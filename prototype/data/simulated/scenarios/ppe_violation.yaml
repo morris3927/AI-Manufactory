@@ -1,0 +1,34 @@
+id: ppe_violation
+title: 場景 1：組裝線未戴安全帽
+duration_s: 15
+cameras:
+  CAM-ASM-01:
+    video: assets/videos/assembly/ppe_violation_01.mp4
+    synthetic: ppe               # 合成畫面：第二位作業員 5 秒後脫下安全帽
+# 沒有 YOLO 權重（models/ppe.pt）時，依劇本時間重播的偵測結果（標示為 scripted）
+sim_detections:
+  - camera: CAM-ASM-01
+    t_from: 0
+    t_to: 5
+    detections:
+      - {cls: person, box: [320, 200, 440, 600], conf: 0.93}
+      - {cls: head,   box: [335, 205, 425, 295], conf: 0.90}
+      - {cls: helmet, box: [325, 190, 435, 255], conf: 0.88}
+      - {cls: person, box: [740, 200, 860, 600], conf: 0.92}
+      - {cls: head,   box: [755, 205, 845, 295], conf: 0.89}
+      - {cls: helmet, box: [745, 190, 855, 255], conf: 0.87}
+  - camera: CAM-ASM-01
+    t_from: 5
+    t_to: 999
+    detections:
+      - {cls: person, box: [320, 200, 440, 600], conf: 0.93}
+      - {cls: head,   box: [335, 205, 425, 295], conf: 0.90}
+      - {cls: helmet, box: [325, 190, 435, 255], conf: 0.88}
+      - {cls: person, box: [740, 200, 860, 600], conf: 0.92}
+      - {cls: head,   box: [755, 205, 845, 295], conf: 0.86}
+expect:
+  t0: 5
+  incident: {type: ppe_violation, severity: S2, category: safety, within_s: 3}
+  notify_within_s: 5
+  assignee_role: leader
+  llm_called: false              # 工安類只派工＋查 SOP，不叫 LLM

@@ -1,0 +1,23 @@
+id: feed_jam
+title: 場景 2：沖床送料卡料
+duration_s: 25
+cameras:
+  CAM-STP-01:
+    video: assets/videos/stamping/feed_jam_01.mp4
+    then: assets/videos/stamping/normal_01.mp4
+    synthetic: feed_jam          # 影片不存在時的合成畫面：板材 10 秒後歪斜卡住
+    jam_at_s: 10
+mes_script:
+  STP-L1-FD02:
+    - {t: 0,  set: {feed_rate: 42, state: running}}
+    - {t: 8,  ramp: {feed_length_error_mm: [0.02, 0.21], over_s: 6}}
+    - {t: 14, set: {feed_rate: 0, spm: 0, state: alarm, alarm_code: MISFEED}}
+  STP-L1-PR01:
+    - {t: 0,  set: {state: running}}
+    - {t: 14, set: {state: idle, spm: 0}}     # 送料停止，沖床連動停機
+expect:                                      # 端到端測試用
+  t0: 14                                     # 異常發生（送料歸零）的劇本時間
+  incident: {type: feed_jam, severity: S2, category: equipment, within_s: 3}
+  notify_within_s: 5
+  assignee_role: technician
+  llm_called: true

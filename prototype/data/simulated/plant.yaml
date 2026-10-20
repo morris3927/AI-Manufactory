@@ -1,0 +1,32 @@
+# 工廠設定（模擬資料）。系統所有地方都用這份設定的 ID，不在程式裡寫死。
+# ROI 座標：x1, y1, x2, y2（以 1280×720 為準）
+# motion 門檻：motion_score = ROI 內變化像素百分比的 EMA；on 以上判定 running、off 以下判定 idle
+lines:
+  - id: stamping
+    name: 沖壓線
+    machines:
+      - {id: STP-L1-PR01, type: servo_press, name: 250t 伺服沖床, days_since_pm: 18}
+      - {id: STP-L1-FD02, type: servo_roll_feeder, name: 伺服送料機, days_since_pm: 41}
+      - {id: STP-L2-PR03, type: mechanical_power_press, name: 200t 機械沖床, days_since_pm: 27}
+      - {id: STP-L2-FD04, type: servo_roll_feeder, name: 伺服送料機（L2）, days_since_pm: 12}
+    cameras:
+      - id: CAM-STP-01
+        machine_id: STP-L1-FD02
+        rois:
+          feed_inlet: [420, 310, 860, 620]
+          danger_zone: [300, 200, 1000, 700]
+        detectors: [motion, jev_feed]
+        motion: {roi: feed_inlet, on: 0.4, off: 0.1, alpha: 0.3}
+        default_video: assets/videos/stamping/normal_01.mp4
+  - id: assembly
+    name: 組裝線
+    machines: []
+    cameras:
+      - id: CAM-ASM-01
+        rois: {workstation: [0, 0, 1280, 720]}
+        detectors: [ppe]
+        default_video: assets/videos/assembly/normal_01.mp4
+  - id: welding
+    name: 銲接線
+    machines: []          # M2：機器人 MIG、點銲（預留）
+    cameras: []

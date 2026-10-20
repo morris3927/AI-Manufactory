@@ -1,0 +1,5 @@
+.venv/
+sentinel.db*
+chroma/
+keyframes/
+*.egg-info/

@@ -1,0 +1,15 @@
+id: log_mismatch
+title: 場景 3：影像閒置但 Log 回報運轉（Log 失準）
+duration_s: 30
+cameras:
+  CAM-STP-01:
+    video: assets/videos/stamping/idle_01.mp4
+    synthetic: idle              # 合成畫面：送料口靜止
+mes_script:
+  STP-L1-FD02:
+    - {t: 0, set: {feed_rate: 42, state: running}}
+expect:
+  t0: 0
+  incident: {type: log_mismatch, severity: S2, category: equipment, within_s: 25}
+  notify_within_s: 26
+  assignee_role: technician

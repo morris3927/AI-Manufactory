@@ -1,0 +1,79 @@
+# Sentinel AI 後端設定
+# 所有門檻集中在這裡，不寫死在程式裡（08_系統設計.md §10）。路徑以 prototype/ 為基準。
+
+app:
+  timezone: Asia/Taipei
+  sim_start: "2026-10-30T09:00:00+08:00"   # 測試與逐步模擬用的起始時間（日班）
+  ambient: true                             # 沒有劇本時，背景持續產生正常 Log 與畫面
+
+paths:
+  plant: data/simulated/plant.yaml
+  roster: data/simulated/roster.csv
+  access: data/simulated/access.csv
+  scenarios: data/simulated/scenarios
+  knowledge: knowledge
+  drafts: knowledge/cases/_drafts           # 結案回寫的案例草稿（review_status=draft）
+  videos_root: .                            # 劇本裡的影片路徑相對於這裡
+  models: models
+  db: backend/sentinel.db
+  chroma: backend/chroma
+  keyframes: backend/keyframes              # 異常成立時的關鍵幀（人員畫面已模糊臉部）
+
+jev:
+  url: https://openrouter.ai/api/alpha/decisions
+  model: typesafe/jev-1.14                  # 鎖定版本，門檻是對這個版本調的
+  timeout_s: 3.0
+  enabled: true
+  warmup: true
+
+llm:
+  url: https://ollama.com/api/chat
+  model: deepseek-v4.1-flash
+  timeout_s: 30.0
+  enabled: true
+
+kb:
+  embedding: auto                           # auto：有裝 sentence-transformers 用 bge-m3，否則用 hash（僅供開發）
+  embedding_model: BAAI/bge-m3
+  allow_draft: false
+
+vision:
+  fps: 15
+  ppe_fps: 5
+  keyframe_interval_s: 5
+  jpeg_quality: 85
+  jev_max_side: 768
+  yolo_weights: models/ppe.pt
+  yolo_device: mps
+  yolo_classes: {head: [head, Head, no_helmet, NO-Hardhat], helmet: [helmet, Helmet, Hardhat], person: [person, Person]}
+  ppe_jev_confirm: false                    # V1（M2）
+
+thresholds:
+  p_jam: 0.7
+  p_jam_count: 2
+  p_jam_window_s: 15
+  feed_drop_window_s: 30
+  jev_stale_s: 30                           # 這段時間內沒有 Jev 看圖結果 → 規則改用動態分數退路
+  ppe_overlap: 0.3                          # Head 與 Helmet 重疊比例低於此值 → 未戴安全帽
+  ppe_conf: 0.5
+  ppe_dedupe_s: 3
+  ppe_window_s: 5
+  log_mismatch_s: 20                        # 影像閒置 ↔ Log 運轉 持續秒數
+  p_false_alarm: 0.9
+  root_cause_conf: 0.6
+  safety_gate_p: 0.3
+  writeback_complete: 0.7
+  sop_top1: 0.6
+  sop_low: 0.3
+  incident_update_s: 5                      # 同一 Incident 更新事件的最短發布間隔
+
+escalation:
+  ack_timeout_s: {S1: 600, S2: 300, S3: 120}
+  demo_ack_timeout_s: null                  # Demo 可設 30，覆蓋上面的值
+
+mes:
+  tick_s: 1.0
+  seed: 42
+
+discord:
+  channels: {stamping: "", assembly: "", welding: "", emergency: ""}

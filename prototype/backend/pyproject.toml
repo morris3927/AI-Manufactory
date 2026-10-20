@@ -1,0 +1,43 @@
+[project]
+name = "sentinel-core"
+version = "0.1.0"
+description = "Sentinel AI 智慧產線異常偵測與派工原型（後端）"
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.8",
+    "pydantic-settings>=2.4",
+    "sqlmodel>=0.0.22",
+    "httpx>=0.27",
+    "opencv-python-headless>=4.10",
+    "numpy>=2.0",
+    "pyyaml>=6.0",
+    "python-ulid>=3.0",
+    "chromadb>=0.5",
+]
+
+[project.optional-dependencies]
+embed = ["sentence-transformers>=3.0"]   # bge-m3（約 2 GB，第一次會下載）
+yolo = ["ultralytics>=8.3"]              # PPE 偵測；權重放 prototype/models/
+discord = ["discord.py>=2.4"]            # 接單按鈕（M2）
+test = ["pytest>=8.3", "pytest-asyncio>=0.24"]
+
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["sentinel*"]
+
+[tool.setuptools.package-data]
+"sentinel.agent" = ["prompts/*.md"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-m 'not live'"
+markers = ["live: 需要真實 API 金鑰的測試（預設略過，用 pytest -m live 執行）"]
+filterwarnings = ["ignore::DeprecationWarning"]
