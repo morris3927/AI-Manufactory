@@ -1,0 +1,28 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# node
+node_modules/
+.next/
+
+# data & artifacts
+*.db
+chroma/
+prototype/assets/videos/**/*.mp4
+prototype/models/*.pt
+prototype/models/*.onnx
+
+# os
+.DS_Store
+
+# local-only
+LOCAL.md
+00_比賽資訊/timeline.md
