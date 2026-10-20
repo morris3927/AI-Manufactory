@@ -1,0 +1,34 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1057
+ },
+ "output": {
+  "technician_report_raw": "PR01 MISFEED連跳3次 05:52 06:41 07:10 料帶位置ok 導正孔ok 送料誤差0.01mm 感測頭接頭鬆 感應面有油 清潔+重插+束線 重置試沖ok 觀察1小時沒再跳",
+  "technician_report_normalized": "夜班期間 PR01 於 05:52、06:41、07:10 連續三次發生 MISFEED 停機，每次重置後可立即恢復運轉。檢查料帶位置、導正孔與模面均正常，停機前送料長度誤差僅 0.01 mm，在 ±0.03 mm 容許範圍內，排除實際卡料。進一步檢查誤送料感測器，發現接頭略微鬆動、感應面沾附油屑，清潔感應面並重新插緊接頭、固定線纜後，重置試運轉，觀察一小時未再跳脫，恢復生產。",
+  "actions": [
+   {
+    "step": "停機後檢查料帶位置、導正孔與模面，確認無卡料或廢料上跳",
+    "result": "正常"
+   },
+   {
+    "step": "調閱警報紀錄與送料長度誤差，數值為 0.01 mm，在 ±0.03 mm 內",
+    "result": "排除實際送料異常"
+   },
+   {
+    "step": "清潔誤送料感測器感應面油屑，檢查接頭端子並重新插緊、固定線纜",
+    "result": "接頭復位"
+   },
+   {
+    "step": "重置後試運轉並觀察 MISFEED 訊號",
+    "result": "未再跳脫，恢復生產"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "MISFEED 反覆跳但送料誤差只有 0.01 mm 時，先查感測器接頭與感應面油屑，不要急著拆模具。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,139 @@
+{
+  "case_id": "CASE-STP-0047",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1046,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2025-12-16T03:10:11+08:00",
+  "closed_at": "2025-12-16T07:08:04+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_trend",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 49,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2512-382"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-10T03:10:19+08:00",
+      "signal": "tonnage_peak",
+      "value": 155
+    },
+    {
+      "t": "2025-12-13T03:10:11+08:00",
+      "signal": "tonnage_peak",
+      "value": 160
+    },
+    {
+      "t": "2025-12-16T03:09:16+08:00",
+      "signal": "tonnage_peak",
+      "value": 167
+    },
+    {
+      "t": "2025-12-16T03:09:51+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 3
+    },
+    {
+      "t": "2025-12-16T03:09:55+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 89780
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 噸位155→160→167緩升 毛邊高 沖子刃口磨耗 沖次89780超基準 換新沖子 試沖ok",
+  "technician_report_normalized": "夜班巡檢發現 PR03 噸位峰值由 155 噸逐步升至 167 噸，製品毛邊偏高。調閱模具履歷，沖次 89780 已超過研磨基準 80000 次，左右噸位平衡 3% 正常。停機上鎖後拆下沖頭，以放大鏡檢查發現刃口鈍化及局部崩角，研判為沖頭刃口磨耗。更換新沖頭並清潔模面，試沖後毛邊高度恢復，噸位峰值回穩，確認正常後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "punch_edge_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "punch_edge_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱模具履歷與噸位趨勢，核對沖次及峰值變化",
+      "result": "沖次 89780 超基準、噸位 155→167"
+    },
+    {
+      "step": "停機量測製品毛邊高度與斷面光亮帶比例",
+      "result": "毛邊偏高、光亮帶變窄"
+    },
+    {
+      "step": "拆下沖頭，以放大鏡檢查刃口崩缺與磨耗程度",
+      "result": "刃口鈍化及局部崩角"
+    },
+    {
+      "step": "更換新沖頭並清潔模面、確認模具潤滑狀況",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並複量毛邊高度與噸位峰值",
+      "result": "毛邊恢復、噸位回穩 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-033"
+  ],
+  "downtime_min": 235,
+  "parts_replaced": [
+    "punch"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "沖次接近 8 萬次就先調噸位趨勢與毛邊，不要等毛邊明顯才停機。",
+  "related_failure_mode_ids": [
+    "punch_edge_wear"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-033"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

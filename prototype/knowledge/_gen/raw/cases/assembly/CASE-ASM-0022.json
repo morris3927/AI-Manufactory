@@ -1,0 +1,47 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4021
+ },
+ "output": {
+  "technician_report_raw": "ST02 FEEDER_TIMEOUT 先查漏鎖 孔位OK 拆護蓋軌道卡歪螺絲 清釘復位 ok",
+  "technician_report_normalized": "ST02 夜班送釘逾時警報，起子端無螺絲可鎖，MES 顯示 FEEDER_TIMEOUT 與 NOK_NO_SCREW。先懷疑漏鎖，檢查已鎖附孔位與鎖附紀錄皆正常，排除漏鎖。查事件紀錄見 feeder_pick_fail_count 24，補料後持續卡。在 LOTO 隔離下拆送釘軌道出口護蓋與分離器護蓋，發現軌道卡歪斜螺絲。以塑膠鑷子清除卡釘，量測卡釘規格與 BOM 相符，排除混料。復位後手動送釘無干涉，以試片試鎖扭力與角度正常；隔離受影響工件並追溯，清理送料盤後首件確認 OK，恢復生產。",
+  "actions": [
+   {
+    "step": "依第一判斷檢查已鎖附孔位、鎖附紀錄與影像，確認是否有漏鎖。",
+    "result": "排除漏鎖"
+   },
+   {
+    "step": "查閱控制器事件紀錄與補料紀錄，核對 FEEDER_TIMEOUT 與 feeder_pick_fail_count。",
+    "result": "指向送釘異常"
+   },
+   {
+    "step": "在 LOTO 隔離下拆送釘軌道出口護蓋與分離器護蓋，目視檢查軌道、分離器與吸嘴。",
+    "result": "發現卡釘"
+   },
+   {
+    "step": "以塑膠鑷子清除卡釘與異物，量測卡釘長度、牙距與頭型並比對 BOM。",
+    "result": "清除完成，規格相符"
+   },
+   {
+    "step": "復位分離器與軌道，手動送釘路徑檢查無干涉，以試片試鎖確認扭力與角度。",
+    "result": "試鎖 ok"
+   },
+   {
+    "step": "隔離停機前後受影響工件並標示追溯，清理送料盤後執行首件確認。",
+    "result": "首件 ok，恢復生產"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因事件前出現 screw_missing=true、又逢補料與換線後的中斷點，直覺懷疑漏鎖；但已鎖附孔位與鎖附紀錄都 OK，且 FEEDER_TIMEOUT 伴隨 feeder_pick_fail_count=24，實際是送釘軌道卡釘導致起子端無螺絲。",
+  "discriminating_evidence": [
+   "已鎖附孔位與鎖附紀錄均正常，沒有漏鎖跡象。",
+   "alarm_code=FEEDER_TIMEOUT 且 screw_result=NOK_NO_SCREW，表示起子端取不到螺絲，非工件漏鎖。",
+   "feeder_pick_fail_count=24，且發生在 01:29 補料與 01:51 換線後，符合送釘機卡釘模式。",
+   "拆開護蓋見軌道卡著歪斜螺絲與異物，直接確認送釘機卡釘。"
+  ],
+  "lessons": "送釘逾時先別急著追漏鎖，先看 feeder_pick_fail_count 與補料時點，拆護蓋確認軌道有無卡釘。",
+  "escalation_note": null
+ }
+}

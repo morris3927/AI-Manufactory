@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1066
+ },
+ "output": {
+  "technician_report_raw": "PR01 STRIP_LIFT跳 料帶上浮 脫料板彈簧軟 突出量不足 換彈簧組 試沖ok",
+  "technician_report_normalized": "PR01 於 12:34、13:01 及 13:09 連續發生料帶上浮停機，SPM 已降至 30 仍未改善。拆開上模護蓋檢查，脫料板無明顯歪斜或卡滯，但以深度規量測脫料板突出量不足，彈簧座壓縮量不一致，彈簧有縮短與疲勞跡象；沖頭端面及模仁面未見黏附廢料。更換脫料板彈簧組，清潔彈簧座與導柱後依對角順序鎖回，寸動確認動作正常，試沖後料帶不再被帶起，恢復生產。",
+  "actions": [
+   {
+    "step": "確認 STRIP_LIFT 警報與料帶狀況，降速至 30 spm 觀察",
+    "result": "仍反覆上浮停機"
+   },
+   {
+    "step": "拆上模護蓋檢查脫料板與彈簧",
+    "result": "脫料板無卡滯，彈簧縮短疲勞"
+   },
+   {
+    "step": "以深度規量測脫料板突出量與各彈簧座壓縮量",
+    "result": "突出量不足、壓縮量不一致"
+   },
+   {
+    "step": "更換脫料板彈簧組並清潔彈簧座與導柱",
+    "result": "更換完成"
+   },
+   {
+    "step": "寸動試模並試沖確認脫料狀況",
+    "result": "料帶不再上浮 ok"
+   }
+  ],
+  "parts_replaced": [
+   "stripper_spring_set"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "料帶反覆上浮且降速無效時，先量脫料板突出量與彈簧壓縮量，不要一直調送料。",
+  "escalation_note": null
+ }
+}

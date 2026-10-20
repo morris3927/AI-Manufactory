@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3012
+ },
+ "output": {
+  "technician_report_raw": "RC01 GAS_LOW 換瓶後流量掉8.1 氣孔6處各治具 查瓶閥+匯流排+接頭 送絲機端接頭鬆 鎖緊束環 流量回17 試銲ok",
+  "technician_report_normalized": "RC01 於 17:23 換氣瓶後，保護氣流量由 17.0 降至 10.5、8.1 L/min，並出現氣體流量低警報；17:53 發現各治具銲道共 6 處氣孔。依 SOP 檢查瓶閥、匯流排壓力與保護氣管路，發現送絲機端接頭鬆脫漏氣，重新鎖緊接頭與束環後流量恢復正常；在局部排氣運轉下、人員於圍欄外試銲，結果 ok。",
+  "actions": [
+   {
+    "step": "依氣體流量低警報檢查氣瓶瓶閥、匯流排壓力與換瓶紀錄",
+    "result": "瓶閥開啟，流量仍低"
+   },
+   {
+    "step": "沿保護氣管路檢查接頭、束環與軟管",
+    "result": "送絲機端接頭鬆脫"
+   },
+   {
+    "step": "重新鎖緊接頭與束環並做中性漏液檢查",
+    "result": "無漏氣"
+   },
+   {
+    "step": "量測保護氣流量與供氣壓力",
+    "result": "流量回 17.0 L/min"
+   },
+   {
+    "step": "在局部排氣運轉下、人員於圍欄外試銲",
+    "result": "試銲 ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換氣瓶後先確認接頭與流量，不要只看瓶壓就開線。",
+  "escalation_note": null
+ }
+}

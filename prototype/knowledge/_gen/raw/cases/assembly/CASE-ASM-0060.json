@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4059
+ },
+ "output": {
+  "technician_report_raw": "ST01 影像告警 cut gloves 沒戴 先停線 庫存只剩1副 班長確認 記錄Kanban 品保接手",
+  "technician_report_normalized": "影像辨識發現 ST01 作業員未配戴防割手套，立即停止該站作業並通知班長。現場清點防護具庫存，防割手套僅剩 1 副，尺寸與發放狀況需進一步確認，已記錄於看板並提醒人員依規定配戴。因庫存不足且涉及靜電防護與後續補發，現場無法完成修復，移交品保工程師協調處理。",
+  "actions": [
+   {
+    "step": "停止 ST01 起子作業，確認現場人員暫停作業並離開作業位置",
+    "result": "停止作業"
+   },
+   {
+    "step": "通知班長確認未配戴防割手套的原因，並依規定記錄",
+    "result": "已通知"
+   },
+   {
+    "step": "清點該站防護具庫存，防割手套僅剩 1 副",
+    "result": "庫存不足"
+   },
+   {
+    "step": "將缺料與未配戴情形記錄於看板，提醒人員依規定配戴防護具",
+    "result": "已記錄"
+   },
+   {
+    "step": "防割手套補發與靜電防護確認由品保工程師執行，現場停止作業待命",
+    "result": "移交"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "防護具庫存低於安全量就先補發，影像告警只是最後一道提醒。",
+  "escalation_note": "移交品保工程師協調防割手套補發與靜電防護確認，現場待庫存補足後再恢復作業。"
+ }
+}

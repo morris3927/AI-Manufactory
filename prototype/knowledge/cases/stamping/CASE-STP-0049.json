@@ -1,0 +1,158 @@
+{
+  "case_id": "CASE-STP-0049",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1048,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2025-12-29T05:27:06+08:00",
+  "closed_at": "2025-12-29T08:50:37+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_trend",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 2,
+    "recent_changes": [
+      "換模 04:05（D-BRKT-HDD-07）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2512-342"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-23T05:27:38+08:00",
+      "signal": "tonnage_peak",
+      "value": 118
+    },
+    {
+      "t": "2025-12-26T05:27:48+08:00",
+      "signal": "tonnage_peak",
+      "value": 122
+    },
+    {
+      "t": "2025-12-29T04:05:25+08:00",
+      "signal": "die_change",
+      "value": "D-BRKT-HDD-07"
+    },
+    {
+      "t": "2025-12-29T05:26:10+08:00",
+      "signal": "tonnage_peak",
+      "value": 126
+    },
+    {
+      "t": "2025-12-29T05:26:14+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 105900
+    },
+    {
+      "t": "2025-12-29T05:26:45+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 2
+    }
+  ],
+  "technician": {
+    "id": "TECH-07",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR03 換模後毛邊漸大 先查定位銷無鬆 左右平衡2% 調履歷沖次105900超8萬 噸位118→126緩升 拆沖子刃口磨耗圓角 換新沖子 模仁刃口檢查ok 試沖毛邊ok 停機201分",
+  "technician_report_normalized": "PR03 於 04:05 換模 D-BRKT-HDD-07 後，製品毛邊逐漸變高。初期懷疑模具定位偏移，檢查定位銷並無鬆動，左右沖壓力平衡值為 2%，屬正常範圍。調閱模具履歷卡，沖次已達 105,900 次，超過 80,000 次研磨基準；噸位峰值由 118 噸緩升至 126 噸。拆檢沖頭發現刃口圓角磨耗、鈍化，判定為刃口磨耗。更換沖頭並檢查模仁刃口後試沖，毛邊恢復正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "die_misalignment",
+    "by": "jev",
+    "p": 0.39
+  },
+  "final_root_cause": "punch_edge_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "換模後一小時內毛邊變大，加上噸位峰值創高，第一時間懷疑換模定位偏移；但左右沖壓力平衡值僅 2%、定位銷無鬆動，且毛邊是隨沖次漸增而非換模後突發，才排除定位問題。",
+  "discriminating_evidence": [
+    "tonnage_balance_pct 為 2%，左右沖壓力平衡正常，未達偏移判斷的 10% 門檻",
+    "噸位峰值由 118 噸、122 噸到 126 噸數日緩升，並非換模後突跳",
+    "stroke_count_since_regrind 已達 105,900 次，超過 80,000 次研磨基準",
+    "毛邊高度隨沖次逐步增加，屬刃口磨耗特徵，而非換模後單側突發毛邊"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查模具定位銷與閉模高度，確認換模後是否定位偏移",
+      "result": "定位銷無鬆動、模高與模具資料相符，排除"
+    },
+    {
+      "step": "讀取左右沖壓力平衡值 tonnage_balance_pct",
+      "result": "2%，平衡正常，排除偏移"
+    },
+    {
+      "step": "調閱模具履歷卡與噸位趨勢紀錄",
+      "result": "沖次 105,900 次超過 80,000 基準，噸位峰值 118→126 緩升"
+    },
+    {
+      "step": "停機拆檢沖頭與模仁刃口，以放大鏡及毛邊高度規量測",
+      "result": "沖頭刃口圓角磨耗、鈍化，毛邊偏高"
+    },
+    {
+      "step": "更換沖頭，並檢查模仁刃口鑲塊",
+      "result": "更換完成，模仁刃口無崩缺"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並量測製品毛邊高度",
+      "result": "毛邊恢復正常，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-021",
+    "SOP-STP-033"
+  ],
+  "downtime_min": 201,
+  "parts_replaced": [
+    "punch"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後看到毛邊別急著怪定位，先調模具履歷卡核對沖次與噸位趨勢，左右平衡值正常就該往刃口磨耗查。",
+  "related_failure_mode_ids": [
+    "punch_edge_wear",
+    "die_misalignment"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-021",
+    "SOP-STP-033"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4037
+ },
+ "output": {
+  "technician_report_raw": "ST02 扭力抽測偏差14.3% 校正標籤過期 鎖附OK 換校正合格起子 SD-02-2送校 試片0.8Nm ok",
+  "technician_report_normalized": "夜班發現 ASM-L1-ST02 扭力工具 SD-02-2 校正已逾期，扭力分析儀抽測偏差 14.3%，超過 ±10% 判定值；鎖附結果雖顯示 OK，但離合器跳脫點有漂移疑慮。依 SOP-ASM-031 核對校正履歷後，依 LOTO-ASM-TOOL-01 斷電，更換校正合格備用起子，於試片以 0.8 N·m 試鎖正常，原起子掛待校正送校。校正逾期期間鎖附之機殼與螺絲批號已隔離待判定，停機 62 分鐘後恢復生產。",
+  "actions": [
+   {
+    "step": "核對 SD-02-2 校正標籤、校正報告與到期日",
+    "result": "確認校正逾期"
+   },
+   {
+    "step": "以有效期內扭力分析儀抽測並比對鎖附紀錄",
+    "result": "偏差 14.3% 超標"
+   },
+   {
+    "step": "檢查起子頭刃口與離合器跳脫外觀",
+    "result": "無明顯磨耗"
+   },
+   {
+    "step": "更換校正合格備用起子，原起子掛待校正送校",
+    "result": "完成更換"
+   },
+   {
+    "step": "於試片或報廢件以 0.8 N·m 試鎖抽測",
+    "result": "正常"
+   },
+   {
+    "step": "隔離校正逾期期間鎖附機殼、螺絲批號與工具批次",
+    "result": "待判定"
+   }
+  ],
+  "parts_replaced": [
+   "calibrated_spare_screwdriver"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "校正到期與抽測偏差 14.3% 要當停線訊號，先換校正合格備品再試片確認，不要只看鎖附 OK。",
+  "escalation_note": null
+ }
+}

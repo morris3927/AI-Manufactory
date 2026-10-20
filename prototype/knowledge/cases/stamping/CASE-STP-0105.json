@@ -1,0 +1,143 @@
+{
+  "case_id": "CASE-STP-0105",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1104,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-02-24T03:03:24+08:00",
+  "closed_at": "2026-02-24T06:43:49+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "scrap_conveyor_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 34,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2602-288"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-24T02:43:55+08:00",
+      "signal": "scrap_conveyor_current_a",
+      "value": 1.2
+    },
+    {
+      "t": "2026-02-24T02:59:46+08:00",
+      "signal": "scrap_conveyor_current_a",
+      "value": 0.0
+    },
+    {
+      "t": "2026-02-24T03:03:11+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-05",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR01 模保跳脫 先查廢料滑道+輸送帶+落料孔 沒塞 清殘料試沖還是NG 再查快速夾模器油壓偏低 上模微量鬆 現場無法處理 交設備工程師",
+  "technician_report_normalized": "03:03 MES 拋出廢料輸送帶警報並觸發模具保護停機。依廢料堵塞方向檢查廢料滑道、輸送帶與下模落料孔，未見堵塞，清除殘料後點動輸送帶正常，但試沖仍再次觸發模具保護。進一步檢查發現快速夾模器油壓偏低，上模在生產中有微量鬆動，現場無法調整修復，已移交設備工程師處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "scrap_chute_jam",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因 MES 拋出廢料輸送帶警報、電流由 1.2 A 掉到 0.0 A，加上模具保護停機，才先懷疑廢料滑道堵塞；但清除後輸送帶與落料孔無堵塞且試沖仍 NG，才轉向夾模器油壓。",
+  "discriminating_evidence": [
+    "廢料滑道、輸送帶與下模落料孔目視無堵塞，清除殘料後試沖仍觸發模具保護。",
+    "點動廢料輸送帶可運轉，未見卡料或回堵情況。",
+    "進一步檢查發現快速夾模器油壓偏低，上模在生產中有微量鬆動。",
+    "模具保護在廢料路徑確認暢通後仍重現，表示停機不是單純廢料回堵。"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "die_clamp_pressure_low",
+    "description": "快速夾模器油壓不足，上模在生產中微量鬆動"
+  },
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "檢查廢料滑道、廢料輸送帶與下模落料孔，清除殘料並點動輸送帶",
+      "result": "未見堵塞、運轉正常"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並查看模具保護紀錄",
+      "result": "模具保護仍觸發、未改善"
+    },
+    {
+      "step": "檢查快速夾模器與上模固定狀態",
+      "result": "夾模器油壓偏低、上模微量鬆動"
+    },
+    {
+      "step": "確認現場可調整範圍與油壓系統狀態",
+      "result": "超出現場能力、需設備工程師"
+    },
+    {
+      "step": "移交設備工程師處理夾模器油壓不足",
+      "result": "已移交"
+    },
+    {
+      "step": "機台維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-065"
+  ],
+  "downtime_min": 220,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "設備工程師",
+  "escalation_note": "移交設備工程師檢修快速夾模器油壓不足與上模微量鬆動，需進一步檢測油壓系統。",
+  "lessons": "遇到模保跳脫先別只咬定廢料堵塞；廢料路徑確認暢通後，要回頭查夾模與油壓狀態。",
+  "related_failure_mode_ids": [
+    "scrap_chute_jam"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-065"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

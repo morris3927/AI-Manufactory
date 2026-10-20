@@ -1,0 +1,178 @@
+{
+  "case_id": "CASE-STP-0070",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1069,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-05-08T13:58:21+08:00",
+  "closed_at": "2026-05-08T17:21:41+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "strip_lift_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 47,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2605-204"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-08T12:49:01+08:00",
+      "signal": "die_stroke_total",
+      "value": 810894
+    },
+    {
+      "t": "2026-05-08T13:18:55+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 6
+    },
+    {
+      "t": "2026-05-08T13:23:54+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2026-05-08T13:28:43+08:00",
+      "signal": "spm",
+      "value": 30
+    },
+    {
+      "t": "2026-05-08T13:43:26+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 3.4
+    },
+    {
+      "t": "2026-05-08T13:50:46+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2026-05-08T13:57:09+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 1.3
+    },
+    {
+      "t": "2026-05-08T13:58:21+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2026-05-08T13:58:21+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_LUBE_LOW"
+    },
+    {
+      "t": "2026-05-08T13:58:21+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 19362
+    }
+  ],
+  "technician": {
+    "id": "TECH-14",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 料帶上浮警報一直跳 先查潤滑 噴油脈衝掉到1.3 補油清噴嘴仍跳 拆上模護蓋 脫料板偏 彈簧軟掉 換spring set 調突出量 試沖ok",
+  "technician_report_normalized": "PR01 於 13:58 出現料帶上浮停機，先前已多次跳料帶上浮警報，模具潤滑脈衝由每分鐘 6 次降至 1.3 次並伴低液位。先朝潤滑不足處理，補油及清潔噴嘴後警報仍未改善。拆上模護蓋檢查，脫料板有偏斜，彈簧明顯縮短、疲勞，判定為主因；潤滑不足為次因。更換脫料板彈簧組，清潔彈簧座與導柱，調整脫料板突出量並恢復噴油，試沖數件無上浮，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "die_lubrication_insufficient",
+    "by": "jev",
+    "p": 0.5
+  },
+  "final_root_cause": "stripper_spring_fatigue",
+  "contributing_causes": [
+    "die_lubrication_insufficient"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因噴油脈衝由 6 降到 1.3、出現低液位且料帶上浮，直覺懷疑潤滑不足；但補油清嘴後仍跳，拆模才看到脫料板偏斜與彈簧疲勞，且沖頭端面無黏屑，故主因不是潤滑。",
+  "discriminating_evidence": [
+    "補油與清潔噴嘴後，料帶上浮警報仍未改善，與潤滑不足通常補油即改善的表現不符。",
+    "拆上模護蓋見脫料板偏斜、彈簧縮短疲勞，回程脫料不平均使料帶被帶起。",
+    "沖頭端面無黏附廢料或跳屑，排除廢料上跳造成料帶上浮。",
+    "模具累積沖次 810,894，超過 500,000 次（模擬值）的彈簧更換週期。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查模具潤滑油箱液位與噴油嘴噴油狀況",
+      "result": "液位偏低、噴油脈衝 1.3 次/分"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "補油並清潔噴油嘴後試沖",
+      "result": "料帶上浮警報仍未改善"
+    },
+    {
+      "step": "拆上模護蓋檢查脫料板與彈簧",
+      "result": "脫料板偏斜、彈簧縮短疲勞"
+    },
+    {
+      "step": "更換脫料板彈簧組並清潔彈簧座、導柱",
+      "result": "完成"
+    },
+    {
+      "step": "調整脫料板突出量並恢復模具潤滑",
+      "result": "突出量恢復、噴油正常"
+    },
+    {
+      "step": "低速試沖並觀察料帶",
+      "result": "ok，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-035",
+    "SOP-STP-036"
+  ],
+  "downtime_min": 203,
+  "parts_replaced": [
+    "stripper_spring_set"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "料帶上浮先別只追潤滑，脈衝低是誘因；拆護蓋量脫料板突出量與彈簧壓縮量，才不會漏掉彈簧疲勞。",
+  "related_failure_mode_ids": [
+    "stripper_spring_fatigue",
+    "die_lubrication_insufficient"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-035",
+    "SOP-STP-036"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

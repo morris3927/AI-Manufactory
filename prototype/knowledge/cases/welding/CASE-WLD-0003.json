@@ -1,0 +1,152 @@
+{
+  "case_id": "CASE-WLD-0003",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3002,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2025-11-04T18:16:02+08:00",
+  "closed_at": "2025-11-04T19:16:18+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "wire_feed_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 4,
+    "recent_changes": [],
+    "part": "1U 機殼後框支架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-138"
+  },
+  "log_signals": [
+    {
+      "t": "2025-11-04T17:56:42+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 6.0
+    },
+    {
+      "t": "2025-11-04T17:56:44+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 2.5
+    },
+    {
+      "t": "2025-11-04T18:10:03+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 5.1
+    },
+    {
+      "t": "2025-11-04T18:10:09+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 4.8
+    },
+    {
+      "t": "2025-11-04T18:15:10+08:00",
+      "signal": "arc_current_cv_pct",
+      "value": 15.7
+    },
+    {
+      "t": "2025-11-04T18:15:23+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 4.7
+    },
+    {
+      "t": "2025-11-04T18:16:02+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 5.0
+    },
+    {
+      "t": "2025-11-04T18:16:02+08:00",
+      "signal": "alarm_code",
+      "value": "ARC_LOST"
+    },
+    {
+      "t": "2025-11-04T18:16:02+08:00",
+      "signal": "tip_arc_on_min",
+      "value": 165
+    }
+  ],
+  "technician": {
+    "id": "TECH-28",
+    "level": "L3"
+  },
+  "technician_report_raw": "RC02 斷弧警報 送絲速度掉到4.7 馬達電流5.0A 開上蓋看送絲輪跟導管入口一團鳥巢 剪掉300mm 軟管刷+乾空壓清導管 重穿絲 試銲ok 導電嘴起弧165分還沒到換 收工",
+  "technician_report_normalized": "RC02 於 18:16 出現斷弧警報，停機前送絲速度由設定 6.0 mpm 一路掉到 4.7 mpm，送絲馬達電流同時升到 5.0 A，電弧電流也忽大忽小。上鎖進入圍欄後打開送絲機上蓋，發現銲絲在送絲輪與導管入口之間纏繞成團，導管入口有鐵屑堆積。剪除纏繞與受壓變形段約 300 mm，以軟管刷配合乾燥壓縮空氣清除導管內鐵屑，並用厚薄規確認送絲輪間隙、上下輪對齊與加壓臂張力正常。重新穿絲後以教導模式降速確認送絲順暢，人員在圍欄外、局部排氣運轉下試銲，電弧穩定。導電嘴累積起弧時間 165 分，尚未達更換基準，予以保留。",
+  "first_hypothesis": {
+    "failure_mode_id": "wire_feed_birdnest",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "wire_feed_birdnest",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "上鎖掛牌後開啟送絲機上蓋，目視送絲輪與導管入口",
+      "result": "發現銲絲纏繞成團"
+    },
+    {
+      "step": "剪除鳥巢段與受壓變形銲絲約 300 mm",
+      "result": "排除"
+    },
+    {
+      "step": "軟管刷配合乾燥壓縮空氣清除導管入口與內壁鐵屑",
+      "result": "排除"
+    },
+    {
+      "step": "厚薄規量測送絲輪間隙，檢查溝槽磨耗、上下輪對齊與加壓臂彈簧張力",
+      "result": "ok"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "重新穿絲，教導模式降速確認送絲順暢，圍欄外試銲",
+      "result": "ok 電弧穩定"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-011"
+  ],
+  "downtime_min": 57,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "送絲速度往下掉、馬達電流往上飆的組合出現時，先開上蓋找鳥巢，別急著換導電嘴。",
+  "related_failure_mode_ids": [
+    "wire_feed_birdnest"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-011"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

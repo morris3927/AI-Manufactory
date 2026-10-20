@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1071
+ },
+ "output": {
+  "technician_report_raw": "PR01 OVERRUN 停止角 10.7→13.5→17.2 一直變大 停止時間253ms 氣壓5.7正常 已停機LOTO 通知課長 記錄 等設備工程師+原廠處理 原廠換brake lining+clutch片 試機ok",
+  "technician_report_normalized": "PR01 於 10:06 發生 OVERRUN 警報，停止角度由 8/23 的 10.7 度、8/25 的 13.5 度升至 17.2 度，停止時間 253 ms；氣源壓力 5.7 bar 正常。研判為離合器／制動器磨耗，滑塊停止位置已偏移。現場立即停機並執行 LOTO，通知課長與設備工程師，記錄角度趨勢後等待合格人員處理。後續由原廠技師更換制動來令片與離合器摩擦片，調整後試機，停止角度恢復正常，交付生產。",
+  "actions": [
+   {
+    "step": "停機並確認滑塊靜止",
+    "result": "已停機"
+   },
+   {
+    "step": "調閱停止角度趨勢與氣源壓力紀錄",
+    "result": "角度 10.7→17.2 度、5.7 bar 正常"
+   },
+   {
+    "step": "通知課長與設備工程師並保留現場紀錄",
+    "result": "已通知"
+   },
+   {
+    "step": "依 SOP-STP-051 等待合格人員檢修離合器／制動器",
+    "result": "移交設備工程師"
+   },
+   {
+    "step": "由原廠技師更換制動來令片與離合器摩擦片",
+    "result": "更換完成"
+   },
+   {
+    "step": "調整後試機並確認停止角度",
+    "result": "恢復正常 ok"
+   }
+  ],
+  "parts_replaced": [
+   "brake_lining",
+   "clutch_friction_plate"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "停止角度連日上升就是制動器磨耗的早期訊號，別等到 OVERRUN 才停機。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1002
+ },
+ "output": {
+  "technician_report_raw": "FD02 06:25 MISFEED 送料偏短 誤差0.03→0.17 滾輪亮帶+油 清潔無效 量料厚ok 換上下送料滾輪 試沖ok",
+  "technician_report_normalized": "夜班約06:25，FD02 出現 MISFEED，送料長度誤差由0.03 mm逐步累積到0.17 mm，送料停止。檢查送料滾輪表面有亮帶與油污，清潔後送料仍偏短；量測料帶厚度在公差內，前60分鐘無換料捲，距上次保養33天，壓緊彈簧與軸承間隙無明顯異常。判定為送料滾輪磨損打滑，更換上、下送料滾輪後低速寸動試送，誤差恢復至0.02 mm，試沖正常，停機72分鐘後恢復生產。",
+  "actions": [
+   {
+    "step": "檢查送料滾輪表面與料帶路徑，發現滾輪亮帶及油污，清潔後試送",
+    "result": "仍偏短"
+   },
+   {
+    "step": "以分厘卡量測料帶厚度，距料邊20 mm以上取5點",
+    "result": "厚度在公差內"
+   },
+   {
+    "step": "檢查滾輪壓緊彈簧壓縮量與軸承徑向間隙",
+    "result": "無明顯異常"
+   },
+   {
+    "step": "更換上、下送料滾輪",
+    "result": "更換完成"
+   },
+   {
+    "step": "低速寸動送料10次並試沖",
+    "result": "誤差恢復 0.02 mm"
+   }
+  ],
+  "parts_replaced": [
+   "feed_roll_upper",
+   "feed_roll_lower"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "送料誤差慢慢爬升先看滾輪亮帶，不要只清潔，表面磨損就要換滾輪。",
+  "escalation_note": null
+ }
+}

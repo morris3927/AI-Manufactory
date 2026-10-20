@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4016
+ },
+ "output": {
+  "technician_report_raw": "ST02 MES NOK_LOW_TORQUE 先猜bit磨耗 cam out 查計數16634未達4萬 螺絲頭無花 無打滑聲 追補料 料盤短暫空料 補完生產正常 誤報 ok",
+  "technician_report_normalized": "MES 於 12：42 發出 ST02 的 NOK_LOW_TORQUE 趨勢告警，當時起子頭累計使用次數為 16634 次。現場先依起子頭磨耗打滑方向查修，讀取控制器維修紀錄並檢視已鎖附螺絲，計數未達 40,000 次門檻，未見明顯 cam-out 打滑聲或十字槽磨花。再追查補料紀錄，發現補料時料盤曾短暫空料，補料完成後生產即恢復正常，確認本次為誤報，設備無故障。",
+  "actions": [
+   {
+    "step": "讀取控制器維修紀錄與起子頭累計次數，核對 NOK 趨勢。",
+    "result": "計數16634未達40000"
+   },
+   {
+    "step": "依第一判斷比對打滑聲與已鎖附螺絲頭十字槽外觀。",
+    "result": "排除"
+   },
+   {
+    "step": "追查補料與料盤供料紀錄。",
+    "result": "發現短暫空料"
+   },
+   {
+    "step": "補料並確認供料恢復，觀察後續鎖附結果。",
+    "result": "恢復正常"
+   },
+   {
+    "step": "確認無設備故障，解除告警恢復生產。",
+    "result": "誤報結案"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因 MES 出現 NOK_LOW_TORQUE 且訊號含起子頭計數，直覺懷疑起子頭磨耗造成 cam-out；但 bit_cycle_count 僅 16634 次，未達 40,000 次門檻，現場也無打滑聲與十字槽磨花，追查後是補料時料盤短暫空料造成的誤報。",
+  "discriminating_evidence": [
+   "控制器讀值 bit_cycle_count=16634，未達起子頭磨耗門檻 40,000 次。",
+   "NOK_LOW_TORQUE 發生於補料時段，補料完成後生產即恢復正常。"
+  ],
+  "lessons": "遇到 NOK_LOW_TORQUE 先看起子頭計數與打滑聲，也要同步查補料紀錄，別讓空料警報被誤當成工具磨耗。",
+  "escalation_note": null
+ }
+}

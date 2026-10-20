@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3054
+ },
+ "output": {
+  "technician_report_raw": "RC02 排煙風量低 壓差1340Pa 煙飄出工位 停銲 LOTO 通知廠務 廠務查排風機+濾筒 換濾芯 試運轉ok",
+  "technician_report_normalized": "RC02 銲接時出現排煙風量偏低警報，現場煙霧滯留並飄出工位外。技術員立即停止銲接，通知主管與廠務，並完成上鎖掛牌後在圍籬外待命。廠務檢查局部排氣系統，發現濾筒壓差達 1,340 Pa、風量不足，判定為濾筒阻塞；由廠務更換濾筒濾芯並確認排風機運轉正常，試運轉後煙霧不再外散，恢復生產。",
+  "actions": [
+   {
+    "step": "停止銲接並確認機器人進入循環停止，觀察煙霧擴散狀況。",
+    "result": "已停機"
+   },
+   {
+    "step": "通報主管與廠務，記錄排煙壓差與風量讀值。",
+    "result": "已通報"
+   },
+   {
+    "step": "由廠務／合格人員檢查排風機、皮帶、濾筒、導管與氣罩。",
+    "result": "壓差高、風量低"
+   },
+   {
+    "step": "由廠務更換濾筒濾芯並確認排風機運轉正常。",
+    "result": "更換完成"
+   },
+   {
+    "step": "由廠務試運轉局部排氣，確認煙霧不再擴散至工位外。",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "extraction_filter_cartridge"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "排煙壓差超過 1,200 Pa 就要安排清濾筒，不要等到煙飄出工位才停線。",
+  "escalation_note": null
+ }
+}

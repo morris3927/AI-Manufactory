@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1080
+ },
+ "output": {
+  "technician_report_raw": "PR03 AIR_LOW 氣壓4.6 同管路別台也掉 濾杯積水 接頭皂液起泡 換O環+束緊 回5.5 試沖ok 停32分",
+  "technician_report_normalized": "夜班期間 PR03 發生 AIR_LOW 氣壓低警報，機台氣壓表由 5.5 bar 逐步降至 4.6 bar。檢查發現同一供氣管路其他機台也同時壓降，氣源三點組合濾杯有積水，沿管路以皂液測漏時發現快速接頭 O 型環起泡漏氣。更換 O 型環並重新束緊接頭，排水後氣壓回升至 5.5 bar，試沖數件無異常，恢復生產，停機 32 分鐘。",
+  "actions": [
+   {
+    "step": "讀取機台氣壓表與 HMI 值，並比對同一供氣管路其他機台",
+    "result": "4.6 bar，多台同時壓降"
+   },
+   {
+    "step": "檢查氣源三點組合，排放濾杯積水並確認調壓閥設定",
+    "result": "濾杯積水，設定未漂移"
+   },
+   {
+    "step": "沿供氣管路與接頭以皂液測漏",
+    "result": "快速接頭 O 型環起泡"
+   },
+   {
+    "step": "更換 O 型環並重新束緊接頭",
+    "result": "無漏氣"
+   },
+   {
+    "step": "觀察氣壓並試沖確認",
+    "result": "回升 5.5 bar，試沖 ok"
+   }
+  ],
+  "parts_replaced": [
+   "air_fitting_oring"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "氣壓低警報先比對同管路其他機台，若一起掉就是供氣側問題，可少走模具這條路。",
+  "escalation_note": null
+ }
+}

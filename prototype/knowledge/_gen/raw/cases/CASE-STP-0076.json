@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1075
+ },
+ "output": {
+  "technician_report_raw": "PR01 1756 過負荷停 噸位250 前168 模內料頭重疊 清掉 試沖ok 停60分",
+  "technician_report_normalized": "PR01 於 17:56 發生過負荷停機，噸位監控顯示前次峰值 168 t，異常沖次尖峰達 250 t 並觸發 OVERLOAD。依 SOP 檢查 D-1U-BASE-01 模具與 SECC 1.0 mm 料帶厚度、送料步距及模內狀況，發現模內有料頭重疊，清除後檢查沖頭、導正銷及脫料板無崩刃或壓傷。試沖噸位恢復正常，生產 OK，停機約 60 分鐘。",
+  "actions": [
+   {
+    "step": "調閱已匯出之噸位監控歷史與警報記錄，確認異常型態",
+    "result": "單一沖次尖峰 250 t，前次 168 t"
+   },
+   {
+    "step": "檢查滑塊位置並以寸動確認可退回，查看模內狀況",
+    "result": "滑塊可退回，模內有料頭重疊"
+   },
+   {
+    "step": "清除模內重疊料頭與可見廢料，清理下模落料孔",
+    "result": "排除"
+   },
+   {
+    "step": "以分釐卡量測料帶厚度 5 點，核對送料步距與滾輪壓痕",
+    "result": "厚度 1.0 mm、步距正常"
+   },
+   {
+    "step": "檢查沖頭、導正銷、脫料板有無崩刃、壓傷或變形",
+    "result": "無損傷"
+   },
+   {
+    "step": "重新試沖並觀察噸位峰值",
+    "result": "噸位恢復正常、生產 ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "噸位單沖尖峰先查模內料頭重疊或異物，不要先懷疑模高或噸位設定。",
+  "escalation_note": null
+ }
+}

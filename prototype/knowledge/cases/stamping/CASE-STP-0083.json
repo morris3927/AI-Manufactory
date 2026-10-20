@@ -1,0 +1,152 @@
+{
+  "case_id": "CASE-STP-0083",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1082,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2026-01-26T01:14:25+08:00",
+  "closed_at": "2026-01-26T02:14:19+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "air_low_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 30,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2601-313"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-26T01:02:45+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.8
+    },
+    {
+      "t": "2026-01-26T01:11:37+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.1
+    },
+    {
+      "t": "2026-01-26T01:13:32+08:00",
+      "signal": "stop_angle_deg",
+      "value": 12.7,
+      "machine_id": "STP-L2-PR03"
+    },
+    {
+      "t": "2026-01-26T01:14:25+08:00",
+      "signal": "air_pressure_bar",
+      "value": 4.3
+    },
+    {
+      "t": "2026-01-26T01:14:25+08:00",
+      "signal": "alarm_code",
+      "value": "AIR_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-12",
+    "level": "L3"
+  },
+  "technician_report_raw": "FD04 AIR_LOW 氣壓5.8掉到4.3 PR03停止角12.7 以為離合器煞車磨耗 查PR03沒超15 無OVERRUN 別台氣壓正常 FD04支管皂液測漏 快速接頭O環漏 換O環 壓力回5.6 試跑ok",
+  "technician_report_normalized": "FD04 夜班出現 AIR_LOW 氣壓低警報，機台氣壓在 12 分鐘內由 5.8 bar 降到 4.3 bar，低於 4.8 bar 下限。因同線 PR03 停止角度讀到 12.7°，一開始懷疑離合器／制動器磨耗；但 12.7° 未達 15° 上限、沒有 OVERRUN 警報，制動器屬安全裝置，未自行拆檢，只通報設備工程師列入觀察。比對同管路其他機台氣壓正常，沿 FD04 支管與三點組合以皂液測漏，快速接頭 O 型環老化起泡。上鎖洩壓後更換 O 型環並重新鎖緊，氣壓回升至 5.6 bar，試跑正常，停機 58 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "clutch_brake_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "air_pressure_low",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "AIR_LOW 前一分鐘 PR03 停止角度讀到 12.7°，比平常 8～12° 偏大，技術員直覺懷疑離合器／制動器磨耗；但 12.7° 未達 15° 上限、沒有 OVERRUN、停止時間也沒異常，FD04 氣壓 12 分鐘內由 5.8 掉到 4.3 bar 才是警報主因，測漏後找到快速接頭 O 型環洩漏。",
+  "discriminating_evidence": [
+    "PR03 停止角度 12.7° 未達 15° 上限，沒有 OVERRUN，停止時間無異常紀錄",
+    "FD04 氣壓 01:02～01:14 由 5.8 bar 連續降到 4.3 bar，低於 4.8 bar 下限，與 AIR_LOW 同步",
+    "同管路其他機台氣壓正常，壓降只在 FD04 支管",
+    "皂液測漏快速接頭 O 型環起泡，更換後氣壓回到 5.6 bar"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "讀取 FD04 氣壓表與 HMI，並調閱 PR03 停止角度與停止時間紀錄",
+      "result": "FD04 4.3 bar；PR03 12.7° 未達 15° 上限、無 OVERRUN"
+    },
+    {
+      "step": "通報設備工程師：PR03 停止角偏大列入觀察，制動器不自行拆檢",
+      "result": "已通報"
+    },
+    {
+      "step": "比對同一供氣管路其他機台氣壓",
+      "result": "其他機台正常，壓降只在 FD04 支管"
+    },
+    {
+      "step": "檢查三點組合濾杯與調壓閥，沿 FD04 支管以皂液測漏",
+      "result": "快速接頭 O 環起泡"
+    },
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌，下游沖床 PR03 依 LOTO-PRESS-MECH-01 連動上鎖，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "洩壓後更換快速接頭 O 型環並重新鎖緊管束",
+      "result": "無洩漏"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試跑送料並確認氣壓",
+      "result": "氣壓 5.6 bar，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-051",
+    "SOP-STP-055"
+  ],
+  "downtime_min": 58,
+  "parts_replaced": [
+    "air_fitting_oring"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "AIR_LOW 先看氣壓趨勢和同管路機台；別台停止角略大但沒超限，先通報列管，不要因此去拆制動器。",
+  "related_failure_mode_ids": [
+    "air_pressure_low",
+    "clutch_brake_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-051",
+    "SOP-STP-055"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1018
+ },
+ "output": {
+  "technician_report_raw": "PR03 換模後 D-RAIL-11 首批就單側毛邊 左邊導正孔壓痕 噸位左右差19% 異音 停機LOTO 定位銷偏磨 襯套亮單邊 間隙0.12 換銷+襯套 空轉試沖 噸位差回到4% ok",
+  "technician_report_normalized": "PR03 於 02:23 換上 D-RAIL-11 後，首批製品就出現單側毛邊，導正孔在左側有壓痕，沖製時伴隨異音，左右噸位平衡差達 19%。停機並執行 LOTO 後檢視模具定位面，發現定位銷偏磨、襯套孔單邊磨亮，厚薄規量得單邊間隙 0.12 mm。清潔定位面後更換定位銷與襯套，寸動空轉確認導正銷進孔無單側干涉，試沖後噸位平衡差降至 4%，恢復生產。",
+  "actions": [
+   {
+    "step": "停機執行 LOTO，會同模具組檢視換模後首批料帶與製品",
+    "result": "左側單側毛邊、導正孔壓痕集中同一側"
+   },
+   {
+    "step": "核對模具資料卡閉模高度與滑塊讀值 388.41 mm",
+    "result": "相符，排除模高設定問題"
+   },
+   {
+    "step": "清潔定位面並以厚薄規量測定位銷與襯套單邊間隙",
+    "result": "單邊 0.12 mm，定位銷偏磨、襯套單邊磨亮"
+   },
+   {
+    "step": "更換模具定位銷與定位銷襯套",
+    "result": "安裝到位"
+   },
+   {
+    "step": "寸動無料空轉確認導正銷進孔狀態，再試沖",
+    "result": "無單側干涉，噸位平衡差 4%，ok"
+   }
+  ],
+  "parts_replaced": [
+   "die_locating_pin",
+   "locating_pin_bushing"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換模後首批要看毛邊是不是固定同一側，再量定位銷單邊間隙，比調模高更快抓到問題。",
+  "escalation_note": null
+ }
+}

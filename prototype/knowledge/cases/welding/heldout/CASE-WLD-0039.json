@@ -1,0 +1,136 @@
+{
+  "case_id": "CASE-WLD-0039",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3038,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "spot_welder",
+  "machine_id": "WLD-L2-SP02",
+  "opened_at": "2026-05-07T02:49:40+08:00",
+  "closed_at": "2026-05-07T05:08:24+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 11,
+    "recent_changes": [
+      "換工件批 00:05（L-2605-38）"
+    ],
+    "part": "電源支架",
+    "fixture_id": "FX-B",
+    "program_id": "PRG-101"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-07T00:06:12+08:00",
+      "signal": "part_lot_change",
+      "value": "L-2605-38"
+    },
+    {
+      "t": "2026-05-07T00:21:07+08:00",
+      "signal": "weld_defect",
+      "value": "spatter×3 FX-B"
+    },
+    {
+      "t": "2026-05-07T02:49:40+08:00",
+      "signal": "weld_defect",
+      "value": "spatter×4 FX-B"
+    },
+    {
+      "t": "2026-05-07T02:49:40+08:00",
+      "signal": "weld_current_ka",
+      "value": 10.2
+    }
+  ],
+  "technician": {
+    "id": "TECH-27",
+    "level": "L3"
+  },
+  "technician_report_raw": "SP02 FX-B 點銲飛濺一直來 都同一點 其他治具沒事 上鎖後看定位銷磨耗 夾爪鬆 塞尺量間隙0.8mm 換定位銷+夾爪 12Nm鎖緊 不通電加壓貼合ok 試銲5件ok 復線",
+  "technician_report_normalized": "夜班期間 SP02 在 FX-B 治具點銲時反覆出現飛濺，且集中在同一銲點位置，其他治具並無異常。調閱缺陷紀錄後，在已上鎖掛牌狀態下檢查，發現定位銷磨耗鬆動、夾爪齒面磨平；以塞尺量測工件與治具基準面間隙共三處，最大達 0.8 mm，超過 0.5 mm 判定值。清潔基準面與夾爪齒面去除銲渣後，更換定位銷與夾爪並依定位方向裝回，以 12 N·m 鎖緊。不通電加壓確認貼合，試銲五件外觀與熔核正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "fixture_fitup_gap",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "fixture_fitup_gap",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-SPOT-WELD-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱點銲缺陷紀錄與治具使用紀錄，比對飛濺發生位置",
+      "result": "確認集中在 FX-B 同一銲點，其他治具正常"
+    },
+    {
+      "step": "上鎖掛牌後目視並手動檢查 FX-B 基準面、定位銷與夾爪齒面",
+      "result": "定位銷磨耗鬆動、夾爪齒面磨平"
+    },
+    {
+      "step": "以塞尺量測工件與治具基準面間隙三處並記錄最大位置",
+      "result": "最大 0.8 mm，超過 0.5 mm"
+    },
+    {
+      "step": "清潔治具基準面、定位銷孔與夾爪齒面之銲渣飛濺油污",
+      "result": "ok"
+    },
+    {
+      "step": "更換定位銷與夾爪，依定位方向裝回並以 12 N·m 鎖緊",
+      "result": "ok"
+    },
+    {
+      "step": "通電測試前依 LOTO-SPOT-WELD-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "不通電加壓確認工件貼合，再試銲五件檢查外觀與熔核",
+      "result": "飛濺未再發生，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-031"
+  ],
+  "downtime_min": 137,
+  "parts_replaced": [
+    "locating_pin",
+    "clamp_jaw"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換批號後若飛濺只集中在同一套治具、同一點，先拿塞尺量間隙，別急著調銲接參數。",
+  "related_failure_mode_ids": [
+    "fixture_fitup_gap"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-WLD-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

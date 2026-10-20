@@ -1,0 +1,51 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4047
+ },
+ "output": {
+  "technician_report_raw": "MA02 DEV_NOT_FOUND HIPOT 2.3M 查connector重插仍NG 拆蓋見線壓破皮 換線束護套束帶 測596M ok",
+  "technician_report_normalized": "MA02 功能測試出現 DEVICE_NOT_FOUND，絕緣測試 HIPOT FAIL、絕緣電阻僅 2.3 MΩ。先檢查連接器，發現卡扣未扣妥，重新插妥後裝置偵測仍偶發 NG。依 LOTO-ASM-TOOL-01 斷電掛牌拆上蓋，發現線束在上蓋蓋合處被夾住、外皮壓破，走線偏離作業指導書且彎曲半徑不足；已更換線束、加護線套並調整束帶，連接器重新扣妥。可疑機殼貼不良標籤隔離並追溯，完成首件確認；重測裝置偵測正常，絕緣 596 MΩ，恢復生產。",
+  "actions": [
+   {
+    "step": "檢查連接器卡扣與公母端間隙，重新插妥",
+    "result": "裝置偵測仍偶發NG"
+   },
+   {
+    "step": "拆上蓋檢查線束路徑、蓋合處與鈑金銳邊",
+    "result": "發現線束被夾、外皮壓破"
+   },
+   {
+    "step": "比對走線作業指導書並量測最小彎曲半徑",
+    "result": "路徑不符、半徑不足"
+   },
+   {
+    "step": "更換線束、加裝護線套並調整束帶位置",
+    "result": "完成"
+   },
+   {
+    "step": "隔離可疑機殼與線束，記錄序號並做首件確認",
+    "result": "完成"
+   },
+   {
+    "step": "重測裝置偵測與絕緣電阻",
+    "result": "596 MΩ pass"
+   }
+  ],
+  "parts_replaced": [
+   "cable_harness",
+   "edge_grommet",
+   "cable_tie"
+  ],
+  "why_first_guess_wrong": "一開始因 DEVICE_NOT_FOUND 重複出現且接頭卡扣有間隙，先懷疑連接器未插到位；但重插後絕緣仍僅 2.3 MΩ，且上蓋蓋合處線束有壓痕破皮，才確認主因是夾線走線錯誤。",
+  "discriminating_evidence": [
+   "絕緣電阻 2.3 MΩ 在接頭重插後仍未恢復",
+   "上蓋與支架蓋合處可見線束被夾、外皮壓破",
+   "走線路徑與作業指導書不符，彎曲半徑小於線束外徑 3 倍",
+   "更換線束、加護線套並重新走線後，絕緣測試回到 596 MΩ"
+  ],
+  "lessons": "蓋合前先目視線束是否避開鈑金銳邊並確認彎曲半徑，比事後重測更快抓到夾線。",
+  "escalation_note": null
+ }
+}

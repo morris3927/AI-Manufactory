@@ -1,0 +1,162 @@
+{
+  "case_id": "CASE-STP-0073",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1072,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-01-31T07:18:47+08:00",
+  "closed_at": "2026-01-31T18:43:08+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "overrun_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 35,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2601-382"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-28T07:19:34+08:00",
+      "signal": "stop_angle_deg",
+      "value": 11.4
+    },
+    {
+      "t": "2026-01-30T07:18:52+08:00",
+      "signal": "stop_angle_deg",
+      "value": 13.3
+    },
+    {
+      "t": "2026-01-31T07:17:06+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.0
+    },
+    {
+      "t": "2026-01-31T07:18:47+08:00",
+      "signal": "stop_angle_deg",
+      "value": 16.5
+    },
+    {
+      "t": "2026-01-31T07:18:47+08:00",
+      "signal": "stop_time_ms",
+      "value": 243
+    },
+    {
+      "t": "2026-01-31T07:18:47+08:00",
+      "signal": "alarm_code",
+      "value": "OVERRUN"
+    },
+    {
+      "t": "2026-01-31T07:18:47+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.8
+    }
+  ],
+  "technician": {
+    "id": "TECH-12",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR03 OVERRUN 停止角16.5 先查氣壓5.8正常 別台無壓降 排除 停止角11.4→13.3→16.5 停止時間243ms 離合器制動器磨耗 停機報 等原廠技師換來令+離合片 ok",
+  "technician_report_normalized": "PR03 夜班發生 OVERRUN 警報，停止角度 16.5°、停止時間 243 ms，滑塊停止位置偏離。量測氣源壓力 5.8 bar 高於下限 4.8 bar，同管路其他機台無壓降，排除氣源低壓。趨勢顯示停止角度由 11.4°、13.3° 增至 16.5°，氣壓恢復後未回穩，研判離合器／制動器磨耗。已停機通報課長與設備工程師，依 SOP-STP-051 等待合格人員；由原廠技師更換煞車來令與離合器摩擦片，試機後停止角度正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "air_pressure_low",
+    "by": "jev",
+    "p": 0.5
+  },
+  "final_root_cause": "clutch_brake_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到 07:17 氣壓 5.0 bar 偏低、接近 4.8 bar 下限、停止角度又同步變大，直覺懷疑氣源低壓；但警報當下氣壓已回到 5.8 bar，同管路其他機台沒有壓降，且停止角度連日由 11.4° 增至 16.5° 未隨氣壓恢復回穩，才確認是離合器／制動器磨耗。",
+  "discriminating_evidence": [
+    "警報當下氣源壓力 5.8 bar，高於下限 4.8 bar，且同一供氣管路其他機台沒有壓降。",
+    "停止角度連日由 11.4°（1/28）、13.3°（1/30）增至 16.5°（1/31），呈持續惡化而非單次氣壓波動。",
+    "氣壓由 5.0 bar 回升至 5.8 bar 後，停止角度未回到正常，排除氣源低壓。",
+    "停止時間 243 ms 超過設定上限，符合制動器磨耗造成滑塊無法在設計位置停止。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停機並確認滑塊靜止，通報課長與設備工程師",
+      "result": "已停機待援"
+    },
+    {
+      "step": "檢查氣源壓力與同一供氣管路其他機台",
+      "result": "5.8 bar 正常，別台無壓降，排除"
+    },
+    {
+      "step": "調閱停止角度趨勢與停止時間紀錄",
+      "result": "11.4→13.3→16.5°，243 ms 偏長"
+    },
+    {
+      "step": "依 SOP-STP-051 由原廠技師／合格人員檢查離合器與制動器",
+      "result": "判定磨耗"
+    },
+    {
+      "step": "由原廠技師更換煞車來令與離合器摩擦片",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試機確認停止角度與停止時間",
+      "result": "恢復正常"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-055",
+    "SOP-STP-051"
+  ],
+  "downtime_min": 684,
+  "parts_replaced": [
+    "brake_lining",
+    "clutch_friction_plate"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "停止角度連續幾天變大，就算氣壓偶爾偏低，也要先調趨勢確認是否為制動器磨耗，不要只追氣壓。",
+  "related_failure_mode_ids": [
+    "clutch_brake_wear",
+    "air_pressure_low"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-STP-055",
+    "SOP-STP-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

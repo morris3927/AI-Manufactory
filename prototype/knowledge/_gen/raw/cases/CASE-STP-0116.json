@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1115
+ },
+ "output": {
+  "technician_report_raw": "PR01 集中潤滑低壓 軸承溫66 油位低 濾網塞 油管滲油 換濾網+油管 補油 試機ok",
+  "technician_report_normalized": "PR01 夜班發生集中潤滑低壓警報，現場查看油箱油位低於下限，泵浦壓力表僅 0.6 bar，曲軸軸承溫度由 42 °C 一路升至 66 °C，滑塊有輕微異音。沿油路檢查發現吸入濾網阻塞，泵浦至分配閥間一段油管硬化並滲油，模具與製品表面無異常。更換濾網與油管、清潔加油口及油位計後，補充指定潤滑油並排氣，壓力恢復正常。試沖後軸承溫度回落、異音消失，觀察生產警報未再發生，恢復生產。",
+  "actions": [
+   {
+    "step": "查看集中潤滑油箱油位與泵浦壓力表，確認油位低於下限、壓力僅 0.6 bar。",
+    "result": "油位低、壓力 0.6 bar"
+   },
+   {
+    "step": "沿泵浦至分配閥、導軌與曲軸軸承油路檢查，發現吸入濾網阻塞及一段油管硬化滲油。",
+    "result": "濾網阻塞、油管滲漏"
+   },
+   {
+    "step": "更換 central_lube_filter 與 lube_hose，清潔加油口及油位計。",
+    "result": "更換完成"
+   },
+   {
+    "step": "補充現場指定潤滑油至油位計範圍，手動運轉泵浦排氣並確認供油壓力。",
+    "result": "壓力恢復正常"
+   },
+   {
+    "step": "以點溫計量測軸承座溫度並聽診滑塊，試沖確認異音與溫升狀況。",
+    "result": "溫度回落、異音消失"
+   },
+   {
+    "step": "觀察夜班生產，集中潤滑低壓警報未再發生。",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "central_lube_filter",
+   "lube_hose"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "軸承溫度連續上升時，先看集中潤滑油位與泵浦壓力，不要等到低壓警報才停機。",
+  "escalation_note": null
+ }
+}

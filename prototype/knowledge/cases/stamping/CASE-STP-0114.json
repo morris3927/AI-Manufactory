@@ -1,0 +1,122 @@
+{
+  "case_id": "CASE-STP-0114",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1113,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2025-12-15T00:31:11+08:00",
+  "closed_at": "2025-12-15T00:50:54+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "vision",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 48,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2512-238"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-15T00:31:11+08:00",
+      "signal": "state",
+      "value": "alarm"
+    },
+    {
+      "t": "2025-12-15T00:32:46+08:00",
+      "signal": "state",
+      "value": "running"
+    }
+  ],
+  "technician": {
+    "id": "TECH-11",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 視覺報毛邊NG 先查閉模高度 讀值跟模具卡一致 沖壓力左右正常 製品無跳屑壓痕 量測治具歸零跑掉 重歸零複量OK 復線",
+  "technician_report_normalized": "夜班期間，PR03 視覺品質站跳出毛邊 NG 警報，系統先以閉模高度異常提示。技術員到場後查閱模具資料卡，HMI 閉模高度讀值與設定相符，沖壓力峰值及左右平衡正常，已沖製品表面無跳屑壓痕。進一步檢查發現量測治具歸零偏移，重新歸零後複量毛邊值在標準內，判定為誤報，隨即恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "shut_height_misset",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因視覺站毛邊 NG 且系統以閉模高度異常提示，直覺懷疑模高跑掉；但 HMI 讀值與模具卡相符、沖壓力平衡正常，且量測治具歸零偏移，重歸零後數據合格，才確認是量測誤判。",
+  "discriminating_evidence": [
+    "HMI 閉模高度讀值與模具資料卡設定相符，未出現 0.2 mm 以上差值",
+    "沖壓力峰值與左右平衡正常，已沖製品無跳屑壓痕",
+    "量測治具歸零偏移，重新歸零後複量毛邊值回到標準內"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "查看視覺站警報與首件量測紀錄",
+      "result": "毛邊 NG"
+    },
+    {
+      "step": "依閉模高度異常提示比對 HMI 讀值與模具資料卡",
+      "result": "讀值相符"
+    },
+    {
+      "step": "調閱沖壓力峰值與左右平衡，檢查已沖製品表面",
+      "result": "正常，製品無跳屑壓痕"
+    },
+    {
+      "step": "複查量測治具歸零與量測手法",
+      "result": "歸零偏移"
+    },
+    {
+      "step": "重新歸零並複量首件毛邊",
+      "result": "合格"
+    },
+    {
+      "step": "恢復生產並觀察",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-023"
+  ],
+  "downtime_min": 15,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "視覺站喊毛邊 NG 時，先複查量測治具歸零與量測手法，再決定要不要動模高。",
+  "related_failure_mode_ids": [
+    "shut_height_misset"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-023"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3018
+ },
+ "output": {
+  "technician_report_raw": "RC02 氣孔變多 飛濺黏噴嘴 清槍91分沒清 拆噴頭內壁積渣 清潔+換新噴嘴 氣流量18.4正常 試銲ok",
+  "technician_report_normalized": "RC02 機器人銲接工位近期銲道氣孔與飛濺逐漸增加，缺陷率由 0.9% 升至 5.3%。檢查發現清槍間隔已達 91 分鐘，噴嘴內壁與保護氣出口有銲渣堆積；保護氣流量 18.4 L/min 仍在正常範圍。冷卻後拆下噴嘴清潔槍頸與氣體分配器，更換新噴嘴並確認出氣孔對正，試銲後氣孔與飛濺明顯改善，恢復生產。",
+  "actions": [
+   {
+    "step": "讀取清槍紀錄與缺陷率趨勢，確認清槍間隔 91 分鐘、缺陷率由 0.9% 升至 5.3%",
+    "result": "清槍逾時、氣孔漸增"
+   },
+   {
+    "step": "在教導模式降速下將銲槍移至換件姿勢，待銲槍冷卻後拆下噴嘴，目視內壁與保護氣出口",
+    "result": "銲渣堆積遮擋"
+   },
+   {
+    "step": "清潔銲槍頸部與氣體分配器出氣孔",
+    "result": "積渣清除"
+   },
+   {
+    "step": "更換新噴嘴並確認出氣孔對正、依規定扭力鎖付",
+    "result": "ok"
+   },
+   {
+    "step": "量測保護氣流量 18.4 L/min，在局部排氣運轉下、人員在圍欄外試銲",
+    "result": "氣孔與飛濺改善"
+   }
+  ],
+  "parts_replaced": [
+   "nozzle"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "清槍間隔拉到 91 分鐘，氣孔就會慢慢多起來；看到缺陷率爬升先查噴嘴內壁。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,34 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1100
+ },
+ "output": {
+  "technician_report_raw": "PR01 廢料輸送帶電流1.2→2.4A 跳scrap conv過載 後模具保護停機 查滑道+落料孔塞料 清乾淨 點動ok 試沖正常",
+  "technician_report_normalized": "PR01 於 14:48 出現廢料輸送帶過載警報，隨後模具保護停機。檢查廢料輸送帶電流由 1.2 A 升至 2.4 A，滑道及下模落料孔有廢料堆積卡住。以塑膠刮板清除堵塞廢料，確認落料孔出口暢通，點動輸送帶運轉正常、無異常音。試沖後恢復生產，停機 44 分鐘，本次未更換零件。",
+  "actions": [
+   {
+    "step": "檢查廢料滑道、輸送帶與下模落料孔，發現廢料堆積卡住，輸送帶電流升至 2.4 A。",
+    "result": "確認堵塞"
+   },
+   {
+    "step": "以塑膠刮板清除滑道、輸送帶及落料孔內堵塞廢料。",
+    "result": "落料孔出口暢通"
+   },
+   {
+    "step": "點動廢料輸送帶，觀察運轉與電流。",
+    "result": "運轉正常、電流回穩"
+   },
+   {
+    "step": "試沖並觀察模具保護是否再觸發。",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "廢料輸送帶電流從 1.2 爬到 2.4 A 就是堵塞前兆，先清滑道與落料孔，不要等到模具保護停機。",
+  "escalation_note": null
+ }
+}

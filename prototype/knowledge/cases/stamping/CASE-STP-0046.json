@@ -1,0 +1,152 @@
+{
+  "case_id": "CASE-STP-0046",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1045,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-09-11T01:52:15+08:00",
+  "closed_at": "2026-09-11T05:39:21+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "die_protect_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 53,
+    "recent_changes": [
+      "提速 32→40 spm 01:25"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2609-387"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-11T01:20:47+08:00",
+      "signal": "spm",
+      "value": 32
+    },
+    {
+      "t": "2026-09-11T01:26:03+08:00",
+      "signal": "spm",
+      "value": 40
+    },
+    {
+      "t": "2026-09-11T01:42:40+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    },
+    {
+      "t": "2026-09-11T01:49:56+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01,
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-09-11T01:52:15+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-14",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 提速40後模保間歇停 模面+沖頭端面無跳屑 送料誤差0.01 ok 脫料板回彈正常 查氮氣彈簧漏氣 壓料力不足 移交模具技師",
+  "technician_report_normalized": "PR01 於夜班提速至 40 spm 後，模具保護間歇觸發停機。依跳屑模式檢查模面、沖頭端面與下模落料孔，未發現廢料上跳或製品壓痕；以銅棒輕壓脫料板，四角回彈正常；FD02 送料長度誤差 0.01 mm，導正銷對位亦正常。清潔模面並試運轉後，停機仍間歇發生，且製品局部成形不穩。進一步檢查模具氮氣彈簧，發現有漏氣情形、壓力不足，壓料力無法維持。因需模具技師處理氮氣彈簧，現場先停機並辦理移交。",
+  "first_hypothesis": {
+    "failure_mode_id": "slug_pulling",
+    "by": "jev",
+    "p": 0.36
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "因為提速至 40 spm 後才出現模具保護間歇停機，符合跳屑多在提速後發生的特徵，且模面有少量油污容易誤判為帶屑；但清模後仍會停機，模面與製品都撿不到廢料，送料誤差也正常，才排除跳屑。",
+  "discriminating_evidence": [
+    "清潔模面、沖頭端面與下模落料孔後，未發現廢料，製品也無典型跳屑壓痕。",
+    "脫料板四角回彈與彈簧動作正常，料帶沒有被帶起痕跡。",
+    "FD02 送料長度誤差僅 0.01 mm，導正銷對位正常，排除送料偏短造成模保誤判。",
+    "清模後試運轉，模具保護仍間歇觸發，且氮氣彈簧有漏氣、壓力不足，壓料力不穩。"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "nitrogen_spring_leak",
+    "description": "模具氮氣彈簧漏氣，壓料力不足造成成形不穩"
+  },
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌（送料機 FD02 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查模面、沖頭端面與下模落料孔，清除少量油污與屑料",
+      "result": "未發現廢料上跳"
+    },
+    {
+      "step": "以銅棒輕壓脫料板，檢查四角回彈與彈簧狀態",
+      "result": "動作正常"
+    },
+    {
+      "step": "核對 FD02 送料長度誤差與導正銷對位",
+      "result": "誤差 0.01 mm，對位正常"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "清潔後試運轉並提速至 40 spm 觀察",
+      "result": "模保仍間歇觸發，未改善"
+    },
+    {
+      "step": "檢查模具氮氣彈簧壓力與外觀，發現漏氣、壓料力不足",
+      "result": "超出現場能力，移交模具技師"
+    },
+    {
+      "step": "機台維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-031"
+  ],
+  "downtime_min": 226,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "模具技師",
+  "escalation_note": "現場確認模具氮氣彈簧漏氣、壓料力不足，已停機並移交模具技師檢修氮氣彈簧。",
+  "lessons": "提速後模保間歇停，不要只往跳屑想；清模無效時要量氮氣彈簧壓力，壓料力不足也會讓成形不穩。",
+  "related_failure_mode_ids": [
+    "slug_pulling"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

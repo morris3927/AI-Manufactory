@@ -1,0 +1,137 @@
+{
+  "case_id": "CASE-WLD-0049",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3048,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-09-14T01:24:40+08:00",
+  "closed_at": "2026-09-14T03:44:00+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "coolant_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 22,
+    "recent_changes": [],
+    "part": "2U 機殼側框",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-108"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-13T23:54:44+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 2.0
+    },
+    {
+      "t": "2026-09-14T00:54:44+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 1.3
+    },
+    {
+      "t": "2026-09-14T00:55:02+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 34
+    },
+    {
+      "t": "2026-09-14T01:24:40+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 0.8
+    },
+    {
+      "t": "2026-09-14T01:24:40+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 49
+    },
+    {
+      "t": "2026-09-14T01:24:40+08:00",
+      "signal": "alarm_code",
+      "value": "WELD_OVERTEMP"
+    }
+  ],
+  "technician": {
+    "id": "TECH-21",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 冷卻水流量低 回水49度 跳WELD_OVERTEMP 已LOTO 查水機濾網髒+管路微折 清洗補水排氣 流量回正常 試銲ok",
+  "technician_report_normalized": "RC01 於夜班發生冷卻水流量低警報，流量由 2.0 L/min 逐步降至 0.8 L/min，回水溫度升至 49°C，並跳出 WELD_OVERTEMP。已依規定完成上鎖掛牌，檢查冷卻水機液位、濾網與管路，發現濾網髒污且水管有輕微折彎。清洗濾網、整理管路並補充冷卻液後排氣，啟動循環量測流量與回水溫度均恢復正常。最後在局部排氣運轉、人員於圍欄外進行試銲，結果 ok。",
+  "first_hypothesis": {
+    "failure_mode_id": "cooling_water_low",
+    "by": "jev",
+    "p": 0.75
+  },
+  "final_root_cause": "cooling_water_low",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP 檢查冷卻水機液位、濾網與管路",
+      "result": "濾網髒、管路微折"
+    },
+    {
+      "step": "清洗濾網並整理折彎管路",
+      "result": "完成"
+    },
+    {
+      "step": "補充冷卻液至液位範圍並排氣",
+      "result": "完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "啟動冷卻水循環，量測流量與回水溫度",
+      "result": "恢復正常"
+    },
+    {
+      "step": "在局部排氣運轉下、人員於圍欄外試銲",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-042"
+  ],
+  "downtime_min": 139,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "夏天冷卻水流量掉到 1 L/min 以下就先查濾網與管路折彎，不要等過熱警報才停機。",
+  "related_failure_mode_ids": [
+    "cooling_water_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

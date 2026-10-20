@@ -1,0 +1,155 @@
+{
+  "case_id": "CASE-STP-0113",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1112,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-02-16T13:23:43+08:00",
+  "closed_at": "2026-02-16T14:17:57+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 26,
+    "recent_changes": [
+      "換模 12:50（D-2U-TOP-03）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2602-242"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-16T12:51:15+08:00",
+      "signal": "die_change",
+      "value": "D-2U-TOP-03"
+    },
+    {
+      "t": "2026-02-16T12:53:46+08:00",
+      "signal": "shut_height_mm",
+      "value": 398.25
+    },
+    {
+      "t": "2026-02-16T12:56:29+08:00",
+      "signal": "tonnage_peak",
+      "value": 121
+    },
+    {
+      "t": "2026-02-16T12:56:31+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 3
+    },
+    {
+      "t": "2026-02-16T13:23:07+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 72866
+    }
+  ],
+  "technician": {
+    "id": "TECH-05",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR01 換模後首件成形高度不足 先查沖頭刃口 沒什麼磨 沖次才72866 回頭比對模高 閉模高度跟模具卡差0.25 重新設定+寸動微調 試沖ok 量產確認",
+  "technician_report_normalized": "PR01 於 12:50 換模 D-2U-TOP-03 後，首件出現成形高度不足。初步懷疑沖頭刃口磨耗，但檢查刃口無明顯磨耗，距上次研磨僅 72,866 沖次，未達 80,000 次基準。改查換模記錄，HMI 閉模高度讀值 398.25 mm 與模具主檔相差 0.25 mm，左右沖壓力平衡 3% 正常。以安全塊支撐滑塊後量測閉模高度調整機構，確認刻度設定偏移，依模具資料卡重新設定並寸動微調，試沖首件成形高度與壓印深度均合格，恢復量產。",
+  "first_hypothesis": {
+    "failure_mode_id": "punch_edge_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "shut_height_misset",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "換模後首件不良，加上沖頭距上次研磨已 72,866 沖次、接近 80,000 次基準，技術員直覺先查刃口；但沖次未達基準、刃口無明顯磨耗，沖壓力峰值 121 t 反而比此模常態約 142 t 低（刃口磨耗應是數日緩升），左右平衡 3% 正常，真正問題是閉模高度比模具資料卡高 0.25 mm。",
+  "discriminating_evidence": [
+    "沖頭距上次研磨僅 72,866 沖次，未達 80,000 次基準，刃口量測也無明顯磨耗",
+    "不良在 12:50 換模後首件立即發生，屬階梯式變化而非數日到數週的漸進惡化",
+    "HMI 閉模高度讀值 398.25 mm 與模具主檔設定值相差 0.25 mm，超過 0.2 mm 判定門檻",
+    "左右沖壓力平衡 3% 正常，排除單側模具或沖頭問題"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查沖頭刃口與成形部位毛邊高度",
+      "result": "刃口無明顯磨耗，毛邊高度正常，排除"
+    },
+    {
+      "step": "查閱換模記錄與模具資料卡，於 HMI 比對閉模高度讀值",
+      "result": "讀值 398.25 mm，與主檔差 0.25 mm"
+    },
+    {
+      "step": "以安全塊支撐滑塊於下死點，用深度規量測閉模高度調整機構之機械指示與鎖固狀態",
+      "result": "刻度設定偏移，鎖固正常，兩側對稱"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "依模具資料卡重新設定閉模高度並寸動微調",
+      "result": "差值歸零"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖首件，量測成形高度、壓印深度與導正孔壓痕",
+      "result": "尺寸合格 ok"
+    },
+    {
+      "step": "連續生產 20 件確認穩定性",
+      "result": "無異常，恢復量產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-033",
+    "SOP-STP-023"
+  ],
+  "downtime_min": 53,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後首件不良先拿模具資料卡對閉模高度，差值沒釐清前不要急著拆沖頭。",
+  "related_failure_mode_ids": [
+    "shut_height_misset",
+    "punch_edge_wear"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-033",
+    "SOP-STP-023"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

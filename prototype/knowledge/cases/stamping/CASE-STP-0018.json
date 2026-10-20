@@ -1,0 +1,147 @@
+{
+  "case_id": "CASE-STP-0018",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1017,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "escalated",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-02-19T19:58:16+08:00",
+  "closed_at": "2026-02-19T23:25:21+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 42,
+    "recent_changes": [
+      "換料捲 19:33（C-2602-171）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2602-171"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-19T19:30:27+08:00",
+      "signal": "tonnage_peak",
+      "value": 142,
+      "machine_id": "STP-L1-PR01"
+    },
+    {
+      "t": "2026-02-19T19:33:51+08:00",
+      "signal": "coil_change",
+      "value": "C-2602-171"
+    },
+    {
+      "t": "2026-02-19T19:35:18+08:00",
+      "signal": "tonnage_peak",
+      "value": 133,
+      "machine_id": "STP-L1-PR01"
+    },
+    {
+      "t": "2026-02-19T19:35:37+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.1
+    },
+    {
+      "t": "2026-02-19T19:56:48+08:00",
+      "signal": "tonnage_peak",
+      "value": 134,
+      "machine_id": "STP-L1-PR01"
+    },
+    {
+      "t": "2026-02-19T19:58:16+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-08",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 19:58 MISFEED 停機 查換料紀錄 19:33換C-2602-171 噸位142→133階躍 量料厚前中後段都偏下限 硬度也偏低 整平壓下量對過設定表ok 隔離料捲 通知設備工程師",
+  "technician_report_normalized": "19:58 FD02 發生 MISFEED 停機。調閱換料紀錄，19:33 更換料捲 C-2602-171 後，沖壓力峰值由 142 階躍降至 133～134 並維持在新水準，符合換料後 30 分鐘內開始異常的特徵。停機後於該料捲前、中、後段各取三點量測料厚，並以攜帶式硬度計量測硬度，結果均低於進料驗收值；整平機輥輪壓下量與該料厚設定表相符，排除整平設定問題。已將問題料捲標示隔離並回報主管，線邊無同料號合格料捲可替換，需品保判定整批處置，移交設備工程師會同品保處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "material_thickness_dev",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "material_thickness_dev",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱換料紀錄與噸位峰值趨勢，比較換料前後的平均值",
+      "result": "換料後階躍下降 142→133"
+    },
+    {
+      "step": "停機後於問題料捲前、中、後段各取 3 點量測料厚，並以攜帶式硬度計量測硬度",
+      "result": "料厚與硬度均低於驗收值"
+    },
+    {
+      "step": "核對整平機輥輪壓下量與該料厚設定表，並檢查料帶側彎與進模前殘留捲曲",
+      "result": "設定相符，排除整平與矯正"
+    },
+    {
+      "step": "將料捲 C-2602-171 標示隔離，回報主管並記錄量測數據",
+      "result": "已隔離"
+    },
+    {
+      "step": "移交設備工程師，會同品保核對料捲標籤與進料檢驗報告",
+      "result": "移交"
+    },
+    {
+      "step": "機台維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-007"
+  ],
+  "downtime_min": 207,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "設備工程師",
+  "escalation_note": "問題料捲 C-2602-171 已標示隔離，實測料厚與硬度低於進料驗收值，移交設備工程師會同品保辦理退料換捲並追查供應商。",
+  "lessons": "換料後半小時內出現一次性的噸位階躍，先查料捲批號與實測料厚硬度，不要急著動整平機。",
+  "related_failure_mode_ids": [
+    "material_thickness_dev"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-007"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

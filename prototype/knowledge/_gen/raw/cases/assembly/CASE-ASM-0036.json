@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4035
+ },
+ "output": {
+  "technician_report_raw": "ST01 COUNT_MISMATCH 少2顆 先查送釘機 軌道卡歪螺絲 清掉後還是少 逐孔看2孔沒鎖 孔牙ok 補M3 12/12 ok",
+  "technician_report_normalized": "ST01 於 00:40 出現鎖附計數不符，要求 12 顆實際僅 10 顆，並伴隨送釘逾時與吸附失敗。清除卡釘前已依 LOTO-ASM-TOOL-01 斷電、洩氣源；檢查送釘機發現軌道有歪斜螺絲卡住，清除後送釘恢復，但計數仍少 2 顆。逐孔目視確認有 2 孔未鎖，孔牙與壓鉚螺母完整、無異物；查換料與重工紀錄後，判定為重工後漏鎖，送釘卡釘為次要原因。已隔離可疑工件並追溯同批前後件，補鎖 M3 螺絲後複核 12/12、扭力正常，恢復生產。",
+  "actions": [
+   {
+    "step": "檢查送釘機軌道、分離器與吸嘴，發現歪斜螺絲卡住並清除",
+    "result": "卡釘排除 但計數仍少2顆"
+   },
+   {
+    "step": "核對工單需求 12 顆與控制器實際 10 顆，逐孔目視確認缺 2 孔",
+    "result": "確認漏鎖2顆"
+   },
+   {
+    "step": "檢查缺孔孔牙與壓鉚螺母，確認無異物、無鬆動",
+    "result": "孔牙完整"
+   },
+   {
+    "step": "隔離可疑工件，追溯同批前後件並執行首件確認",
+    "result": "已隔離待確認"
+   },
+   {
+    "step": "補鎖 M3 螺絲 2 顆，複核鎖附計數與扭力",
+    "result": "12/12 扭力OK"
+   }
+  ],
+  "parts_replaced": [
+   "screw_m3"
+  ],
+  "why_first_guess_wrong": "一開始因 00:35 送釘吸附失敗累計 11 次、出現 FEEDER_TIMEOUT，且 23:57 才換新螺絲批，直覺是送釘機卡釘；但清除卡釘後計數仍只有 10/12，逐孔目視確認是重工後漏鎖 2 顆，卡釘只是次要原因。",
+  "discriminating_evidence": [
+   "screw_count_actual=10、screw_count_required=12，且 screw_missing=true，直接指出有 2 顆漏鎖。",
+   "雖有 FEEDER_TIMEOUT 與 feeder_pick_fail_count=11，但 COUNT_MISMATCH 與 NOK_NO_SCREW 顯示缺螺絲發生在鎖附數量層級。",
+   "recent_changes 記載 00:08 重工與 23:56 補螺絲，符合漏鎖常發生在作業中斷後的特徵。"
+  ],
+  "lessons": "重工或補料後不要只看送釘機復歸，務必核對計數與逐孔目視，少一顆也要隔離追溯。",
+  "escalation_note": null
+ }
+}

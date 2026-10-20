@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1106
+ },
+ "output": {
+  "technician_report_raw": "PR03 光幕LC_FAULT一直跳 12:09 12:24 12:33各一次 停機通知課長 等電氣合格人員 查接頭訊號不穩 換cable 復歸+遮斷測試正常 14:35復產",
+  "technician_report_normalized": "PR03 於 12:09、12:24 接連出現光幕警報，12:33 光幕狀態轉為 FAULT，機台無法起動。現場先停機並通知課長及電氣合格人員，同時記錄警報時間與次數。合格人員檢查光幕自我診斷與線路，發現接頭端訊號不穩，更換光幕電纜後進行復歸與遮斷測試，動作恢復正常，14:35 恢復生產，停機 121 分鐘。",
+  "actions": [
+   {
+    "step": "光幕警報發生後停機，通知課長與電氣合格人員到場",
+    "result": "等待支援"
+   },
+   {
+    "step": "記錄 12:09、12:24、12:33 三次警報時間與光幕狀態",
+    "result": "紀錄完成"
+   },
+   {
+    "step": "由合格人員檢查光幕自我診斷結果與線路接頭",
+    "result": "接頭端訊號不穩"
+   },
+   {
+    "step": "由合格人員更換光幕電纜",
+    "result": "更換完成"
+   },
+   {
+    "step": "由合格人員執行復歸與遮斷測試",
+    "result": "動作正常"
+   },
+   {
+    "step": "恢復生產並觀察運轉",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "light_curtain_cable"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "光幕反覆跳警報不要只按復歸，先把每次跳警時間記錄下來並等電氣合格人員確認，這次就是接頭端訊號不穩。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,154 @@
+{
+  "case_id": "CASE-STP-0009",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1008,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-04-29T17:41:33+08:00",
+  "closed_at": "2026-04-30T04:57:36+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 51,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2604-293"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-29T17:27:37+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02
+    },
+    {
+      "t": "2026-04-29T17:32:36+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.07
+    },
+    {
+      "t": "2026-04-29T17:37:55+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.12
+    },
+    {
+      "t": "2026-04-29T17:41:33+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.17
+    },
+    {
+      "t": "2026-04-29T17:41:33+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-04-29T17:41:33+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-08",
+    "level": "L3"
+  },
+  "technician_report_raw": "FD02 送料長度誤差慢慢大 0.02→0.17 跳MISFEED 停機上鎖 拆滾輪看亮帶+油 擦乾淨 分厘卡量料厚ok 壓緊彈簧軸承間隙正常 寸動空轉+短料各10次 送50.00還是飄 料環在甩 料架剎車來令片磨平 沒備品 叫原廠",
+  "technician_report_normalized": "FD02 送料長度誤差在約十四分鐘內由 0.02 mm 逐步累積到 0.17 mm，隨後觸發 MISFEED 警報、送料停止。依 SOP-STP-012 完成上鎖掛牌後，目視滾輪表面有亮帶與油污，以無絨布清潔；分厘卡量測料帶厚度在公差內，壓緊彈簧壓縮量與軸承徑向間隙正常。通電後以寸動空轉十次及短料帶低速送料十次（設定 50.00 mm），誤差仍持續累積。進一步觀察發現料環有甩動現象、送料瞬間張力不穩，檢查料架剎車來令片已磨耗變薄，現場無備品可換，已回報主管並移交原廠技師處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "feed_roller_wear",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "誤差在十幾分鐘內斜坡式累積、滾輪表面又有亮帶與油污，完全符合送料滾輪打滑的典型特徵；但滾輪清潔後料厚、壓緊力與軸承間隙都正常，寸動送料誤差照樣往上爬，才轉向料架端找原因。",
+  "discriminating_evidence": [
+    "滾輪清潔後、料帶厚度與壓緊彈簧壓縮量、軸承徑向間隙皆在範圍內，送料誤差仍持續累積",
+    "寸動空轉 10 次與短料低速送料 10 次（設定 50.00 mm）誤差照樣變大，排除滾輪打滑",
+    "現場觀察料環有甩動、送料瞬間張力不穩，問題指向料架剎車而非送料滾輪",
+    "拆檢料架剎車，來令片已磨耗變薄"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "uncoiler_brake_wear",
+    "description": "料架剎車來令片磨耗，料捲慣性過大造成料環甩動、送料瞬間張力變化"
+  },
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP-STP-012 目視檢查送料滾輪表面與料帶路徑，滾輪有亮帶及油污",
+      "result": "已清潔待測"
+    },
+    {
+      "step": "分厘卡量測料帶厚度，並檢查滾輪壓緊彈簧壓縮量與軸承徑向間隙",
+      "result": "數值正常"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "寸動空轉 10 次、短料低速送料 10 次（設定 50.00 mm）驗證",
+      "result": "誤差仍累積 未改善"
+    },
+    {
+      "step": "觀察料環與送料張力變化，檢查料架剎車機構",
+      "result": "來令片磨耗變薄"
+    },
+    {
+      "step": "回報主管並確認現場無備品",
+      "result": "移交原廠技師"
+    },
+    {
+      "step": "機台維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-012"
+  ],
+  "downtime_min": 672,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "原廠技師",
+  "escalation_note": "料架剎車來令片磨耗、現場無備品，移交原廠技師更換並重新調整剎車張力。",
+  "lessons": "誤差慢慢爬不一定是滾輪，滾輪擦乾淨、料厚量過還在飄，就該去料架看料環跟張力。",
+  "related_failure_mode_ids": [
+    "feed_roller_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

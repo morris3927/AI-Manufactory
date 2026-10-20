@@ -1,0 +1,162 @@
+{
+  "case_id": "CASE-STP-0005",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1004,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2026-08-15T17:37:30+08:00",
+  "closed_at": "2026-08-15T19:03:46+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 51,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2608-163"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-15T17:24:15+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.03
+    },
+    {
+      "t": "2026-08-15T17:29:04+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.09
+    },
+    {
+      "t": "2026-08-15T17:33:46+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.16
+    },
+    {
+      "t": "2026-08-15T17:34:55+08:00",
+      "signal": "motor_temp_c",
+      "value": 72
+    },
+    {
+      "t": "2026-08-15T17:37:30+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.23
+    },
+    {
+      "t": "2026-08-15T17:37:30+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-08-15T17:37:30+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-13",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD04 misfeed 送料偏短 誤差0.03→0.23 查驅動器無過電流 馬達72度 滾輪亮帶+油 清潔仍偏 換上下滾輪 ok",
+  "technician_report_normalized": "FD04 於 17:37 發生 MISFEED 停機，送料長度誤差由 0.03 mm 逐步累積至 0.23 mm，馬達溫度 72°C。初期懷疑伺服驅動器異常，查閱 HMI 無過電流或位置偏差瞬間跳脫紀錄。停機上鎖後檢查送料滾輪，表面有亮帶與油污，清潔後試送仍偏短；量測料厚在公差內，確認滾輪磨損打滑。更換上下送料滾輪並低速試送，誤差恢復正常，交班生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "servo_feeder_drive_alarm",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "feed_roller_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到 MISFEED 停機、馬達溫度 72°C，容易以為是伺服驅動器過電流或位置偏差跳脫；但 HMI 無過電流尖峰，送料誤差是 13 分鐘內由 0.03 累積到 0.23 mm 的斜坡，不是單一沖次瞬間停止，因此排除驅動器警報。",
+  "discriminating_evidence": [
+    "送料長度誤差在 17:24～17:37 由 0.03 mm 逐步升至 0.23 mm，呈斜坡累積而非瞬間跳變",
+    "HMI 無驅動器過電流或位置偏差過大紀錄，馬達溫度 72°C 未達跳脫",
+    "滾輪表面有亮帶與油污、料帶表面有滑痕，清潔後送料仍偏短",
+    "料厚量測在公差內，排除料厚變異"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查閱送料機 HMI 警報與馬達電流歷史，確認停止前無過電流尖峰，馬達溫度 72°C 無瞬間跳脫",
+      "result": "排除"
+    },
+    {
+      "step": "停機後目視送料滾輪與料帶路徑，滾輪表面有亮帶及油污，料帶有滑痕",
+      "result": "發現打滑跡象"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以無絨布清潔滾輪亮帶與料帶路徑，低速試送 10 次",
+      "result": "未改善"
+    },
+    {
+      "step": "量測料厚 5 點在公差內，檢查壓緊彈簧壓縮量與軸承間隙，確認滾輪磨損",
+      "result": "鎖定滾輪磨損"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "更換上下送料滾輪，低速寸動試送並試沖",
+      "result": "誤差恢復 0.02 mm，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-061",
+    "SOP-STP-012"
+  ],
+  "downtime_min": 82,
+  "parts_replaced": [
+    "feed_roll_upper",
+    "feed_roll_lower"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "送料誤差慢慢爬升時，先看滾輪亮帶與料帶滑痕，不要被 MISFEED 警報拉去查驅動器。",
+  "related_failure_mode_ids": [
+    "feed_roller_wear",
+    "servo_feeder_drive_alarm"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-061",
+    "SOP-STP-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

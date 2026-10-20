@@ -1,0 +1,117 @@
+{
+  "case_id": "CASE-WLD-0035",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3034,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-04-16T04:16:23+08:00",
+  "closed_at": "2026-04-16T04:34:38+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "fused",
+    "event_type": "arc_unstable",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 21,
+    "recent_changes": [],
+    "part": "硬碟籠框架",
+    "fixture_id": "FX-A",
+    "program_id": "PRG-129"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-16T04:16:23+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 10.6
+    },
+    {
+      "t": "2026-04-16T04:19:56+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 3.2
+    }
+  ],
+  "technician": {
+    "id": "TECH-26",
+    "level": "L3"
+  },
+  "technician_report_raw": "RC01 0416 arc voltage CV 10.6% 先查接地夾+回路接頭 正常 0419 降到3.2% 看影像 ROI 正常火花 誤判 復產 ok",
+  "technician_report_normalized": "夜班時 RC01 於 04:16 出現電弧電壓變異率 10.6%，系統判定電弧不穩。先懷疑接地不良，檢查 FX-A 治具接地夾、回路電纜接頭與端子，未見鬆脫、銲渣或發熱，接地回路正常。04:19 電壓變異率降至 3.2%，調閱影像後確認為銲接工位 ROI 內正常火花遭影像誤判。確認無設備故障後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "ground_poor",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因 04:16 arc_voltage_cv_pct 達 10.6% 且屬電弧不穩，先懷疑接地不良；但接地夾與回路接頭無異常，且 04:19 電壓變異率自行降至 3.2%，影像確認為 ROI 內正常火花誤判。",
+  "discriminating_evidence": [
+    "04:19:56 arc_voltage_cv_pct 降至 3.2%，未處理即回到正常範圍",
+    "接地夾、回路電纜接頭與端子目視無鬆脫、銲渣或發熱變色",
+    "影像複查顯示異常來源為銲接工位 ROI 內正常火花"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查 FX-A 治具接地夾齒面、夾持面與回路電纜接頭",
+      "result": "排除"
+    },
+    {
+      "step": "比對正常側並查看 arc_voltage_cv_pct 趨勢",
+      "result": "恢復正常"
+    },
+    {
+      "step": "調閱銲接工位影像複查",
+      "result": "確認正常火花"
+    },
+    {
+      "step": "恢復生產前確認：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區，由原上鎖人取下自己的鎖後以正常模式復機",
+      "result": "ok"
+    },
+    {
+      "step": "確認無設備故障後恢復生產",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-015"
+  ],
+  "downtime_min": 14,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "影像告警先比對訊號趨勢與 ROI 畫面，數值已回落且接地正常就別急著拆修。",
+  "related_failure_mode_ids": [
+    "ground_poor"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-015"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

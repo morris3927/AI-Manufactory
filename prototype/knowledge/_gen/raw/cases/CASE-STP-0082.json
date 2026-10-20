@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1081
+ },
+ "output": {
+  "technician_report_raw": "FD02 AIR_LOW 氣壓4.4 三點組合濾杯積水 調壓閥漂移 洩水調整後5.9 ok",
+  "technician_report_normalized": "FD02 於 13:23 出現 AIR_LOW 氣壓低警報，機台氣壓由 5.8 bar 逐步降至 4.4 bar。檢查氣源三點組合，發現濾杯積水且調壓閥設定有漂移，管路接頭測漏無明顯洩漏，比對同管路其他機台無同步壓降。洩水並重新調整調壓閥至設定值後，氣壓回升至 5.9 bar，試運轉送料與離合器動作正常，恢復生產。",
+  "actions": [
+   {
+    "step": "讀取機台氣壓表與 HMI 氣壓值，記錄 AIR_LOW 發生時間",
+    "result": "4.4 bar 低於下限"
+   },
+   {
+    "step": "比對同一供氣管路其他機台壓力與停機紀錄",
+    "result": "無同步壓降"
+   },
+   {
+    "step": "檢查氣源三點組合壓力設定、濾杯積水與調壓閥",
+    "result": "濾杯積水 調壓閥偏低"
+   },
+   {
+    "step": "洩除濾杯積水並調整調壓閥至設定值，管路接頭測漏",
+    "result": "壓力回升 5.9 bar 無洩漏"
+   },
+   {
+    "step": "試運轉觀察送料與離合器制動動作",
+    "result": "ok 恢復生產"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "氣壓緩降先看三點組合濾杯與調壓閥，別只 reset 警報。",
+  "escalation_note": null
+ }
+}

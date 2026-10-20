@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3025
+ },
+ "output": {
+  "technician_report_raw": "RC01 17:19撞槍後 銲道整批偏同一邊 8件全偏 TCP量2.2mm 電壓穩 換頸管 重新校正 試銲ok",
+  "technician_report_normalized": "RC01 於 17:19 發生撞槍後，陸續出現銲道偏邊，8 件工件全數偏向同一側。檢查銲槍本體與頸管，發現頸管受撞擊後有彎曲，TCP 校驗偏差達 2.2 mm，電弧電壓變異僅 3.1% 屬穩定。更換銲槍頸管並清潔接合面，依規定扭力鎖附後重新執行 TCP 校正。試銲後銲道位置恢復正常，確認可續產。",
+  "actions": [
+   {
+    "step": "調閱撞槍事件與銲道偏移紀錄，比對兩工位與各治具的偏移方向",
+    "result": "確認為同向偏移"
+   },
+   {
+    "step": "目視檢查銲槍本體、頸管與防撞檢知座有無撞擊凹痕或彎曲",
+    "result": "頸管撞擊後彎曲"
+   },
+   {
+    "step": "以 TCP 校驗治具量測銲絲尖端與校正棒偏差",
+    "result": "偏差 2.2 mm 超標"
+   },
+   {
+    "step": "更換銲槍頸管，清潔接合面並依 25 N·m 鎖附",
+    "result": "完成"
+   },
+   {
+    "step": "教導模式降速重新校正 TCP，並在局部排氣運轉、人員於圍欄外試銲",
+    "result": "銲道正常"
+   }
+  ],
+  "parts_replaced": [
+   "torch_neck"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "撞槍後別急著調參數，先量 TCP；偏差超過 1 mm 就檢查頸管與槍身固定座。",
+  "escalation_note": null
+ }
+}

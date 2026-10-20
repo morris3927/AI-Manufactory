@@ -1,0 +1,139 @@
+{
+  "case_id": "CASE-STP-0066",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1065,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2025-12-10T10:04:35+08:00",
+  "closed_at": "2025-12-10T11:50:06+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "strip_lift_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 43,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2512-162"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-10T08:54:51+08:00",
+      "signal": "die_stroke_total",
+      "value": 724653
+    },
+    {
+      "t": "2025-12-10T09:30:12+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2025-12-10T09:35:16+08:00",
+      "signal": "spm",
+      "value": 30
+    },
+    {
+      "t": "2025-12-10T09:57:05+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2025-12-10T10:04:35+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-08",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR03 料帶上浮警報連跳3次 降30spm仍跳 料帶被帶起 脫料不順 拆上模護蓋 脫料板歪斜 彈簧縮短+斷1條 沖次72萬超過更換週期 換整組脫料彈簧 試沖30spm ok 觀察1小時沒再跳",
+  "technician_report_normalized": "PR03 於 09:30、09:57、10:04 連續三次料帶上浮停機，降速至 30 spm 仍未改善。拆上模護蓋檢查，脫料板歪斜卡滯，脫料彈簧縮短且斷一條；模具累積沖次約 72.5 萬次，已超過更換週期。量測脫料板突出量與彈簧座壓縮量偏差過大，確認彈簧疲勞造成脫料不均、料帶被帶起。更換整組脫料彈簧並清潔彈簧座後，試沖以 30 spm 觀察一小時，未再上浮，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "stripper_spring_fatigue",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "stripper_spring_fatigue",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "拆上模護蓋，目視與手感檢查脫料板及彈簧",
+      "result": "脫料板歪斜、彈簧縮短且斷裂"
+    },
+    {
+      "step": "以深度規量測脫料板突出量及各彈簧座壓縮量",
+      "result": "偏差過大，確認彈簧疲勞"
+    },
+    {
+      "step": "查閱模具履歷與累積沖次",
+      "result": "724,653 沖次，超過更換週期"
+    },
+    {
+      "step": "更換脫料板彈簧組，清潔彈簧座與導柱",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並以 30 spm 觀察料帶脫料",
+      "result": "恢復正常，未再上浮"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-036"
+  ],
+  "downtime_min": 104,
+  "parts_replaced": [
+    "stripper_spring_set"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "脫料板彈簧要照沖次週期換，不要等到料帶上浮連跳才拆模。",
+  "related_failure_mode_ids": [
+    "stripper_spring_fatigue"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-036"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

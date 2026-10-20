@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4056
+ },
+ "output": {
+  "technician_report_raw": "ST01 影像告警 護目鏡沒戴 停線 通知班長 查庫存2副 補發 提醒配戴 記錄Kanban ok",
+  "technician_report_normalized": "ST01 影像偵測到作業員未配戴護目鏡，立即停止該站作業並通知班長。檢查發現護目鏡庫存尚有 2 副，發放數量足夠；由班長補發護目鏡並提醒同仁配戴，同時將未落實項目記錄於 Kanban。確認防護具已配戴後恢復生產，停機 7 分鐘。",
+  "actions": [
+   {
+    "step": "停止 ST01 作業並確認人員離開鎖附區",
+    "result": "已停線"
+   },
+   {
+    "step": "通知班長到場確認未配戴護目鏡的情況並記錄",
+    "result": "已通知"
+   },
+   {
+    "step": "清點該站護目鏡庫存",
+    "result": "庫存 2 副"
+   },
+   {
+    "step": "由班長補發護目鏡並提醒正確配戴",
+    "result": "已補發"
+   },
+   {
+    "step": "於 Kanban 記錄並確認防護具配戴後復工",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "護目鏡庫存還有 2 副，現場先補發、確認配戴再復工，比事後追問有效。",
+  "escalation_note": null
+ }
+}

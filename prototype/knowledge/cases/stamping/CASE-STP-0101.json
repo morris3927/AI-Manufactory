@@ -1,0 +1,128 @@
+{
+  "case_id": "CASE-STP-0101",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1100,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-09-09T14:48:49+08:00",
+  "closed_at": "2026-09-09T15:35:33+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "scrap_conveyor_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 51,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2609-292"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-09T14:28:52+08:00",
+      "signal": "scrap_conveyor_current_a",
+      "value": 1.2
+    },
+    {
+      "t": "2026-09-09T14:45:20+08:00",
+      "signal": "scrap_conveyor_current_a",
+      "value": 2.4
+    },
+    {
+      "t": "2026-09-09T14:48:07+08:00",
+      "signal": "alarm_code",
+      "value": "SCRAP_CONV_OVERLOAD"
+    },
+    {
+      "t": "2026-09-09T14:48:49+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-09",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 廢料輸送帶電流1.2→2.4A 跳scrap conv過載 後模具保護停機 查滑道+落料孔塞料 清乾淨 點動ok 試沖正常",
+  "technician_report_normalized": "PR01 於 14:48 出現廢料輸送帶過載警報，隨後模具保護停機。檢查廢料輸送帶電流由 1.2 A 升至 2.4 A，滑道及下模落料孔有廢料堆積卡住。以塑膠刮板清除堵塞廢料，確認落料孔出口暢通，點動輸送帶運轉正常、無異常音。試沖後恢復生產，停機 44 分鐘，本次未更換零件。",
+  "first_hypothesis": {
+    "failure_mode_id": "scrap_chute_jam",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "scrap_chute_jam",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查廢料滑道、輸送帶與下模落料孔，發現廢料堆積卡住，輸送帶電流升至 2.4 A。",
+      "result": "確認堵塞"
+    },
+    {
+      "step": "以塑膠刮板清除滑道、輸送帶及落料孔內堵塞廢料。",
+      "result": "落料孔出口暢通"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "點動廢料輸送帶，觀察運轉與電流。",
+      "result": "運轉正常、電流回穩"
+    },
+    {
+      "step": "試沖並觀察模具保護是否再觸發。",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-065"
+  ],
+  "downtime_min": 44,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "廢料輸送帶電流從 1.2 爬到 2.4 A 就是堵塞前兆，先清滑道與落料孔，不要等到模具保護停機。",
+  "related_failure_mode_ids": [
+    "scrap_chute_jam"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-065"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

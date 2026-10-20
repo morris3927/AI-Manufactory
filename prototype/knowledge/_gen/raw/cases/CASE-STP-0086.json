@@ -1,0 +1,34 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1085
+ },
+ "output": {
+  "technician_report_raw": "PR01 換模後異音 主馬達電流105→121 平衡缸錶4.1 與模具資料不符 氣源5.9正常 查上模重對應值 調壓閥每階0.2調到資料值 等30秒 試沖電流降 首件ok 停52分",
+  "technician_report_normalized": "PR01 於 08:30 換模後出現異音，09:24 主馬達電流由 105 A 上升至 121 A。現場檢查平衡缸壓力錶為 4.1 bar，與模具資料表所載上模重量對應值不符；氣源總壓 5.9 bar 正常。依模具資料以調壓閥分段調整平衡缸壓力，每階 0.2 bar，調整後等待 30 秒，並檢查軟管與接頭無洩漏。試沖後電流恢復正常，首件成形高度與壓印深度確認 OK，停機 52 分鐘後復產。",
+  "actions": [
+   {
+    "step": "查閱模具資料表，比對上模重量對應之平衡缸壓力與現場壓力錶讀值",
+    "result": "確認 4.1 bar 與資料不符"
+   },
+   {
+    "step": "檢查氣源總壓及平衡缸軟管、接頭有無洩漏",
+    "result": "總壓 5.9 bar 正常，無洩漏"
+   },
+   {
+    "step": "以調壓閥分段調整平衡缸壓力至模具資料值，每階 0.2 bar，間隔 30 秒",
+    "result": "壓力到位"
+   },
+   {
+    "step": "試沖並讀取主馬達電流與首件尺寸",
+    "result": "電流恢復，首件 ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換模後別只看氣源總壓，平衡缸錶值要對模具資料表，再試沖確認電流。",
+  "escalation_note": null
+ }
+}

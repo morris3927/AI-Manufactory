@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4018
+ },
+ "output": {
+  "technician_report_raw": "ST01 送釘逾時 補SL-2605-70後卡釘 吸不到 pick fail16 LOTO清軌道 試打ok",
+  "technician_report_normalized": "ST01 於 21:19 發生送釘逾時，鎖附結果為 NOK_NO_SCREW；停機前吸釘失敗累計 16 次，20:55 曾補充螺絲 SL-2605-70。依 LOTO-ASM-TOOL-01 上鎖掛牌並關閉送釘機氣源後，檢查送釘軌道、分離器與吸嘴，發現軌道出口卡著歪斜螺絲與金屬屑。以塑膠鑷子清除卡釘，確認護蓋與吸嘴無變形，手動送釘路徑無干涉；抽檢螺絲規格相符，隔離卡釘並追溯該批，試鎖與首件確認正常後復歸生產。",
+  "actions": [
+   {
+    "step": "檢查送釘軌道、分離器與吸嘴",
+    "result": "發現卡釘"
+   },
+   {
+    "step": "以塑膠鑷子清除軌道出口卡釘與金屬屑",
+    "result": "排除"
+   },
+   {
+    "step": "檢查送釘管、護蓋與吸嘴磨耗並手動確認送釘路徑",
+    "result": "無干涉"
+   },
+   {
+    "step": "抽檢螺絲長度、牙距、頭型並比對工單 BOM，隔離 NOK 工件與卡釘批並追溯補料紀錄",
+    "result": "規格相符"
+   },
+   {
+    "step": "試鎖與首件確認，檢查送釘計數及鎖附結果",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "補料後先查送釘軌道出口，卡釘會讓起子端一直等到送釘逾時。",
+  "escalation_note": null
+ }
+}

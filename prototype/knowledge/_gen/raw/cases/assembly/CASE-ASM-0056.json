@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4055
+ },
+ "output": {
+  "technician_report_raw": "MA02 影像 PPE ESD手環沒戴 先停線 查庫存23個夠 班長補發+確認戴好 記錄Kanban 復線 ok",
+  "technician_report_normalized": "MA02 手動組裝站影像偵測到作業員未配戴靜電手環，立即停止該站作業並通知班長。現場確認該站防護具庫存尚有二十三個，尺寸與發放數量足夠；由班長補發靜電手環並確認作業員正確配戴，同時將未落實原因記錄於 Kanban。完成後恢復生產，停機約六分鐘。",
+  "actions": [
+   {
+    "step": "停止 MA02 作業並通知班長",
+    "result": "已停線"
+   },
+   {
+    "step": "確認該站防護具庫存、尺寸與發放數量",
+    "result": "庫存23個足夠"
+   },
+   {
+    "step": "由班長補發靜電手環並確認作業員配戴",
+    "result": "已補發"
+   },
+   {
+    "step": "將未落實項目與原因記錄於 Kanban",
+    "result": "已記錄"
+   },
+   {
+    "step": "由班長確認防護具配戴後恢復生產",
+    "result": "復線"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "影像抓到 ESD 手環沒戴就先停線，現場庫存足夠就補發並確認配戴，記錄原因比追究個人更務實。",
+  "escalation_note": null
+ }
+}

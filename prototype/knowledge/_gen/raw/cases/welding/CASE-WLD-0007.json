@@ -1,0 +1,36 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3006
+ },
+ "output": {
+  "technician_report_raw": "RC02 起弧重試10.2/百 導電嘴回燒孔橢圓 換contact tip 試焊ok",
+  "technician_report_normalized": "RC02 機器人銲接工作站出現起弧失敗與銲絲熔黏警報，每百次起弧重試次數由 1.5 升至 10.2，導電嘴累積起弧時間 343 分鐘。檢查導電嘴孔口呈橢圓且端部回燒，送絲速度 6.0 m/min 正常。更換導電嘴並清潔座面後，於局部排氣運轉下在圍欄外試銲，起弧恢復正常，停機 14 分鐘。",
+  "actions": [
+   {
+    "step": "讀取每百次起弧重試趨勢與導電嘴累積起弧時間",
+    "result": "重試10.2、343分"
+   },
+   {
+    "step": "檢查導電嘴孔口與端部",
+    "result": "孔口橢圓、回燒"
+   },
+   {
+    "step": "更換導電嘴並清潔導電嘴座螺紋與端面",
+    "result": "ok"
+   },
+   {
+    "step": "局部排氣運轉下於圍欄外試銲",
+    "result": "起弧正常"
+   }
+  ],
+  "parts_replaced": [
+   "contact_tip"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "起弧重試次數連續幾班往上爬，先量導電嘴孔口與累積起弧時間，比一直調參數快。",
+  "escalation_note": null
+ }
+}

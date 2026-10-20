@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1095
+ },
+ "output": {
+  "technician_report_raw": "FD02 換捲後LOOP_FAULT+一直misfeed 料頭翹起來卡進料口 整平壓下量還停在0.96 沒照1.2設定表 調到1.15 料環重設 刮板換掉 試沖ok",
+  "technician_report_normalized": "19:05 換料捲，由 SECC 0.8 mm 改為 SGCC 1.2 mm，隨後出現 LOOP_FAULT 與 MISFEED 警報，料帶在進料口卡住。現場檢查，整平機出口至進料口之間料帶有明顯翹頭與弓形殘留捲曲；以厚薄規量測輥隙為 0.96 mm，核對設定表後確認是沿用前一料捲的壓下量，與 1.2 mm 料厚不符。依設定表重新調整整平輥壓下量至 1.15 mm、間隙與背壓輥，並重設料環高度後鎖緊；同時清潔整平輥與料環檢出板，更換磨耗刮板。寸動建立料環後 LOOP_FAULT 未再出現，試沖與連續生產正常，20:09 恢復生產。",
+  "actions": [
+   {
+    "step": "檢查整平機出口至進料口間料帶外觀與手感，確認殘留捲曲狀況",
+    "result": "料頭翹起、中段呈弓形"
+   },
+   {
+    "step": "以厚薄規量測整平輥輥隙，並核對 SGCC 1.2 mm 之整平設定表",
+    "result": "實測 0.96 mm，與設定表不符"
+   },
+   {
+    "step": "依設定表重新調整整平輥壓下量、間隙與背壓輥，重設料環高度並鎖緊調整機構",
+    "result": "壓下量調整至 1.15 mm"
+   },
+   {
+    "step": "清潔整平輥與料環檢出板，檢查輥面黏料並更換磨耗刮板",
+    "result": "輥面異物與壓痕排除"
+   },
+   {
+    "step": "寸動建立料環，觀察料環高度、張力與 LOOP_FAULT 是否再現",
+    "result": "未再出現"
+   },
+   {
+    "step": "試沖並連續生產確認送料與料環穩定",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "straightener_scraper"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換不同料厚或材質的料捲，整平壓下量一定要重新對設定表，不要沿用前一捲的數字。",
+  "escalation_note": null
+ }
+}

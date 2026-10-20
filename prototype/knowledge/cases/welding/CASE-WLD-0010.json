@@ -1,0 +1,152 @@
+{
+  "case_id": "CASE-WLD-0010",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3009,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-09-03T16:34:03+08:00",
+  "closed_at": "2026-09-03T17:01:53+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "rule",
+    "event_type": "arc_start_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 11,
+    "recent_changes": [],
+    "part": "1U 機殼後框支架",
+    "fixture_id": "FX-B",
+    "program_id": "PRG-136"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-02T20:34:09+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 1.8
+    },
+    {
+      "t": "2026-09-03T08:34:51+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 4.6
+    },
+    {
+      "t": "2026-09-03T16:30:15+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 9.1
+    },
+    {
+      "t": "2026-09-03T16:34:03+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 9.9
+    },
+    {
+      "t": "2026-09-03T16:34:03+08:00",
+      "signal": "tip_arc_on_min",
+      "value": 383
+    },
+    {
+      "t": "2026-09-03T16:34:03+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 5.9
+    },
+    {
+      "t": "2026-09-03T16:34:03+08:00",
+      "signal": "alarm_code",
+      "value": "ARC_START_FAIL"
+    }
+  ],
+  "technician": {
+    "id": "TECH-22",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 起弧重試多次 先查接地夾+地線 清銲渣無效 導電咀孔橢圓回燒 383min 換contact tip 試銲ok 停24分",
+  "technician_report_normalized": "RC01 於起弧時出現多次重試，每百次起弧重試次數由 1.8 升至 9.9，並觸發起弧失敗警報。第一時間依接地不良方向檢查治具接地夾與回路電纜接頭，清除銲渣後重試仍未改善。進一步在電源隔離下目視導電嘴，發現孔口磨成橢圓且端部有回燒熔黏，累積起弧時間 383 分鐘，送絲速度 5.9 m/min 正常。更換導電嘴後試銲正常，恢復生產，停機 24 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "ground_poor",
+    "by": "jev",
+    "p": 0.43
+  },
+  "final_root_cause": "contact_tip_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到電弧電壓變異 9.1% 接近門檻且起弧不穩，先懷疑接地回路；但接地夾與電纜接頭清潔鎖固後重試未降，且送絲速度正常、導電嘴累積起弧 383 分鐘且孔口橢圓回燒，才確認為導電嘴磨耗。",
+  "discriminating_evidence": [
+    "電弧電壓變異 9.1%，未超過接地不良典型的 10% 門檻",
+    "導電嘴累積起弧時間 383 分鐘，已超過 300 分鐘門檻",
+    "目視導電嘴孔口磨成橢圓且端部有銲絲熔黏回燒",
+    "送絲速度 5.9 m/min 正常，送絲系統無異常"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查治具接地夾與回路電纜接頭，清除銲渣並確認鎖固",
+      "result": "未改善"
+    },
+    {
+      "step": "讀取起弧重試趨勢、導電嘴累積起弧時間與送絲資料",
+      "result": "重試9.9、累積383分"
+    },
+    {
+      "step": "電源隔離下目視導電嘴孔口與端部",
+      "result": "孔口橢圓、端部回燒"
+    },
+    {
+      "step": "以導電嘴扳手更換導電嘴並清潔嘴座",
+      "result": "更換完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "試銲確認起弧與銲道",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-015",
+    "SOP-WLD-012"
+  ],
+  "downtime_min": 24,
+  "parts_replaced": [
+    "contact_tip"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "起弧重試一路往上爬時，先看導電嘴累積起弧時間與孔口，比先拆接地夾更快找到問題。",
+  "related_failure_mode_ids": [
+    "contact_tip_wear",
+    "ground_poor"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-015",
+    "SOP-WLD-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

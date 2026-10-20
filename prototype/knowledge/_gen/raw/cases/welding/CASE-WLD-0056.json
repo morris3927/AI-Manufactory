@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3055
+ },
+ "output": {
+  "technician_report_raw": "SP01 排煙風量低 壓差1503 煙飄到工位外 停機通知廠務 已上鎖 廠務換濾筒後試機 ok",
+  "technician_report_normalized": "夜班 06:14 發現 SP01 點銲工位排煙風量偏低，壓差 1503 Pa、風量 1135 m3/h，出現 FUME_EXH_LOW 警報，煙霧擴散到工位外，設備於 06:17 進入 cycle_stop。初判為排煙設備異常，立即停止作業並通知廠務，現場依規定上鎖管制。廠務檢查確認為排煙濾筒阻塞，更換濾筒後風量與壓差恢復正常，試機 ok。停機 129 分鐘，08:27 結案。",
+  "actions": [
+   {
+    "step": "停止 SP01 作業並通報主管",
+    "result": "已停機"
+   },
+   {
+    "step": "通知廠務並記錄壓差 1503 Pa、風量 1135 m3/h、FUME_EXH_LOW",
+    "result": "已通報"
+   },
+   {
+    "step": "現場警戒，等待廠務檢查排風機、皮帶、濾筒、導管與氣罩",
+    "result": "待廠務"
+   },
+   {
+    "step": "由廠務更換排煙濾筒",
+    "result": "由廠務完成"
+   },
+   {
+    "step": "會同廠務試點銲，確認煙霧不再外擴",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "extraction_filter_cartridge"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "排煙壓差超過 1,200 Pa 且煙霧外擴時，先停機通報廠務，不要只調風量硬撐。",
+  "escalation_note": null
+ }
+}

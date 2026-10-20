@@ -1,0 +1,147 @@
+{
+  "case_id": "CASE-ASM-0022",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4021,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-03-18T02:47:34+08:00",
+  "closed_at": "2026-03-18T03:10:54+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "feeder_timeout",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 71,
+    "recent_changes": [
+      "補充螺絲 01:29（SL-2603-30）",
+      "換線 01:51"
+    ],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2603-78"
+  },
+  "log_signals": [
+    {
+      "t": "2026-03-18T01:29:54+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2603-30"
+    },
+    {
+      "t": "2026-03-18T02:43:13+08:00",
+      "signal": "feeder_pick_fail_count",
+      "value": 24
+    },
+    {
+      "t": "2026-03-18T02:45:57+08:00",
+      "signal": "screw_missing",
+      "value": true
+    },
+    {
+      "t": "2026-03-18T02:47:34+08:00",
+      "signal": "alarm_code",
+      "value": "FEEDER_TIMEOUT"
+    },
+    {
+      "t": "2026-03-18T02:47:34+08:00",
+      "signal": "screw_result",
+      "value": "NOK_NO_SCREW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L1"
+  },
+  "technician_report_raw": "ST02 FEEDER_TIMEOUT 先查漏鎖 孔位OK 拆護蓋軌道卡歪螺絲 清釘復位 ok",
+  "technician_report_normalized": "ST02 夜班送釘逾時警報，起子端無螺絲可鎖，MES 顯示 FEEDER_TIMEOUT 與 NOK_NO_SCREW。先懷疑漏鎖，檢查已鎖附孔位與鎖附紀錄皆正常，排除漏鎖。查事件紀錄見 feeder_pick_fail_count 24，補料後持續卡。在 LOTO 隔離下拆送釘軌道出口護蓋與分離器護蓋，發現軌道卡歪斜螺絲。以塑膠鑷子清除卡釘，量測卡釘規格與 BOM 相符，排除混料。復位後手動送釘無干涉，以試片試鎖扭力與角度正常；隔離受影響工件並追溯，清理送料盤後首件確認 OK，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "missing_screw",
+    "by": "jev",
+    "p": 0.46
+  },
+  "final_root_cause": "screw_feeder_jam",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因事件前出現 screw_missing=true、又逢補料與換線後的中斷點，直覺懷疑漏鎖；但已鎖附孔位與鎖附紀錄都 OK，且 FEEDER_TIMEOUT 伴隨 feeder_pick_fail_count=24，實際是送釘軌道卡釘導致起子端無螺絲。",
+  "discriminating_evidence": [
+    "已鎖附孔位與鎖附紀錄均正常，沒有漏鎖跡象。",
+    "alarm_code=FEEDER_TIMEOUT 且 screw_result=NOK_NO_SCREW，表示起子端取不到螺絲，非工件漏鎖。",
+    "feeder_pick_fail_count=24，且發生在 01:29 補料與 01:51 換線後，符合送釘機卡釘模式。",
+    "拆開護蓋見軌道卡著歪斜螺絲與異物，直接確認送釘機卡釘。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查已鎖附孔位、鎖附紀錄與影像，確認是否有漏鎖。",
+      "result": "排除漏鎖"
+    },
+    {
+      "step": "查閱控制器事件紀錄與補料紀錄，核對 FEEDER_TIMEOUT 與 feeder_pick_fail_count。",
+      "result": "指向送釘異常"
+    },
+    {
+      "step": "在 LOTO 隔離下拆送釘軌道出口護蓋與分離器護蓋，目視檢查軌道、分離器與吸嘴。",
+      "result": "發現卡釘"
+    },
+    {
+      "step": "以塑膠鑷子清除卡釘與異物，量測卡釘長度、牙距與頭型並比對 BOM。",
+      "result": "清除完成，規格相符"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "復位分離器與軌道，手動送釘路徑檢查無干涉，以試片試鎖確認扭力與角度。",
+      "result": "試鎖 ok"
+    },
+    {
+      "step": "隔離停機前後受影響工件並標示追溯，清理送料盤後執行首件確認。",
+      "result": "首件 ok，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-023",
+    "SOP-ASM-021"
+  ],
+  "downtime_min": 19,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "送釘逾時先別急著追漏鎖，先看 feeder_pick_fail_count 與補料時點，拆護蓋確認軌道有無卡釘。",
+  "related_failure_mode_ids": [
+    "screw_feeder_jam",
+    "missing_screw"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-023",
+    "SOP-ASM-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

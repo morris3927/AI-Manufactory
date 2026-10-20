@@ -1,0 +1,135 @@
+{
+  "case_id": "CASE-STP-0076",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1075,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-02-14T17:56:25+08:00",
+  "closed_at": "2026-02-14T18:57:00+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "overload_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 24,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2602-290"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-14T17:56:13+08:00",
+      "signal": "tonnage_peak",
+      "value": 168
+    },
+    {
+      "t": "2026-02-14T17:56:25+08:00",
+      "signal": "tonnage_peak",
+      "value": 250
+    },
+    {
+      "t": "2026-02-14T17:56:25+08:00",
+      "signal": "alarm_code",
+      "value": "OVERLOAD"
+    }
+  ],
+  "technician": {
+    "id": "TECH-01",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 1756 過負荷停 噸位250 前168 模內料頭重疊 清掉 試沖ok 停60分",
+  "technician_report_normalized": "PR01 於 17:56 發生過負荷停機，噸位監控顯示前次峰值 168 t，異常沖次尖峰達 250 t 並觸發 OVERLOAD。依 SOP 檢查 D-1U-BASE-01 模具與 SECC 1.0 mm 料帶厚度、送料步距及模內狀況，發現模內有料頭重疊，清除後檢查沖頭、導正銷及脫料板無崩刃或壓傷。試沖噸位恢復正常，生產 OK，停機約 60 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "overload_tonnage",
+    "by": "jev",
+    "p": 0.82
+  },
+  "final_root_cause": "overload_tonnage",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌（送料機 FD02 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱已匯出之噸位監控歷史與警報記錄，確認異常型態",
+      "result": "單一沖次尖峰 250 t，前次 168 t"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "檢查滑塊位置並以寸動確認可退回，查看模內狀況",
+      "result": "滑塊可退回，模內有料頭重疊"
+    },
+    {
+      "step": "清除模內重疊料頭與可見廢料，清理下模落料孔",
+      "result": "排除"
+    },
+    {
+      "step": "以分釐卡量測料帶厚度 5 點，核對送料步距與滾輪壓痕",
+      "result": "厚度 1.0 mm、步距正常"
+    },
+    {
+      "step": "檢查沖頭、導正銷、脫料板有無崩刃、壓傷或變形",
+      "result": "無損傷"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "重新試沖並觀察噸位峰值",
+      "result": "噸位恢復正常、生產 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-053"
+  ],
+  "downtime_min": 60,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "噸位單沖尖峰先查模內料頭重疊或異物，不要先懷疑模高或噸位設定。",
+  "related_failure_mode_ids": [
+    "overload_tonnage"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-053"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

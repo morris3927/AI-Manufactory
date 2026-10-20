@@ -11,6 +11,7 @@
                        --hardhat raw/hardhat --out data/ppe2
 """
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -18,7 +19,8 @@ from pathlib import Path
 NAMES = {0: "head", 1: "helmet"}
 SH17_MAP = {12: 0, 10: 1}                       # SH17：head=12、helmet=10
 HARDHAT_MAP = {"head": 0, "helmet": 1}          # person 刻意不收
-HARDHAT_VAL_RATIO = 0.2                         # 依 FiftyOne 的 _rand 固定切分，可重現
+HARDHAT_VAL_RATIO = 0.2                         # 依檔名雜湊固定切分，可重現
+# 注意：FiftyOne 的 _rand 是內部排序值（集中在 0.999～1），不能拿來切分
 
 
 def link(src: Path, dst: Path) -> None:
@@ -57,7 +59,8 @@ def prep_hardhat(root: Path, out: Path) -> dict:
         img = root / s["filepath"]
         if not img.exists():
             continue
-        split = "val" if s["_rand"] < HARDHAT_VAL_RATIO else "train"
+        bucket = int(hashlib.md5(img.name.encode()).hexdigest(), 16) % 100
+        split = "val" if bucket < HARDHAT_VAL_RATIO * 100 else "train"
         rows = []
         for d in (s.get("ground_truth") or {}).get("detections", []):
             cls = HARDHAT_MAP.get(d["label"].lower())

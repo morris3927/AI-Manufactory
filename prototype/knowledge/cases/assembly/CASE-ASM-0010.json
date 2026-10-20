@@ -1,0 +1,163 @@
+{
+  "case_id": "CASE-ASM-0010",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4009,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-06-24T06:57:44+08:00",
+  "closed_at": "2026-06-24T07:46:16+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 12,
+    "recent_changes": [
+      "換螺絲批 06:09（SL-2606-78）"
+    ],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2606-49"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-24T06:10:03+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2606-78"
+    },
+    {
+      "t": "2026-06-24T06:17:49+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2026-06-24T06:17:50+08:00",
+      "signal": "nok_hole_id",
+      "value": "H04"
+    },
+    {
+      "t": "2026-06-24T06:35:48+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2026-06-24T06:35:50+08:00",
+      "signal": "nok_hole_id",
+      "value": "H04"
+    },
+    {
+      "t": "2026-06-24T06:53:53+08:00",
+      "signal": "nok_hole_id",
+      "value": "H04"
+    },
+    {
+      "t": "2026-06-24T06:54:31+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2026-06-24T06:57:44+08:00",
+      "signal": "rundown_torque_nm",
+      "value": 0.4
+    }
+  ],
+  "technician": {
+    "id": "TECH-41",
+    "level": "L3"
+  },
+  "technician_report_raw": "ST01 H04一直NOK 初段扭力就衝高 想說06:09換批螺絲 SL-2606-78 可能混料 量長度牙距都對 排除 拆看H04壓鉚螺母孔口斜牙有毛邊鋅渣 通規過不去 換pem nut 清孔 報廢件試鎖ok 首件pass",
+  "technician_report_normalized": "ST01 夜班 H04 鎖附 NOK，旋入初段扭力異常升高，最終扭力僅 0.4 N·m。因 06:09 剛換螺絲批 SL-2606-78，先懷疑錯料或混料；量測螺絲長度、牙距、頭型均與 BOM 相符，排除。讀取鎖附紀錄發現 NOK 固定於 H04，放大鏡目視壓鉚螺母孔口有斜牙、毛邊與鋅渣堵塞，螺紋通規無法順暢通過，確認為斜牙／滑牙。已隔離 NOK 工件與同批可疑螺絲並掛標，記錄 hole_id、批號、時間與鎖附曲線，通報品保；以手動壓鉚工具更換同規格壓鉚螺母，清潔孔口，僅用報廢件試鎖，首件與功能測試通過後恢復生產，停機 47 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "wrong_screw_type",
+    "by": "jev",
+    "p": 0.41
+  },
+  "final_root_cause": "cross_thread_strip",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "因為 06:09 才剛換螺絲批 SL-2606-78，異常又在換批後開始，加上初段扭力偏高，很容易先聯想螺絲規格或混料；但螺絲長度、牙距、頭型量測都與 BOM 相符，且 NOK 固定集中在 H04，才轉向孔牙斜牙問題。",
+  "discriminating_evidence": [
+    "NOK 訊號固定落在同一孔位 H04，06:17、06:35、06:53 連續出現，並非整批螺絲隨機發生。",
+    "鎖附結果為 NOK_HIGH_TORQUE_EARLY，初段扭力就異常升高，且 rundown_torque_nm 僅 0.4 N·m，符合孔牙斜牙／滑牙特徵。",
+    "放大鏡目視 H04 壓鉚螺母孔口可見斜牙、毛邊與鋅渣堵塞，螺紋通規無法順暢通過。",
+    "送料盤螺絲長度、牙距、頭型量測與 BOM 相符，排除錯料／混料。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷核對送料盤螺絲批號與 BOM，量測螺絲長度、牙距、頭型",
+      "result": "排除"
+    },
+    {
+      "step": "讀取鎖附控制器紀錄與 NOK 清單，比對 hole_id、rundown_torque_nm、screw_result",
+      "result": "鎖定 H04"
+    },
+    {
+      "step": "以放大鏡目視 H04 壓鉚螺母與攻牙孔口，並以螺紋通規、止規檢查",
+      "result": "確認斜牙／滑牙"
+    },
+    {
+      "step": "隔離 NOK 工件與同批可疑螺絲並掛標，記錄 hole_id、批號、時間與鎖附曲線，通報品保",
+      "result": "已隔離"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以手動壓鉚工具更換 H04 同規格壓鉚螺母，清潔孔口鋅渣與毛邊，僅用報廢件試鎖",
+      "result": "ok"
+    },
+    {
+      "step": "確認壓鉚螺母端面與鈑金齊平、無鬆動，執行首件試鎖與功能測試",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-022",
+    "SOP-ASM-012"
+  ],
+  "downtime_min": 47,
+  "parts_replaced": [
+    "pem_nut"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "同一孔位重複 NOK 時，先比對 hole_id 與鎖附曲線，不要只因為最近換批螺絲就認定是混料。",
+  "related_failure_mode_ids": [
+    "cross_thread_strip",
+    "wrong_screw_type"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-022",
+    "SOP-ASM-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

@@ -1,0 +1,128 @@
+{
+  "case_id": "CASE-STP-0110",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1109,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-04-09T19:30:01+08:00",
+  "closed_at": "2026-04-09T22:29:02+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "person_in_danger_zone",
+    "rule_severity": "S3"
+  },
+  "context": {
+    "days_since_pm": 18,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2604-247"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-09T19:15:42+08:00",
+      "signal": "light_curtain_status",
+      "value": "MUTED"
+    },
+    {
+      "t": "2026-04-09T19:29:25+08:00",
+      "signal": "person_in_zone",
+      "value": true
+    }
+  ],
+  "technician": {
+    "id": "TECH-04",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 光幕MUTED 19:29有人入危險區 立即停機 通知主管+電氣合格人員 記錄時間 合格人員查自我診斷 換光幕接收器 測試ok",
+  "technician_report_normalized": "PR01 於 19:15 顯示光幕狀態為 MUTED，19:29 影像偵測到人員進入危險區。現場立即停機並通知主管與電氣合格人員，同時記錄光幕狀態與人員進入時間，並提報虛驚事件（near miss），由主管調查光幕為何被停用。合格人員到場後確認光幕自我診斷異常，查明停用原因並更換光幕接收器，完成功能測試與復歸。試運轉確認光幕遮斷與起動連鎖正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "light_curtain_fault",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "light_curtain_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "發現光幕 MUTED 且人員進入危險區，立即按停機",
+      "result": "已停機"
+    },
+    {
+      "step": "通知現場主管與電氣合格人員到場",
+      "result": "已通知"
+    },
+    {
+      "step": "記錄光幕狀態、人員進入時間與現場狀況，提報虛驚事件（near miss）",
+      "result": "已記錄"
+    },
+    {
+      "step": "由合格人員檢查光幕自我診斷與停用原因",
+      "result": "確認光幕接收器異常"
+    },
+    {
+      "step": "由合格人員更換光幕接收器並執行功能測試",
+      "result": "測試正常"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "由合格人員完成復歸與試運轉，確認遮斷及起動連鎖正常",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-071"
+  ],
+  "downtime_min": 178,
+  "parts_replaced": [
+    "light_curtain_receiver"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": true
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "光幕 MUTED 又偵測到有人進危險區就是虛驚事件：先停機、提報 near miss，由主管查明光幕為何處於 MUTED、由誰設定，修好並測試後才能復機。",
+  "related_failure_mode_ids": [
+    "light_curtain_fault"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-STP-071"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,144 @@
+{
+  "case_id": "CASE-STP-0071",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1070,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-04-25T13:55:55+08:00",
+  "closed_at": "2026-04-25T17:58:14+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "overrun_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 59,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2604-163"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-22T13:56:10+08:00",
+      "signal": "stop_angle_deg",
+      "value": 10.8
+    },
+    {
+      "t": "2026-04-24T13:56:36+08:00",
+      "signal": "stop_angle_deg",
+      "value": 13.5
+    },
+    {
+      "t": "2026-04-25T13:55:55+08:00",
+      "signal": "stop_angle_deg",
+      "value": 16.0
+    },
+    {
+      "t": "2026-04-25T13:55:55+08:00",
+      "signal": "stop_time_ms",
+      "value": 242
+    },
+    {
+      "t": "2026-04-25T13:55:55+08:00",
+      "signal": "alarm_code",
+      "value": "OVERRUN"
+    },
+    {
+      "t": "2026-04-25T13:55:55+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.7
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR03 OVERRUN 停止角16度 前兩天10.8→13.5一直爬 停止時間242ms 氣壓5.7正常 停機通報課長 設備工程師+原廠拆檢制動器 制動襯片磨耗 換brake lining 調間隙 試沖停止角9度 ok",
+  "technician_report_normalized": "PR03 於 4 月 25 日 13:55 發生 OVERRUN 警報，停止角度監視值為 16.0 度，停止時間 242 ms；對照前兩日紀錄，停止角度由 10.8 度、13.5 度持續上升。現場先停機並通報課長與設備工程師，檢查氣源壓力為 5.7 bar，屬正常範圍，排除氣壓不足因素。後續由設備工程師會同原廠技師拆檢離合器／制動器，發現制動襯片磨耗、間隙過大，已更換制動襯片並調整間隙。依 SOP-STP-051 試機與試沖後，停止角度恢復至 9 度左右，停止時間正常，確認可恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "clutch_brake_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "clutch_brake_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停止角度監視值 16.0 度、停止時間 242 ms，較前兩日 10.8 度與 13.5 度持續上升，立即停機並通報課長與設備工程師。",
+      "result": "停機待修"
+    },
+    {
+      "step": "檢查氣源壓力 5.7 bar 正常，排除氣壓不足造成停止角度偏移。",
+      "result": "排除氣壓因素"
+    },
+    {
+      "step": "由設備工程師會同原廠技師拆檢離合器／制動器，確認制動襯片磨耗、間隙過大。",
+      "result": "確認制動襯片磨耗"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "由原廠技師更換制動襯片並調整制動間隙，依 SOP-STP-051 執行試機。",
+      "result": "更換完成"
+    },
+    {
+      "step": "由合格人員試沖並量測停止角度與停止時間，確認恢復正常後恢復生產。",
+      "result": "恢復正常"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-051"
+  ],
+  "downtime_min": 242,
+  "parts_replaced": [
+    "brake_lining"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "停止角度連三天從 10.8 度爬到 16.0 度、氣壓又正常，就要先量停止時間並通報設備工程師，不要只清感測器。",
+  "related_failure_mode_ids": [
+    "clutch_brake_wear"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-STP-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

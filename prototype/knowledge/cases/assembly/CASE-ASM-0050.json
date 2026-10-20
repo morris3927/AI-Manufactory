@@ -1,0 +1,135 @@
+{
+  "case_id": "CASE-ASM-0050",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4049,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA01",
+  "opened_at": "2026-03-06T16:49:32+08:00",
+  "closed_at": "2026-03-06T17:07:02+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 40,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2603-64"
+  },
+  "log_signals": [
+    {
+      "t": "2026-03-06T16:45:53+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-03-06T16:48:58+08:00",
+      "signal": "connector_unlatched",
+      "value": true
+    },
+    {
+      "t": "2026-03-06T16:49:32+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-03-06T16:49:32+08:00",
+      "signal": "insulation_mohm",
+      "value": 648
+    }
+  ],
+  "technician": {
+    "id": "TECH-41",
+    "level": "L1"
+  },
+  "technician_report_raw": "MA01 DEVICE_NOT_FOUND 接頭卡扣沒扣 有間隙 重插扣上 測pass 絕緣648 ok",
+  "technician_report_normalized": "功能測試站回報 DEVICE_NOT_FOUND，且連續兩次測試皆失敗，並非時有時無。現場目視故障連接器，發現卡扣未扣、公母端之間有可見間隙；線材外皮完好，絕緣測試為 648 MΩ 正常。依程序完成 LOTO 後，先隔離故障機殼與可疑線束並記錄機殼序號、連接器位置及線束批號，再對正防呆鍵、握住連接器本體重新插接至卡扣完全扣上，確認無可見間隙。重新執行功能與絕緣測試，裝置可正常偵測且未再出現 DEVICE_NOT_FOUND，測試通過；同批首件確認 OK，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "connector_not_seated",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "connector_not_seated",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "調閱功能測試紀錄與現場標示，確認連續測試皆出現 DEVICE_NOT_FOUND，記錄機殼序號與連接器位置。",
+      "result": "確認為持續性失敗"
+    },
+    {
+      "step": "目視檢查故障連接器公母端、卡扣與防呆鍵，發現卡扣未扣且公母端有可見間隙，線材外皮完好。",
+      "result": "卡扣未扣"
+    },
+    {
+      "step": "隔離故障機殼與可疑線束，貼上不良標示並追溯同批線束批號。",
+      "result": "已隔離"
+    },
+    {
+      "step": "對正防呆鍵，握住連接器本體重新插接至卡扣完全扣上，確認公母端無可見間隙。",
+      "result": "已扣合"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "重新執行功能測試與絕緣測試，確認裝置可偵測且絕緣值正常。",
+      "result": "測試pass"
+    },
+    {
+      "step": "恢復量產前確認：清點工具與螺絲、恢復送釘機護蓋，由原上鎖人取下自己的插頭鎖蓋並插回電源，首件由班長確認",
+      "result": "ok"
+    },
+    {
+      "step": "同批首件確認後恢復生產。",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-042"
+  ],
+  "downtime_min": 16,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "連接器有間隙先看卡扣，不要只重開機；重插後要拉一下確認保持力。",
+  "related_failure_mode_ids": [
+    "connector_not_seated"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

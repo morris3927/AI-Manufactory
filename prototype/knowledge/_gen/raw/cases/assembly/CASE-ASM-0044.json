@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4043
+ },
+ "output": {
+  "technician_report_raw": "MA02 測試LINK_INTERMITTENT 時好時壞 先查走線 開上蓋見線束被支架壓到 有壓痕 護線套跑位 接頭卡扣有扣好 依SOP-ASM-041重走 換護線套+束帶 絕緣測3次ok 不良品隔離",
+  "technician_report_normalized": "夜班 MA02 測試連續出現 LINK_INTERMITTENT，連線時有時無。依 LOTO-ASM-TOOL-01 掛牌後開上蓋檢查，發現線束在支架蓋合處被夾住且有壓痕，護線套偏移，走線與作業指導書不符，最小彎曲半徑也不足線束外徑三倍；接頭卡扣已到位。依 SOP-ASM-041 重走線，避開鈑金銳邊並加裝護線套、調整束帶，更換護線套與束帶。不良品已貼標隔離並記錄追溯。測試站裝置偵測與絕緣測試三次均正常，停機36分鐘後恢復生產。",
+  "actions": [
+   {
+    "step": "目視檢查上蓋與支架蓋合處、線束路徑及護線套狀態",
+    "result": "發現線束被夾住且有壓痕，護線套偏移"
+   },
+   {
+    "step": "以游標卡尺量線束外徑，並用半徑規量最小彎曲半徑，比對走線作業指導書",
+    "result": "彎曲半徑不足，路徑不符"
+   },
+   {
+    "step": "將有夾線與壓痕的機殼貼不良標籤，記錄工單、序號與測試結果後移入隔離區",
+    "result": "已隔離"
+   },
+   {
+    "step": "依 SOP-ASM-041 重新走線，避開鈑金銳邊並調整束帶位置與鬆緊",
+    "result": "走線改善"
+   },
+   {
+    "step": "更換偏移的護線套與束帶，確認接頭卡扣扣上且公母端間隙正常",
+    "result": "更換完成"
+   },
+   {
+    "step": "於測試站執行裝置偵測與絕緣測試三次",
+    "result": "三次 ok"
+   }
+  ],
+  "parts_replaced": [
+   "edge_grommet",
+   "cable_tie"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "線束被上蓋夾住時，先量彎曲半徑再重走線，接頭重插不會解決走線問題。",
+  "escalation_note": null
+ }
+}

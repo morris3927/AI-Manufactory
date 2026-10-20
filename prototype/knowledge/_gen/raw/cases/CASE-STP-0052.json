@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1051
+ },
+ "output": {
+  "technician_report_raw": "PR03 模具潤滑警報 噴油脈衝6→1.4 油箱液位夠 濾網塞 噴嘴乾掉堵住 清油路+換濾網噴嘴 試沖脈衝回6 ok 停70分",
+  "technician_report_normalized": "PR03 於 10:59 發出模具潤滑警報，模具潤滑脈衝由每分鐘 6 次逐步降至 1.4 次。檢查油箱液位正常，但吸入濾網有沉澱堵塞，噴油嘴噴口乾涸黏膠、油霧不足；油管無折扁滲漏。清洗油路並更換濾網與噴油嘴後，無料空轉確認霧化正常，脈衝回復至每分鐘 6 次，試沖成形面無拉痕，恢復生產，停機 70 分鐘。",
+  "actions": [
+   {
+    "step": "查閱模具潤滑脈衝趨勢與油箱液位",
+    "result": "脈衝 6→1.4、液位正常"
+   },
+   {
+    "step": "拆檢吸入濾網與油管",
+    "result": "濾網堵塞、油管無折扁"
+   },
+   {
+    "step": "拆下噴油嘴檢查噴口",
+    "result": "噴口乾涸堵塞、無油霧"
+   },
+   {
+    "step": "清洗油路並更換濾網、噴油嘴",
+    "result": "更換完成"
+   },
+   {
+    "step": "無料空轉確認噴油霧化與脈衝",
+    "result": "脈衝回復 6 次/分"
+   },
+   {
+    "step": "試沖並檢查成形面",
+    "result": "無拉痕、ok"
+   }
+  ],
+  "parts_replaced": [
+   "die_lube_filter",
+   "die_lube_nozzle"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "模具潤滑脈衝掉到一半以下，先查濾網與噴嘴，只補油通常撐不久。",
+  "escalation_note": null
+ }
+}

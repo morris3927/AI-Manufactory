@@ -1,0 +1,178 @@
+{
+  "case_id": "CASE-STP-0090",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1089,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-01-20T09:04:02+08:00",
+  "closed_at": "2026-01-20T09:42:10+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "motor_current_abnormal",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 59,
+    "recent_changes": [
+      "換模 07:49（D-1U-BASE-01）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2601-113"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-17T09:04:19+08:00",
+      "signal": "stop_angle_deg",
+      "value": 10.6
+    },
+    {
+      "t": "2026-01-19T09:04:10+08:00",
+      "signal": "stop_angle_deg",
+      "value": 13.6
+    },
+    {
+      "t": "2026-01-20T07:39:08+08:00",
+      "signal": "motor_current_a",
+      "value": 105
+    },
+    {
+      "t": "2026-01-20T07:49:24+08:00",
+      "signal": "die_change",
+      "value": "D-1U-BASE-01"
+    },
+    {
+      "t": "2026-01-20T07:52:12+08:00",
+      "signal": "counterbalance_bar",
+      "value": 3.8
+    },
+    {
+      "t": "2026-01-20T09:02:12+08:00",
+      "signal": "motor_current_a",
+      "value": 124
+    },
+    {
+      "t": "2026-01-20T09:02:47+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.6
+    },
+    {
+      "t": "2026-01-20T09:04:02+08:00",
+      "signal": "stop_angle_deg",
+      "value": 16.7
+    },
+    {
+      "t": "2026-01-20T09:04:02+08:00",
+      "signal": "stop_time_ms",
+      "value": 244
+    },
+    {
+      "t": "2026-01-20T09:04:02+08:00",
+      "signal": "alarm_code",
+      "value": "OVERRUN"
+    },
+    {
+      "t": "2026-01-20T09:04:02+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.8
+    }
+  ],
+  "technician": {
+    "id": "TECH-09",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR01 換模後異音 主馬達電流爬到124A 停止角16.7超限 先停機通報設備工程師 查平衡缸 錶壓跟模具資料不符 分段調壓後異音小 電流降 工程師複測停止角13.9 制動器磨耗列管排修 試沖首件ok",
+  "technician_report_normalized": "PR01 換模後出現異音，主馬達電流升至 124 A，停止角度 16.7°、停止時間 244 ms 觸發 OVERRUN。停止角超限屬安全裝置異常，先停機上鎖並通報設備工程師。平衡缸錶壓與模具資料的上模重量對應值不符，依 SOP 分段調整後異音與電流改善；由設備工程師試機複測停止角 13.9°、停止時間 205 ms，回到上限內，判定主因為平衡缸設定不當。停止角三天內由 10.6° 升到 13.6°，制動器磨耗列為次因，由合格人員排定檢修，修好前每班點檢停止角。試沖首件正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "counterbalance_misset",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "counterbalance_misset",
+  "contributing_causes": [
+    "clutch_brake_wear"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "停機並通報課長與設備工程師：停止角 16.7°、停止時間 244 ms 超限",
+      "result": "已通報"
+    },
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌（送料機 FD02 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查閱模具資料，比對上模重量對應之平衡缸壓力設定與現場錶壓",
+      "result": "設定不符"
+    },
+    {
+      "step": "依 SOP 以調壓閥分段調整平衡缸壓力，每段 0.2 bar 並等待 30 秒觀察",
+      "result": "異音減小 電流下降"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "由設備工程師試機複測停止角度與停止時間",
+      "result": "13.9°、205 ms，回到上限內"
+    },
+    {
+      "step": "由設備工程師判讀停止角趨勢，制動器磨耗列管並排定合格人員檢修",
+      "result": "列管排修，每班點檢停止角"
+    },
+    {
+      "step": "試沖首件，量測成形高度、壓印深度與沖壓力峰值平衡",
+      "result": "首件ok 恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-056",
+    "SOP-STP-051"
+  ],
+  "downtime_min": 37,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後先比對平衡缸錶壓與模具資料；停止角超限一律停機通報，由設備工程師複測回到上限內才可試沖，連日上升的趨勢要列管排修制動器。",
+  "related_failure_mode_ids": [
+    "counterbalance_misset",
+    "clutch_brake_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-056",
+    "SOP-STP-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

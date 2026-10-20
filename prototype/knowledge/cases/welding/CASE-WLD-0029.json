@@ -1,0 +1,150 @@
+{
+  "case_id": "CASE-WLD-0029",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3028,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-01-05T12:12:14+08:00",
+  "closed_at": "2026-01-05T18:19:20+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 10,
+    "recent_changes": [
+      "更換銲槍頸管 10:11"
+    ],
+    "part": "1U 機殼後框支架",
+    "fixture_id": "FX-A",
+    "program_id": "PRG-133"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-05T10:11:28+08:00",
+      "signal": "consumable_change",
+      "value": "torch_neck"
+    },
+    {
+      "t": "2026-01-05T10:41:26+08:00",
+      "signal": "weld_defect",
+      "value": "bead_offset×6 全治具"
+    },
+    {
+      "t": "2026-01-05T12:12:14+08:00",
+      "signal": "tcp_check_delta_mm",
+      "value": 2.2
+    },
+    {
+      "t": "2026-01-05T12:12:14+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 3.6
+    },
+    {
+      "t": "2026-01-05T12:12:14+08:00",
+      "signal": "alarm_code",
+      "value": "TCP_CHECK_NG"
+    }
+  ],
+  "technician": {
+    "id": "TECH-27",
+    "level": "L3"
+  },
+  "technician_report_raw": "RC01 後框支架銲道偏 6件全治具同段偏 10:11換頸管 查TCP 2.2mm NG 照SOP查槍身頸管固定座無撞痕鬆動 重校後單一銲道仍偏 疑教導點被改 教導模式降速比對 移交機器人工程師",
+  "technician_report_normalized": "10:11 更換銲槍頸管後，10:41 起發現 1U 機殼後框支架的銲道偏移，全治具共 6 件都出現同一段銲道偏。依 SOP 檢查銲槍本體、頸管、槍身固定座與防撞檢知座，未見撞痕、彎曲或螺栓鬆動；TCP 校驗偏差 2.2 mm，出現 NG，電弧電壓變異 3.6% 尚穩定。清潔接合面並重新校正 TCP 後，偏移仍未改善，且只集中在單一銲道，研判為教導程式中一個點位被誤改。已於教導模式降速比對 PRG-133 點位，因超出現場維修能力，移交機器人工程師處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "tcp_drift",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因 10:11 更換銲槍頸管、TCP 校驗偏差 2.2 mm 且出現 NG，加上全治具 6 件都有銲道偏移，直覺懷疑是 TCP 偏移；但依 SOP 檢查槍身、頸管與固定座無撞痕鬆動，偏移只集中在單一銲道，電弧電壓變異僅 3.6% 尚穩定，重新比對後才確認是教導程式單一點位被誤改。",
+  "discriminating_evidence": [
+    "全治具 6 件是同一段銲道偏移，不是所有銲道一起偏，與 TCP 偏移會整批同向偏的表現不同。",
+    "TCP 校驗偏差 2.2 mm 且出現 NG，但電弧電壓變異僅 3.6%，銲接電流電壓穩定。",
+    "依 SOP 檢查銲槍本體、頸管、槍身固定座與防撞檢知座，未見撞痕、彎曲、裂紋或螺栓鬆動。",
+    "比對 PRG-133 教導程式後，發現單一銲道對應的點位被誤改，其他銲道點位正常。"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "program_point_edited",
+    "description": "教導程式中一個點位被誤改，只有該銲道偏移"
+  },
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP 檢查銲槍本體、頸管、槍身固定座與防撞檢知座",
+      "result": "無撞痕鬆動"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "執行 TCP 校驗並調閱電弧電流電壓波形",
+      "result": "偏差2.2mm NG 電壓變異3.6%"
+    },
+    {
+      "step": "取兩工位各治具已完成工件量測銲道偏移方向與量",
+      "result": "僅單一銲道同段偏"
+    },
+    {
+      "step": "清潔接合面重新校正 TCP，於局部排氣運轉下由圍欄外試銲",
+      "result": "偏移未改善"
+    },
+    {
+      "step": "以教導模式降速比對 PRG-133 程式點位",
+      "result": "單一點位被誤改"
+    },
+    {
+      "step": "因教導程式修正超出現場權限，移交機器人工程師",
+      "result": "移交"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-021"
+  ],
+  "downtime_min": 364,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "機器人工程師",
+  "escalation_note": "因教導程式點位修正需機器人工程師權限，已將 PRG-133 單一點位誤改、TCP 校驗 2.2 mm 與偏移分佈紀錄移交機器人工程師。",
+  "lessons": "換頸管後看到多件偏移，先確認是整批所有銲道偏還是只偏同一段；TCP 數值 NG 不代表程式點位沒被動過。",
+  "related_failure_mode_ids": [
+    "tcp_drift"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

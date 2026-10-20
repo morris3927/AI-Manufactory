@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3034
+ },
+ "output": {
+  "technician_report_raw": "RC01 0416 arc voltage CV 10.6% 先查接地夾+回路接頭 正常 0419 降到3.2% 看影像 ROI 正常火花 誤判 復產 ok",
+  "technician_report_normalized": "夜班時 RC01 於 04:16 出現電弧電壓變異率 10.6%，系統判定電弧不穩。先懷疑接地不良，檢查 FX-A 治具接地夾、回路電纜接頭與端子，未見鬆脫、銲渣或發熱，接地回路正常。04:19 電壓變異率降至 3.2%，調閱影像後確認為銲接工位 ROI 內正常火花遭影像誤判。確認無設備故障後恢復生產。",
+  "actions": [
+   {
+    "step": "依第一判斷檢查 FX-A 治具接地夾齒面、夾持面與回路電纜接頭",
+    "result": "排除"
+   },
+   {
+    "step": "比對正常側並查看 arc_voltage_cv_pct 趨勢",
+    "result": "恢復正常"
+   },
+   {
+    "step": "調閱銲接工位影像複查",
+    "result": "確認正常火花"
+   },
+   {
+    "step": "確認無設備故障後恢復生產",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因 04:16 arc_voltage_cv_pct 達 10.6% 且屬電弧不穩，先懷疑接地不良；但接地夾與回路接頭無異常，且 04:19 電壓變異率自行降至 3.2%，影像確認為 ROI 內正常火花誤判。",
+  "discriminating_evidence": [
+   "04:19:56 arc_voltage_cv_pct 降至 3.2%，未處理即回到正常範圍",
+   "接地夾、回路電纜接頭與端子目視無鬆脫、銲渣或發熱變色",
+   "影像複查顯示異常來源為銲接工位 ROI 內正常火花"
+  ],
+  "lessons": "影像告警先比對訊號趨勢與 ROI 畫面，數值已回落且接地正常就別急著拆修。",
+  "escalation_note": null
+ }
+}

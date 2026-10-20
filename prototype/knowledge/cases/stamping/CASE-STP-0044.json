@@ -1,0 +1,190 @@
+{
+  "case_id": "CASE-STP-0044",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1043,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-08-20T05:12:07+08:00",
+  "closed_at": "2026-08-20T06:34:19+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "die_protect_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 31,
+    "recent_changes": [
+      "提速 32→40 spm 04:55"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2608-382"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-20T03:22:10+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-08-20T03:23:25+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-08-20T04:42:17+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-08-20T04:43:48+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-08-20T04:50:29+08:00",
+      "signal": "spm",
+      "value": 32
+    },
+    {
+      "t": "2026-08-20T04:55:51+08:00",
+      "signal": "spm",
+      "value": 40
+    },
+    {
+      "t": "2026-08-20T05:01:39+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    },
+    {
+      "t": "2026-08-20T05:09:09+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02,
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-08-20T05:11:20+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01,
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-08-20T05:12:07+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    },
+    {
+      "t": "2026-08-20T05:12:07+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-12",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 提速40後模保跳 模面撿到廢料3片 沖子端面油黏 清模+換防跳屑銷 誤送料接頭鬆重插 ok",
+  "technician_report_normalized": "夜班生產 2U 上蓋，PR01 於 05:01 起模具保護間歇跳停並出現 MISFEED 警報；停機前送料長度誤差僅 0.01～0.02 mm，屬正常。檢查發現模面與下模落料孔有沖孔廢料、沖頭端面油膜黏附，研判為提速至 40 spm 後廢料上跳所致；另誤送料偵測器接頭鬆動、感應面沾油，造成反覆誤報。處置先降回 32 spm，以銅棒與刮刀清除模面及落料孔廢料、擦拭沖頭端面並加裝防跳屑銷；同時重插感測器接頭、束線固定並清潔感應面。試沖 50 模未再跳停，恢復量產。",
+  "first_hypothesis": {
+    "failure_mode_id": "slug_pulling",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "slug_pulling",
+  "contributing_causes": [
+    "misfeed_sensor_fault"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "降回 32 spm，寸動滑塊上下 3 次觀察沖頭回程",
+      "result": "沖頭端面吸附廢料，確認跳屑"
+    },
+    {
+      "step": "以銅棒與刮刀清除模面、沖頭端面及下模落料孔廢料",
+      "result": "清出廢料 3 片"
+    },
+    {
+      "step": "檢查沖頭端面粗糙度、刃口與油膜狀況",
+      "result": "端面油膜黏附、刃口正常"
+    },
+    {
+      "step": "加裝防跳屑銷並擦乾端面油污",
+      "result": "完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖確認",
+      "result": "試沖 50 模未再帶屑"
+    },
+    {
+      "step": "檢查誤送料偵測器感應面與訊號接頭",
+      "result": "接頭鬆動、感應面沾油"
+    },
+    {
+      "step": "重插接頭、束線固定並清潔感應面",
+      "result": "misfeed 誤報未再出現"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-031",
+    "SOP-STP-041"
+  ],
+  "downtime_min": 80,
+  "parts_replaced": [
+    "anti_slug_pin"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "提速後模具保護間歇跳停，先開模看模面有沒有廢料，不要第一時間去追送料。",
+  "related_failure_mode_ids": [
+    "slug_pulling",
+    "misfeed_sensor_fault"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-031",
+    "SOP-STP-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

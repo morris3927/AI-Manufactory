@@ -1,0 +1,140 @@
+{
+  "case_id": "CASE-STP-0029",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1028,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2025-12-08T10:43:26+08:00",
+  "closed_at": "2025-12-08T11:45:36+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 29,
+    "recent_changes": [
+      "導正釋放角度由 220° 改為 205° 09:08"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2512-195"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-08T09:08:40+08:00",
+      "signal": "param_change",
+      "value": "pilot_release_angle_deg 220→205"
+    },
+    {
+      "t": "2025-12-08T09:08:56+08:00",
+      "signal": "pilot_release_angle_deg",
+      "value": 205
+    },
+    {
+      "t": "2025-12-08T10:38:47+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02
+    },
+    {
+      "t": "2025-12-08T10:43:26+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 導正孔單向拉長 導正銷磨亮 查參數 釋放角09:08改205 無料空轉送料誤差0.02正常 調到匹配角度+換導正銷 試沖ok",
+  "technician_report_normalized": "FD02 送料機生產 1U 機殼底板時，發現導正孔有單向拉長、導正銷表面磨亮，料帶定位不穩。查閱參數紀錄發現 09:08 導正釋放角度由 220° 改為 205°，與目前沖速不匹配；無料空轉量測送料長度誤差為 0.02 mm，屬正常範圍。隨後以 0.5° 為一階調整釋放角度，並更換磨亮導正銷、清潔導正孔，試沖後定位恢復正常，重新投入生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "pilot_release_timing",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "pilot_release_timing",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌，下游沖床 PR01 依 LOTO-PRESS-SERVO-01 連動上鎖，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "核對最近參數變更與導正釋放角度紀錄",
+      "result": "發現 09:08 由 220° 改為 205°"
+    },
+    {
+      "step": "檢查導正銷與導正孔磨耗",
+      "result": "導正銷磨亮、孔口單向拉長"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "無料空轉連續量測送料長度與釋放角度",
+      "result": "送料誤差 0.02 mm 正常"
+    },
+    {
+      "step": "以 0.5° 為一階調整導正釋放角度至與目前沖速匹配",
+      "result": "定位改善"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "更換磨亮導正銷並清潔導正孔後試沖",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-014"
+  ],
+  "downtime_min": 60,
+  "parts_replaced": [
+    "pilot_pin"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "參數變更後要先對照沖速 SPM 與導正釋放角度，不要只看送料誤差正常就放過。",
+  "related_failure_mode_ids": [
+    "pilot_release_timing"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-014"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

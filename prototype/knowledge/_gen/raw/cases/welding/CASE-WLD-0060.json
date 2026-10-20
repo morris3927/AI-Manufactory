@@ -1,0 +1,34 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3059
+ },
+ "output": {
+  "technician_report_raw": "RC01 排煙低警報 排風機stopped 風量72 煙飄出圍欄 停銲cycle_stop LOTO 通知廠務 等合格人員查風機皮帶+濾筒",
+  "technician_report_normalized": "RC01 銲接工作站於 15:06 出現排煙風量低警報，排風機狀態為停止，風量由 1960 m³/h 降至 72 m³/h，隨後工位外出現煙霧，機器人進入循環停止。現場立即停止銲接並完成上鎖掛牌，通報主管與廠務；技術員僅記錄與警戒，未自行拆卸或修復排煙設備，等待廠務合格人員檢查排風機、皮帶、濾筒與導管。",
+  "actions": [
+   {
+    "step": "停止銲接作業並確認機器人進入循環停止",
+    "result": "已停止"
+   },
+   {
+    "step": "通報主管與廠務，說明排風機停止、風量 72 m³/h 及煙霧外洩狀況",
+    "result": "已通報"
+   },
+   {
+    "step": "記錄警報與現場狀況，維持停工警戒，未自行拆卸設備",
+    "result": "已記錄"
+   },
+   {
+    "step": "將排煙設備檢修移交廠務，由合格人員檢查排風機、皮帶、濾筒與導管",
+    "result": "移交廠務"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "排煙風量掉到設定值以下又飄煙時，先停銲通報廠務，不要為了趕產能自行拆排風機。",
+  "escalation_note": "已將排煙風機停止、風量低及煙霧外洩狀況移交廠務，由合格人員檢修排風機、皮帶、濾筒與導管。"
+ }
+}

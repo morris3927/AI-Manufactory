@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1059
+ },
+ "output": {
+  "technician_report_raw": "FD02 MISFEED一班跳5次 料帶沒卡 導正孔ok 停機前送料誤差0.02 感測面有油屑 接頭拉會晃 清潔+換接頭+束線 試跑30分ok",
+  "technician_report_normalized": "FD02 於本班多次觸發 MISFEED 停機，每次重置後即可恢復運轉。現場檢查料帶位置與導正孔均正常，停機前送料長度誤差僅 0.02 mm，並無實際卡料。進一步檢查發現誤送料感測器感應面沾附油屑，接頭輕拉有鬆動現象。已清潔感應面，更換同規格接頭並以固定夾束線固定，試運轉 30 分鐘未再跳脫。",
+  "actions": [
+   {
+    "step": "調閱警報與狀態紀錄，確認 MISFEED 是否為間歇性反覆觸發",
+    "result": "一班內多次觸發，重置後立即回到運轉"
+   },
+   {
+    "step": "檢查料帶位置、導正孔與停機前送料長度誤差",
+    "result": "料帶正常、導正孔無變形，誤差 0.02 mm"
+   },
+   {
+    "step": "以無絨布清潔誤送料感測器感應面油屑",
+    "result": "感應面油屑清除"
+   },
+   {
+    "step": "輕拉感測器接頭檢查鬆動，更換接頭並束線固定",
+    "result": "接頭固定確實、無晃動"
+   },
+   {
+    "step": "試運轉觀察送料與感測訊號",
+    "result": "30 分鐘未再跳脫，ok"
+   }
+  ],
+  "parts_replaced": [
+   "sensor_connector"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "MISFEED 反覆跳但料帶、導正孔與送料誤差都正常時，先去看感測器接頭和感應面，不要急著拆模具。",
+  "escalation_note": null
+ }
+}

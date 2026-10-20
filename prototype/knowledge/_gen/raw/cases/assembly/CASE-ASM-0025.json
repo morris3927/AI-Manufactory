@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4024
+ },
+ "output": {
+  "technician_report_raw": "ST01 0101換批SL-2607-38 0107角度2274偏高 0222 NOK_ANGLE_HIGH 送釘盤混到不同長度螺絲 量長度牙距跟BOM不符 起子頭孔牙正常 已隔離清料換正確M3 試片ok",
+  "technician_report_normalized": "ASM-L1-ST01 於 02:22 出現 NOK_ANGLE_HIGH。比對換批紀錄，01:01 更換螺絲批 SL-2607-38 後，01:07 最終角度達 2274 度。目視送釘盤與補料盒，發現混入不同長度及頭型螺絲，量測與 BOM 不符，起子頭及孔牙正常。依 LOTO-ASM-TOOL-01 拔插頭關氣源，清空送釘盤與軌道移除混料；可疑螺絲及工件已隔離、貼標拍照，補入正確 M3 螺絲並以試片確認，首件正常後恢復生產。",
+  "actions": [
+   {
+    "step": "核對換批紀錄與鎖附控制器資料，01:01 更換螺絲批 SL-2607-38 後，01:07 最終角度 2274 偏高，02:22 出現 NOK_ANGLE_HIGH。",
+    "result": "時序吻合"
+   },
+   {
+    "step": "目視送釘盤、補料盒與待鎖螺絲，發現混入長度及頭型不同之螺絲；量測長度、外徑與牙距，與 BOM 規格不符。",
+    "result": "確認錯料"
+   },
+   {
+    "step": "檢查起子頭十字槽與壓鉚螺母孔牙，無明顯磨耗、斜牙或滑牙。",
+    "result": "排除"
+   },
+   {
+    "step": "依 LOTO-ASM-TOOL-01 拔除插頭並關閉送釘機氣源，清空送釘盤、送釘軌道與分離器，以鑷子及軟毛刷移除混料。",
+    "result": "清料完成"
+   },
+   {
+    "step": "隔離送釘盤、補料盒、待鎖螺絲與已鎖可疑工件，貼疑似錯料標籤並拍照，依批號與換批紀錄追溯。",
+    "result": "已隔離"
+   },
+   {
+    "step": "補入正確 M3 螺絲，以試片確認角度與扭力，並完成首件確認。",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "screw_m3"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換批後若角度突然偏高，先核對螺絲長度與料盒標籤，不要急著調參數。",
+  "escalation_note": null
+ }
+}

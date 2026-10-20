@@ -1,0 +1,145 @@
+{
+  "case_id": "CASE-WLD-0011",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3010,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-05-16T14:38:10+08:00",
+  "closed_at": "2026-05-16T23:40:58+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "arc_start_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 17,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-B",
+    "program_id": "PRG-139"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-15T18:38:36+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 1.5
+    },
+    {
+      "t": "2026-05-16T06:38:38+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 4.2
+    },
+    {
+      "t": "2026-05-16T14:38:10+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 10.6
+    },
+    {
+      "t": "2026-05-16T14:38:10+08:00",
+      "signal": "tip_arc_on_min",
+      "value": 366
+    },
+    {
+      "t": "2026-05-16T14:38:10+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 6.0
+    },
+    {
+      "t": "2026-05-16T14:38:10+08:00",
+      "signal": "alarm_code",
+      "value": "ARC_START_FAIL"
+    },
+    {
+      "t": "2026-05-16T14:38:10+08:00",
+      "signal": "alarm_code",
+      "value": "WIRE_STICK"
+    }
+  ],
+  "technician": {
+    "id": "TECH-28",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC02 起弧重試10.6 先查導電嘴孔正常 送絲順 拆銲絲見表面生鏽脫銅 現場無同批料 通知電源原廠",
+  "technician_report_normalized": "RC02 於起弧時反覆重試，每百次起弧重試次數由 1.5 升至 10.6，並出現起弧失敗與銲絲黏著警報。依第一判斷檢查導電嘴孔口與送絲路徑，孔徑正常、送絲順暢，未見回燒或熔黏。進一步檢查銲絲批次，發現銲絲表面生鏽、銅鍍層剝落，送絲阻力不穩。現場無同批正常銲絲可更換，已停止作業並移交銲接電源原廠技師確認起弧狀況並協助判定銲絲批次品質。",
+  "first_hypothesis": {
+    "failure_mode_id": "contact_tip_wear",
+    "by": "jev",
+    "p": 0.29
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因每百次起弧重試升至 10.6、導電嘴累積起弧時間達 366 分鐘且出現起弧失敗與銲絲黏著警報，符合導電嘴磨耗模式；但孔口量測正常、無回燒，送絲也正常，真正問題是銲絲表面生鏽與銅鍍層剝落。",
+  "discriminating_evidence": [
+    "導電嘴孔口量測正常，端部無橢圓、無銲絲熔黏或回燒變色。",
+    "導電嘴累積起弧時間雖達 366 分鐘，但孔口未見磨耗擴大。",
+    "送絲速度 6.0 m/min 正常，且抽檢銲絲批次發現表面生鏽、銅鍍層剝落。"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "wire_surface_rust",
+    "description": "銲絲批次表面生鏽、銅鍍層剝落，送絲阻力與起弧都不穩（送絲機與導電嘴本身正常）"
+  },
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷以孔徑規量測導電嘴孔口並目視端部狀況。",
+      "result": "孔徑正常，排除"
+    },
+    {
+      "step": "打開送絲機護蓋檢查送絲輪、導管與送絲阻力。",
+      "result": "送絲正常，排除"
+    },
+    {
+      "step": "抽檢銲絲批次表面與鍍層狀況。",
+      "result": "表面生鏽、銅鍍層剝落"
+    },
+    {
+      "step": "因現場無同批正常銲絲，移交銲接電源原廠技師確認起弧狀況並協助判定銲絲批次品質。",
+      "result": "已移交"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-012"
+  ],
+  "downtime_min": 539,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "銲接電源原廠技師",
+  "escalation_note": "現場無同批正常銲絲，已將銲絲表面生鏽、銅鍍層剝落造成起弧不穩的現象與量測紀錄移交銲接電源原廠技師確認起弧狀況並協助判定銲絲批次品質。",
+  "lessons": "起弧重試偏高不一定是導電嘴磨耗，孔口正常時要抽檢銲絲表面與鍍層，批次生鏽也會讓起弧不穩。",
+  "related_failure_mode_ids": [
+    "contact_tip_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

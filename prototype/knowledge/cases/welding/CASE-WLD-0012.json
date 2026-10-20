@@ -1,0 +1,178 @@
+{
+  "case_id": "CASE-WLD-0012",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3011,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2025-11-08T18:00:19+08:00",
+  "closed_at": "2025-11-08T18:37:29+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "rule",
+    "event_type": "arc_start_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 12,
+    "recent_changes": [],
+    "part": "硬碟籠框架",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-120"
+  },
+  "log_signals": [
+    {
+      "t": "2025-11-07T22:00:23+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 1.9
+    },
+    {
+      "t": "2025-11-08T10:00:54+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 4.2
+    },
+    {
+      "t": "2025-11-08T16:31:04+08:00",
+      "signal": "defect_rate_pct",
+      "value": 1.2
+    },
+    {
+      "t": "2025-11-08T16:59:56+08:00",
+      "signal": "alarm_code",
+      "value": "CLEAN_STATION_FAULT"
+    },
+    {
+      "t": "2025-11-08T17:20:27+08:00",
+      "signal": "defect_rate_pct",
+      "value": 2.8
+    },
+    {
+      "t": "2025-11-08T18:00:19+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 14.0
+    },
+    {
+      "t": "2025-11-08T18:00:19+08:00",
+      "signal": "tip_arc_on_min",
+      "value": 364
+    },
+    {
+      "t": "2025-11-08T18:00:19+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 6.0
+    },
+    {
+      "t": "2025-11-08T18:00:19+08:00",
+      "signal": "alarm_code",
+      "value": "ARC_START_FAIL"
+    },
+    {
+      "t": "2025-11-08T18:00:19+08:00",
+      "signal": "defect_rate_pct",
+      "value": 6.6
+    },
+    {
+      "t": "2025-11-08T18:00:19+08:00",
+      "signal": "torch_clean_interval_min",
+      "value": 77
+    },
+    {
+      "t": "2025-11-08T18:00:19+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 17.5
+    }
+  ],
+  "technician": {
+    "id": "TECH-22",
+    "level": "L3"
+  },
+  "technician_report_raw": "RC01 起弧重試飆到14/百 飛濺多 進圍欄看導電嘴孔橢圓+端部銲絲熔黏回燒 累積起弧364min 換contact tip 清座面 噴嘴也積渣 清槍站報錯77min沒清 清完復歸 試銲ok 重試降回1",
+  "technician_report_normalized": "RC01 搖擺班起弧重試次數由 1.9 次/百次一路升到 14 次，飛濺變多、不良率 6.6%，並觸發起弧失敗警報。上鎖後進入圍欄檢查，導電嘴孔口已磨成橢圓、孔徑擴大，端部有銲絲熔黏與回燒變色，累積起弧 364 分鐘超過上限；送絲速度 6.0 m/min 與送絲馬達電流正常，排除送絲異常。另發現清槍站報錯、距上次清槍已 77 分鐘，噴嘴內壁銲渣堆積遮住氣孔，保護氣流量仍在正常範圍。已更換導電嘴並以扭力起子鎖緊、清潔導電嘴座端面，同時清除噴嘴積渣並復歸清槍站。教導模式降速確認 TCP 後，於圍欄外局部排氣運轉下試銲，重試降回 1 次/百次，試片 ok，停機 36 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "contact_tip_wear",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "contact_tip_wear",
+  "contributing_causes": [
+    "nozzle_spatter_buildup"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "電源隔離上鎖後進入圍欄，目視檢查導電嘴端部與孔口",
+      "result": "孔口成橢圓、端部銲絲熔黏回燒"
+    },
+    {
+      "step": "以孔徑規量測孔口並核對維護紀錄的累積起弧時間",
+      "result": "孔徑擴大、累積 364 分鐘超標"
+    },
+    {
+      "step": "檢查送絲輪、送絲導管與送絲馬達電流，排除送絲異常",
+      "result": "送絲正常 排除"
+    },
+    {
+      "step": "核對清槍站狀態與距上次清槍時間，檢查噴嘴內壁",
+      "result": "清槍站報錯、積渣遮住氣孔"
+    },
+    {
+      "step": "以專用扳手拆下舊導電嘴、清潔座端面飛濺後換新並扭力鎖緊，另清除噴嘴積渣並復歸清槍站",
+      "result": "更換完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "教導模式降速確認 TCP，圍欄外局部排氣運轉下試銲",
+      "result": "重試降回 1 次/百次 試片 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-012",
+    "SOP-WLD-014"
+  ],
+  "downtime_min": 36,
+  "parts_replaced": [
+    "contact_tip"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "起弧重試次數連續幾班往上爬，就是導電嘴在討換；別等到每百次 14 次才動手，換嘴時順手確認清槍站有沒有真的清到。",
+  "related_failure_mode_ids": [
+    "contact_tip_wear",
+    "nozzle_spatter_buildup"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-012",
+    "SOP-WLD-014"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

@@ -1,0 +1,122 @@
+{
+  "case_id": "CASE-ASM-0043",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4042,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA01",
+  "opened_at": "2026-03-31T00:47:12+08:00",
+  "closed_at": "2026-03-31T01:34:48+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 65,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2603-47"
+  },
+  "log_signals": [
+    {
+      "t": "2026-03-31T00:27:58+08:00",
+      "signal": "cable_out_of_path",
+      "value": true
+    },
+    {
+      "t": "2026-03-31T00:47:12+08:00",
+      "signal": "test_result",
+      "value": "HIPOT_FAIL"
+    },
+    {
+      "t": "2026-03-31T00:47:12+08:00",
+      "signal": "insulation_mohm",
+      "value": 1.6
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L1"
+  },
+  "technician_report_raw": "MA01 線走出槽 上蓋夾線 HIPOT NG 絕緣1.6 換線束護套+束帶 重走復測ok",
+  "technician_report_normalized": "00:27發現線材離開走線路徑，00:47功能測試HIPOT失敗，絕緣電阻1.6 MΩ。檢查上蓋與支架蓋合處有線材被夾，走線與作業指導書不符，連接器卡扣已到位。依SOP-ASM-041重新走線，避開鈑金銳邊並加裝護線套、更新束帶，更換受壓線束，彎曲半徑達線束外徑3倍。可疑機殼與線束貼不良標籤並隔離；首件確認後復測絕緣與裝置偵測通過，恢復生產，停機47分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "cable_pinch_misroute",
+    "by": "jev",
+    "p": 0.87
+  },
+  "final_root_cause": "cable_pinch_misroute",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "檢查上蓋與支架蓋合處、線束路徑、鈑金銳邊與護線套，並比對走線作業指導書",
+      "result": "發現夾線與走線不符"
+    },
+    {
+      "step": "量測線束外徑與最小彎曲半徑，檢查束帶及連接器卡扣",
+      "result": "彎曲半徑不足 卡扣已到位"
+    },
+    {
+      "step": "將有壓痕與走線錯誤的機殼、線束貼不良標籤，記錄序號與測試結果並移入隔離區",
+      "result": "完成隔離追溯"
+    },
+    {
+      "step": "依SOP-ASM-041重新走線，避開鈑金銳邊並加裝護線套、更新束帶，更換受壓線束",
+      "result": "走線符合指導書"
+    },
+    {
+      "step": "執行首件確認及裝置偵測、絕緣測試",
+      "result": "pass 恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-041"
+  ],
+  "downtime_min": 47,
+  "parts_replaced": [
+    "cable_harness",
+    "edge_grommet",
+    "cable_tie"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "上蓋前先比對走線與量彎曲半徑，夾線才不會等到HIPOT NG才回頭拆。",
+  "related_failure_mode_ids": [
+    "cable_pinch_misroute"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

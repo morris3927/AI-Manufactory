@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4014
+ },
+ "output": {
+  "technician_report_raw": "ST01 H07 H09 NOK_LOW_TORQUE NOK率4.1% bit 47316次 打滑聲 十字槽磨花 刃口圓化 換新起子頭 清夾頭吸嘴 試鎖5顆 ok 隔離追溯 SL-2512-20 首件確認",
+  "technician_report_normalized": "ST01 出現鎖附 NOK 率升至 4.1%，H07、H09 連續低扭力。檢查發現起子頭累計 47,316 次，鎖附有打滑聲，螺絲頭十字槽磨花、起子頭刃口圓化。依 SOP-ASM-013 用舊起子頭於試片試鎖 5 顆確認打滑；LOTO-ASM-TOOL-01 斷電後換新起子頭，清潔夾頭、吸嘴與送釘軌道。新起子頭試鎖 5 顆正常，NOK 未再發生。已隔離可疑工件、追溯螺絲批號 SL-2512-20 並完成首件確認，停機 19 分鐘。",
+  "actions": [
+   {
+    "step": "調閱控制器紀錄與 NOK 分佈，確認 H07、H09 低扭力及起子頭累計 47,316 次",
+    "result": "確認"
+   },
+   {
+    "step": "以放大鏡檢視起子頭刃口與螺絲頭十字槽",
+    "result": "判定磨耗"
+   },
+   {
+    "step": "用舊起子頭於試片試鎖 5 顆並記錄打滑",
+    "result": "重現打滑"
+   },
+   {
+    "step": "更換新起子頭，清潔固定座、夾頭、吸嘴與送釘軌道",
+    "result": "ok"
+   },
+   {
+    "step": "以新起子頭試鎖 5 顆並做首件確認，隔離追溯 NOK 工件與螺絲批號",
+    "result": "恢復正常"
+   }
+  ],
+  "parts_replaced": [
+   "driver_bit"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "NOK 分散在不同孔位又伴隨打滑聲時，先查起子頭刃口與使用次數，比逐孔追查更快。",
+  "escalation_note": null
+ }
+}

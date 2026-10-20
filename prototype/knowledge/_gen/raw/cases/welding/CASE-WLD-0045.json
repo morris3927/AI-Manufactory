@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3044
+ },
+ "output": {
+  "technician_report_raw": "SP01 熔核小+飛濺多 量cap端面變大 修磨27次/259點 換電極帽 修磨至5.0到5.5mm 試片ok",
+  "technician_report_normalized": "SP01 點銲機生產後框支架時連續出現熔核偏小與飛濺增加。停電下量測上下電極帽，端面已擴大且沾鋅變色；控制器顯示修磨 27 次、上次修磨後已銲 259 點，電流 10.4 kA 仍在設定範圍。冷卻水流量、回水溫度、治具間隙與定位銷均正常。更換電極帽並清潔錐面後，修磨端面至 5.0～5.5 mm 並清除銅屑；於局部排氣運轉下、人員退至遮光簾外以報廢試片做剝離試驗，熔核合格、飛濺正常，恢復生產。",
+  "actions": [
+   {
+    "step": "電極分開且未通電下，目視並以游標卡尺量測上下電極帽端面直徑與端面狀況",
+    "result": "端面擴大、沾鋅變色"
+   },
+   {
+    "step": "讀取控制器歷史之 weld_count_since_dress 與 tip_dress_count，核對修磨紀錄",
+    "result": "259 點／27 次，超過修磨次數"
+   },
+   {
+    "step": "檢查電極冷卻水進水流量、回水溫度及治具接合面間隙與定位銷",
+    "result": "正常"
+   },
+   {
+    "step": "更換電極帽，清潔電極座錐面之鋅渣與氧化層，確認錐面貼合",
+    "result": "更換完成"
+   },
+   {
+    "step": "以電極修磨器修磨端面至 5.0～5.5 mm，並清除修磨銅屑",
+    "result": "修磨完成"
+   },
+   {
+    "step": "局部排氣運轉下、人員退至遮光簾外，以報廢試片做剝離試驗並觀察飛濺",
+    "result": "熔核合格、飛濺正常"
+   }
+  ],
+  "parts_replaced": [
+   "electrode_cap"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "修磨次數一超過 25 次就換電極帽，別等熔核變小、飛濺變多才處理。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,153 @@
+{
+  "case_id": "CASE-ASM-0018",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4017,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "heldout",
+  "case_type": "escalated",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-04-27T11:16:32+08:00",
+  "closed_at": "2026-04-27T19:06:28+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "nok_rate_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 44,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-1",
+    "screw_lot": "SL-2604-71"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-26T05:16:39+08:00",
+      "signal": "nok_rate_pct",
+      "value": 0.7
+    },
+    {
+      "t": "2026-04-27T01:16:46+08:00",
+      "signal": "nok_rate_pct",
+      "value": 1.6
+    },
+    {
+      "t": "2026-04-27T11:09:00+08:00",
+      "signal": "nok_hole_id",
+      "value": "H03"
+    },
+    {
+      "t": "2026-04-27T11:09:11+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-04-27T11:13:38+08:00",
+      "signal": "nok_hole_id",
+      "value": "H01"
+    },
+    {
+      "t": "2026-04-27T11:14:03+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-04-27T11:16:32+08:00",
+      "signal": "nok_rate_pct",
+      "value": 4.9
+    },
+    {
+      "t": "2026-04-27T11:16:32+08:00",
+      "signal": "bit_cycle_count",
+      "value": 45717
+    }
+  ],
+  "technician": {
+    "id": "TECH-45",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 H03 H01 低扭力NOK NOK率4.9 bit 45717次 打滑 十字槽花 拆bit刃口圓化 換新bit仍偶發打滑 夾頭疑偏擺 待工具原廠",
+  "technician_report_normalized": "2026-04-27 11:16，ASM-L1-ST01 鎖附站 NOK 率升至 4.9%，H03、H01 出現 NOK_LOW_TORQUE，起子頭累計 45717 次。現場鎖附時有打滑聲，螺絲十字槽磨花；依 SOP-ASM-013 完成上鎖掛牌後拆檢起子頭，刃口已圓化，清潔固定座、吸嘴與送釘軌道，並以試片比較舊、新起子頭，換新後打滑減少但仍偶發，起子夾頭疑似偏擺，需工具原廠技師檢修，現場已隔離可疑工件並追溯，移交原廠處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "bit_wear_camout",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "bit_wear_camout",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP-ASM-013 離線讀取控制器維修紀錄，核對 bit_cycle_count 與 NOK 率趨勢。",
+      "result": "45717 次，NOK 率上升"
+    },
+    {
+      "step": "拆下起子頭，以放大鏡檢視十字槽刃口並檢查螺絲頭磨花狀況。",
+      "result": "刃口圓化，確認磨耗"
+    },
+    {
+      "step": "清潔起子頭固定座、夾頭、吸嘴及送釘軌道與壓鉚螺母孔牙周邊。",
+      "result": "清潔完成"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以試片先用舊起子頭試鎖 5 顆，再換新起子頭試鎖 5 顆比較打滑次數。",
+      "result": "舊 bit 打滑；新 bit 仍偶發打滑，夾頭疑似偏擺"
+    },
+    {
+      "step": "隔離 H03、H01 可疑工件並追溯；因起子夾頭偏擺需原廠檢修，移交工具原廠技師。",
+      "result": "已移交"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-013"
+  ],
+  "downtime_min": 469,
+  "parts_replaced": [
+    "driver_bit"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "工具原廠技師",
+  "escalation_note": "起子頭磨耗已確認，惟換新起子頭後仍偶發打滑、夾頭疑似偏擺，需原廠檢修，現場已移交工具原廠技師處理。",
+  "lessons": "起子頭累計次數超過 4 萬次就應列入更換點檢，不要等 NOK 率衝高才處理。",
+  "related_failure_mode_ids": [
+    "bit_wear_camout"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-013"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

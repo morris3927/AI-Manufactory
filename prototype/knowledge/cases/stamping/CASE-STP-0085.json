@@ -1,0 +1,144 @@
+{
+  "case_id": "CASE-STP-0085",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1084,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-08-20T14:47:18+08:00",
+  "closed_at": "2026-08-20T18:05:33+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "air_low_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 31,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2608-307"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-20T14:35:32+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.5
+    },
+    {
+      "t": "2026-08-20T14:45:02+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.2
+    },
+    {
+      "t": "2026-08-20T14:47:18+08:00",
+      "signal": "air_pressure_bar",
+      "value": 4.7
+    },
+    {
+      "t": "2026-08-20T14:47:18+08:00",
+      "signal": "alarm_code",
+      "value": "AIR_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-09",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 14:47 AIR_LOW 5.5掉到4.7 三點組合洩水+皂液測漏沒漏 別台壓力正常 補回5.5連續跑又掉 平衡缸錶壓跟著抖 缸內嘶嘶聲 疑平衡缸密封內漏 沒備品 叫原廠",
+  "technician_report_normalized": "PR01 於 14:47 發生氣壓低警報，機台氣壓由 5.5 bar 降至 4.7 bar，低於 4.8 bar 下限。依 SOP-STP-055 檢查三點組合、洩水並確認調壓閥無漂移，管路、接頭與電磁閥皂液測漏均無外漏；同一供氣管路其他機台壓力正常，排除氣源不足。補回 5.5 bar 後連續生產，機台端氣壓又逐步下降，平衡缸錶壓隨行程抖動、缸體有內部洩氣聲，研判平衡缸活塞密封件內漏造成耗氣量異常。現場無密封件備品且需拆缸，已移交原廠技師。",
+  "first_hypothesis": {
+    "failure_mode_id": "air_pressure_low",
+    "by": "jev",
+    "p": 0.38
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "氣壓由 5.5 bar 一路降到 4.7 bar 並跳 AIR_LOW，直覺就是氣源壓力不足；但同管路其他機台壓力正常、三點組合與外部測漏都查無洩漏，補回壓力後一連續運轉又掉，平衡缸錶壓還隨行程抖動，問題在機台內部耗氣（平衡缸密封內漏），不是供氣不足。",
+  "discriminating_evidence": [
+    "同一供氣管路其他機台氣壓沒有同步壓降",
+    "三點組合、管路、接頭與電磁閥皂液測漏皆無外漏",
+    "補回 5.5 bar 後連續運轉，機台端氣壓又逐步下降",
+    "平衡缸錶壓隨行程抖動，缸體可聽到內部洩氣聲"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "counterbalance_seal_leak",
+    "description": "平衡缸活塞密封件內漏，機台本身耗氣量異常增加，連續運轉時機台端氣壓下降（外部皂液測漏查不到）"
+  },
+  "actions": [
+    {
+      "step": "讀取機台氣壓表與 HMI 氣壓值，記錄 AIR_LOW 警報時間",
+      "result": "4.7 bar 低於下限 4.8 bar"
+    },
+    {
+      "step": "比對同一供氣管路其他機台的氣壓與停機紀錄",
+      "result": "其他機台正常，未同步壓降"
+    },
+    {
+      "step": "檢查三點組合、洩水並確認調壓閥設定，沿管路接頭與電磁閥皂液測漏",
+      "result": "無外漏，壓力補回 5.5 bar"
+    },
+    {
+      "step": "恢復連續生產，觀察機台端氣壓與平衡缸錶壓",
+      "result": "氣壓又逐步下降，平衡缸錶壓隨行程抖動"
+    },
+    {
+      "step": "停機，在模區外聽診平衡缸並確認備品",
+      "result": "缸內有洩氣聲，無密封件備品"
+    },
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "移交原廠技師拆缸更換平衡缸密封件",
+      "result": "已移交"
+    },
+    {
+      "step": "機台維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-055"
+  ],
+  "downtime_min": 195,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "原廠技師",
+  "escalation_note": "平衡缸活塞密封件疑似內漏，需拆缸更換密封件並做保壓測試，現場無備品與拆缸治具，移交原廠技師處理。",
+  "lessons": "AIR_LOW 時別台都正常、外部又測不到漏，就要懷疑機台內部耗氣，平衡缸錶壓會不會隨行程抖動要看一眼。",
+  "related_failure_mode_ids": [
+    "air_pressure_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-055"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

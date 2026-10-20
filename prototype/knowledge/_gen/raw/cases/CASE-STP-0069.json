@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1068
+ },
+ "output": {
+  "technician_report_raw": "PR03 料帶上浮一直停 回程被脫料板帶起 降30spm也一樣 拆上模護蓋 彈簧縮短+歪 換整組彈簧 寸動試沖ok",
+  "technician_report_normalized": "PR03 於 12:17 起連續出現料帶上浮停機，12:51 再次觸發後停機檢查。現場先將速度降至 30 spm 測試，狀況仍未改善，排除速度因素。拆開上模護蓋檢查脫料板，發現多支脫料板彈簧明顯縮短且歪斜，脫料力不平均，回程時將料帶帶起。更換整組脫料板彈簧並清潔彈簧座後，以寸動試沖確認脫料正常，恢復生產，停機 166 分鐘。",
+  "actions": [
+   {
+    "step": "將沖速降至 30 spm 觀察料帶上浮狀況",
+    "result": "未改善"
+   },
+   {
+    "step": "拆上模護蓋，檢查脫料板動作與彈簧壓縮量",
+    "result": "多支彈簧縮短、歪斜"
+   },
+   {
+    "step": "查閱模具履歷，核對累積沖次",
+    "result": "累積 803,436 沖次"
+   },
+   {
+    "step": "更換整組脫料板彈簧並清潔彈簧座",
+    "result": "完成"
+   },
+   {
+    "step": "以寸動試沖後恢復連續生產",
+    "result": "脫料正常 ok"
+   }
+  ],
+  "parts_replaced": [
+   "stripper_spring_set"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "料帶上浮重複發生時，先降速比對，再拆護蓋量彈簧壓縮量，不要只清模面。",
+  "escalation_note": null
+ }
+}

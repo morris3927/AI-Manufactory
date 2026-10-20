@@ -1,0 +1,159 @@
+{
+  "case_id": "CASE-STP-0042",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1041,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-04-15T04:56:29+08:00",
+  "closed_at": "2026-04-15T06:20:00+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "die_protect_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 49,
+    "recent_changes": [
+      "提速 32→40 spm 04:08"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2604-251"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-15T04:03:49+08:00",
+      "signal": "spm",
+      "value": 32
+    },
+    {
+      "t": "2026-04-15T04:08:46+08:00",
+      "signal": "spm",
+      "value": 40
+    },
+    {
+      "t": "2026-04-15T04:42:56+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    },
+    {
+      "t": "2026-04-15T04:52:51+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    },
+    {
+      "t": "2026-04-15T04:54:06+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02,
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-04-15T04:56:29+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR03 模保間歇跳 先查滑道沒塞 送料0.02 ok 寸動見沖子帶屑 清模+換防跳屑銷 降32 ok",
+  "technician_report_normalized": "04:56 PR03 發生模具保護間歇跳停，04:08 曾將沖速由 32 spm 提高至 40 spm。先依廢料排出堵塞方向檢查，廢料滑道與下模落料孔均無積料，清除後模保仍會間歇觸發；送料長度誤差 0.02 mm，導正銷與偵測器無異常。以寸動觀察沖頭回程，發現沖頭端面吸附廢料、模面可撿到廢料，確認是跳屑造成。清潔模面、沖頭端面與落料孔，並更換防跳屑銷，再降回 32 spm 試沖，連續生產正常，停機 79 分鐘後恢復。",
+  "first_hypothesis": {
+    "failure_mode_id": "scrap_chute_jam",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "slug_pulling",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "模具保護間歇跳停加上落料孔可能積料的印象，依規則先懷疑廢料滑道堵塞；但滑道與落料孔無積料、送料誤差僅 0.02 mm，寸動時才看到沖頭回程帶屑，因此真正原因是跳屑而非排出堵塞。",
+  "discriminating_evidence": [
+    "廢料滑道與下模落料孔無積料，清除後模保仍間歇觸發",
+    "送料長度誤差 0.02 mm，導正銷與偵測器正常，排除送料偏短",
+    "寸動觀察到沖頭端面吸附廢料、模面撿到廢料",
+    "提速 32→40 spm 後異常增加，降回 32 spm 後未再發生"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查廢料滑道與下模落料孔，清除積料",
+      "result": "無堵塞，排除"
+    },
+    {
+      "step": "核對送料長度誤差與導正銷、偵測器",
+      "result": "0.02 mm，正常"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-MECH-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "寸動滑塊觀察沖頭回程與模面",
+      "result": "沖頭帶屑，確認跳屑"
+    },
+    {
+      "step": "清潔模面、沖頭端面與落料孔，更換防跳屑銷",
+      "result": "跳屑排除"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "降回 32 spm 試沖並連續觀察",
+      "result": "ok，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-065",
+    "SOP-STP-031"
+  ],
+  "downtime_min": 79,
+  "parts_replaced": [
+    "anti_slug_pin"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "提速前先看沖頭端面與防跳屑銷，跳屑通常是在速度拉上去後才露出來。",
+  "related_failure_mode_ids": [
+    "slug_pulling",
+    "scrap_chute_jam"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-065",
+    "SOP-STP-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

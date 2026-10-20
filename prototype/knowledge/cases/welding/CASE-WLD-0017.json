@@ -1,0 +1,126 @@
+{
+  "case_id": "CASE-WLD-0017",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3016,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-05-06T19:36:25+08:00",
+  "closed_at": "2026-05-06T19:55:53+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "gas_low_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 11,
+    "recent_changes": [],
+    "part": "硬碟籠框架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-128"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-06T19:36:25+08:00",
+      "signal": "alarm_code",
+      "value": "GAS_LOW"
+    },
+    {
+      "t": "2026-05-06T19:36:25+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 11.5
+    },
+    {
+      "t": "2026-05-06T19:38:03+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 16.5
+    }
+  ],
+  "technician": {
+    "id": "TECH-28",
+    "level": "L1"
+  },
+  "technician_report_raw": "RC01 GAS_LOW 流量11.5 復測16.5 管路無漏 影像正常火花 誤報復線ok",
+  "technician_report_normalized": "RC01 於 19:36 出現 GAS_LOW 警報，當下保護氣流量 11.5 L/main，低於 12 L/min 門檻。依保護氣不足方向檢查氣瓶瓶閥、匯流排壓力與管路接頭，未發現漏氣或折壓；19:38 複測流量回升至 16.5 L/min，噴嘴內壁無銲渣遮擋，清槍紀錄正常。另調閱工位影像，確認 ROI 內火花為正常銲接火花，非異常。綜合判斷為流量瞬間波動與影像誤判，無實際故障，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "shielding_gas_low",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "GAS_LOW 警報當下流量 11.5 L/min 低於 12 L/min 門檻，且事件類型即為氣體低壓警報，因此先懷疑保護氣不足；但 19:38 複測已回升至 16.5 L/min，管路無漏、銲道無氣孔，影像亦確認為 ROI 內正常火花，故非真正保護氣不足。",
+  "discriminating_evidence": [
+    "19:38:03 複測 gas_flow_lpm 為 16.5 L/min，已高於 12 L/min 的 GAS_LOW 門檻。",
+    "19:36:25 的 11.5 L/min 屬短暫波動，後續未持續低流量。",
+    "工位影像顯示 ROI 內火花為正常銲接火花，為影像誤判，非設備異常。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 GAS_LOW 警報檢查氣瓶瓶閥、匯流排壓力表與保護氣管路接頭，確認有無鬆脫或漏氣。",
+      "result": "未發現漏氣"
+    },
+    {
+      "step": "複測保護氣流量並對照警報時數值。",
+      "result": "回升至 16.5 L/min"
+    },
+    {
+      "step": "目視檢查噴嘴內壁與保護氣出口，核對清槍紀錄。",
+      "result": "無積渣阻塞"
+    },
+    {
+      "step": "調閱銲接工位影像，確認 ROI 內火花來源。",
+      "result": "正常銲接火花 誤判"
+    },
+    {
+      "step": "恢復生產前確認：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區，由原上鎖人取下自己的鎖後以正常模式復機",
+      "result": "ok"
+    },
+    {
+      "step": "確認無實際故障後恢復生產。",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-013"
+  ],
+  "downtime_min": 15,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "GAS_LOW 先看複測流量與管路漏氣，別被第一次 11.5 L/min 的瞬時值牽著走。",
+  "related_failure_mode_ids": [
+    "shielding_gas_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-013"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

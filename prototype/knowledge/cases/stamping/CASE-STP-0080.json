@@ -1,0 +1,170 @@
+{
+  "case_id": "CASE-STP-0080",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1079,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-01-09T01:09:56+08:00",
+  "closed_at": "2026-01-09T05:06:49+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "overload_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 13,
+    "recent_changes": [
+      "換料捲 00:57（C-2601-353）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2601-353"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-09T00:55:04+08:00",
+      "signal": "tonnage_peak",
+      "value": 155
+    },
+    {
+      "t": "2026-01-09T00:58:22+08:00",
+      "signal": "coil_change",
+      "value": "C-2601-353",
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-01-09T01:00:24+08:00",
+      "signal": "tonnage_peak",
+      "value": 165
+    },
+    {
+      "t": "2026-01-09T01:00:46+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.1,
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-01-09T01:08:28+08:00",
+      "signal": "tonnage_peak",
+      "value": 164
+    },
+    {
+      "t": "2026-01-09T01:09:18+08:00",
+      "signal": "tonnage_peak",
+      "value": 154
+    },
+    {
+      "t": "2026-01-09T01:09:56+08:00",
+      "signal": "tonnage_peak",
+      "value": 193
+    },
+    {
+      "t": "2026-01-09T01:09:56+08:00",
+      "signal": "alarm_code",
+      "value": "OVERLOAD"
+    },
+    {
+      "t": "2026-01-09T01:09:56+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-10",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 過負荷停機 噸位193 OVERLOAD+misfeed 換C-2601-353後噸位165 模內雙料清掉 料厚偏厚 退料換前捲+清滾輪 試沖ok",
+  "technician_report_normalized": "PR03 於凌晨 01:09 發生過負荷停機，噸位峰值 193 噸，同時出現 MISFEED 警報。調閱噸位歷史，前幾沖約 154～165 噸，屬於單一沖次尖峰；換料捲 C-2601-353 後，峰值由約 155 噸升至 165 噸。檢查模內發現雙料與料頭重疊，量測料帶厚度有偏厚情形。研判主因為模內雙料造成過負荷，次因為新料捲厚度偏差。清除雙料及異物，清潔落料孔與送料滾輪，問題料捲隔離退料並換回前一捲合格料（不以調模高遷就偏厚料），檢查沖頭、導正銷與脫料板無損傷。試沖後噸位恢復正常，05:06 復產。",
+  "first_hypothesis": {
+    "failure_mode_id": "overload_tonnage",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "overload_tonnage",
+  "contributing_causes": [
+    "material_thickness_dev"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌（送料機 FD04 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱噸位監控歷史與警報記錄，比對換料前後峰值",
+      "result": "確認為單一沖次尖峰 193 噸，前幾沖 154～165 噸"
+    },
+    {
+      "step": "檢查滑塊位置與模內狀況，發現雙料及料頭重疊",
+      "result": "異物位置確認"
+    },
+    {
+      "step": "清除模內雙料、料頭與異物，清理下模落料孔及廢料滑道",
+      "result": "模內排除，落料順暢"
+    },
+    {
+      "step": "以分釐卡量測料帶厚度並比對料捲標示與換料記錄",
+      "result": "料厚偏厚，列為次要原因"
+    },
+    {
+      "step": "問題料捲 C-2601-353 標示隔離退料，換回前一捲合格料並清潔送料滾輪",
+      "result": "送料恢復，閉模高度維持模具資料值"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "檢查沖頭、導正銷、脫料板有無崩刃或壓傷，試沖確認",
+      "result": "無損傷，噸位正常，試沖 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-053",
+    "SOP-STP-007"
+  ],
+  "downtime_min": 234,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換料捲後先量料厚並比對噸位基準，噸位突然跳高先查模內雙料，不要只歸因於送料。",
+  "related_failure_mode_ids": [
+    "overload_tonnage",
+    "material_thickness_dev"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-053",
+    "SOP-STP-007"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

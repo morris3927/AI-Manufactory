@@ -1,0 +1,157 @@
+{
+  "case_id": "CASE-STP-0035",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1034,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-09-26T02:36:21+08:00",
+  "closed_at": "2026-09-26T03:42:55+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "strip_edge_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 21,
+    "recent_changes": [
+      "換料捲 01:08（C-2609-184，SECC 0.8 mm → SECC 1.0 mm）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2609-184"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-26T01:08:26+08:00",
+      "signal": "coil_change",
+      "value": "C-2609-184 spec_changed"
+    },
+    {
+      "t": "2026-09-26T02:04:03+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE"
+    },
+    {
+      "t": "2026-09-26T02:24:33+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE"
+    },
+    {
+      "t": "2026-09-26T02:34:31+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.03
+    },
+    {
+      "t": "2026-09-26T02:36:21+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE"
+    }
+  ],
+  "technician": {
+    "id": "TECH-07",
+    "level": "L3"
+  },
+  "technician_report_raw": "FD02 STRIP_EDGE狂跳 先查整平機 壓下量照1.0表 ok 但進模還是偏同一側 送料誤差0.03 放平量側彎超標 換C-2609-184才這樣 料架重新對中+換磨損側導板 試沖ok",
+  "technician_report_normalized": "夜班 FD02 連續觸發 STRIP_EDGE，料帶進模前後一直偏向同一側，後段工站有擦痕。因 01:08 換上的 C-2609-184 料厚由 0.8 mm 改為 1.0 mm，先查整平機壓下量；核對後與設定表相符，送料長度誤差僅 0.03 mm，且偏移只跟著 C-2609-184 出現。將 1 m 料帶放平量測，最大側彎量超過允差，確認是料捲側彎。重新對中料架與料捲中心線，使中心偏差小於 1 mm，並更換磨損側導板；試沖後 STRIP_EDGE 未再觸發，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "straightener_misset",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "coil_camber",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "因 01:08 換上 C-2609-184 時料厚由 SECC 0.8 mm 改為 1.0 mm，之後 STRIP_EDGE 連續發生，很自然先懷疑整平機壓下量沒跟上料厚；但壓下量與 1.0 mm 設定表相符、送料長度誤差僅 0.03 mm，且偏移只跟著 C-2609-184 這捲料出現，放平量測側彎超標才確認不是整平機設定。",
+  "discriminating_evidence": [
+    "STRIP_EDGE 反覆在同一側觸發，料帶越往後段工站偏移越明顯",
+    "送料長度誤差僅 0.03 mm，沒有明顯變化",
+    "異常只跟著 C-2609-184 這捲料出現，換料前後不同",
+    "1 m 料帶放平量測最大側彎量超過允差"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 SECC 1.0 mm 料厚核對整平機輥輪壓下量與設定表",
+      "result": "設定相符，排除"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "低速送料觀察料帶行進、側導板磨痕與後段工站擦痕",
+      "result": "料帶持續偏同一側"
+    },
+    {
+      "step": "取 1 m 料帶放平量測最大側彎量",
+      "result": "超過允差"
+    },
+    {
+      "step": "比對換料捲前後與送料長度誤差",
+      "result": "僅 C-2609-184 發生，誤差 0.03 mm 無明顯變化"
+    },
+    {
+      "step": "重新對中料架與料捲中心線，更換磨損側導板",
+      "result": "中心偏差小於 1 mm"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並連續生產觀察 STRIP_EDGE",
+      "result": "未再觸發，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-063",
+    "SOP-STP-009"
+  ],
+  "downtime_min": 62,
+  "parts_replaced": [
+    "strip_side_guide"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換料厚後若 STRIP_EDGE 只咬同一側，先放平量料捲側彎，再懷疑整平機，才不會白拆一輪。",
+  "related_failure_mode_ids": [
+    "coil_camber",
+    "straightener_misset"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-063",
+    "SOP-STP-009"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

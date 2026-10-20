@@ -1,0 +1,49 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1042
+ },
+ "output": {
+  "technician_report_raw": "PR03 DIE_PROTECT間歇跳 先查廢料滑道沒塞 輸送帶正常 送料誤差0.01 ok 開模看到模面有廢料 衝子端面黏屑 清模面+落料孔 換防跳屑銷 降速試沖 ok",
+  "technician_report_normalized": "PR03 自 09:43 起 DIE_PROTECT 間歇停機，09:11 曾將速度由 32 提至 40 spm。先檢查廢料滑道與輸送帶，未見堵塞；送料長度誤差 0.01 mm 正常。開模檢查發現模面與沖頭端面有上跳廢料，研判為跳屑。以銅棒清除模面、沖頭端面及落料孔廢料，並更換防跳屑銷，降速試沖後未再觸發，恢復生產。",
+  "actions": [
+   {
+    "step": "檢查廢料滑道與輸送帶",
+    "result": "排除"
+   },
+   {
+    "step": "核對送料長度與導正銷",
+    "result": "誤差 0.01 mm 正常"
+   },
+   {
+    "step": "開模目視模面、沖頭端面與落料孔",
+    "result": "確認跳屑"
+   },
+   {
+    "step": "清潔模面、沖頭端面及落料孔廢料",
+    "result": "清潔完成"
+   },
+   {
+    "step": "更換防跳屑銷",
+    "result": "ok"
+   },
+   {
+    "step": "降速試沖並觀察",
+    "result": "未再觸發"
+   }
+  ],
+  "parts_replaced": [
+   "anti_slug_pin"
+  ],
+  "why_first_guess_wrong": "一開始因 DIE_PROTECT 間歇停機，直覺懷疑廢料滑道堵塞；但滑道與輸送帶無堵塞、送料誤差僅 0.01 mm，且模面撿到上跳廢料，才確認為跳屑。",
+  "discriminating_evidence": [
+   "廢料滑道與輸送帶檢查無堵塞，與廢料排出堵塞模式不符",
+   "送料長度誤差僅 0.01 mm，送料步距正常",
+   "DIE_PROTECT 在 09:11 提速 32→40 spm 後於 09:43、09:47、09:52 間歇觸發",
+   "模面與沖頭端面撿到上跳廢料，符合跳屑形態"
+  ],
+  "lessons": "提速後 DIE_PROTECT 間歇跳，先開模看模面有無上跳廢料，不要只查廢料滑道。",
+  "escalation_note": null
+ }
+}

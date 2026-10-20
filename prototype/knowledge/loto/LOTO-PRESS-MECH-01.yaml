@@ -1,0 +1,62 @@
+# 機械沖床上鎖掛牌（LOTO）檢查表 —— 07_RAG知識庫資料.md §4.4
+# data_label: 模擬資料。隔離點代號、壓力門檻皆為模擬值，非任何原廠規格。
+# 本檔不切塊、不進向量庫；kb.loto_for(machine_type) 直接讀取。
+# review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核）；審核紀錄見 reviews/2026-10-21_press_chief.md
+loto_id: LOTO-PRESS-MECH-01
+version: "0.2"
+title: 機械沖床（曲軸式、氣壓離合器／制動器，200 t 級）停機、隔離與上鎖掛牌程序
+machine_type: mechanical_power_press
+applies_to_machines: [STP-L2-PR03]
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+review_status: approved
+reviewed_by: [ai_sim_reviewer_press_chief]
+review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+review_date: "2026-10-21"
+legal_basis:
+  - 設施規則第57條（現行 113-08-01 版；115-06-30 修正版自 116-01-01 施行）：停止運轉及送料、上鎖及設置標示、危害防止計畫、作業許可、殘壓處理 [ref:REG-N0060009-57-p1, REG-N0060009-57-v20240801]
+  - 設施規則第69條：換模、調模使用安全塊、安全插梢或安全開關鎖匙 [ref:REG-N0060009-69]
+  - 設施規則第70條：調模用寸動，無寸動須切斷動力電源 [ref:REG-N0060009-70]
+  - 設施規則第254條：由原掛簽人取下鎖或掛牌後才能復電 [ref:REG-N0060009-254-p1]
+  - 機械設備器具安全標準第35、40、42條：制動器彈簧緊固型構造；離合器／制動器氣壓低於設定時自動停止；平衡器構造 [ref:REG-N0060034-35, REG-N0060034-40, REG-N0060034-42]
+  - OSHA 1910.147(d)、(e)、(f)（作為程序範本） [ref:REG-OSHA-1910.147-d-1, REG-OSHA-1910.147-d-5, REG-OSHA-1910.147-e-3, REG-OSHA-1910.147-f-1]
+permit:
+  required: true
+  approver_role: 現場主管
+  hazard_plan_ref: HPP-STP-01
+  permit_form: PTW-STP（作業許可單，模擬編號）
+energy_sources:
+  - {id: E1, type: electrical, device: 主電源隔離開關 QS1, method: 切斷＋個人鎖＋「禁止送電」標籤}
+  - {id: E2, type: pneumatic, device: 離合器／制動器與平衡缸氣源閥 V1, method: 必須等 E4 安全塊放妥後才關閉＋洩壓＋鎖，確認氣壓表歸零；平衡缸先洩壓會讓滑塊重量全壓在制動器上，制動器磨耗時滑塊可能下滑}
+  - {id: E3, type: kinetic_flywheel, device: 飛輪, method: 主馬達斷電後等待飛輪完全停止（目視＋轉速計 0 rpm，可能需數分鐘），不得以手或工具制動飛輪}
+  - {id: E4, type: gravity_slide, device: 滑塊與上模, method: 滑塊停在上死點（開模位置），飛輪停止後於上下模之間插入安全塊（第69條）；滑塊停在下死點附近無法退回時屬異常（常見於過負荷），保持上鎖並通知設備工程師}
+  - {id: E5, type: feed_line, device: 送料機電源 QS2, method: 連動上鎖，依 LOTO-FEED-01 處理（第57條「停止送料」）}
+  - {id: E6, type: hydraulic, device: 過負荷保護油壓缸, method: 依機台指示洩壓並確認油壓表歸零；過負荷動作後的復歸由設備工程師確認}
+  - {id: E7, type: mechanical_stored, device: 模具內彈簧、氮氣彈簧, method: 不在受壓狀態下拆解}
+  - {id: E8, type: electrical_aux, device: 輔助設備電源（滑塊調整馬達、集中潤滑泵、模具噴油器、廢料輸送帶；獨立迴路者）, method: 個別切斷並上鎖；與 QS1 同迴路者以 E1 涵蓋，但仍要在驗證零能量時逐一按鈕確認}
+  - {id: E9, type: pneumatic_hydraulic, device: 模墊（氣墊／油壓墊，如有）, method: 洩壓至 0 並確認壓力表歸零；未洩壓前頂出板可能上推，不得在其上方作業}
+steps:
+  - {"no": 1, action: 通知操作員與受影響人員, check: 簽名}
+  - {"no": 2, action: 確認危害防止計畫與作業許可已核准, check: 許可單號}
+  - {"no": 3, action: 以正常程序停機（停止按鈕使滑塊停在上死點），停止送料, check: 目視}
+  - {"no": 4, action: 依下列順序隔離：主電源與輔助電源（E1、E8）→ 等飛輪完全停止（E3）→ 放入安全塊（E4）→ 離合器／制動器與平衡缸氣源（E2）→ 過負荷油壓與模墊（E6、E9）→ 送料機連動上鎖（E5）, check: 每項勾選}
+  - {"no": 5, action: 每位作業人員在每個隔離點掛個人鎖與標籤（多人作業用群組鎖箱）, check: 鎖號登記}
+  - {"no": 6, action: 確認飛輪轉速 0、安全塊在上下模之間，再確認氣壓表、油壓表歸零, check: 轉速 0、安全塊位置、壓力讀值}
+  - {"no": 7, action: 驗證零能量：按起動鈕、寸動鈕、滑塊調整鈕與送料機寸動鈕確認都不動作後歸回 OFF, check: 兩人確認}
+release:
+  - 清點工具、恢復護圍與光幕，並確認功能正常
+  - 取出安全塊，確認人員離開危險區
+  - 各人取下自己的鎖（不得代取；第254條由原掛簽人取下）
+  - 原上鎖人不在場時，不得由他人剪鎖或代取；依廠內異常解鎖程序由主管確認該員不在廠內、聯絡本人並記錄後處理（參考 OSHA 1910.147(e)(3) 例外程序）
+  - 通知受影響人員，由原上鎖人送電，寸動與單動試沖確認無異常後再連續生產
+testing_positioning:
+  - 清除危險區內工具與人員；滑塊需要移動時先撤出安全塊
+  - 由原上鎖人取下自己的鎖，現場主管在場；機械沖床寸動需要主馬達運轉、飛輪轉動
+  - 只用寸動模式操作（第70條），完成後立即停機
+  - 重新上鎖、等飛輪完全停止並放回安全塊、驗證零能量後，才能再把手伸入上下模之間
+ai_constraints:
+  - AI 不得宣告「已完成上鎖」或「可以復電」，只能提示下一步並要求人員在 Kanban 勾選
+  - 任何步驟涉及 E1～E9 → J4 needs_loto 必須為 true
+  - 離合器、制動器與停止角度監視器屬安全裝置，AI 只提示停機、通知與交由合格人員依管理辦法第26條檢查
+  - AI 不得建議以手動盤車、撬棒或敲擊方式移動卡在下死點的滑塊

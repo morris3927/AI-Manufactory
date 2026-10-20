@@ -1,0 +1,7 @@
+# transient generator outputs (reproducible via _gen scripts)
+_gen/.cache/
+_gen/__pycache__/
+__pycache__/
+_gen/raw/draft_log.txt
+_gen/raw/case_check_report.json
+_gen/raw/case_check_report_*.json

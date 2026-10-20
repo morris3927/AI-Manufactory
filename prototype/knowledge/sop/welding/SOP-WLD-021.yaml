@@ -1,0 +1,301 @@
+# SOP-WLD-021 銲槍 TCP 偏移之檢查與校正
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-WLD-021
+version: '0.1'
+title: 銲槍 TCP 偏移之檢查與校正
+line: welding
+machine_type:
+- robot_mig_cell
+failure_mode_ids:
+- tcp_drift
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 121
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-WELD-ROBOT-01
+  loto_checklist_ids:
+  - LOTO-WELD-ROBOT-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - gravity
+  - pneumatic
+  - mechanical_stored
+  - shielding_gas
+  - coolant
+  - thermal
+  ppe:
+  - 安全鞋
+  - 防護手套（耐熱）
+  - 護目鏡（遮光）
+  - 防塵口罩（銲接燻煙）
+  - 銲接面罩或遮光面罩（試銲觀察時，設施規則第284條）
+  - 安全帽
+  - 工具繫繩（防掉落）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - 工業用機器人危害預防標準第26、33條
+  - 工業用機器人危害預防標準第27條（教導作業）
+  - OSHA 1910.147(d)
+  - 設施規則第292條（試銲時局部排氣須運轉）
+symptoms:
+- 銲道偏邊
+- 銲不到接縫
+- 撞槍後銲道跑掉
+- 換頸管後位置不準
+- 每一件都偏同一邊
+- 銲道整批偏同一邊，兩個工位、所有治具、所有工件都一樣偏
+- 撞槍之後銲道就跑掉，銲不到接縫
+- 換過銲槍頸管或銲槍本體後，位置就不準了
+- 每一件都偏同一側，換治具、換批工件也一樣
+- 教導器出現 TCP 校驗偏差，但電弧電流與電壓看起來很穩
+prerequisites:
+  tools:
+  - 教導器
+  - TCP 校驗專用治具（校正棒／尖錐）
+  - 游標卡尺或深度規
+  - 內六角扳手組
+  - 扭力扳手
+  - 清潔布與異丙醇
+  parts:
+  - 銲槍頸管
+  - 銲槍本體固定座（絕緣座）
+  - 導電嘴
+  - 定位銷
+  skill_level: 機器人工程師
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼、近 15 分鐘訊號趨勢與不良銲道位置（治具、工位）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-WELD-ROBOT-01（機器人銲接工作站）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量
+  caution: 上鎖前先確認手臂已停穩、銲槍與噴嘴已冷卻，並注意銲絲張力（R10）與冷卻水殘壓，拆卸頸管前先洩除殘壓與張力，避免銲絲彈出或熱水噴濺。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: 進入機器人圍欄前，在啟動開關處掛「禁止觸動」標示並攜帶自己的安全栓（模式鑰匙），圍欄外安排監視人員；銲槍、導電嘴與工件可能仍高溫，等待冷卻或戴耐熱手套（工業用機器人危害預防標準第26、33條）
+  caution: 機器人停在維修姿勢，不得手動鬆開各軸煞車
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060025-33
+  - REG-N0060025-26
+- 'no': 5
+  phase: inspect
+  action: 目視檢查銲槍本體、頸管、槍身固定座與防撞檢知座：有無撞擊凹痕、彎曲、裂紋、錯位，固定螺栓有無鬆動或滑牙，頸管與槍身接合面有無偏擺。
+  criteria: 頸管與槍身無彎曲、裂紋、錯位，固定螺栓無鬆動，接合面貼合無偏擺，判定 TCP 結構正常；若看到撞擊痕跡、頸管歪斜或固定座裂紋，判定為本模式（銲槍 TCP 偏移）。
+  caution: 銲槍與噴嘴仍有餘熱，觸碰前先確認已冷卻；拆卸前先確認銲絲張力（R10）已釋放，避免銲絲彈出。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W4
+  - L20
+- 'no': 6
+  phase: inspect
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-WELD-ROBOT-01 測試／定位程序：清除圍欄內工具；需留在可動範圍內的人員只限持教導器者；由原上鎖人取下自己的鎖，現場主管在場，並在圍欄外安排監視人員（第26條）；只用教導模式降速操作，持教導器者握住致能開關，放手即停（第5、9條）；試銲時人員退到圍欄外並確認局部排氣運轉；完成後立即停機，重新上鎖並驗證零能量，才能再次進入圍欄
+  caution: 通電期間手不得進入機器人可動範圍或電極之間；試銲前確認局部排氣運轉、人員退到圍欄或遮光簾外（設施規則第292條）
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060025-26
+  - REG-N0060009-292
+- 'no': 7
+  phase: inspect
+  action: 查閱維修與事件紀錄：確認 480 分鐘（模擬值）內是否有 collision_event、是否有更換銲槍頸管（torch_neck）的 consumable_change 紀錄、是否有 TCP_CHECK_NG 警報，並核對不良發生時間點。
+  criteria: 有撞槍事件或更換頸管紀錄，且時間點與銲道偏邊開始時間吻合，判定為本模式；若完全無撞槍、無換件紀錄，且不良只集中在單一治具（fixture_id）或同一銲點位置，改懷疑治具定位不良／間隙過大（SOP-WLD-031）。
+  caution: 讀取紀錄需由原上鎖人暫時解除上鎖掛牌並復電，主管須在場；僅讀取資料，不得在教導器上修改任何安全相關參數。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W4
+  - W10
+- 'no': 8
+  phase: inspect
+  action: 比對銲道偏移的分布：分別取兩個工位、每一個治具各 3 件（模擬值）已完成工件，量測銲道中心線相對接縫的偏移方向與偏移量，做成分布表。
+  criteria: 兩個工位、所有治具、所有工件都偏同一方向且偏移量相近（差異在 0.3 mm（模擬值）以內），判定為本模式；若偏移只出現在某一個治具，或伴隨燒穿、未熔合、點銲飛濺集中在同一銲點，改懷疑治具定位不良／間隙過大（SOP-WLD-031）。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 9
+  phase: inspect
+  action: 以 TCP 校驗專用治具執行 TCP 校驗：機器人切教導模式、降速並握住致能開關，將銲絲尖端對準校正棒尖端，讀取各軸 TCP 偏差量並記錄。
+  criteria: TCP 校驗偏差超過 1.0 mm（模擬值），判定為本模式；偏差在 0.5 mm（模擬值）以內，判定 TCP 正常，應改查治具與夾持（SOP-WLD-031）。
+  caution: 移動機器人只能在教導模式降速並握住致能開關；人員不得站在手臂動作範圍內，校正棒須以專用夾持固定，不得以手直接扶持對點。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W4
+  - L20
+  - REG-N0060025-27
+- 'no': 10
+  phase: inspect
+  action: 調閱最近 10 件（模擬值）的電弧電流與電壓波形紀錄，確認銲接過程電流電壓是否穩定，並檢查接地夾與回路電纜接點有無鬆動、氧化。
+  criteria: 電流與電壓波動在 ±5%（模擬值）以內且接地夾鎖附正常，支持本模式（TCP 偏移）判定；若電流電壓明顯不穩或接地夾鬆動、氧化，改懷疑送絲不順（SOP-WLD-011）或接地不良（SOP-WLD-015）。
+  caution: 量測與讀取波形需復電，由原上鎖人暫時解除上鎖掛牌、主管在場；量測時不得碰觸銲槍導電部位。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W6
+  - REG-OSHA-1910.254-d-9
+- 'no': 11
+  phase: repair
+  action: 需要移動機器人（修正教導點、校正 TCP、移到換件姿勢）時，一律在教導模式降速操作，持教導器者握住致能開關、放手即停，圍欄外有監視人員；不得修改機器人的安全相關參數（工業用機器人危害預防標準第26、27條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - REG-N0060025-27
+  - REG-N0060025-26
+- 'no': 12
+  phase: repair
+  action: 更換銲槍頸管與槍身固定座（絕緣座）：清潔接合面與錐面，去除飛濺與油污，裝上新頸管，以扭力扳手依 25 N·m（模擬值）均勻鎖附固定螺栓，確認頸管無偏擺、無鬆動。
+  caution: 鎖附時依對角順序分次加扭力，不可一次鎖到底；不得以敲擊方式校正頸管角度，避免槍身變形。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W4
+- 'no': 13
+  phase: repair
+  action: 檢查防撞檢知座與槍身固定座的復位狀態：確認檢知座已完全復歸定位、無殘留位移，接頭與訊號線無拉扯或破皮；若檢知座已變形則更換，並確認銲槍纜線、回路電纜走向無干涉。
+  caution: 不得調整碰撞偵測靈敏度或任何安全相關參數，也不得手動鬆開機器人各軸煞車；發現檢知座無法復歸時停止作業並通知機器人工程師。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W4
+  - L20
+- 'no': 14
+  phase: repair
+  action: 重新校正並寫入 TCP：以校正棒在教導模式下逐點對位，更新工具座標資料，完成後再執行一次 TCP 校驗確認偏差量，並記錄校正前後數值。
+  caution: 移動機器人只能在教導模式降速並握住致能開關；TCP 資料寫入須由機器人工程師執行或覆核，不得連帶修改速度限制、安全區域等安全相關參數。
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - W4
+  - L20
+  - REG-N0060025-27
+- 'no': 15
+  phase: verify
+  action: 在教導模式下低速空跑，將銲絲尖端分別對準校正棒與試片上的基準十字，確認 TCP 重現性。
+  criteria: 連續 3 次（模擬值）對點偏差均在 0.5 mm（模擬值）以內，且方向一致無漂移，判定校正有效。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W4
+  - L20
+- 'no': 16
+  phase: verify
+  action: 試銲驗證：確認局部排氣運轉正常、人員退到圍欄或遮光簾外後，於兩個工位各試銲 3 件（模擬值），量測銲道中心線相對接縫的偏移量。
+  criteria: 兩個工位試銲件的銲道偏移量均在 ±0.5 mm（模擬值）以內，無偏邊、無未熔合、無燒穿，判定修復完成。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W6
+  - REG-OSHA-1910.252-c-3
+  - PUB-OSHA-FS-3647-reducing-exposure
+- 'no': 17
+  phase: verify
+  action: 首件確認：由品保依首件檢查表確認銲道位置、外觀與熔深，並連續量測 5 件（模擬值）建立偏移趨勢紀錄，兩個工位都要取樣。（現場經驗（模擬））
+  criteria: 首件檢查全部項目合格，且連續 5 件（模擬值）偏移量變異在 0.3 mm（模擬值）以內，無往同一方向累積的趨勢，方可交回生產。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - none
+- 'no': 18
+  phase: restore
+  action: 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+  - REG-N0060025-32
+- 'no': 19
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 在教導模式下低速空跑，將銲絲尖端分別對準校正棒與試片上的基準十字，確認 TCP 重現性；判定：連續 3 次（模擬值）對點偏差均在 0.5 mm（模擬值）以內，且方向一致無漂移，判定校正有效。
+- 試銲驗證：確認局部排氣運轉正常、人員退到圍欄或遮光簾外後，於兩個工位各試銲 3 件（模擬值），量測銲道中心線相對接縫的偏移量；判定：兩個工位試銲件的銲道偏移量均在 ±0.5 mm（模擬值）以內，無偏邊、無未熔合、無燒穿，判定修復完成。
+- 首件確認：由品保依首件檢查表確認銲道位置、外觀與熔深，並連續量測 5 件（模擬值）建立偏移趨勢紀錄，兩個工位都要取樣；判定：首件檢查全部項目合格，且連續 5 件（模擬值）偏移量變異在 0.3 mm（模擬值）以內，無往同一方向累積的趨勢，方可交回生產。
+restore:
+- 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- TCP 重新校正後偏差仍超過 1.0 mm（模擬值），或短期內重複發生撞槍 → 通知機器人工程師檢查第六軸背隙與防撞檢知座。
+- 發現槍身固定座裂紋、頸管反覆鬆動或機器人手臂有異音 → 通知設備工程師。
+- 偏移只集中在單一治具，或實測接合間隙超過 0.5 mm（模擬值）、定位銷磨耗、夾爪鬆動 → 改走 SOP-WLD-031。
+lessons: 撞槍或換頸管後一定要重做 TCP 校驗並留下校正前後數值，不要只憑肉眼看著「差不多」就開線，否則整批工件會一起偏同一邊。
+references:
+- id: W4
+  title: OSHA Technical Manual Section IV Chapter 4 Industrial Robot Systems and Industrial Robot System Safety
+  url: https://www.osha.gov/otm/section-4-safety-hazards/chapter-4
+  license: PD
+  use: reference
+- id: L20
+  title: 工業用機器人危害預防標準
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060025
+  license: TW-law
+  use: quote
+- id: W10
+  title: 第三方整理之機器人警報類別（伺服、編碼器、過載、過熱、超行程）
+  url: https://www.robots.com/articles/understanding-error-codes-in-fanuc-robots
+  license: ©
+  use: paraphrase
+- id: W6
+  title: 'Miller: Tips for Troubleshooting Common MIG Weld Defects'
+  url: https://www.millerwelds.com/resources/article-library/troubleshooting-weld-defects
+  license: ©
+  use: paraphrase
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-292、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060025-26、REG-N0060025-27、REG-N0060025-32、REG-N0060025-33、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1、REG-OSHA-1910.252-c-3、REG-OSHA-1910.254-d-9
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+- id: public/guidance_weld_asm.jsonl
+  title: 公開文件 chunk：PUB-OSHA-FS-3647-reducing-exposure
+  url: https://www.osha.gov/ ; https://standards.nasa.gov/ ; https://www.hse.gov.uk/
+  license: PD / OGL
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

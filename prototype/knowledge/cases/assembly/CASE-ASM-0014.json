@@ -1,0 +1,149 @@
+{
+  "case_id": "CASE-ASM-0014",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4013,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-03-12T21:59:49+08:00",
+  "closed_at": "2026-03-12T22:29:24+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "rule",
+    "event_type": "nok_rate_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 65,
+    "recent_changes": [],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-02-2",
+    "screw_lot": "SL-2603-25"
+  },
+  "log_signals": [
+    {
+      "t": "2026-03-11T16:00:25+08:00",
+      "signal": "nok_rate_pct",
+      "value": 0.8
+    },
+    {
+      "t": "2026-03-12T12:00:24+08:00",
+      "signal": "nok_rate_pct",
+      "value": 1.8
+    },
+    {
+      "t": "2026-03-12T21:51:49+08:00",
+      "signal": "nok_hole_id",
+      "value": "H07"
+    },
+    {
+      "t": "2026-03-12T21:52:08+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-03-12T21:57:16+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-03-12T21:57:24+08:00",
+      "signal": "nok_hole_id",
+      "value": "H12"
+    },
+    {
+      "t": "2026-03-12T21:59:49+08:00",
+      "signal": "nok_rate_pct",
+      "value": 4.6
+    },
+    {
+      "t": "2026-03-12T21:59:49+08:00",
+      "signal": "bit_cycle_count",
+      "value": 42702
+    }
+  ],
+  "technician": {
+    "id": "TECH-42",
+    "level": "L3"
+  },
+  "technician_report_raw": "ST02 H07/H12 LOW_TORQUE跳 打滑聲 bit 42702次 十字槽花 起子投刃口圓 LOTO後拆bit清夾頭換新 舊bit試5打滑2 新bit試5 ok 孔牙鋅渣清 首件ok",
+  "technician_report_normalized": "ST02 鎖附站自 3 月 12 日晚間起 NOK 率由 0.8% 升至 4.6%，H07、H12 出現 NOK_LOW_TORQUE，鎖附時有起子頭打滑聲，螺絲十字槽磨花。依 SOP-ASM-013 於 LOTO 後拆下起子頭檢查，刃口已圓化，控制器累計 42,702 次；舊起子頭試鎖 5 顆有 2 顆打滑，換新起子頭並清潔夾頭、吸嘴與送釘軌道後，試鎖 5 顆皆正常。孔牙鋅渣已清除，可疑螺絲與批號 SL-2603-25 已隔離追溯，並完成首件確認，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "bit_wear_camout",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "bit_wear_camout",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "檢查起子頭刃口與螺絲十字槽磨花狀況",
+      "result": "刃口圓化、槽磨花"
+    },
+    {
+      "step": "讀取控制器累計次數與 NOK 孔位分佈",
+      "result": "42,702 次、H07/H12"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以舊起子頭在報廢件試鎖 5 顆",
+      "result": "2 顆打滑"
+    },
+    {
+      "step": "更換起子頭並清潔夾頭、吸嘴後試鎖 5 顆",
+      "result": "5 顆 ok"
+    },
+    {
+      "step": "清潔送釘軌道與孔牙鋅渣，隔離可疑螺絲、追溯批號並首件確認",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-013"
+  ],
+  "downtime_min": 25,
+  "parts_replaced": [
+    "driver_bit"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "看到 NOK 分散在各孔又有打滑聲，先查起子頭累計次數與刃口，比只清孔牙更快抓到。",
+  "related_failure_mode_ids": [
+    "bit_wear_camout"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-013"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

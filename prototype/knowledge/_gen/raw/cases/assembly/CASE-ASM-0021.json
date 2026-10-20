@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4020
+ },
+ "output": {
+  "technician_report_raw": "ST02 送釘逾時 pick fail13 補料後一直卡 軌道出口歪螺絲卡住 清卡釘+屑 手送順 試片ok 首件ok",
+  "technician_report_normalized": "ASM-L1-ST02 於 21：18 送釘逾時，起子端無螺絲可鎖（NOK_NO_SCREW），停機前吸取失敗累計 13 次；20：37 曾補充螺絲 SL-2510-59。依 LOTO-ASM-TOOL-01 隔離後，目視送釘軌道、分離器、吸嘴與送料盤出口，發現軌道出口卡著歪斜螺絲及金屬屑。以塑膠鑷子清除卡釘與異物，抽檢卡釘和送料盤螺絲並比對 BOM，規格相符、無混料；手動送釘順暢，報廢件試鎖正常，完成首件確認，21：53 恢復生產，停機 30 分鐘。",
+  "actions": [
+   {
+    "step": "查控制器事件紀錄與補料紀錄，確認 FEEDER_TIMEOUT、吸取失敗 13 次及 NOK_NO_SCREW",
+    "result": "確認送釘異常"
+   },
+   {
+    "step": "目視送釘軌道、分離器、吸嘴與送料盤出口",
+    "result": "軌道出口卡歪斜螺絲及金屬屑"
+   },
+   {
+    "step": "以塑膠鑷子清除卡釘、異物與金屬屑",
+    "result": "排除"
+   },
+   {
+    "step": "抽檢卡釘與送料盤螺絲，量測長度、牙距、頭型並比對工單 BOM",
+    "result": "規格相符無混料"
+   },
+   {
+    "step": "手動檢查送釘路徑並以報廢件試鎖",
+    "result": "送釘順暢試鎖ok"
+   },
+   {
+    "step": "隔離停機前後可疑工件、標示螺絲批號並做首件確認",
+    "result": "首件ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "補料後先看吸取失敗次數與軌道出口，卡釘常是歪螺絲先露餡。",
+  "escalation_note": null
+ }
+}

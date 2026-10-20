@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3046
+ },
+ "output": {
+  "technician_report_raw": "SP02 點銲熔核小 undersize nugget×2 weld_count 390 超過350 cap端面磨耗 電流10.5kA正常 現場無法更換 移交設備工程師",
+  "technician_report_normalized": "SP02 點銲機於生產電源支架時出現兩點熔核偏小（undersize nugget×2）。檢查發現 weld_count_since_dress 為 390、tip_dress_count 為 20，已超過修磨週期；點銲電流 10.5 kA 在設定範圍內。目視上下電極帽端面有磨耗與沾鋅變色，判定為電極帽磨耗。現場無法完成電極帽更換與後續剝離試驗確認，已移交設備工程師處理。",
+  "actions": [
+   {
+    "step": "目視檢查上下電極帽端面，發現端面磨耗、沾鋅變色",
+    "result": "確認磨耗"
+   },
+   {
+    "step": "讀取 weld_count_since_dress 390 與 tip_dress_count 20，核對已超過修磨週期",
+    "result": "確認超標"
+   },
+   {
+    "step": "量測點銲電流 10.5 kA，確認在設定範圍內",
+    "result": "排除電流異常"
+   },
+   {
+    "step": "檢查現場電極帽備品與更換條件",
+    "result": "無法完成"
+   },
+   {
+    "step": "移交設備工程師更換電極帽並安排剝離試驗確認",
+    "result": "已移交"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "點銲熔核變小先查 weld_count 與電極帽端面，這次 390 點已超過修磨週期，先換帽再試片可少走冤枉路。",
+  "escalation_note": "電極帽磨耗已確認，現場無法完成更換與剝離試驗確認，移交設備工程師處理。"
+ }
+}

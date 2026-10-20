@@ -1,0 +1,48 @@
+# 資料來源與授權清冊（07_RAG知識庫資料.md §7.3 第 3 點）
+# 編號沿用 07 號文件 §1、§2 的來源編號；failure_modes 的 sources 與 SOP 步驟的 ref 只能引用這裡的編號，
+# 或 public/regulations.jsonl 的 chunk_id。
+# use:
+#   ingest     —— 公有領域／法令／開放授權，可整段切塊入向量庫（public/ 下有切好的 chunk）
+#   paraphrase —— 有著作權（©），只能讀後以自己的話改寫成模擬 SOP，不重製原文、不入向量庫
+#   reference  —— 只引用名稱或欄位設計，不取內容
+# accessed: 本知識庫建置時的取用日期
+accessed: "2026-10-20"
+sources:
+  L1:  {title: 職業安全衛生設施規則, url: "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060009", license: TW-law, use: ingest}
+  L2:  {title: 職業安全衛生管理辦法 第26條（衝剪機械定期檢查）, url: "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0060027&flno=26", license: TW-law, use: ingest}
+  L3:  {title: 職業安全衛生管理辦法 第59條（衝剪機械作業前檢點）, url: "https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0060027&flno=59", license: TW-law, use: ingest}
+  L4:  {title: 機械設備器具安全標準, url: "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060034", license: TW-law, use: ingest}
+  L5:  {title: 職安署南區中心《衝剪機械危害預防》單張, url: "https://esh.ncut.edu.tw/var/file/7/1007/img/720104393.pdf", license: "TW-OGDL（🔬 轉載檔）", use: reference}
+  L7:  {title: "OSHA 29 CFR 1910.147 The control of hazardous energy (lockout/tagout)", url: "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-J/section-1910.147", license: PD, use: ingest}
+  L8:  {title: "OSHA 1910.147 Appendix A — Typical minimal lockout procedures", url: "https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.147AppA", license: PD, use: reference}
+  L10: {title: "OSHA grant material: LOTO Procedures Example (Harwood SH-27664-SH5)", url: "https://www.osha.gov/sites/default/files/2018-12/fy15_sh-27664-sh5_Toolbox_LOTO_Procedures_Example.pdf", license: "©-NC", use: reference}
+  L11: {title: "NIOSH 2011-156 Using Lockout and Tagout Procedures", url: "https://www.cdc.gov/niosh/publications/numbered/2011-156.html", license: "PD（🔬）", use: reference, note: "2026-10-20 程式抓取被 cdc.gov 擋下（HTTP 403，Akamai），未入庫，只作參考"}
+  L12: {title: "HSE INDG316 Procedures for daily inspection and testing of mechanical power presses and press brakes", url: "https://www.hse.gov.uk/pubns/indg316.pdf", license: "OGL（文件內載：© Crown copyright, may be freely reproduced, except for advertising, endorsement or commercial purposes）", use: ingest, note: "2026-10-20 以 pdftotext 逐字抽出重點段落 → public/guidance_weld_asm.jsonl；須標示 Please acknowledge the source as HSE"}
+  L13: {title: "HSE HSG236 Power presses: Maintenance and thorough examination", url: "https://www.hse.gov.uk/pubns/books/hsg236.htm", license: "OGL（🔬）", use: reference}
+  S1:  {title: "OSHA Machine Guarding eTool: Mechanical Power Presses", url: "https://www.osha.gov/etools/machine-guarding/presses/mechanical-power", license: PD, use: reference}
+  S3:  {title: "OSHA 29 CFR 1910.217 Mechanical power presses", url: "https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.217", license: PD, use: reference}
+  S4:  {title: "Durant Tool: Progressive die misfeed troubleshooting", url: "https://www.durantco.com/blog/progressive-die-misfeed-troubleshooting-feed-accuracy/", license: "©", use: paraphrase}
+  S5:  {title: "The Fabricator: Die Basics 101 — Resolving slug pulling problems", url: "https://www.thefabricator.com/article/stamping/die-basics-101-resolving-slug-pulling-problems", license: "©", use: paraphrase}
+  S6:  {title: "The Fabricator: How can I avoid die crashes?", url: "https://www.thefabricator.com/thefabricator/article/bending/ask-the-stamping-expert-how-can-i-avoid-die-crashes-", license: "©", use: paraphrase}
+  S7:  {title: "MetalForming Magazine 2022-11 p.13（十大模具問題）", url: "https://www.metalformingmagazine.com/public/Images/2022/11/digital/files/basic-html/page13.html", license: "©", use: paraphrase}
+  S8:  {title: "MetalForming Magazine 2013-12 p.20（導正釋放時機）", url: "https://www.metalformingmagazine.com/public/images/2013/12/digital/files/basic-html/page20.html", license: "©", use: paraphrase}
+  D1:  {title: MaintNorm（工單寫法風格參考）, url: "https://github.com/nlp-tlp/maintnorm", license: MIT, use: reference}
+  D2:  {title: MaintIE（案例欄位分類參考）, url: "https://github.com/nlp-tlp/maintie", license: MIT, use: reference}
+  D7:  {title: AI4I 2020（規則式合成前例）, url: "https://archive.ics.uci.edu/dataset/601/ai4i+2020+predictive+maintenance+dataset", license: CC-BY-4.0, use: reference}
+  D8:  {title: Azure Predictive Maintenance（五表結構參考）, url: "https://github.com/Azure-Samples/MachineLearningSamples-PredictiveMaintenance", license: MIT, use: reference}
+  # ---- 銲接線、組裝線（2026-10-20 新增）
+  L20: {title: 工業用機器人危害預防標準, url: "https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060025", license: TW-law, use: ingest}
+  L21: {title: "OSHA 29 CFR 1910.252 / 1910.254 / 1910.255 Welding, cutting and brazing（General requirements; Arc welding; Resistance welding）", url: "https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-Q", license: PD, use: ingest}
+  W1:  {title: "OSHA Fact Sheet FS-3647 Controlling Hazardous Fume and Gases during Welding (2013)", url: "https://www.osha.gov/sites/default/files/publications/OSHA_FS-3647_Welding.pdf", license: PD, use: ingest}
+  W2:  {title: "OSHA Welding, Cutting, and Brazing topic page", url: "https://www.osha.gov/welding-cutting-brazing", license: PD, use: reference}
+  W4:  {title: "OSHA Technical Manual Section IV Chapter 4 Industrial Robot Systems and Industrial Robot System Safety", url: "https://www.osha.gov/otm/section-4-safety-hazards/chapter-4", license: PD, use: reference}
+  W5:  {title: "NAVEDTRA 14250 Steelworker Volume 1 (Gas Shielded-Arc Welding)", url: "https://everyspec.com/USN/NAVEDTRA/NAVEDTRA_14250_VOLUME-1_NOV1996_18385/", license: "PD（🔬 發行聲明未確認）", use: reference}
+  W6:  {title: "Miller: Tips for Troubleshooting Common MIG Weld Defects", url: "https://www.millerwelds.com/resources/article-library/troubleshooting-weld-defects", license: "©", use: paraphrase}
+  W8:  {title: "microJoining Solutions: Resistance Welding – Trouble Shooting Guide", url: "https://microjoining.com/wp-content/uploads/2025/12/microTips-%E2%80%93-Resistance-Welding-%E2%80%93-Troubleshooting.pdf", license: "©", use: paraphrase}
+  W9:  {title: "AMADA WELD TECH: Welding problems and solutions start with these 4 things", url: "https://amadaweldtech.com/blog/welding-problems-and-solutions-start-with-these-4-things/", license: "©", use: paraphrase}
+  W10: {title: "第三方整理之機器人警報類別（伺服、編碼器、過載、過熱、超行程）", url: "https://www.robots.com/articles/understanding-error-codes-in-fanuc-robots", license: "©", use: paraphrase, note: 只取「類別」概念，不使用任何真實警報碼}
+  A1:  {title: "NASA RP-1228 Fastener Design Manual (1990)", url: "https://ntrs.nasa.gov/citations/19900009424", license: PD, use: reference}
+  A2:  {title: "NASA-STD-8739.4A Change 4 Workmanship Standard for Crimping, Interconnecting Cables, Harnesses, and Wiring", url: "https://standards.nasa.gov/standard/nasa/nasa-std-87394", license: PD, use: ingest}
+  A3:  {title: "NASA Workmanship: Cable and Harness General Requirements", url: "https://workmanship.nasa.gov/lib/insp/2%20books/links/sections/401%20General%20Requirements.html", license: "PD（🔬）", use: reference}
+  A4:  {title: "Atlas Copco: Pocket Guide to Tightening Technique", url: "https://www.atlascopco.com/zh-tw/itba/expert-hub/pocket-guide/tightening-technique", license: "©", use: paraphrase}
+  A5:  {title: "Atlas Copco: electric screwdriver troubleshooting (online manual)", url: "https://picontent.atlascopco.com/cont/external/dir/41/15384642827_A2390001_html5_external/en-US/14503108875.html", license: "©", use: paraphrase}

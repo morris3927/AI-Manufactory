@@ -1,0 +1,148 @@
+{
+  "case_id": "CASE-STP-0052",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1051,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-09-08T10:59:02+08:00",
+  "closed_at": "2026-09-08T12:13:16+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "die_lube_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 15,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2609-201"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-08T10:19:21+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 6
+    },
+    {
+      "t": "2026-09-08T10:44:29+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 2.7
+    },
+    {
+      "t": "2026-09-08T10:57:10+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 1.4
+    },
+    {
+      "t": "2026-09-08T10:59:02+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_LUBE_LOW"
+    },
+    {
+      "t": "2026-09-08T10:59:02+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 47152
+    }
+  ],
+  "technician": {
+    "id": "TECH-10",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 模具潤滑警報 噴油脈衝6→1.4 油箱液位夠 濾網塞 噴嘴乾掉堵住 清油路+換濾網噴嘴 試沖脈衝回6 ok 停70分",
+  "technician_report_normalized": "PR03 於 10:59 發出模具潤滑警報，模具潤滑脈衝由每分鐘 6 次逐步降至 1.4 次。檢查油箱液位正常，但吸入濾網有沉澱堵塞，噴油嘴噴口乾涸黏膠、油霧不足；油管無折扁滲漏。清洗油路並更換濾網與噴油嘴後，無料空轉確認霧化正常，脈衝回復至每分鐘 6 次，試沖成形面無拉痕，恢復生產，停機 70 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "die_lubrication_insufficient",
+    "by": "jev",
+    "p": 0.91
+  },
+  "final_root_cause": "die_lubrication_insufficient",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查閱模具潤滑脈衝趨勢與油箱液位",
+      "result": "脈衝 6→1.4、液位正常"
+    },
+    {
+      "step": "拆檢吸入濾網與油管",
+      "result": "濾網堵塞、油管無折扁"
+    },
+    {
+      "step": "拆下噴油嘴檢查噴口",
+      "result": "噴口乾涸堵塞、無油霧"
+    },
+    {
+      "step": "清洗油路並更換濾網、噴油嘴",
+      "result": "更換完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-MECH-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "無料空轉確認噴油霧化與脈衝",
+      "result": "脈衝回復 6 次/分"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並檢查成形面",
+      "result": "無拉痕、ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-035"
+  ],
+  "downtime_min": 70,
+  "parts_replaced": [
+    "die_lube_filter",
+    "die_lube_nozzle"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "模具潤滑脈衝掉到一半以下，先查濾網與噴嘴，只補油通常撐不久。",
+  "related_failure_mode_ids": [
+    "die_lubrication_insufficient"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-035"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

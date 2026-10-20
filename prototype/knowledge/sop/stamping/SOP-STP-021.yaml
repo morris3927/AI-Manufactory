@@ -1,0 +1,283 @@
+# SOP-STP-021 模具定位偏移之檢查與修復
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核）
+sop_id: SOP-STP-021
+version: '0.1'
+title: 模具定位偏移之檢查與修復
+line: stamping
+machine_type:
+- servo_press
+- mechanical_power_press
+failure_mode_ids:
+- die_misalignment
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+review_status: approved
+reviewed_by:
+- ai_sim_reviewer_press_chief
+review_note: AI 角色扮演審核（模擬資深維修課長），非真人專家審核
+review_date: '2026-10-21'
+review_doc: reviews/2026-10-21_press_chief.md
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-v1
+  seed: 21
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-PRESS-SERVO-01
+  loto_checklist_ids:
+  - LOTO-PRESS-SERVO-01
+  - LOTO-PRESS-MECH-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - pneumatic
+  - hydraulic
+  - gravity_slide
+  - feed_line
+  - mechanical_stored
+  - electrical_aux
+  - pneumatic_hydraulic
+  - kinetic_flywheel
+  ppe:
+  - 安全鞋
+  - 防割手套
+  - 護目鏡
+  - 耳塞（設施規則第300條）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第69條
+  - 設施規則第70條
+  - 設施規則第254條
+  - OSHA 1910.147(d)
+symptoms:
+- 單側毛邊
+- 異音
+- 換模後卡料
+- 導正孔單側壓痕
+- 左右沖壓力不平衡
+- 換模後第一批就出現單側毛邊，另一側正常。
+- 導正孔只有單邊有壓痕，料帶會卡在導正銷。
+- 沖起來有異音，左右噸位表差很多。
+- 換模後一直卡料，而且都卡同一邊。
+- 閉模高度看起來跟模具資料差不多，但製品就是偏一邊。
+prerequisites:
+  tools:
+  - 厚薄規
+  - 扭力扳手
+  - 百分表
+  - 鋼尺
+  - 定位銷拔取器
+  - 無絨布
+  parts:
+  - 模具定位銷
+  - 定位銷襯套
+  - 固定螺栓
+  - 定位塊（依模具圖面）
+  skill_level: 模具技師
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼與近 15 分鐘訊號趨勢（之後判讀趨勢用 MES／Sentinel 已記錄的資料，不需要為了看紀錄對機台送電）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-PRESS-SERVO-01（伺服沖床） 或 LOTO-PRESS-MECH-01（機械沖床）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量；送料機依各檢查表的送料線隔離點連動上鎖（兩台都要上鎖，不是擇一）
+  caution: 送料機與沖床須同時上鎖，並確認已於上下模之間放入安全塊後，才可觸碰模具定位銷與襯套。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: 手要進入上下模之間前：滑塊停在上死點（開模位置），於上下模之間放入安全塊（設施規則第69條）；滑塊停在下死點附近、無法退回時不得進入模區，保持上鎖並通知設備工程師
+  caution: 安全塊放置位置與規格依模具資料；未放安全塊不得作業。平衡缸要等安全塊放妥後才洩壓；制動器有疑慮（停止角度變大、寸動會滑行）時，放安全塊前先通知設備工程師
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-69
+  - REG-OSHA-1910.147-d-5
+- 'no': 5
+  phase: inspect
+  action: 在能源隔離狀態下，檢視換模後首批料帶與製品，標記單側毛邊、導正孔壓痕與卡料位置，並確認是否集中在同一側。
+  criteria: 若同一側連續出現單側毛邊高度超過 0.08 mm（模擬值）、另一側正常，且導正孔壓痕僅在單側，判定為本模式；若毛邊高度隨沖次逐步增加、左右沖壓力平衡正常且與換模無關，改懷疑 punch_edge_wear（SOP-STP-033）。
+  caution: 料帶邊緣可能割手，搬運時須戴防割手套。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+  - S7
+- 'no': 6
+  phase: inspect
+  action: 核對模具資料卡之閉模高度與滑塊閉模高度刻度或手動量測值，並記錄左右沖壓力歷史值。
+  criteria: 若閉模高度差值在 0.05 mm（模擬值）以內，但左右沖壓力差超過 10%（模擬值），支持本模式；若閉模高度差值超過 0.2 mm（模擬值），或首件成形高度／壓印深度不足或過深，改懷疑 shut_height_misset（SOP-STP-023）。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+- 'no': 7
+  phase: inspect
+  action: 目視與手動檢查模具定位銷、定位銷襯套、定位面有無單側磨亮、鬆動、異物或壓痕；以厚薄規量測定位銷與襯套單邊間隙。
+  criteria: 若定位銷單側磨亮、襯套單邊間隙超過 0.08 mm（模擬值）或定位面有壓痕，判定為本模式；若定位銷與襯套正常，但料帶持續往同一側偏、越往模具後段偏移越大且送料長度誤差沒有明顯變化，改懷疑 coil_camber（SOP-STP-009）。
+  caution: 模具內彈簧與氮氣彈簧可能仍有預壓，不可直接敲擊或拆卸。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+- 'no': 8
+  phase: inspect
+  action: 需要通電量測或移動滑塊時，依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區內工具與人員；滑塊需要移動時先撤出安全塊；由原上鎖人取下自己的鎖，現場主管在場；只用寸動模式操作（第70條），完成後立即停機；重新上鎖、放回安全塊並驗證零能量後，才能再把手伸入上下模之間
+  caution: 通電期間手不得進入模具區或滾輪夾捲點；測試／定位只限寸動調整與讀值，不得用來試沖或連續生產
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060009-70
+- 'no': 9
+  phase: inspect
+  action: 由原上鎖人暫時解除、主管在場，以寸動試沖一次（有料），讀取左右沖壓力平衡值，並觀察導正銷進入導正孔時有無單側干涉
+  criteria: 若左右沖壓力差超過 10%（模擬值），且閉模高度讀值與模具資料相符，判定為本模式；若壓力峰值異常高或低但左右平衡，改懷疑 shut_height_misset（SOP-STP-023）；若壓力峰值在數日到數週內緩慢上升 3～8%（模擬值）且毛邊隨沖次增加，改懷疑 punch_edge_wear（SOP-STP-033）。
+  caution: 只可用寸動，確認模具內無工具與人員後再動作；無料空打讀不到沖壓力，比對左右平衡必須有料
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S6
+- 'no': 10
+  phase: repair
+  action: 清潔模具定位面、定位銷與襯套孔，去除毛邊、油污與異物；檢查定位銷有無彎曲或偏磨。
+  caution: 使用無絨布擦拭，不可用壓縮空氣朝人員吹拂。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+- 'no': 11
+  phase: repair
+  action: 更換彎曲或偏磨的模具定位銷與定位銷襯套，選用與模具資料相符的通用尺寸；以手動壓入或輕敲方式安裝，避免傷及基準孔。
+  caution: 敲擊時須以軟質墊塊保護，不可傷及模具基準面。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+- 'no': 12
+  phase: repair
+  action: 將模具重新對準，依對角順序鎖緊壓板螺栓至模具資料卡扭力（例如 M16 壓板螺栓約 200 N·m，模擬值），並確認定位銷完全進入襯套。
+  caution: 鎖緊過程注意模具是否滑動，扭力扳手須歸零確認。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - S6
+- 'no': 13
+  phase: repair
+  action: 【現場經驗（模擬）】定位面或定位銷孔磨耗不得以墊片補償：墊片在沖壓振動下會鬆動，偏移很快再發生。定位面有磨耗或壓痕時，交模具技師修復定位面或更換定位塊，修復後單邊間隙回到 0.03 mm（模擬值）以內
+  caution: 不得自行加墊片，也不得以敲擊方式強迫對位
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - none
+- 'no': 14
+  phase: verify
+  action: 手動確認定位銷插入與拔出順暢，無單側卡澀；以厚薄規量測定位銷與襯套單邊間隙。
+  criteria: 若單邊間隙不超過 0.05 mm（模擬值）且手動滑順，通過；若仍單側卡澀或間隙超過 0.05 mm（模擬值），重新檢查定位面與襯套。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+- 'no': 15
+  phase: verify
+  action: 試沖與連續生產屬於恢復生產，不是測試／定位：先清點工具、撤出安全塊、恢復護圍、光幕與所有安全裝置並確認功能正常、確認人員離開危險區與滾輪夾捲點；由原上鎖人取下自己的鎖（連動上鎖的送料機／沖床一併確認）後，才由操作員以正常操作模式（單動、光幕與雙手操作有效）試沖。試沖中發現異常，須重新依 LOTO 上鎖後才能再進入模區或滾輪夾捲點
+  caution: AI 不得宣告可以復電或可以生產；是否恢復試沖由現場主管決定
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-e-1
+  - REG-OSHA-1910.147-e-2
+  - REG-N0060009-254-p2
+- 'no': 16
+  phase: verify
+  action: 以寸動進行試沖，檢查首批 5 件（模擬值）之導正孔壓痕、單側毛邊與左右沖壓力差。
+  criteria: 若左右沖壓力差在 10%（模擬值）以內、毛邊高度不超過 0.08 mm（模擬值）且左右差 0.03 mm 以內（模擬值）、導正孔無單側壓痕，判定修復完成；若壓力差仍超過 10%（模擬值）且閉模高度相符，通知設備工程師／原廠技師或改走 SOP-STP-033。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S6
+  - S7
+- 'no': 17
+  phase: verify
+  action: 連續生產 30 件（模擬值），確認無卡料、無異常異音，且料帶無持續單側偏移。
+  criteria: 30 件（模擬值）內無卡料、無異常異音、料帶無持續單側偏移，判定穩定；若料帶仍往同一側偏且越後段越大，改走 SOP-STP-009。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S7
+- 'no': 18
+  phase: restore
+  action: 依 LOTO-PRESS-SERVO-01 解除程序（連動上鎖的送料機／沖床依各自檢查表一併解除）：清點工具、恢復護圍與光幕、取出安全塊、確認人員離開後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內異常解鎖程序由主管處理；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+- 'no': 19
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 手動確認定位銷插入與拔出順暢，無單側卡澀；以厚薄規量測定位銷與襯套單邊間隙；判定：若單邊間隙不超過 0.05 mm（模擬值）且手動滑順，通過；若仍單側卡澀或間隙超過 0.05 mm（模擬值），重新檢查定位面與襯套。
+- 試沖與連續生產屬於恢復生產，不是測試／定位：先清點工具、撤出安全塊、恢復護圍、光幕與所有安全裝置並確認功能正常、確認人員離開危險區與滾輪夾捲點；由原上鎖人取下自己的鎖（連動上鎖的送料機／沖床一併確認）後，才由操作員以正常操作模式（單動、光幕與雙手操作有效）試沖。試沖中發現異常，須重新依 LOTO 上鎖後才能再進入模區或滾輪夾捲點
+- 以寸動進行試沖，檢查首批 5 件（模擬值）之導正孔壓痕、單側毛邊與左右沖壓力差；判定：若左右沖壓力差在 10%（模擬值）以內、毛邊高度不超過 0.08 mm（模擬值）且左右差 0.03 mm 以內（模擬值）、導正孔無單側壓痕，判定修復完成；若壓力差仍超過 10%（模擬值）且閉模高度相符，通知設備工程師／原廠技師或改走 SOP-STP-033。
+- 連續生產 30 件（模擬值），確認無卡料、無異常異音，且料帶無持續單側偏移；判定：30 件（模擬值）內無卡料、無異常異音、料帶無持續單側偏移，判定穩定；若料帶仍往同一側偏且越後段越大，改走 SOP-STP-009。
+restore:
+- 依 LOTO-PRESS-SERVO-01 解除程序（連動上鎖的送料機／沖床依各自檢查表一併解除）：清點工具、恢復護圍與光幕、取出安全塊、確認人員離開後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內異常解鎖程序由主管處理；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 更換定位銷與襯套後，左右沖壓力差仍超過 10%（模擬值）且閉模高度讀值與模具資料相符 → 通知設備工程師／原廠技師。
+- 定位銷孔磨耗超過 0.10 mm（模擬值）或襯套座鬆動無法以更換襯套回復 → 通知設備工程師／原廠技師。
+- 料帶持續往同一側偏移、越往模具後段偏移越大且送料長度誤差沒有明顯變化 → 改走 SOP-STP-009。
+lessons: 換模後首批不要只看尺寸，單側毛邊與導正孔單側壓痕就是模具定位偏移的早期訊號，先量定位銷間隙再調壓力。
+references:
+- id: S6
+  title: 'The Fabricator: How can I avoid die crashes?'
+  url: https://www.thefabricator.com/thefabricator/article/bending/ask-the-stamping-expert-how-can-i-avoid-die-crashes-
+  license: ©
+  use: paraphrase
+- id: S7
+  title: MetalForming Magazine 2022-11 p.13（十大模具問題）
+  url: https://www.metalformingmagazine.com/public/Images/2022/11/digital/files/basic-html/page13.html
+  license: ©
+  use: paraphrase
+- id: L1
+  title: 職業安全衛生設施規則
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060009
+  license: TW-law
+  use: quote
+- id: public/regulations.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060009-69、REG-N0060009-70、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-5、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-1、REG-OSHA-1910.147-e-2、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote

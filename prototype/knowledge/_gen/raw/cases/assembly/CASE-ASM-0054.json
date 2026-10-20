@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4053
+ },
+ "output": {
+  "technician_report_raw": "MA02 測DEVICE_NOT_FOUND連2次NG 先查connector卡扣有扣 重插後仍NG 絕緣252MΩ正常 放大鏡見端子退針 線束壓接不良 隔離可疑批 移交測試工程師",
+  "technician_report_normalized": "MA02 功能測試連續兩次出現 DEVICE_NOT_FOUND，絕緣測試 252 MΩ 正常。先依 SOP-ASM-042 檢查故障連接器，卡扣已扣、公母端無明顯間隙，重插後重測仍未改善。完成 LOTO 後以放大鏡檢查，發現端子在連接器內退針，線束端壓接不良。已隔離故障機殼與同批可疑線束並記錄序號、位置、批號及測試紀錄，因超出產線現場修復能力，移交測試工程師處理。",
+  "actions": [
+   {
+    "step": "依 SOP-ASM-042 檢查故障連接器卡扣、公母端與防呆鍵，卡扣已扣且無明顯間隙，重插後重測",
+    "result": "未改善"
+   },
+   {
+    "step": "調閱功能測試紀錄，確認連續兩次 DEVICE_NOT_FOUND、絕緣 252 MΩ 正常",
+    "result": "紀錄一致"
+   },
+   {
+    "step": "LOTO 完成後以放大鏡檢查端子與線束壓接，發現端子在連接器內退針、壓接不良",
+    "result": "發現退針"
+   },
+   {
+    "step": "隔離故障機殼與同批可疑線束，貼不良標示並記錄機殼序號、連接器位置、線束批號與測試紀錄",
+    "result": "完成隔離"
+   },
+   {
+    "step": "移交測試工程師判定線束壓接不良與同批追溯",
+    "result": "已移交"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因功能測試連續出現 DEVICE_NOT_FOUND、症狀像連接器未插到位而懷疑 connector_not_seated，但依 SOP 檢查卡扣已扣、無可見間隙且重插無效，放大鏡下才確認為端子退針的線束壓接不良。",
+  "discriminating_evidence": [
+   "test_result 連續兩次為 DEVICE_NOT_FOUND，屬每次測試皆失敗而非時有時無。",
+   "insulation_mohm 為 252 MΩ，絕緣測試正常，線材外皮未見破損跡象。",
+   "依 SOP 檢查卡扣已扣、公母端無可見間隙且重插後仍失敗，放大鏡下見端子在連接器內退針、線束壓接不良。"
+  ],
+  "lessons": "DEVICE_NOT_FOUND 連續發生時，重插前後都要看端子，卡扣有扣不代表端子沒退針。",
+  "escalation_note": "線束壓接不良導致端子退針，已將故障機殼、同批線束與測試紀錄移交測試工程師判定與追溯。"
+ }
+}

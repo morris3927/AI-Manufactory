@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4026
+ },
+ "output": {
+  "technician_report_raw": "ST02 00:28 NOK_ANGLE_LOW 換批SL-2512-40後 bit孔牙ok 送釘盤混長短螺絲 清盤換正確M3 試鎖ok",
+  "technician_report_normalized": "00:28 ST02 鎖附站 MES 觸發螺絲鎖附 NOK_ANGLE_LOW，最終角度 793 度。00:12 曾更換螺絲批 SL-2512-40，初步懷疑錯料。檢查起子頭十字槽與壓鉚螺母孔牙均正常，排除起子頭磨耗、斜牙與滑牙；檢視送釘盤發現長短不同螺絲混料，量測長度與牙距和 BOM 不符。立即隔離送釘盤、補料盒與已鎖可疑工件，貼標拍照並依批號追溯；已依 LOTO-ASM-TOOL-01 斷電斷氣，清空送釘盤與送釘軌道，換回正確 M3 螺絲，試鎖確認 ok 後恢復生產，停機 57 分鐘。",
+  "actions": [
+   {
+    "step": "讀取鎖附控制器換批紀錄與最終角度，比對 NOK 發生時序",
+    "result": "確認 00:12 換批、00:28 NOK"
+   },
+   {
+    "step": "檢查起子頭十字槽與壓鉚螺母孔牙",
+    "result": "正常，排除磨耗與滑牙"
+   },
+   {
+    "step": "目視送釘盤、補料盒與待鎖螺絲，量測長度與牙距並比對 BOM",
+    "result": "發現長短混料、規格不符"
+   },
+   {
+    "step": "隔離送釘盤、補料盒與已鎖可疑工件，貼標拍照並依批號追溯",
+    "result": "完成隔離"
+   },
+   {
+    "step": "清空送釘盤與送釘軌道，移除異規螺絲，換回正確 M3 螺絲",
+    "result": "清料完成"
+   },
+   {
+    "step": "以試片試鎖並確認首件",
+    "result": "ok，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "screw_m3"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換批後先核對料盒標籤與螺絲長度，再開始鎖附，可避免混料一路打到 NOK。",
+  "escalation_note": null
+ }
+}

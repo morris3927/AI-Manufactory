@@ -1,0 +1,295 @@
+# SOP-WLD-042 冷卻水流量不足之檢查與修復
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-WLD-042
+version: '0.1'
+title: 冷卻水流量不足之檢查與修復
+line: welding
+machine_type:
+- robot_mig_cell
+- spot_welder
+failure_mode_ids:
+- cooling_water_low
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 142
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-WELD-ROBOT-01
+  loto_checklist_ids:
+  - LOTO-WELD-ROBOT-01
+  - LOTO-SPOT-WELD-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - gravity
+  - pneumatic
+  - mechanical_stored
+  - shielding_gas
+  - coolant
+  - thermal
+  - mechanical
+  ppe:
+  - 安全鞋
+  - 防護手套（耐熱）
+  - 護目鏡（遮光）
+  - 防塵口罩（銲接燻煙）
+  - 銲接面罩或遮光面罩（試銲觀察時，設施規則第284條）
+  - 防潑水手套（補充冷卻液時）
+  - 防潑水圍裙（補充冷卻液時）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - 工業用機器人危害預防標準第26、33條
+  - OSHA 1910.147(d)
+  - OSHA 1910.255(b)(8)
+  - 設施規則第292條（試銲時局部排氣須運轉）
+symptoms:
+- 冷卻水流量低警報
+- 電極頭很燙
+- 銲槍過熱
+- 電極頭很快變形
+- 回水溫度高
+- 冷卻水流量低警報反覆出現
+- 電極頭摸起來很燙
+- 銲槍頸管過熱
+- 電極帽很快就變形
+- 回水溫度偏高
+prerequisites:
+  tools:
+  - 紅外線測溫槍
+  - 冷卻水流量計
+  - 扳手組
+  - 管鉗
+  - 檢漏液或乾淨擦拭布
+  parts:
+  - 冷卻水濾網
+  - 水管／快速接頭
+  - 冷卻液
+  - 電極帽
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼、近 15 分鐘訊號趨勢與不良銲道位置（治具、工位）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-WELD-ROBOT-01（機器人銲接工作站） 或 LOTO-SPOT-WELD-01（點銲機）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量
+  caution: 本模式上鎖時要特別注意冷卻水機與點銲機／銲槍冷卻水迴路都要上鎖，拆管前確認進回水閥關閉且無殘壓，電極帽與銲槍頸管仍可能高溫。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: （機器人工作站）進入機器人圍欄前，在啟動開關處掛「禁止觸動」標示並攜帶自己的安全栓（模式鑰匙），圍欄外安排監視人員；銲槍、導電嘴與工件可能仍高溫，等待冷卻或戴耐熱手套（工業用機器人危害預防標準第26、33條）
+  caution: 機器人停在維修姿勢，不得手動鬆開各軸煞車
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060025-33
+  - REG-N0060025-26
+- 'no': 5
+  phase: isolate
+  action: （點銲機）手要進入上下電極之間前，確認加壓氣缸已洩壓，並插入安全插銷或在電極之間放入墊塊，確認上電極不會下降；電極帽可能仍高溫
+  caution: 未插安全插銷或放墊塊前，手不得放在電極之間
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.255-b-8
+- 'no': 6
+  phase: inspect
+  action: 在已上鎖掛牌狀態下，目視檢查冷卻水機液位、濾網、水管有無折彎或滲漏，並記錄流量計與警報歷史（COOLANT_LOW、WELD_OVERTEMP）。
+  criteria: 液位低於下限、濾網明顯堵塞、水管折彎或接頭滲漏，且歷史出現 COOLANT_LOW 或 WELD_OVERTEMP，即支持冷卻水流量不足；若液位、濾網、管路正常且無相關警報，先排除本模式。
+  caution: 目視檢查時勿拆管；若需拆濾網，先確認進回水閥關閉且無殘壓。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - L21
+  - W8
+- 'no': 7
+  phase: inspect
+  action: 以紅外線測溫槍量測回水管、銲槍頸管與電極帽表面溫度，並檢查電極帽端面有無短時間異常變形或變色。
+  criteria: 回水溫度超過 45 °C（模擬值）、頸管或電極帽表面溫度超過 60 °C（模擬值），且電極帽短時間變形，判定偏向本模式；若溫度正常但電極帽端面直徑已擴大，改懷疑點銲電極頭磨耗（spot_electrode_wear）。
+  caution: 待設備降溫或戴耐熱手套，勿直接觸摸電極帽與頸管。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+  - W9
+- 'no': 8
+  phase: inspect
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-WELD-ROBOT-01 測試／定位程序：清除圍欄內工具；需留在可動範圍內的人員只限持教導器者；由原上鎖人取下自己的鎖，現場主管在場，並在圍欄外安排監視人員（第26條）；只用教導模式降速操作，持教導器者握住致能開關，放手即停（第5、9條）；試銲時人員退到圍欄外並確認局部排氣運轉；完成後立即停機，重新上鎖並驗證零能量，才能再次進入圍欄
+  caution: 通電期間手不得進入機器人可動範圍或電極之間；試銲前確認局部排氣運轉、人員退到圍欄或遮光簾外（設施規則第292條）
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060025-26
+  - REG-N0060009-292
+- 'no': 9
+  phase: inspect
+  action: 啟動冷卻水循環，使用流量計量測點銲機與水冷銲槍流量，並讀取回水溫度與警報狀態。
+  criteria: 點銲機流量低於 3.0 L/min（模擬值）或水冷銲槍流量低於 1.0 L/min（模擬值），且回水溫度超過 45 °C（模擬值）或出現 COOLANT_LOW／WELD_OVERTEMP，即證實本模式；若流量與溫度都在範圍內，改查電極帽與導電嘴磨耗。
+  caution: 量測時人員遠離電極與銲槍動作範圍，不得把手放在上下電極之間。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - L21
+  - W8
+- 'no': 10
+  phase: inspect
+  action: 檢查點銲電極帽端面直徑、凹陷與沾鋅狀況，並核對修磨次數與銲點數。
+  criteria: 端面直徑超過 6.5 mm（模擬值；新品 5.0～5.5 mm（模擬值））、端面凹陷或沾鋅變色，或修磨次數超過 25 次（模擬值）、銲點數超過 350 點（模擬值），且冷卻水流量正常，則改懷疑點銲電極頭磨耗（spot_electrode_wear）；若流量低且電極帽變形，仍以本模式為主並一併更換電極帽。
+  caution: 量測使用專用工具，手不得置於上下電極之間。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+- 'no': 11
+  phase: inspect
+  action: 檢查 MIG 導電嘴孔口有無橢圓磨耗或銲絲熔黏回燒，並核對導電嘴累積起弧時間與每百次起弧重試次數。
+  criteria: 導電嘴孔口橢圓、端部回燒、累積起弧時間超過 300 分鐘（模擬值）或每百次起弧重試超過 8 次（模擬值），且冷卻水流量正常，則改懷疑導電嘴磨耗／回燒（contact_tip_wear）；若流量低且導電嘴正常，維持本模式。
+  caution: 檢查前確認銲絲張力已釋放，避免銲絲彈出。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+  - W8
+- 'no': 12
+  phase: repair
+  action: 拆下冷卻水機濾網與水盤清洗，清除銲渣、鋅粉與異物；檢查水管有無折彎、壓扁或接頭滲漏。
+  caution: 拆濾網前確認冷卻水進回水閥已關閉且無殘壓，熱水可能燙傷。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+  - W9
+- 'no': 13
+  phase: repair
+  action: 更換破損濾網、折彎或滲漏的水管／快速接頭，並補充冷卻液至液位上下限之間（模擬值）。
+  caution: 冷卻液不可混用不同種類；補充時避免濺入電氣箱。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+- 'no': 14
+  phase: repair
+  action: 清理泵浦入口與葉輪異物，手動確認泵浦無卡死，復原管路並確認所有接頭鎖緊無滲漏。
+  caution: 手動確認泵浦前確認電源已上鎖；不可強迫轉動卡死泵浦。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+- 'no': 15
+  phase: verify
+  action: 啟動冷卻水循環，量測點銲機與水冷銲槍流量、回水溫度，並確認警報已消失。
+  criteria: 點銲機流量 ≥3.0 L/min（模擬值）、水冷銲槍流量 ≥1.0 L/min（模擬值）、回水溫度 ≤45 °C（模擬值），且無 COOLANT_LOW 或 WELD_OVERTEMP 警報。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - L21
+  - W8
+- 'no': 16
+  phase: verify
+  action: 使用試片或報廢件進行試銲／試點銲功能測試；MIG 試銲前確認局部排氣運轉正常，人員退到圍欄或遮光簾外；點銲時手不得放在上下電極之間；若測試不良，將試片或報廢件隔離並標示追溯。
+  criteria: MIG 銲道無燒穿、未熔合、氣孔，飛濺量與首件相當（模擬值）；點銲熔核直徑 ≥4.5 mm（模擬值），無異常飛濺；測試期間流量與回水溫度維持正常。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - L21
+  - W6
+  - W8
+- 'no': 17
+  phase: verify
+  action: 執行首件確認並連續生產 5 件（模擬值），檢查電極帽與銲槍頸管有無異常升溫或變形。
+  criteria: 連續 5 件（模擬值）流量與回水溫度仍在上限內，電極帽端面無短時間異常變形、頸管無過熱，首件尺寸與熔核符合標準（模擬值）。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W8
+  - W9
+- 'no': 18
+  phase: restore
+  action: 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+  - REG-N0060025-32
+- 'no': 19
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 啟動冷卻水循環，量測點銲機與水冷銲槍流量、回水溫度，並確認警報已消失；判定：點銲機流量 ≥3.0 L/min（模擬值）、水冷銲槍流量 ≥1.0 L/min（模擬值）、回水溫度 ≤45 °C（模擬值），且無 COOLANT_LOW 或 WELD_OVERTEMP 警報。
+- 使用試片或報廢件進行試銲／試點銲功能測試；MIG 試銲前確認局部排氣運轉正常，人員退到圍欄或遮光簾外；點銲時手不得放在上下電極之間；若測試不良，將試片或報廢件隔離並標示追溯；判定：MIG 銲道無燒穿、未熔合、氣孔，飛濺量與首件相當（模擬值）；點銲熔核直徑 ≥4.5 mm（模擬值），無異常飛濺；測試期間流量與回水溫度維持正常。
+- 執行首件確認並連續生產 5 件（模擬值），檢查電極帽與銲槍頸管有無異常升溫或變形；判定：連續 5 件（模擬值）流量與回水溫度仍在上限內，電極帽端面無短時間異常變形、頸管無過熱，首件尺寸與熔核符合標準（模擬值）。
+restore:
+- 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 清潔濾網、排除折管並補液後，點銲機流量仍低於 3.0 L/min（模擬值）或水冷銲槍流量仍低於 1.0 L/min（模擬值） → 通知設備工程師。
+- 回水溫度持續超過 45 °C（模擬值），且泵浦運轉與管路無折彎 → 通知設備工程師。
+- 電極帽在短時間內異常變形，但流量與回水溫度正常 → 改走 SOP-WLD-041（點銲電極頭磨耗）。
+lessons: 冷卻水不足常從濾網堵塞與折管開始；先看流量與回水溫度，再怪電極帽，才不會把磨耗誤判成過熱。
+references:
+- id: L21
+  title: OSHA 29 CFR 1910.252 / 1910.254 / 1910.255 Welding, cutting and brazing（General requirements; Arc welding; Resistance welding）
+  url: https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-Q
+  license: PD
+  use: quote
+- id: W8
+  title: 'microJoining Solutions: Resistance Welding – Trouble Shooting Guide'
+  url: https://microjoining.com/wp-content/uploads/2025/12/microTips-%E2%80%93-Resistance-Welding-%E2%80%93-Troubleshooting.pdf
+  license: ©
+  use: paraphrase
+- id: W6
+  title: 'Miller: Tips for Troubleshooting Common MIG Weld Defects'
+  url: https://www.millerwelds.com/resources/article-library/troubleshooting-weld-defects
+  license: ©
+  use: paraphrase
+- id: W9
+  title: 'AMADA WELD TECH: Welding problems and solutions start with these 4 things'
+  url: https://amadaweldtech.com/blog/welding-problems-and-solutions-start-with-these-4-things/
+  license: ©
+  use: paraphrase
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-292、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060025-26、REG-N0060025-32、REG-N0060025-33、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1、REG-OSHA-1910.255-b-8
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

@@ -1,0 +1,460 @@
+# 沖壓線故障模式目錄（J3 根因選擇、J5 結案回寫共用）
+# data_label: 模擬資料 —— 本檔所有故障模式、門檻與 SOP 編號皆為團隊依公開資料自行撰寫之模擬資料，
+# 與任何企業實際製程無關。數值門檻一律為模擬值，未經現場驗證。
+# 規格：02_規格定義/07_RAG知識庫資料.md §4.3、§5.1；Jev整合規劃.md §3.9
+# 欄位說明：
+#   criteria         —— 直接交給 Jev 當 Choice 選項的判斷依據（照字面讀），只寫可觀察的事實，不寫名稱
+#   log_signals      —— 訊號名稱對齊 knowledge/signals.yaml（MES 模擬器共用）
+#   distinguish_from —— 最容易混淆的其他模式；錯誤第一判斷案例只從這裡抽
+#   machine_types    —— 適用機台類型（plant.yaml 的 machine type）
+#   safety_only_sop  —— true：SOP 只寫停機、通知、等待主管，AI 不提供排除方法
+# 共 20 個模式。review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核；紀錄見 reviews/2026-10-21_press_chief.md）
+# 仍建議由真人業師複核 reviews/2026-10-21_press_chief.md 的「留給真人專家」清單。
+stamping:
+  feed_roller_wear:
+    label: 送料滾輪磨損／打滑
+    criteria: 送料長度誤差在 5～15 分鐘內逐步累積（斜坡上升，不是某一沖次突然跳變）；前 60 分鐘內沒有換料捲，料厚實測在公差內；距上次保養多已超過 30 天（模擬值）；料帶表面有滑痕、滾輪表面有亮帶或油污
+    symptoms: [送料偏短, 步距跑掉, 導正孔橢圓, 料帶表面滑痕, 滾輪表面亮帶]
+    log_signals:
+      - {signal: feed_length_error_mm, pattern: ramp_up, window_min: 15, note: 由約 0.02 mm 逐步升到 0.15 mm 以上（模擬值）}
+      - {signal: days_since_pm, op: ">", value: 30}
+      - {signal: coil_change, pattern: absent, window_min: 60}
+    distinguish_from: [material_thickness_dev, pilot_release_timing, servo_feeder_drive_alarm]
+    machine_types: [servo_roll_feeder]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-012
+    sources: [S4, L7, L8]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  material_thickness_dev:
+    label: 材料厚度／硬度偏差
+    criteria: 換料捲後 30 分鐘內開始異常；沖壓力峰值相對換料前出現一次性的階躍變化（升或降 5% 以上，模擬值），之後維持在新水準；同一料捲反覆發生，換回前一捲即恢復；送料誤差若有變化，也是換料當下一次改變，不是逐步累積
+    symptoms: [換料後卡料, 沖壓力突然變大或變小, 成形高度不穩, 回彈變大, 同一捲重複異常]
+    log_signals:
+      - {signal: coil_change, pattern: present, window_min: 30}
+      - {signal: tonnage_peak, pattern: step_change, threshold_pct: 5, note: 相對換料前平均值}
+      - {signal: feed_length_error_mm, pattern: step_change, note: 若有變化為階躍，非斜坡}
+    distinguish_from: [feed_roller_wear, coil_camber, straightener_misset]
+    machine_types: [servo_press, mechanical_power_press, servo_roll_feeder]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-007
+    sources: [S4, S7]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  die_misalignment:
+    label: 模具定位偏移
+    criteria: 換模後首批生產即出現；左右沖壓力差超過 10%（模擬值，以該模具正常生產時的左右比例為基準）；製品單側毛邊或單側導正孔壓痕，伴隨異音；閉模高度讀值與模具資料相符
+    symptoms: [單側毛邊, 異音, 換模後卡料, 導正孔單側壓痕, 左右沖壓力不平衡]
+    log_signals:
+      - {signal: die_change, pattern: present, window_min: 120}
+      - {signal: tonnage_balance_pct, op: ">", value: 10}
+      - {signal: shut_height_mm, pattern: matches_die_master, note: 與閉模高度錯誤區分}
+    distinguish_from: [punch_edge_wear, shut_height_misset, coil_camber]
+    machine_types: [servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-021
+    sources: [S6, S7, L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  pilot_release_timing:
+    label: 導正銷釋放時機錯誤
+    criteria: 送料機單獨試送（料帶不經導正銷）量測的送料長度誤差正常（±0.03 mm 以內，模擬值），但導正孔被單向拉長、導正銷磨亮或斷裂；常發生在送料機的導正釋放角度或沖速參數變更後；調整釋放角度後立即改善
+    symptoms: [導正孔單向拉長, 導正銷磨亮或斷裂, 送料數值正常但料帶定位不良, 改沖速後才出現]
+    log_signals:
+      - {signal: param_change, pattern: present, window_min: 120, note: pilot_release_angle_deg 或 spm 變更}
+      - {signal: feed_length_error_mm, op: "<=", value: 0.03, note: 數值維持正常}
+      - {signal: pilot_release_angle_deg, pattern: changed}
+    distinguish_from: [feed_roller_wear, die_misalignment]
+    machine_types: [servo_roll_feeder]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-014
+    sources: [S4, S8]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  coil_camber:
+    label: 料捲側彎／料帶偏移
+    criteria: 料帶持續往同一側偏，越往模具後段工站偏移越大；料帶邊緣偵測器單側反覆觸發；只在特定料捲發生，送料長度誤差沒有明顯變化；料帶放平量測側彎量超過允差
+    symptoms: [料帶擦側導板, 後段工站卡料, 料帶往單側偏, 側導板磨痕]
+    log_signals:
+      - {signal: alarm_code, value: STRIP_EDGE, pattern: intermittent, note: 同一側重複觸發}
+      - {signal: coil_change, pattern: present, window_min: 240}
+      - {signal: feed_length_error_mm, pattern: normal}
+    distinguish_from: [material_thickness_dev, die_misalignment, straightener_misset]
+    machine_types: [servo_roll_feeder, servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-009
+    sources: [S4]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  slug_pulling:
+    label: 廢料上跳（跳屑）
+    criteria: 沖孔廢料被沖頭帶上模面，下一模壓出凹痕，或讓模具保護偵測間歇觸發停機；多在沖速提高後出現，降速即減少；送料長度誤差正常；模面或製品上可撿到廢料
+    symptoms: [製品壓痕, 模面有廢料, 模具保護間歇停機, 提速後異常增加]
+    log_signals:
+      - {signal: spm, pattern: step_up, window_min: 60}
+      - {signal: alarm_code, value: DIE_PROTECT, pattern: intermittent}
+      - {signal: feed_length_error_mm, pattern: normal}
+    distinguish_from: [scrap_chute_jam, stripper_spring_fatigue, misfeed_sensor_fault]
+    machine_types: [servo_press, mechanical_power_press]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-031
+    sources: [S5, S7]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  punch_edge_wear:
+    label: 刃口／沖頭磨耗
+    criteria: 毛邊高度隨沖次逐步增加；沖頭距上次研磨的沖次超過基準 80,000 次（模擬值）；沖壓力峰值在數日到數週內緩慢上升 3～8%（模擬值）；左右沖壓力平衡正常，與換模無關
+    symptoms: [毛邊變高, 沖壓力緩升, 刃口崩缺, 斷面光亮帶變窄]
+    log_signals:
+      - {signal: stroke_count_since_regrind, op: ">", value: 80000}
+      - {signal: tonnage_peak, pattern: slow_ramp_up, window_min: 10080, note: 以週為單位緩升}
+      - {signal: tonnage_balance_pct, op: "<=", value: 5}
+    distinguish_from: [die_misalignment, shut_height_misset, die_lubrication_insufficient]
+    machine_types: [servo_press, mechanical_power_press]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-033
+    sources: [S7, L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  die_lubrication_insufficient:
+    label: 模具潤滑不足（拉傷）
+    criteria: 成形件表面出現拉痕、黏模或料屑附著（鍍鋅料常見鋅屑）；模具噴油器的噴油次數下降或模具潤滑油箱低液位警報；沖頭研磨後沖次未超過基準；補油或恢復噴油後下一批即改善
+    symptoms: [拉痕, 黏模, 成形面刮傷, 料屑附著, 鋅屑堆積, 噴油嘴無油霧]
+    log_signals:
+      - {signal: die_lube_pulse_per_min, pattern: step_down, note: 由約 6 次／分降到 2 次／分以下（模擬值）}
+      - {signal: alarm_code, value: DIE_LUBE_LOW}
+      - {signal: stroke_count_since_regrind, op: "<=", value: 80000}
+    distinguish_from: [punch_edge_wear, central_lube_fault]
+    machine_types: [servo_press, mechanical_power_press]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-035
+    sources: [S7]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  misfeed_sensor_fault:
+    label: 誤送料偵測器誤報
+    criteria: 誤送料偵測觸發停機，但現場檢查料帶位置、導正孔與模具都正常，且停機前送料長度誤差在 ±0.03 mm 以內（模擬值）；同一顆感測器在一班內反覆觸發，重置後可立即恢復生產；常見於感測器接頭鬆動、纜線受振或感應面沾油屑
+    symptoms: [無實際卡料卻停機, 同一感測器反覆跳, 重置即可生產, 接頭鬆動]
+    log_signals:
+      - {signal: alarm_code, value: MISFEED, pattern: intermittent, note: 一班內 2 次以上}
+      - {signal: feed_length_error_mm, op: "<=", value: 0.03}
+      - {signal: state, pattern: alarm_then_running, note: 重置後數十秒內回到 running}
+    distinguish_from: [feed_roller_wear, slug_pulling, servo_feeder_drive_alarm]
+    machine_types: [servo_roll_feeder, servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-041
+    sources: [S4, S7]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  stripper_spring_fatigue:
+    label: 脫料板彈簧疲勞
+    criteria: 上模回程時料帶或製品被帶起、不易脫料，脫料不平均讓料帶變形，觸發料帶上浮偵測；模具累積沖次高或彈簧已超過更換週期；廢料沒有黏在沖頭上；降速沒有明顯改善
+    symptoms: [料帶被帶起, 料帶變形, 脫料不順, 料帶上浮停機]
+    log_signals:
+      - {signal: alarm_code, value: STRIP_LIFT, pattern: intermittent}
+      - {signal: die_stroke_total, op: ">", value: 500000, note: 模具累積沖次（模擬值）}
+      - {signal: spm, pattern: no_effect, note: 降速後仍發生}
+    distinguish_from: [slug_pulling, die_lubrication_insufficient]
+    machine_types: [servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-036
+    sources: [S5, S7]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  clutch_brake_wear:
+    label: 離合器／制動器磨耗（停止角度超限）
+    criteria: 停止角度監視器報超限，停止角度或停止時間超過設定上限，或在數日內持續增加；屬安全裝置異常，滑塊可能無法在設計位置停止；同時段氣源壓力正常
+    symptoms: [滑塊停止位置偏移, 停止角度超限警報, 制動異音, 停止時間變長]
+    log_signals:
+      - {signal: stop_angle_deg, op: ">", value: 15, note: 正常約 8～12°（模擬值）}
+      - {signal: stop_time_ms, op: ">", value: 230, note: 正常約 160～200 ms（模擬值）}
+      - {signal: alarm_code, value: OVERRUN}
+      - {signal: air_pressure_bar, pattern: normal}
+    distinguish_from: [air_pressure_low, counterbalance_misset]
+    machine_types: [mechanical_power_press, servo_press]
+    category: safety
+    severity_default: S2
+    severity_note: 停止角度超限時若有人員在危險區或已有人受傷，依 S3 處理
+    loto_required: true
+    safety_only_sop: true
+    sop: SOP-STP-051
+    sources: [L2, L3, L4, S3]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  overload_tonnage:
+    label: 過負荷（噸位超限）
+    criteria: 單次沖壓的沖壓力峰值超過設定上限（250 t 機台設 225 t、200 t 機台設 180 t，模擬值），過負荷保護動作立即停機；常伴隨雙料、料頭重疊或模內異物；異常是單一沖次的尖峰，前後沖次的沖壓力正常
+    symptoms: [過負荷停機, 油壓過負荷洩壓, 雙料, 模內異物, 滑塊停在下死點附近]
+    log_signals:
+      - {signal: tonnage_peak, op: ">", value: 225, pattern: spike, note: 250 t 機台；200 t 機台為 180（模擬值，與 signals.yaml 一致）}
+      - {signal: alarm_code, value: OVERLOAD}
+      - {signal: alarm_code, value: DOUBLE_BLANK, note: 若有雙料偵測}
+    distinguish_from: [material_thickness_dev, scrap_chute_jam, shut_height_misset]
+    machine_types: [servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    severity_note: 滑塊卡在下死點無法退回時，需主管與合格人員到場，不由一般技術員自行排除
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-053
+    sources: [S6, S3, L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  air_pressure_low:
+    label: 氣源壓力不足
+    criteria: 機台氣源壓力低於下限 4.8 bar（模擬值），觸發氣壓低警報；同時段同一條供氣管路的多台機台一起壓降；停止角度可能同步變大，但氣壓恢復後即回到正常
+    symptoms: [氣壓低警報, 離合器結合不良, 行程變慢, 多台同時停機]
+    log_signals:
+      - {signal: air_pressure_bar, op: "<", value: 4.8}
+      - {signal: alarm_code, value: AIR_LOW}
+      - {signal: air_pressure_bar, pattern: multi_machine_drop, note: 同管路多台同時}
+    distinguish_from: [clutch_brake_wear, counterbalance_misset]
+    machine_types: [servo_press, mechanical_power_press, servo_roll_feeder]
+    category: equipment
+    severity_default: S2
+    severity_note: 多台機台同時停止時依 S3 處理（Jev 嚴重度定義）
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-055
+    sources: [S3, L7]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  counterbalance_misset:
+    label: 平衡缸壓力設定不當
+    criteria: 換模後發生；平衡缸壓力與模具資料的上模重量對應值不符（差 0.3 bar 以上，模擬值）；主馬達電流在上行或下行段明顯上升，伴隨異音；氣源總壓正常
+    symptoms: [換模後異音, 主馬達電流上升, 停止角度變化, 滑塊運動不順]
+    log_signals:
+      - {signal: die_change, pattern: present, window_min: 240}
+      - {signal: counterbalance_bar, pattern: mismatch_die_master, value: 0.3}
+      - {signal: motor_current_a, pattern: step_up}
+      - {signal: air_pressure_bar, pattern: normal}
+    distinguish_from: [clutch_brake_wear, air_pressure_low, shut_height_misset]
+    machine_types: [servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-056
+    sources: [S3, L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  servo_feeder_drive_alarm:
+    label: 伺服送料機驅動器警報
+    criteria: 送料機驅動器報過電流或位置偏差過大，送料在單一沖次內瞬間停止、沖床連動停機；停機前送料長度誤差沒有逐步累積；送料馬達電流出現尖峰或馬達溫度偏高
+    symptoms: [送料機突然停止, 沖床連動停機, 驅動器警報, 馬達過熱]
+    log_signals:
+      - {signal: alarm_code, value: FD_OVERCURRENT, note: 或 FD_POS_DEV}
+      - {signal: motor_current_a, pattern: spike}
+      - {signal: motor_temp_c, op: ">", value: 75, note: 正常約 45～65 °C（模擬值）}
+      - {signal: feed_length_error_mm, pattern: normal_until_stop}
+    distinguish_from: [feed_roller_wear, misfeed_sensor_fault, straightener_misset]
+    machine_types: [servo_roll_feeder]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-061
+    sources: [L7, L8]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  straightener_misset:
+    label: 整平機設定不當
+    criteria: 換了不同料厚或不同材質的料捲後發生；料帶進模前仍有殘留捲曲（翹頭或弓形），在進料口或第一工站卡住；料環偵測異常；整平輥壓下量設定與該料厚的設定表不符
+    symptoms: [料帶翹曲, 進料口卡料, 料環異常, 料頭翹起]
+    log_signals:
+      - {signal: coil_change, pattern: present_with_spec_change, window_min: 60, note: 料厚或材質與前一捲不同}
+      - {signal: alarm_code, value: LOOP_FAULT}
+      - {signal: straightener_setting_mm, pattern: mismatch_setting_table}
+    distinguish_from: [coil_camber, material_thickness_dev]
+    machine_types: [servo_roll_feeder]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-063
+    sources: [S4]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  scrap_chute_jam:
+    label: 廢料排出堵塞
+    criteria: 廢料滑道或廢料輸送帶堵塞，輸送帶電流異常升高或輸送帶停止；廢料回堆在下模落料孔，造成模具保護觸發或沖壓力升高；與沖速無關，清除堵塞即恢復
+    symptoms: [模具內廢料堆積, 廢料輸送帶停止, 落料孔塞住, 模具保護停機]
+    log_signals:
+      - {signal: scrap_conveyor_current_a, pattern: step_up_or_zero, note: 正常約 1.2 A（模擬值）}
+      - {signal: alarm_code, value: SCRAP_CONV_OVERLOAD}
+      - {signal: alarm_code, value: DIE_PROTECT, note: 可能伴隨}
+    distinguish_from: [slug_pulling, overload_tonnage]
+    machine_types: [servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-065
+    sources: [S7]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  light_curtain_fault:
+    label: 光幕異常或被旁路
+    criteria: 光幕自我診斷錯誤導致無法起動或頻繁誤遮斷；或光幕處於停用狀態時，影像偵測到人員在危險區作業；屬安全裝置異常
+    symptoms: [無法起動, 頻繁誤遮斷, 光幕停用中有人在危險區]
+    log_signals:
+      - {signal: light_curtain_status, value: FAULT, note: 或 MUTED}
+      - {signal: alarm_code, value: LC_FAULT}
+      - {signal: person_in_zone, value: true, note: 影像事件}
+    distinguish_from: []
+    machine_types: [servo_press, mechanical_power_press]
+    category: safety
+    severity_default: S2
+    severity_note: 光幕停用狀態下偵測到人員在危險區，依 S3 處理；AI 不提供任何排除或使安全裝置失效的方法
+    loto_required: true
+    safety_only_sop: true
+    sop: SOP-STP-071
+    sources: [L4, L5, S1, L12]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  shut_height_misset:
+    label: 閉模高度設定錯誤
+    criteria: 換模後首件尺寸不良（成形高度或壓印深度不足或過深），沖壓力峰值異常高或低；閉模高度讀值與模具資料差 0.2 mm 以上（模擬值）；左右沖壓力平衡正常
+    symptoms: [換模後首件不良, 成形高度不足, 壓印過深, 沖壓力異常]
+    log_signals:
+      - {signal: die_change, pattern: present, window_min: 60}
+      - {signal: shut_height_mm, pattern: mismatch_die_master, value: 0.2}
+      - {signal: tonnage_peak, pattern: abnormal_high_or_low}
+      - {signal: tonnage_balance_pct, op: "<=", value: 5}
+    distinguish_from: [die_misalignment, overload_tonnage, punch_edge_wear]
+    machine_types: [servo_press, mechanical_power_press]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-023
+    sources: [S6, L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"
+
+  central_lube_fault:
+    label: 機台集中潤滑異常
+    criteria: 機台集中潤滑泵壓力低於下限或油位低警報；導軌或曲軸軸承溫度在數小時內緩升超過 60 °C（模擬值）；伴隨滑塊異音；模具與製品表面沒有異常
+    symptoms: [軸承溫升, 導軌異音, 集中潤滑警報, 潤滑油位低]
+    log_signals:
+      - {signal: lube_pressure_bar, op: "<", value: 1.0}
+      - {signal: alarm_code, value: CENTRAL_LUBE_LOW}
+      - {signal: bearing_temp_c, pattern: ramp_up, window_min: 240, note: 由約 40 °C 升到 60 °C 以上（模擬值）}
+    distinguish_from: [die_lubrication_insufficient, counterbalance_misset]
+    machine_types: [servo_press, mechanical_power_press]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-STP-057
+    sources: [L2, L3]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_press_chief]
+    review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+    review_date: "2026-10-21"

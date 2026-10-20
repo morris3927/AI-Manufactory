@@ -1,0 +1,149 @@
+{
+  "case_id": "CASE-STP-0004",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1003,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-06-09T20:53:16+08:00",
+  "closed_at": "2026-06-09T21:36:41+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 32,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2606-389"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-09T20:39:49+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.03
+    },
+    {
+      "t": "2026-06-09T20:44:17+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.1
+    },
+    {
+      "t": "2026-06-09T20:49:52+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.18
+    },
+    {
+      "t": "2026-06-09T20:53:16+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.25
+    },
+    {
+      "t": "2026-06-09T20:53:16+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-06-09T20:53:16+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-09",
+    "level": "L3"
+  },
+  "technician_report_raw": "FD02 送料一直偏短 0.03爬到0.25 跳MISFEED 停機LOTO 拆上滾輪看亮帶+油 擦過還是偏 量料厚ok 換上下送料滾輪 試送50.00十次誤差0.02 ok",
+  "technician_report_normalized": "FD02 送料偏短，送料長度誤差從 0.03 mm 在十餘分鐘內一路爬升到 0.25 mm，最後跳 MISFEED、送料停止。停機上鎖後檢查送料滾輪，滾輪表面有明顯亮帶與油污，料帶也有滑痕；以無絨布清潔滾輪與料帶路徑後低速寸動試送，誤差仍有 0.15 mm，未改善。量測料帶厚度五點皆為 0.80 mm，在公差內，排除料厚與換料捲因素。續查壓緊彈簧壓縮量與軸承間隙，判定為滾輪磨損打滑，更換上下送料滾輪後試送十次，誤差恢復 0.02 mm，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "feed_roller_wear",
+    "by": "jev",
+    "p": 0.63
+  },
+  "final_root_cause": "feed_roller_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "目視檢查送料滾輪表面、料帶路徑與料帶表面",
+      "result": "滾輪有亮帶與油膜，料帶有滑痕"
+    },
+    {
+      "step": "以無絨布與中性清潔劑清潔滾輪表面及料帶路徑",
+      "result": "清潔完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "低速寸動送料 10 次，每次設定 50.00 mm",
+      "result": "誤差仍 0.15 mm，未改善"
+    },
+    {
+      "step": "以分厘卡量測料帶厚度，距料邊 20 mm 取 5 點",
+      "result": "皆 0.80 mm，在公差內"
+    },
+    {
+      "step": "檢查壓緊彈簧壓縮量與滾輪軸承徑向間隙",
+      "result": "彈簧壓縮量不足、滾輪磨損，更換上下送料滾輪"
+    },
+    {
+      "step": "換輪後低速試送 10 次確認送料長度",
+      "result": "誤差恢復 0.02 mm，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-012"
+  ],
+  "downtime_min": 43,
+  "parts_replaced": [
+    "feed_roll_upper",
+    "feed_roll_lower"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "送料誤差是十幾分鐘慢慢爬上去的，先看滾輪亮帶與料帶滑痕，比一直調參數快得多。",
+  "related_failure_mode_ids": [
+    "feed_roller_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

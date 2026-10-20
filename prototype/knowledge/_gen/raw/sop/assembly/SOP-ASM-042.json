@@ -1,0 +1,158 @@
+{
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "sop-gen-wa-v1",
+    "seed": 242
+  },
+  "failure_mode_id": "connector_not_seated",
+  "output": {
+    "title": "連接器未插到位（卡扣未扣）之檢查與修復",
+    "symptoms": [
+      "功能測試顯示 DEVICE_NOT_FOUND，開機抓不到硬碟或裝置。",
+      "目視連接器卡扣沒扣上，公母端之間有可見間隙。",
+      "連接器鬆鬆的，輕拉本體就脫開或出現縫隙。",
+      "重插到卡扣扣上後就恢復；修復前每次測試都失敗，不是時有時無。",
+      "線材外皮看起來完好，絕緣測試正常。"
+    ],
+    "prerequisites": {
+      "tools": [
+        "頭燈與放大鏡",
+        "厚薄規",
+        "非金屬連接器拔取工具",
+        "防靜電手環測試器",
+        "首件檢查表",
+        "無塵布與清潔棒"
+      ],
+      "parts": [
+        "連接器（通用規格）",
+        "線束（通用規格）",
+        "束帶",
+        "護線套"
+      ],
+      "skill_level": "維修技術員 L1"
+    },
+    "ppe": [
+      "防割手套（鈑金銳邊）",
+      "護目鏡",
+      "靜電手環",
+      "安全鞋（搬運機殼）"
+    ],
+    "inspect": [
+      {
+        "action": "調閱功能測試站紀錄與現場標示，確認故障是否為每次測試皆出現 DEVICE_NOT_FOUND，並記錄發生位置、機殼序號與線束批號。",
+        "criteria": "紀錄顯示同一機殼每次測試皆為 DEVICE_NOT_FOUND，且 connector_unlatched 為 true；若時有時無或開機測試偶發失敗，先保留紀錄並改懷疑 cable_pinch_misroute。",
+        "caution": null,
+        "requires_energized": false,
+        "ref": [
+          "none"
+        ]
+      },
+      {
+        "action": "在 LOTO 完成後目視檢查故障連接器之公母端、卡扣、防呆鍵與端子，確認卡扣是否未扣、是否有可見間隙、端子是否歪斜或異物。",
+        "criteria": "卡扣未扣上或公母端有肉眼可見間隙，即符合本模式；若卡扣已完全扣上且無間隙，則本模式可能性低，改查線材夾線／走線錯誤或測試治具。",
+        "caution": "不可用金屬工具硬撬端子或卡扣，避免二次損傷。",
+        "requires_energized": false,
+        "ref": [
+          "PUB-NASA-STD-8739.4A-C4-17.2.1-mating",
+          "PUB-NASA-STD-8739.4A-C4-16.1-handling"
+        ]
+      },
+      {
+        "action": "檢查線材外皮、走線路徑、彎曲半徑、護線套與束帶固定，並與作業指導書比對，專門區分是否為夾線／走線錯誤。",
+        "criteria": "若線材外皮完好、絕緣無破皮、彎曲半徑不小於線束外徑 3 倍（模擬值）、走線與作業指導書相符，則支持本模式；若看到上蓋或支架蓋合處夾線、壓痕、破皮、彎曲半徑小於線束外徑 3 倍（模擬值）或貼銳邊無護線，則改懷疑 cable_pinch_misroute，改走 SOP-ASM-041。",
+        "caution": "檢查時不可拉扯線材本體，應以連接器本體或線束固定點為施力點。",
+        "requires_energized": false,
+        "ref": [
+          "PUB-NASA-STD-8739.4A-C4-table-7-1",
+          "PUB-NASA-STD-8739.4A-C4-7.2.28-support",
+          "PUB-NASA-STD-8739.4A-C4-20.5.1-ties-assemblies"
+        ]
+      },
+      {
+        "action": "以手輕拉故障連接器本體，確認卡扣保持力與是否有鬆脫；必要時用放大鏡確認端子完全到位。",
+        "criteria": "輕拉時卡扣脫開或公母端出現間隙，判定本模式；若卡扣已扣但輕拉即脫開，檢查卡扣是否斷裂或尺寸異常並更換。",
+        "caution": "只能拉連接器本體，不可拉線材；拉力以不損傷卡扣為原則。",
+        "requires_energized": false,
+        "ref": [
+          "PUB-NASA-STD-8739.4A-C4-17.2.1-mating"
+        ]
+      }
+    ],
+    "repair": [
+      {
+        "action": "將故障機殼與可疑線束隔離，貼上不良標示，記錄工單、機殼序號、連接器位置、線束批號與測試紀錄，並依不良品流程追溯同批。",
+        "caution": "隔離品不得直接回流產線；搬運時避免壓迫連接器與線材。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "PUB-NASA-STD-8739.4A-C4-16.1-handling"
+        ]
+      },
+      {
+        "action": "使用放大鏡與非金屬工具檢查並清除公母端異物；若端子歪斜、卡扣斷裂、防呆鍵損傷或線材外皮破損，更換線束或連接器，不可硬扳端子。",
+        "caution": "不可用金屬尖物插入端子；更換件須為相同通用規格並經首件確認。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "A2",
+          "PUB-NASA-STD-8739.4A-C4-16.1-handling"
+        ]
+      },
+      {
+        "action": "對正防呆鍵，握住連接器本體重新插接至卡扣完全扣上，確認公母端無可見間隙；必要時整理線材走線與束帶／護線套。",
+        "caution": "不可拉線材硬塞或斜插；插接時避免壓到相鄰線材與卡扣。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "PUB-NASA-STD-8739.4A-C4-17.2.1-mating",
+          "PUB-NASA-STD-8739.4A-C4-20.5.1-ties-assemblies"
+        ]
+      },
+      {
+        "action": "完成修復後整理走線與固定，確認束帶與護線套不壓迫線材，並建立首件待驗。",
+        "caution": "首件未通過前不得批量放行。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "A2",
+          "PUB-NASA-STD-8739.4A-C4-17.2.1-mating"
+        ]
+      }
+    ],
+    "verify": [
+      {
+        "action": "執行首件確認：目視與輕拉檢查修復後連接器，確認卡扣完全扣上、公母端無可見間隙，線材走線與固定符合作業指導書。",
+        "criteria": "卡扣完全扣上；厚薄規量測公母端間隙不大於 0.2 mm（模擬值）；輕拉連接器本體位移不大於 0.5 mm（模擬值）且卡扣未脫開；束帶與護線套無壓迫線材。",
+        "requires_energized": false,
+        "ref": [
+          "PUB-NASA-STD-8739.4A-C4-17.2.1-mating",
+          "PUB-NASA-STD-8739.4A-C4-20.5.1-ties-assemblies"
+        ]
+      },
+      {
+        "action": "在功能測試站執行裝置偵測測試。",
+        "criteria": "連續 3 次（模擬值）測試皆偵測到裝置，無 DEVICE_NOT_FOUND；若仍偶發失敗或時好時壞，停止放行並改查 cable_pinch_misroute 或測試治具。",
+        "requires_energized": true,
+        "ref": [
+          "none"
+        ]
+      },
+      {
+        "action": "執行絕緣測試並檢查線材外觀。",
+        "criteria": "絕緣電阻大於 100 MΩ（模擬值），線材外皮完好、無夾線壓痕；開機測試通過但絕緣異常或外觀有壓痕／破皮，改走 SOP-ASM-041。",
+        "requires_energized": true,
+        "ref": [
+          "PUB-NASA-STD-8739.4A-C4-table-7-1",
+          "PUB-NASA-STD-8739.4A-C4-7.2.28-support"
+        ]
+      }
+    ],
+    "isolate_caution": "上鎖掛牌時要確認受測機殼 AC 電源與送釘機氣源均已隔離並洩壓，插拔連接器前不得有殘電或殘壓。",
+    "escalate_if": [
+      "若卡扣斷裂、端子歪斜或連接器本體損傷 → 更換線束並通知品保工程師。",
+      "若同批連續 2 件（模擬值）出現連接器未插到位 → 通知品保工程師並追溯同批。",
+      "若絕緣電阻小於 100 MΩ（模擬值）、線材有夾痕／破皮或彎曲半徑不足 → 改走 SOP-ASM-041。"
+    ],
+    "lessons": "連接器要握本體、對正防呆鍵插到卡扣聲，並目視無間隙；重插後仍須做首件與功能／絕緣驗證，不可只憑手感放行。"
+  }
+}

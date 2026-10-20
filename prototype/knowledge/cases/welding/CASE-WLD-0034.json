@@ -1,0 +1,155 @@
+{
+  "case_id": "CASE-WLD-0034",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3033,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-01-08T11:38:40+08:00",
+  "closed_at": "2026-01-08T13:56:50+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "arc_unstable",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 13,
+    "recent_changes": [],
+    "part": "硬碟籠框架",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-116"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-08T10:58:55+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 2.7
+    },
+    {
+      "t": "2026-01-08T11:26:41+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 13.6
+    },
+    {
+      "t": "2026-01-08T11:33:23+08:00",
+      "signal": "arc_current_cv_pct",
+      "value": 9.1
+    },
+    {
+      "t": "2026-01-08T11:33:51+08:00",
+      "signal": "weld_defect",
+      "value": "spatter×5 工位B 側"
+    },
+    {
+      "t": "2026-01-08T11:37:53+08:00",
+      "signal": "alarm_code",
+      "value": "ARC_LOST"
+    },
+    {
+      "t": "2026-01-08T11:38:40+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 17.5
+    },
+    {
+      "t": "2026-01-08T11:38:40+08:00",
+      "signal": "arc_current_a",
+      "value": 138
+    },
+    {
+      "t": "2026-01-08T11:38:40+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 2.2
+    }
+  ],
+  "technician": {
+    "id": "TECH-21",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 斷弧 電壓跳到17.5% 先查送絲 送絲輪無鳥巢 馬達電流2.2A正常 → 查B側接地夾 有銲渣鬆動 清潔重鎖 試銲ok",
+  "technician_report_normalized": "RC01 銲接硬碟籠框架時出現斷弧，電弧電壓變異一度達 17.5%，工位 B 側伴隨飛濺。初期懷疑送絲不順，檢查送絲輪與導管未見鳥巢，送絲馬達電流 2.2 A 正常。完成上鎖掛牌後，比對雙工位變位機，發現僅 B 側電弧不穩，且 B 側治具接地夾齒面有銲渣、固定螺栓鬆動。清潔接地夾與回路電纜接頭並重新緊固，量測接地回路電阻已與正常側相近；試銲後電弧穩定，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "wire_feed_birdnest",
+    "by": "jev",
+    "p": 0.53
+  },
+  "final_root_cause": "ground_poor",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因斷弧與電弧電流變異，加上送絲是斷弧常見原因，先懷疑送絲鳥巢；但送絲馬達電流僅 2.2 A、送絲輪與導管未見纏絲，且異常只固定在 B 側工位，才轉向接地回路。",
+  "discriminating_evidence": [
+    "送絲馬達電流為 2.2 A，未達鳥巢模式所稱的 4.5 A 升高門檻。",
+    "電弧電壓變異達 17.5%，但送絲馬達電流正常，不符合送絲不順造成之電流同步升高。",
+    "飛濺與斷弧只出現在工位 B 側，另一側正常，符合接地不良的分側特徵。",
+    "B 側治具接地夾齒面有銲渣且固定螺栓鬆動，清潔與緊固後電弧恢復穩定。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查送絲機送絲輪、導管與導電嘴，確認有無纏絲或卡阻",
+      "result": "排除送絲異常"
+    },
+    {
+      "step": "查看送絲馬達電流與電弧電流，分別為 2.2 A、138 A，未見送絲過負荷",
+      "result": "送絲正常"
+    },
+    {
+      "step": "比對雙工位變位機，發現僅 B 側工位電弧不穩，檢查該側治具接地夾與回路電纜接頭",
+      "result": "發現銲渣與鬆動"
+    },
+    {
+      "step": "清潔 B 側接地夾齒面、夾持面與回路電纜接頭，重新緊固固定螺栓及端子，量測接地回路電阻並與正常側比較",
+      "result": "接地電阻恢復"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "在局部排氣運轉下，人員於圍欄外進行試銲",
+      "result": "電弧穩定 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-011",
+    "SOP-WLD-015"
+  ],
+  "downtime_min": 135,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "斷弧先別急著拆送絲機，先比對兩側工位與接地夾，分側異常往往就是接地回路。",
+  "related_failure_mode_ids": [
+    "ground_poor",
+    "wire_feed_birdnest"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-011",
+    "SOP-WLD-015"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

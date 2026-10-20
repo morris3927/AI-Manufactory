@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4029
+ },
+ "output": {
+  "technician_report_raw": "ST02 H10一直NOK 初段扭力高 換批後開始 送釘盤混到不同長度螺絲 隔離 LOTO後清軌道 清孔牙鋅渣 換正確M3 試鎖ok",
+  "technician_report_normalized": "ST02 於 H10 連續 NOK，初段扭力偏高，最終角度 2111° 偏離正常範圍，且在 11:16 換螺絲批 SL-2512-76 後才開始。檢查送釘盤、補料盒與待鎖螺絲，發現混入長度不同的螺絲，量測與 BOM 不符；H10 孔牙另有鋅渣堵塞，為次要斜牙／滑牙問題。已依 LOTO-ASM-TOOL-01 斷電並關送釘機氣源，隔離混料與可疑工件，清空送釘盤、軌道與分離器，清潔 H10 孔牙並換正確 M3 螺絲，試鎖與首件確認 OK，恢復生產，停機 55 分鐘。",
+  "actions": [
+   {
+    "step": "目視送釘盤、補料盒與待鎖螺絲，核對料盒標籤、頭型、長度與牙距",
+    "result": "發現混入異規螺絲"
+   },
+   {
+    "step": "讀取鎖附控制器換批紀錄與最終角度，比對最近 3 批補料標籤與 BOM",
+    "result": "確認換批後才 NOK"
+   },
+   {
+    "step": "量測送釘盤與補料盒螺絲長度、外徑、牙距，檢查起子頭與 H10 孔牙",
+    "result": "螺絲規格不符；起子頭正常，孔牙有鋅渣"
+   },
+   {
+    "step": "隔離送釘盤、補料盒、待鎖螺絲與已鎖可疑工件，拍照並依批號追溯",
+    "result": "完成隔離與追溯"
+   },
+   {
+    "step": "清空送釘盤、送釘軌道與分離器，清除混料，清潔 H10 孔牙鋅渣，更換正確 M3 螺絲",
+    "result": "混料與孔牙堵塞排除"
+   },
+   {
+    "step": "以試片與報廢件試鎖，再做首件確認",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "screw_m3"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換批後先核對料盒標籤與螺絲長度，同一孔重複 NOK 也要回頭查混料，不要只清孔牙。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,110 @@
+# SOP-ASM-051 防護具（PPE）與靜電防護未落實之提醒與處理
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-ASM-051
+version: '0.1'
+title: 防護具（PPE）與靜電防護未落實之提醒與處理
+line: assembly
+machine_type:
+- screwdriving_station
+- manual_assembly_station
+failure_mode_ids:
+- ppe_esd_missing
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: safety
+safety_only: true
+generator:
+  model: null
+  prompt_ver: safety-template-wa-v1
+  seed: null
+safety:
+  loto_required: false
+  loto_checklist_id: null
+  loto_checklist_ids: []
+  energy_sources: []
+  ppe:
+  - 防割手套（鈑金銳邊）
+  - 護目鏡
+  - 靜電手環
+  danger_zone_entry: false
+  legal_basis:
+  - 設施規則第277條
+  - 職業安全衛生法第18條
+symptoms:
+- 沒戴手套
+- 沒戴護目鏡
+- 沒戴靜電手環
+- 靜電測試沒過
+- 手套破了沒換
+prerequisites:
+  tools:
+  - Kanban 工單
+  - 備用防護具
+  parts: []
+  skill_level: 班長
+steps:
+- 'no': 1
+  phase: prepare
+  action: 影像或靜電測試站告警後，由班長到站確認；該作業員先暫停接觸工件（靜電測試未通過時不得觸碰主機板等靜電敏感零件），設備不需停機上鎖
+  caution: 提醒為主、不懲罰；畫面中人臉已模糊
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-277
+- 'no': 2
+  phase: prepare
+  action: 先確認系統面：該站防護具（防割手套、護目鏡、靜電手環）庫存、尺寸是否合適、是否損壞（設施規則第277條）；庫存不足時由班長向倉管申請補發
+  caution: 系統問題優先，不以個人為對象究罰
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-277
+- 'no': 3
+  phase: inspect
+  action: 交由班長確認未落實的項目與原因（沒有發放、尺寸不合、破損、太熱、忘記），記錄在 Kanban；AI 只記錄時間、站別與事件類型，不做個人懲處判斷，也不提供任何排除方法
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-277
+- 'no': 4
+  phase: verify
+  action: 班長補發或更換防護具後，作業員重新佩戴；靜電手環重新測試通過，班長在 Kanban 簽核
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-277
+- 'no': 5
+  phase: restore
+  action: 班長確認後才恢復該站作業；AI 不得宣告可以恢復作業。本事件紀錄只用於改善防護具供應與作業設計，不得用於個人考核
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 班長補發或更換防護具後，作業員重新佩戴；靜電手環重新測試通過，班長在 Kanban 簽核
+restore:
+- 班長確認後才恢復該站作業；AI 不得宣告可以恢復作業。本事件紀錄只用於改善防護具供應與作業設計，不得用於個人考核
+escalate_if:
+- 同一站一週內重複發生 → 班長與職安人員檢討防護具選型、尺寸與供應（設施規則第277條）
+- 靜電手環測試站本身異常（多人同時不通過） → 通知品保工程師檢查測試站
+- 有人被鈑金銳邊割傷 → 急救優先，通知主管並記錄
+lessons: PPE 告警先問「有沒有發、合不合用」，再提醒個人；不懲罰、不做考核。
+references:
+- id: L1
+  title: 職業安全衛生設施規則
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060009
+  license: TW-law
+  use: quote
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-277
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

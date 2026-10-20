@@ -1,0 +1,135 @@
+{
+  "case_id": "CASE-STP-0087",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1086,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2025-12-11T03:47:44+08:00",
+  "closed_at": "2025-12-11T04:42:05+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "motor_current_abnormal",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 19,
+    "recent_changes": [
+      "換模 02:43（D-1U-BASE-01）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2512-362"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-11T02:33:50+08:00",
+      "signal": "motor_current_a",
+      "value": 105
+    },
+    {
+      "t": "2025-12-11T02:43:50+08:00",
+      "signal": "die_change",
+      "value": "D-1U-BASE-01"
+    },
+    {
+      "t": "2025-12-11T02:47:24+08:00",
+      "signal": "counterbalance_bar",
+      "value": 4.6
+    },
+    {
+      "t": "2025-12-11T03:45:50+08:00",
+      "signal": "motor_current_a",
+      "value": 121
+    },
+    {
+      "t": "2025-12-11T03:46:06+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.7
+    }
+  ],
+  "technician": {
+    "id": "TECH-03",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 換模後異音 電流121A 平衡缸4.6 模具表設定不符 調壓閥分段調整 試沖ok",
+  "technician_report_normalized": "PR01 夜班換模後出現異音，主馬達電流由約 105 A 上升至 121 A，氣源總壓 5.7 bar 正常；現場平衡缸壓力錶讀值 4.6 bar，與模具資料表所載上模重量對應設定不符。依 SOP-STP-056 以調壓閥分段調整平衡缸壓力，每段不超過 0.2 bar，並確認氣源軟管與接頭無洩漏。調整後試沖首件成形正常，異音消失、電流回穩，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "counterbalance_misset",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "counterbalance_misset",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌（送料機 FD02 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查閱模具資料表，比對現場平衡缸壓力錶讀值",
+      "result": "設定不符（4.6 bar）"
+    },
+    {
+      "step": "確認氣源總壓錶與平衡缸軟管、接頭",
+      "result": "總壓 5.7 bar 正常、無洩漏"
+    },
+    {
+      "step": "依 SOP-STP-056 以調壓閥分段調整平衡缸壓力",
+      "result": "調整至模具表設定值"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖首件，量測成形高度並讀取沖壓力與主馬達電流",
+      "result": "首件 ok、異音消失、電流回穩"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-056"
+  ],
+  "downtime_min": 54,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後平衡缸壓力一定要照模具資料表對上模重量重新核對，氣源總壓正常不代表平衡缸設定正確。",
+  "related_failure_mode_ids": [
+    "counterbalance_misset"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-056"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

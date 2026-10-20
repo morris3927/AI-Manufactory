@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1049
+ },
+ "output": {
+  "technician_report_raw": "PR01 底板毛邊變高 噸位168→181緩升 沖次100543超過8萬 平衡3%正常 刃口R角磨耗 換沖頭+模仁鑲塊 試沖ok",
+  "technician_report_normalized": "PR01 生產 1U 機殼底板（SECC 1.0 mm，模具 D-1U-BASE-01）時發現毛邊逐漸變高、斷面光亮帶變窄。調閱模具履歷與噸位趨勢，沖次已達 100543 次，超過研磨基準 80000 次；噸位峰值由 168 噸緩升至 181 噸，左右平衡 3% 正常。停機以毛邊規與放大鏡檢查，確認沖頭刃口 R 角磨耗及局部崩缺，更換沖頭與模仁刃口鑲塊後試沖，毛邊恢復正常，停機 166 分鐘。",
+  "actions": [
+   {
+    "step": "調閱模具履歷卡與噸位趨勢紀錄，核對沖次與峰值",
+    "result": "沖次100543超過8萬基準，噸位168→173→181緩升"
+   },
+   {
+    "step": "停機量測製品毛邊高度與斷面光亮帶比例",
+    "result": "毛邊偏高、光亮帶變窄"
+   },
+   {
+    "step": "以放大鏡目視檢查沖頭與模仁刃口",
+    "result": "刃口R角磨耗、局部崩缺"
+   },
+   {
+    "step": "拆換沖頭與模仁刃口鑲塊並清潔潤滑",
+    "result": "更換完成"
+   },
+   {
+    "step": "無料空轉確認噸位平衡後試沖並量測毛邊",
+    "result": "毛邊恢復標準、噸位約170 ok"
+   }
+  ],
+  "parts_replaced": [
+   "punch",
+   "die_insert"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "沖次破8萬就要排刃口研磨，不要等毛邊變高才處理；噸位緩升是提前指標。",
+  "escalation_note": null
+ }
+}

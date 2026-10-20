@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4038
+ },
+ "output": {
+  "technician_report_raw": "ST02 CALIB_OVERDUE 校正過期25天 抽測偏14.5% 換校正品 試鎖ok",
+  "technician_report_normalized": "ST02 電動起子鎖附站出現 CALIB_OVERDUE，查校正標籤發現到期日已過 25 天；以扭力分析儀在報廢試片抽測，實測與設定 0.8 N·m 偏差 14.5%。依 LOTO-ASM-TOOL-01 完成斷電與氣源隔離後，換上校正合格備品起子，原工具掛待校正送校；試片試鎖與抽測正常。校正逾期期間鎖附機殼已依螺絲批號 SL-2604-76、工具編號隔離貼待判定標籤，恢復生產。",
+  "actions": [
+   {
+    "step": "核對 SD-02-1 校正標籤與控制器履歷，確認 CALIB_OVERDUE 與到期日",
+    "result": "逾期25天"
+   },
+   {
+    "step": "以校正有效期內扭力分析儀在報廢試片抽測 0.8 N·m",
+    "result": "偏差14.5%"
+   },
+   {
+    "step": "換上校正合格備品起子，原工具掛待校正送校",
+    "result": "已更換"
+   },
+   {
+    "step": "在報廢試片試鎖並抽測",
+    "result": "ok"
+   },
+   {
+    "step": "隔離校正逾期期間鎖附機殼，依螺絲批號與工具編號貼待判定標籤",
+    "result": "已隔離"
+   }
+  ],
+  "parts_replaced": [
+   "calibrated_spare_screwdriver"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "鎖附結果 OK 不代表扭力沒漂，校正標籤與抽測值要一起看。",
+  "escalation_note": null
+ }
+}

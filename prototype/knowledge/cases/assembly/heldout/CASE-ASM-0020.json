@@ -1,0 +1,133 @@
+{
+  "case_id": "CASE-ASM-0020",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4019,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-01-05T16:37:23+08:00",
+  "closed_at": "2026-01-05T17:06:31+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "feeder_timeout",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 89,
+    "recent_changes": [
+      "補充螺絲 16:27（SL-2601-69）"
+    ],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-02-2",
+    "screw_lot": "SL-2601-70"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-05T16:27:44+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2601-69"
+    },
+    {
+      "t": "2026-01-05T16:32:25+08:00",
+      "signal": "feeder_pick_fail_count",
+      "value": 22
+    },
+    {
+      "t": "2026-01-05T16:37:23+08:00",
+      "signal": "alarm_code",
+      "value": "FEEDER_TIMEOUT"
+    },
+    {
+      "t": "2026-01-05T16:37:23+08:00",
+      "signal": "screw_result",
+      "value": "NOK_NO_SCREW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-42",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 送釘逾時 FEEDER_TIMEOUT 吸不到釘 pick fail 22 補料後卡住 LOTO後拆護蓋清歪釘 試打 ok",
+  "technician_report_normalized": "16:37 MES 觸發送釘逾時（FEEDER_TIMEOUT）警報，起子端無螺絲可鎖，送釘吸取失敗累計 22 次；16:27 曾補充螺絲。完成 LOTO 後目視檢查送釘軌道、分離器與吸嘴，發現軌道出口有歪斜螺絲卡住，並有少量金屬屑。以塑膠鑷子清除卡釘與異物，核對螺絲頭型、長度與批號規格；手動送釘路徑確認無干涉，並以試片試鎖正常。可疑螺絲批與受影響工件已隔離追溯，首件確認後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "screw_feeder_jam",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "screw_feeder_jam",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "查閱控制器事件紀錄、鎖附報表與補料紀錄，確認送釘逾時與吸取失敗次數。",
+      "result": "確認送釘異常"
+    },
+    {
+      "step": "目視檢查送釘軌道、分離器與吸嘴，發現軌道出口卡住歪斜螺絲。",
+      "result": "找到卡釘"
+    },
+    {
+      "step": "以塑膠鑷子清除卡釘與金屬屑，並核對螺絲頭型、長度與批號規格。",
+      "result": "卡釘排除"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "手動檢查送釘路徑並以試片試鎖，確認無干涉且鎖附正常。",
+      "result": "試鎖 ok"
+    },
+    {
+      "step": "恢復量產前確認：清點工具與螺絲、恢復送釘機護蓋，由原上鎖人取下自己的插頭鎖蓋並插回電源，首件由班長確認",
+      "result": "ok"
+    },
+    {
+      "step": "隔離可疑螺絲批與受影響工件，完成追溯與首件確認後恢復生產。",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-021"
+  ],
+  "downtime_min": 26,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "補料後先核對螺絲批與送釘軌道出口，吸取失敗次數上升就別再硬打。",
+  "related_failure_mode_ids": [
+    "screw_feeder_jam"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

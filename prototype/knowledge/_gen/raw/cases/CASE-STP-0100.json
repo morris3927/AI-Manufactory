@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1099
+ },
+ "output": {
+  "technician_report_raw": "FD04 換料後料頭翹 進料口卡 MISFEED 壓下量沿用上捲1.2 重調1.0+換刮板 ok",
+  "technician_report_normalized": "23:00 更換料捲（SECC 1.2 mm 改為 SGCC 1.0 mm）後，連續出現 STRIP_EDGE、LOOP_FAULT 及 MISFEED，料頭卡在進料口。檢查送料長度誤差僅 0.01 mm，送料本體無異常；以厚薄規量測整平輥隙得 1.44 mm，核對設定表確認仍沿用前一料捲 1.2 mm 的壓下量，整平機出口料帶殘留翹頭與弓形，造成進料口卡料與料環異常。已依 SGCC 1.0 mm 設定表重新調整壓下量、間隙與背壓輥並鎖緊，同時更換整平機刮板、清潔輥面與料環檢出板。另將料帶放平量測，側彎偏向同一側，屬該料捲殘留側彎，已調整入口導向並回報料捲狀況。寸動建立料環後 LOOP_FAULT 未再發生，試沖正常，恢復生產。",
+  "actions": [
+   {
+    "step": "停機確認 MISFEED／STRIP_EDGE 警報，清除卡在進料口的料頭",
+    "result": "卡料排除"
+   },
+   {
+    "step": "量測送料長度誤差並檢查送料滾輪與壓輪",
+    "result": "誤差 0.01 mm，送料本體正常"
+   },
+   {
+    "step": "以厚薄規量測整平輥隙，核對 SGCC 1.0 mm 整平設定表",
+    "result": "輥隙 1.44 mm，沿用前一料捲設定"
+   },
+   {
+    "step": "依設定表重新調整整平輥壓下量、間隙與背壓輥後鎖緊",
+    "result": "翹頭與弓形消除"
+   },
+   {
+    "step": "更換整平機刮板，清潔整平輥面與料環檢出板",
+    "result": "ok"
+   },
+   {
+    "step": "寸動建立料環，量測料帶側彎並調整入口導向後試沖",
+    "result": "LOOP_FAULT 未再出現，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "straightener_scraper"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換料厚或換材質後，整平輥壓下量一定要照設定表重設，不能沿用上一捲的數值。",
+  "escalation_note": null
+ }
+}

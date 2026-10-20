@@ -1,0 +1,139 @@
+{
+  "case_id": "CASE-STP-0058",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1057,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2025-12-12T07:10:19+08:00",
+  "closed_at": "2025-12-12T07:38:57+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 20,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2512-323"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-12T05:52:42+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2025-12-12T05:54:07+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2025-12-12T06:41:45+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2025-12-12T06:42:59+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2025-12-12T07:10:08+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01,
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2025-12-12T07:10:19+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-14",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR01 MISFEED連跳3次 05:52 06:41 07:10 料帶位置ok 導正孔ok 送料誤差0.01mm 感測頭接頭鬆 感應面有油 清潔+重插+束線 重置試沖ok 觀察1小時沒再跳",
+  "technician_report_normalized": "夜班期間 PR01 於 05:52、06:41、07:10 連續三次發生 MISFEED 停機，每次重置後可立即恢復運轉。檢查料帶位置、導正孔與模面均正常，停機前送料長度誤差僅 0.01 mm，在 ±0.03 mm 容許範圍內，排除實際卡料。進一步檢查誤送料感測器，發現接頭略微鬆動、感應面沾附油屑，清潔感應面並重新插緊接頭、固定線纜後，重置試運轉，觀察一小時未再跳脫，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "misfeed_sensor_fault",
+    "by": "jev",
+    "p": 0.77
+  },
+  "final_root_cause": "misfeed_sensor_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停機後檢查料帶位置、導正孔與模面，確認無卡料或廢料上跳",
+      "result": "正常"
+    },
+    {
+      "step": "調閱警報紀錄與送料長度誤差，數值為 0.01 mm，在 ±0.03 mm 內",
+      "result": "排除實際送料異常"
+    },
+    {
+      "step": "清潔誤送料感測器感應面油屑，檢查接頭端子並重新插緊、固定線纜",
+      "result": "接頭復位"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "重置後試運轉並觀察 MISFEED 訊號",
+      "result": "未再跳脫，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-041"
+  ],
+  "downtime_min": 25,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "MISFEED 反覆跳但送料誤差只有 0.01 mm 時，先查感測器接頭與感應面油屑，不要急著拆模具。",
+  "related_failure_mode_ids": [
+    "misfeed_sensor_fault"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,285 @@
+# SOP-ASM-011 扭力未達／浮鎖之檢查與補鎖驗證
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-ASM-011
+version: '0.1'
+title: 扭力未達／浮鎖之檢查與補鎖驗證
+line: assembly
+machine_type:
+- screwdriving_station
+failure_mode_ids:
+- torque_not_reached
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: quality
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 211
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-ASM-TOOL-01
+  loto_checklist_ids:
+  - LOTO-ASM-TOOL-01
+  energy_sources:
+  - electrical
+  - pneumatic
+  - mechanical_stored
+  - dut_power
+  ppe:
+  - 防割手套（鈑金銳邊）
+  - 護目鏡
+  - 靜電手環
+  - 安全鞋（搬運機殼）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
+  - OSHA 1910.147(d)
+symptoms:
+- 浮鎖
+- 螺絲沒鎖平
+- 扭力不夠
+- 起子提早停
+- 補鎖就好了
+- 浮鎖，螺絲頭與機殼之間有可見間隙。
+- 螺絲沒鎖平，用手輕推可感覺鬆動。
+- 扭力不夠，控制器判低扭力 NOK。
+- 起子提早停，角度沒有轉完應有圈數。
+- 現場常說補鎖就好了，且 NOK 分散在不同孔位。
+prerequisites:
+  tools:
+  - 扭力分析儀（含轉接頭）
+  - 校正合格之電動起子與十字起子頭
+  - 間隙規或游標卡尺
+  - 放大鏡與照明燈
+  - 試片或報廢機殼（含壓鉚螺母）
+  - 清潔布與非金屬異物清除工具
+  parts:
+  - M3 機殼螺絲（通用名稱）
+  - 十字起子頭（通用規格）
+  - 壓鉚螺母（通用名稱）
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知班長本站暫停，於 Kanban 開立維修單；記錄NOK 結果、孔位與近 30 件的鎖附扭力／角度紀錄
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 可疑工件先隔離：本站與下游已完成、可能受影響的機殼貼「待確認」標籤並移到隔離區，依序號追溯，判定前不得出貨
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+- 'no': 3
+  phase: prepare
+  action: 確認班長已核准簡化作業許可（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 4
+  phase: isolate
+  action: 依 LOTO-ASM-TOOL-01 執行輕量上鎖：拔下起子控制器插頭並套上插頭鎖蓋（充電式起子取下電池）、關閉送釘機氣源並洩壓，掛上個人標籤；插頭保持在自己的專屬控制下，並按啟動鍵確認不動作
+  caution: 本模式上鎖時要特別注意扭力臂／懸吊平衡器彈簧與送釘機振動盤的機械蓄能，確認完全靜止後再進行檢查。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 5
+  phase: inspect
+  action: 在上鎖掛牌完成後，目視檢查 NOK 孔位之螺絲頭與工件間隙、十字槽、壓鉚螺母孔牙及周圍鋅渣或塗料；以間隙規量測螺絲頭與工件之間隙。
+  criteria: 若螺絲頭與工件間隙大於 0.05 mm（模擬值）、十字槽完好、孔牙無明顯損傷，且 NOK 分散在不同孔位、常集中在同一位作業員或同一班，判定符合本模式；若十字槽磨花或起子頭刃口圓化，改懷疑 bit_wear_camout；若同一孔位孔牙損傷、毛邊或被異物堵住，改懷疑 cross_thread_strip。
+  caution: 鈑金銳邊請戴防割手套；不可用金屬工具硬挖孔牙。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+  - A4
+- 'no': 6
+  phase: inspect
+  action: 調閱已匯出之鎖附紀錄（不啟動鎖附站），確認低扭力 NOK、最終角度與旋入初段扭力之分布。
+  criteria: 若紀錄顯示低扭力 NOK、最終角度低於 1080 度（模擬值）、旋入初段扭力小於 0.15 N·m（模擬值）且 NOK 孔位分散，判定本模式；若初段扭力大於 0.30 N·m（模擬值）或角度已超過正常上限仍不到目標扭力，改懷疑 cross_thread_strip；若多數結果 OK 但下游鬆脫扭力偏差超過 ±10%（模擬值），改懷疑 tool_calibration_due。
+  caution: 讀取紀錄時不得變更控制器參數或放寬扭力判定上下限。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A4
+  - A5
+- 'no': 7
+  phase: inspect
+  action: 檢查起子頭使用次數、刃口狀態與工具校正到期日。
+  criteria: 若起子頭使用次數未超過 40,000 次（模擬值）、刃口無圓化或缺角、校正到期日未過，支持本模式；若使用次數超過 40,000 次（模擬值）或刃口圓化，改懷疑 bit_wear_camout；若校正到期日已過，改懷疑 tool_calibration_due。
+  caution: 更換起子頭前先確認十字槽規格；不得以放寬扭力上下限方式處理。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A5
+  - A4
+- 'no': 8
+  phase: inspect
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-ASM-TOOL-01 測試／定位程序：需要通電試鎖、量測扭力或執行功能測試時：由原上鎖人取下自己的插頭鎖蓋並插回電源，班長知悉；只在治具上用試片或報廢件試鎖；手指不得放在起子頭與送釘吸嘴下方；完成後再拔插頭並套回插頭鎖蓋
+  caution: 通電期間手指不得放在起子頭、送釘吸嘴下方或受測機殼內
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 9
+  phase: inspect
+  action: 在試片或報廢件上以正確下壓力與垂直姿態試鎖 3 次（模擬值），並以扭力分析儀抽測其中 3 點（模擬值）。
+  criteria: 若每次最終扭力達 0.80 N·m（模擬值）且角度達 1080 度以上（模擬值），抽測 3 點（模擬值）與設定值偏差在 ±10% 內（模擬值），判定本模式；若試鎖時起子頭打滑或十字槽磨花，改懷疑 bit_wear_camout；若同一孔位初段扭力大於 0.30 N·m（模擬值）或滑牙，改懷疑 cross_thread_strip；若抽測偏差超過 ±10%（模擬值）或校正逾期，改懷疑 tool_calibration_due。
+  caution: 試鎖只用試片或報廢件，不得在待出貨機殼上試鎖；人員手部遠離起子頭旋轉路徑。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A4
+  - A5
+- 'no': 10
+  phase: repair
+  action: 將 NOK 機殼、同批可疑機殼與拆下螺絲貼標隔離，記錄批號、孔位、作業員、班別與鎖附紀錄，進行追溯。
+  caution: 不得把 NOK 件混入良品；隔離區要清楚標示。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A4
+- 'no': 11
+  phase: repair
+  action: 清除壓鉚螺母孔內鋅渣、塗料或異物，檢查孔牙與螺絲螺紋；若孔牙損傷或堵住，改走 SOP-ASM-012，不強行補鎖。
+  caution: 不可用會刮傷孔牙的尖銳工具；清潔後確認無異物。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+  - A4
+- 'no': 12
+  phase: repair
+  action: 更換起子頭或送釘機吸嘴（若磨耗或送釘不順），以試片或報廢件依正確下壓力與垂直姿態試鎖 3 次（模擬值），確認最終扭力 0.80 N·m（模擬值）與角度 1080 度以上（模擬值）。
+  caution: 試鎖只用試片或報廢件；更換起子頭需確認十字槽規格，送釘機吸嘴不得有破損。
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - A4
+  - A5
+- 'no': 13
+  phase: repair
+  action: 拆下 NOK 螺絲、換新螺絲後依正確下壓力與垂直姿態重新鎖附（僅限孔牙正常且已排除斜牙／滑牙者；不在原螺絲上直接補鎖），完成後標記並保留紀錄。
+  caution: 補鎖前確認螺絲規格與孔位正確；不可放寬扭力判定上下限或關閉鎖附計數、防錯功能。
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - A4
+  - A5
+- 'no': 14
+  phase: verify
+  action: 修復後執行首件確認：由品保或指定人員對第一件機殼檢查所有鎖附點、螺絲頭貼平與外觀。
+  criteria: 首件所有鎖附點最終扭力達 0.80 N·m（模擬值）且角度達 1080 度以上（模擬值），螺絲頭與工件間隙不大於 0.05 mm（模擬值），判定合格；若再出現低扭力 NOK，改走 SOP-ASM-031 由品保工程師複判。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A4
+  - A5
+- 'no': 15
+  phase: verify
+  action: 以扭力分析儀對首件抽測 3 點（模擬值），確認實測值與設定值偏差。
+  criteria: 抽測 3 點（模擬值）皆在 0.72～0.88 N·m（模擬值）且無浮鎖，判定合格；若偏差超過 ±10%（模擬值），改走 SOP-ASM-031 並由品保工程師複判。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A4
+  - A5
+- 'no': 16
+  phase: verify
+  action: 下游功能測試站執行裝置偵測與絕緣測試，並檢查拆鎖後走線、連接器卡扣、束帶與護線套。
+  criteria: 功能測試通過、絕緣測試合格、連接器卡扣到位、線材彎曲半徑與束帶／護線套無異常，判定修復完成；若功能測試異常，隔離該批並由品保工程師複判。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A2
+  - PUB-NASA-STD-8739.4A-C4-17.2.1-mating
+- 'no': 17
+  phase: restore
+  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+- 'no': 18
+  phase: restore
+  action: 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - none
+- 'no': 19
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 修復後執行首件確認：由品保或指定人員對第一件機殼檢查所有鎖附點、螺絲頭貼平與外觀；判定：首件所有鎖附點最終扭力達 0.80 N·m（模擬值）且角度達 1080 度以上（模擬值），螺絲頭與工件間隙不大於 0.05 mm（模擬值），判定合格；若再出現低扭力 NOK，改走 SOP-ASM-031 由品保工程師複判。
+- 以扭力分析儀對首件抽測 3 點（模擬值），確認實測值與設定值偏差；判定：抽測 3 點（模擬值）皆在 0.72～0.88 N·m（模擬值）且無浮鎖，判定合格；若偏差超過 ±10%（模擬值），改走 SOP-ASM-031 並由品保工程師複判。
+- 下游功能測試站執行裝置偵測與絕緣測試，並檢查拆鎖後走線、連接器卡扣、束帶與護線套；判定：功能測試通過、絕緣測試合格、連接器卡扣到位、線材彎曲半徑與束帶／護線套無異常，判定修復完成；若功能測試異常，隔離該批並由品保工程師複判。
+restore:
+- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+- 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 若同一孔位重複低扭力且孔牙有損傷、毛邊或被異物堵住 → 改走 SOP-ASM-012 並通知品保工程師。
+- 若起子頭使用次數超過 40,000 次（模擬值）、刃口圓化或缺角，或試鎖有打滑聲 → 改走 SOP-ASM-013。
+- 若扭力分析儀抽測偏差超過 ±10%（模擬值）或工具校正逾期 → 改走 SOP-ASM-031 並通知設備工程師。
+lessons: 浮鎖先看間隙、角度與孔牙，再談補鎖；不要用放寬扭力或關閉計數來讓 NOK 變 OK。
+references:
+- id: A4
+  title: 'Atlas Copco: Pocket Guide to Tightening Technique'
+  url: https://www.atlascopco.com/zh-tw/itba/expert-hub/pocket-guide/tightening-technique
+  license: ©
+  use: paraphrase
+- id: A1
+  title: NASA RP-1228 Fastener Design Manual (1990)
+  url: https://ntrs.nasa.gov/citations/19900009424
+  license: PD
+  use: reference
+- id: A5
+  title: 'Atlas Copco: electric screwdriver troubleshooting (online manual)'
+  url: https://picontent.atlascopco.com/cont/external/dir/41/15384642827_A2390001_html5_external/en-US/14503108875.html
+  license: ©
+  use: paraphrase
+- id: A2
+  title: NASA-STD-8739.4A Change 4 Workmanship Standard for Crimping, Interconnecting Cables, Harnesses, and Wiring
+  url: https://standards.nasa.gov/standard/nasa/nasa-std-87394
+  license: PD
+  use: quote
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+- id: public/guidance_weld_asm.jsonl
+  title: 公開文件 chunk：PUB-NASA-STD-8739.4A-C4-17.2.1-mating
+  url: https://www.osha.gov/ ; https://standards.nasa.gov/ ; https://www.hse.gov.uk/
+  license: PD / OGL
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

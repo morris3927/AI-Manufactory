@@ -1,0 +1,128 @@
+{
+  "case_id": "CASE-WLD-0042",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3041,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "welding",
+  "machine_type": "spot_welder",
+  "machine_id": "WLD-L1-SP01",
+  "opened_at": "2026-06-24T15:06:42+08:00",
+  "closed_at": "2026-06-24T15:28:16+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 11,
+    "recent_changes": [
+      "換工件批 13:38（L-2606-83）"
+    ],
+    "part": "硬碟籠框架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-136"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-24T13:38:48+08:00",
+      "signal": "part_lot_change",
+      "value": "L-2606-83"
+    },
+    {
+      "t": "2026-06-24T15:06:42+08:00",
+      "signal": "weld_defect",
+      "value": "burn_through×1 FX-C"
+    }
+  ],
+  "technician": {
+    "id": "TECH-21",
+    "level": "L3"
+  },
+  "technician_report_raw": "SP01 MES跳FX-C燒穿1件 先查治具 塞尺量3處最大0.3mm 定位銷夾爪ok 間隙沒超標 再查品保量測治具 歸零錯誤 重新歸零複測ok 恢復生產 無更換",
+  "technician_report_normalized": "SP01 接獲 MES 通報 FX-C 出現一件燒穿，適逢 13:38 更換工件批 L-2606-83。先朝治具定位不良追查：缺陷紀錄僅一件，未集中於 FX-C；在未拆卸狀態下目視基準面、定位銷與夾爪均無磨耗鬆動；塞尺量三處間隙最大 0.3 mm，未超過 0.5 mm 判定值，排除治具間隙問題。續查品保量測治具，發現歸零錯誤造成誤判，重新歸零後複測正常。恢復生產，未更換零件，停機 17 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "fixture_fitup_gap",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "MES 通報 FX-C 燒穿且 13:38 剛換批 L-2606-83，符合治具定位間隙的典型觸發，因此先懷疑 fixture_fitup_gap；但實測三處間隙最大僅 0.3 mm、定位銷與夾爪無磨耗鬆動，且缺陷僅單件未集中，後續查出品保量測治具歸零錯誤造成誤判，才確認是誤報。",
+  "discriminating_evidence": [
+    "塞尺量測 FX-C 三處間隙最大 0.3 mm，未達 0.5 mm 判定值",
+    "定位銷與夾爪齒面目視無磨耗、鬆動，夾持正常",
+    "缺陷紀錄僅 1 件 burn_through，未集中於 FX-C 或同一銲點",
+    "品保量測治具重新歸零後複測，燒穿判定消失"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-SPOT-WELD-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱銲接缺陷紀錄與 FX-C 治具使用紀錄，核對燒穿是否集中",
+      "result": "僅1件，未集中"
+    },
+    {
+      "step": "在未拆卸狀態下目視檢查 FX-C 基準面、定位銷與夾爪",
+      "result": "無磨耗鬆動"
+    },
+    {
+      "step": "以塞尺量測工件與治具基準面間隙三處",
+      "result": "最大0.3mm，排除"
+    },
+    {
+      "step": "檢視品保量測治具與判定紀錄",
+      "result": "量測治具歸零錯誤"
+    },
+    {
+      "step": "量測治具重新歸零後複測",
+      "result": "恢復正常"
+    },
+    {
+      "step": "恢復生產前確認：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區，由原上鎖人取下自己的鎖後以正常模式復機",
+      "result": "ok"
+    },
+    {
+      "step": "恢復生產並確認首件",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-031"
+  ],
+  "downtime_min": 17,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "MES 跳品質異常時先看缺陷有沒有集中；治具間隙量了沒超標，就回頭查品保量測治具有沒有歸零。",
+  "related_failure_mode_ids": [
+    "fixture_fitup_gap"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-WLD-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

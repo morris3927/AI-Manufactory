@@ -1,0 +1,113 @@
+{
+  "case_id": "CASE-STP-0084",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1083,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2026-04-21T04:49:51+08:00",
+  "closed_at": "2026-04-21T04:59:21+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "air_low_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 55,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2604-394"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-21T04:49:51+08:00",
+      "signal": "air_pressure_bar",
+      "value": 4.7
+    },
+    {
+      "t": "2026-04-21T04:50:52+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.6
+    }
+  ],
+  "technician": {
+    "id": "TECH-12",
+    "level": "L3"
+  },
+  "technician_report_raw": "FD04 氣壓低警報 04:49 HMI 4.7 bar 一分鐘後 5.6 三點組合正常 濾杯無水 調壓閥沒漂 查是保養前測試訊號 誤報 復機ok 停5分",
+  "technician_report_normalized": "FD04 於 04:49 發出氣壓低警報，HMI 顯示 4.7 bar，低於下限 4.8 bar。檢查三點組合、濾杯與調壓閥均正常，無積水或明顯洩漏；04:50 氣壓已回升至 5.6 bar。核對警報來源後確認為計畫性保養前的測試訊號，機台無實際故障。已恢復生產，停機約 5 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "air_pressure_low",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "規則以 4.7 bar 低於 4.8 bar 下限判定氣壓不足，但一分鐘後即回升至 5.6 bar，且警報來源是保養前測試訊號，並非實際氣源壓力不足。",
+  "discriminating_evidence": [
+    "HMI 於 04:50:52 顯示氣壓已回到 5.6 bar，未持續低於 4.8 bar 下限。",
+    "警報來源確認為計畫性保養前的測試訊號，非實際氣源不足。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "讀取 HMI 氣壓值與警報時間",
+      "result": "4.7 bar"
+    },
+    {
+      "step": "檢查三點組合、濾杯與調壓閥",
+      "result": "無異常 排除"
+    },
+    {
+      "step": "觀察氣壓回升並核對警報來源",
+      "result": "5.6 bar／保養前測試訊號"
+    },
+    {
+      "step": "恢復生產",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-055"
+  ],
+  "downtime_min": 5,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "氣壓警報先看一分鐘內趨勢與來源，4.7 衝到 5.6 這種多半不是真低壓，別急著拆三點組合。",
+  "related_failure_mode_ids": [
+    "air_pressure_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-055"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

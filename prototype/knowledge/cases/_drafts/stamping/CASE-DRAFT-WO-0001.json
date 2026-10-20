@@ -1,0 +1,31 @@
+{
+  "case_id": "CASE-DRAFT-WO-0001",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "source": "writeback",
+    "workorder_id": "WO-0001"
+  },
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-10-21T00:04:24.540973+08:00",
+  "closed_at": "2026-10-21T00:05:00.107570+08:00",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam",
+    "rule_severity": "S2"
+  },
+  "technician_report_raw": "原因：送料下滾輪表面亮帶加油污，清潔後仍偏短，量測直徑磨耗超過基準。處置：依 SOP-STP-012 更換上下滾輪並調整壓緊彈簧。結果：送料長度誤差恢復 0.02 mm，試沖 20 模導正孔正常，已恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "feed_roller_wear",
+    "by": "jev",
+    "p": 0.98
+  },
+  "final_root_cause": "feed_roller_wear",
+  "hypothesis_correct": true,
+  "sop_used": [
+    "SOP-STP-012"
+  ],
+  "review_status": "draft"
+}

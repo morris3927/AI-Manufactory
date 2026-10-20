@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4057
+ },
+ "output": {
+  "technician_report_raw": "MA01 ESD check FAIL 沒戴靜電手環 先停線 班長查庫存26 ok 補發 重測pass 復線",
+  "technician_report_normalized": "MA01 人工組裝站影像偵測到防護具未落實，且靜電手環測試顯示 FAIL。現場立即停止作業並通知班長，確認該站防護具庫存為 26 件、尺寸與發放量足夠。班長依 SOP-ASM-051 確認未配戴原因並記錄於 Kanban，補發靜電手環後請作業員重新配戴，重測 PASS 後恢復生產；本次停機 10 分鐘。",
+  "actions": [
+   {
+    "step": "停止 MA01 作業並通知班長到場",
+    "result": "已停線"
+   },
+   {
+    "step": "確認站別防護具庫存、尺寸與發放狀況",
+    "result": "庫存 26 件足夠"
+   },
+   {
+    "step": "由班長依 SOP-ASM-051 確認未配戴原因並記錄 Kanban",
+    "result": "已記錄"
+   },
+   {
+    "step": "由班長補發靜電手環並提醒正確配戴",
+    "result": "已補發"
+   },
+   {
+    "step": "重新執行靜電手環測試",
+    "result": "PASS 復線"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "上線前先確認靜電手環有戴、庫存夠不夠，缺件先補發再開線，重測一次就過。",
+  "escalation_note": null
+ }
+}

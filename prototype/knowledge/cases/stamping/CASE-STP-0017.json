@@ -1,0 +1,118 @@
+{
+  "case_id": "CASE-STP-0017",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1016,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-09-01T20:02:37+08:00",
+  "closed_at": "2026-09-01T20:15:41+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "vision",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 56,
+    "recent_changes": [
+      "換料捲 19:44（C-2609-283）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2609-283"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-01T19:45:01+08:00",
+      "signal": "coil_change",
+      "value": "C-2609-283"
+    },
+    {
+      "t": "2026-09-01T20:00:52+08:00",
+      "signal": "tonnage_peak",
+      "value": 169,
+      "machine_id": "STP-L1-PR01"
+    }
+  ],
+  "technician": {
+    "id": "TECH-09",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 20:02 misfeed停 料帶沒堆 料環正常 量料厚OK 看畫面是料架反光 誤判 無故障 復歸ok 20:15復產",
+  "technician_report_normalized": "20:02 FD02 觸發送料不順停機。到場檢查料帶與料環，未見堆積或送料偏短；因 19:44 剛換料捲 C-2609-283，先量測料厚與硬度並比對噸位，數值無異常，排除材料厚度偏差。調閱攝影畫面發現料架反光干擾，影像誤判料帶堆積。現場無實際故障，復歸試送正常，20:15 恢復生產，停機 12 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "material_thickness_dev",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "因為 19:44 才換料捲 C-2609-283，20:02 就發生送料停機，時間點符合換料後 30 分鐘內異常的模式，所以先懷疑料厚／硬度偏差；但量測料厚與硬度正常、噸位也無換料前後階躍，實際是攝影機受料架反光誤判。",
+  "discriminating_evidence": [
+    "現場料帶無堆積、料環正常，送料長度與導正孔無異常",
+    "料厚與硬度量測值與進料驗收相符，無換料後偏差",
+    "噸位僅有一筆 169 峰值，無換料前基線可比較，也未出現階躍後維持新水準的趨勢",
+    "攝影畫面可見料架反光，影像中的堆料位置與實際料帶不符"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "到 FD02 查看料帶、料環與送料狀態",
+      "result": "料帶無堆積、送料正常"
+    },
+    {
+      "step": "依第一判斷量測料厚、硬度並比對換料後噸位",
+      "result": "數值正常，排除材料厚度偏差"
+    },
+    {
+      "step": "調閱攝影機畫面確認停機來源",
+      "result": "料架反光造成影像誤判"
+    },
+    {
+      "step": "復歸試送並恢復生產",
+      "result": "ok，20:15 復產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-007"
+  ],
+  "downtime_min": 12,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換料後停機先別急著怪材料，先看現場料帶；鏡頭反光也會把正常料帶看成堆料。",
+  "related_failure_mode_ids": [
+    "material_thickness_dev"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-007"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

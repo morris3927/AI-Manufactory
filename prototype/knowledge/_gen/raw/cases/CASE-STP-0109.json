@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1108
+ },
+ "output": {
+  "technician_report_raw": "PR03 光幕LC_FAULT連跳3次 01:57變FAULT 停機+通報課長 合格人員查自我診斷接收器NG 換接收器+線路整理 試運轉ok",
+  "technician_report_normalized": "夜班期間 PR03 機械沖床光幕於 01:33、01:47 接連出現 LC_FAULT，01:57 光幕狀態轉為 FAULT，設備無法起動。現場先停機並通報主管，依安全裝置異常流程等待電氣合格人員處理。合格人員檢查光幕自我診斷，確認接收器異常並更換接收器、整理線路，完成功能測試後恢復生產。本次停機 147 分鐘。",
+  "actions": [
+   {
+    "step": "停機並通報主管，記錄 01:33、01:47、01:57 光幕警報時間",
+    "result": "已停機通報"
+   },
+   {
+    "step": "由電氣合格人員檢查光幕自我診斷結果與停用原因",
+    "result": "接收器異常"
+   },
+   {
+    "step": "由合格人員更換光幕接收器並整理線路",
+    "result": "更換完成"
+   },
+   {
+    "step": "執行光幕遮蔽與復歸功能測試",
+    "result": "功能正常"
+   },
+   {
+    "step": "空運轉與試沖確認無誤遮斷",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "light_curtain_receiver"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "光幕重複 LC_FAULT 不要只按復歸，先看自我診斷並依安全流程等合格人員，才不會把真故障當成誤遮斷。",
+  "escalation_note": null
+ }
+}

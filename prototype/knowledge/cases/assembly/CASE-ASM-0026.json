@@ -1,0 +1,126 @@
+{
+  "case_id": "CASE-ASM-0026",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4025,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-01-22T21:14:17+08:00",
+  "closed_at": "2026-01-22T22:40:30+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 39,
+    "recent_changes": [
+      "換螺絲批 20:57（SL-2601-34）"
+    ],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-01-1",
+    "screw_lot": "SL-2601-76"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-22T20:58:05+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2601-34"
+    },
+    {
+      "t": "2026-01-22T21:02:20+08:00",
+      "signal": "final_angle_deg",
+      "value": 794
+    },
+    {
+      "t": "2026-01-22T21:14:17+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-43",
+    "level": "L1"
+  },
+  "technician_report_raw": "ST01 換批後一直NOK 角度偏低 送丁盤混到短螺絲 長度沒對BOM 隔離換正確M3 首件ok",
+  "technician_report_normalized": "ASM-L1-ST01 於 21:14 出現鎖附 NOK_ANGLE_LOW，最終角度 794 度明顯偏低。核對換批紀錄發現 20:57 更換螺絲批後開始異常；檢查送釘盤與補料盒，發現混入長度較短、與 BOM 規格不符的螺絲。讀取鎖附控制器確認換批時序與 NOK 吻合，起子頭與壓鉚螺母孔牙正常。已依 LOTO-ASM-TOOL-01 關氣源，隔離送釘盤、補料盒、待鎖螺絲與已鎖可疑機殼並拍照追溯；清空送釘盤、軌道與分離器，補入正確 M3 螺絲，試片試鎖與首件確認正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "wrong_screw_type",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "wrong_screw_type",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "核對換批紀錄與送釘盤、補料盒螺絲，發現混入長度較短且與 BOM 不符的螺絲",
+      "result": "發現錯料"
+    },
+    {
+      "step": "量測螺絲長度、外徑與牙距，並讀取鎖附控制器最終角度 794 度與 NOK_ANGLE_LOW",
+      "result": "確認"
+    },
+    {
+      "step": "隔離送釘盤、補料盒、待鎖螺絲與已鎖可疑機殼，貼疑似錯料標籤拍照並依批號追溯",
+      "result": "已隔離"
+    },
+    {
+      "step": "關送釘機氣源後清空送釘盤、送釘軌道與分離器，以鑷子與軟毛刷移除混料，補入正確 M3 螺絲",
+      "result": "排除"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以試片或報廢件試鎖並做首件確認，連續鎖附結果正常",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-022"
+  ],
+  "downtime_min": 82,
+  "parts_replaced": [
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換批後先核對料盒標籤與螺絲長度，再開始鎖附，可避免角度偏低造成整批重工。",
+  "related_failure_mode_ids": [
+    "wrong_screw_type"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-022"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

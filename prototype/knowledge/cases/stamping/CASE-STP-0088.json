@@ -1,0 +1,152 @@
+{
+  "case_id": "CASE-STP-0088",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1087,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-04-26T03:46:38+08:00",
+  "closed_at": "2026-04-26T04:31:05+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "motor_current_abnormal",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 35,
+    "recent_changes": [
+      "換模 02:20（D-2U-TOP-03）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2604-205"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-26T02:11:27+08:00",
+      "signal": "motor_current_a",
+      "value": 105
+    },
+    {
+      "t": "2026-04-26T02:20:46+08:00",
+      "signal": "die_change",
+      "value": "D-2U-TOP-03"
+    },
+    {
+      "t": "2026-04-26T02:23:56+08:00",
+      "signal": "counterbalance_bar",
+      "value": 4.3
+    },
+    {
+      "t": "2026-04-26T03:44:40+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.9
+    },
+    {
+      "t": "2026-04-26T03:44:58+08:00",
+      "signal": "motor_current_a",
+      "value": 125
+    },
+    {
+      "t": "2026-04-26T03:45:25+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.0
+    }
+  ],
+  "technician": {
+    "id": "TECH-12",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 換模後馬達電流125A 有異音 先查氣壓 5.9→5.0 未低於4.8 排除氣壓 查模資料平衡缸4.3 與設定不符 調閥+試沖 ok",
+  "technician_report_normalized": "PR01 夜班換模後主馬達電流升至 125 A，運轉有異音。先查氣源總壓，讀值由 5.9 bar 降至 5.0 bar，仍高於 4.8 bar 下限，排除氣壓不足。比對換模紀錄與模具資料表，現場平衡缸壓力 4.3 bar 與 D-2U-TOP-03 設定不符，差逾 0.3 bar。依資料表以調壓閥分段調整，每次調降不超過 0.2 bar（目標 3.9 bar）；試沖首件之成形高度、壓印深度與沖壓力峰值正常，電流回落、異音消失，恢復生產，停機 44 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "air_pressure_low",
+    "by": "jev",
+    "p": 0.44
+  },
+  "final_root_cause": "counterbalance_misset",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到氣壓讀值由 5.9 bar 降到 5.0 bar、主馬達電流又升高，先懷疑氣源壓力不足；但 5.0 bar 仍高於 4.8 bar 下限、總壓正常，且異常時序緊接 02:20 換模後，現場平衡缸 4.3 bar 與模具資料不符，才確認不是氣壓低而是平衡缸設定不當。",
+  "discriminating_evidence": [
+    "氣源總壓讀值 5.9→5.0 bar，仍高於 4.8 bar 下限，未符合氣壓低條件",
+    "主馬達電流升至 125 A 且異常出現在於 02:20 換模 D-2U-TOP-03 之後",
+    "現場平衡缸壓力 4.3 bar，與模具資料對應值差逾 0.3 bar",
+    "依模具資料調整平衡缸後試沖正常、電流回落，支持平衡缸設定不當"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌（送料機 FD02 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查氣源總壓與機台氣壓錶，記錄 5.9→5.0 bar",
+      "result": "高於 4.8 bar 下限，排除氣壓不足"
+    },
+    {
+      "step": "比對換模紀錄與模具資料表之平衡缸壓力設定，現場讀值 4.3 bar",
+      "result": "與對應值差逾 0.3 bar"
+    },
+    {
+      "step": "依模具資料表以調壓閥分段調整平衡缸壓力，每次調降不超過 0.2 bar（目標 3.9 bar），調整後等待 30 秒",
+      "result": "壓力到達對應值"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖取首件，量測成形高度、壓印深度並讀取沖壓力峰值與左右平衡",
+      "result": "尺寸與沖壓力正常"
+    },
+    {
+      "step": "觀察主馬達電流與運轉聲音",
+      "result": "電流回落、異音消失"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-055",
+    "SOP-STP-056"
+  ],
+  "downtime_min": 44,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後電流一升高，先核對模具資料表的平衡缸壓力，不要只看氣源總錶就下結論。",
+  "related_failure_mode_ids": [
+    "counterbalance_misset",
+    "air_pressure_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-055",
+    "SOP-STP-056"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

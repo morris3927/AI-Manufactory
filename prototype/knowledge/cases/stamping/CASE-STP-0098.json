@@ -1,0 +1,150 @@
+{
+  "case_id": "CASE-STP-0098",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1097,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2025-10-27T06:40:51+08:00",
+  "closed_at": "2025-10-27T07:43:15+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 47,
+    "recent_changes": [
+      "換料捲 06:22（SECC 0.8 mm → SECC 1.0 mm）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2510-242"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2025-10-27T06:23:20+08:00",
+      "signal": "coil_change",
+      "value": "C-2510-242 spec_changed"
+    },
+    {
+      "t": "2025-10-27T06:24:40+08:00",
+      "signal": "straightener_setting_mm",
+      "value": 0.96
+    },
+    {
+      "t": "2025-10-27T06:39:19+08:00",
+      "signal": "alarm_code",
+      "value": "LOOP_FAULT"
+    },
+    {
+      "t": "2025-10-27T06:40:51+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-02",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 換料捲0.8→1.0後 MISFEED+LOOP 先當材料厚度 量料厚ok 實為翹頭 整平壓下量還在前捲0.96 重調+清刮板 ok",
+  "technician_report_normalized": "夜班 06:22 換料捲，料厚由 SECC 0.8 mm 改為 1.0 mm（C-2510-242）。06:39 出現 LOOP_FAULT，06:40 接續 MISFEED，送料中斷。原先懷疑材料厚度偏差，以厚薄規量測料厚為 1.0 mm 與規格相符，沖壓力峰值也沒有階躍變化，故予排除。改查整平機，發現輥壓下量仍停留在前一料捲的 0.96 mm，與 1.0 mm 料厚的設定表不符；且整平機出口到進料口之間，料帶有明顯翹頭與弓形殘留捲曲，料頭在進料口卡住。依設定表重新調整輥壓下量與間隙並鎖緊，清潔整平輥與刮板，以寸動建立料環後試沖，送料恢復正常。",
+  "first_hypothesis": {
+    "failure_mode_id": "material_thickness_dev",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "straightener_misset",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "換料捲時間 06:22 與 06:39 的 LOOP_FAULT、06:40 的 MISFEED 只差十幾分鐘，完全符合「換料後 30 分鐘內開始異常」的線索，加上料厚由 0.8 mm 換成 1.0 mm，才會先懷疑材料厚度偏差；但實測料厚與規格相符、沖壓力也沒有階躍變化，真正問題是整平輥壓下量沿用前一料捲的 0.96 mm。",
+  "discriminating_evidence": [
+    "以厚薄規量測料帶厚度為 1.0 mm，與料捲規格相符，並非厚度偏差",
+    "換料前後沖壓力峰值沒有出現 5% 以上的階躍變化，維持原水準",
+    "整平機輥壓下量記錄為 0.96 mm，仍是前一料捲 0.8 mm 的設定，與 1.0 mm 設定表不符",
+    "整平機出口至進料口間料帶有翹頭與弓形殘留捲曲，料頭在第一工站前卡住並伴隨料環異常"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷以厚薄規量測料帶厚度，並比對換料前後沖壓力峰值",
+      "result": "厚度 1.0 mm 相符、無階躍變化，排除"
+    },
+    {
+      "step": "核對整平機輥壓下量與該料厚設定表",
+      "result": "仍為前捲 0.96 mm，與 1.0 mm 不符"
+    },
+    {
+      "step": "目視與手感檢查整平機出口至進料口間的料帶",
+      "result": "翹頭、弓形殘留捲曲"
+    },
+    {
+      "step": "依 1.0 mm 設定表重調輥壓下量與間隙並鎖緊調整機構",
+      "result": "調整完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "清潔整平輥與刮板，以寸動建立料環觀察",
+      "result": "料環穩定、LOOP_FAULT 未再出現"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並連續觀察送料",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-007",
+    "SOP-STP-063"
+  ],
+  "downtime_min": 61,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換料厚時整平輥壓下量要照設定表重抓，不要沿用前一捲的數字；換捲後先看一眼料頭平不平再上線。",
+  "related_failure_mode_ids": [
+    "straightener_misset",
+    "material_thickness_dev"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-007",
+    "SOP-STP-063"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

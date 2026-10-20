@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3043
+ },
+ "output": {
+  "technician_report_raw": "SP02 點銲熔核小+飛濺多 量cap端面6.8mm 修磨次數29 超過25 換cap+修磨 試片剝離ok",
+  "technician_report_normalized": "SP02 點銲工位出現熔核偏小與飛濺增加，剝離試驗熔核直徑不足。以游標卡尺量測上下電極帽端面直徑已達 6.8 mm（新品 5.0～5.5 mm），端面有凹陷與沾鋅變色；控制器歷史顯示修磨次數 29 次、上次修磨後已銲 201 點，點銲電流 9.8 kA 與加壓力均在設定範圍內。判斷為電極帽磨耗，遂上鎖停電後更換電極帽，並以修磨器將端面修磨至 5.2 mm，清除銅屑。試片剝離試驗合格，恢復生產。",
+  "actions": [
+   {
+    "step": "上鎖停電後以游標卡尺量測上下電極帽端面直徑與端面狀況",
+    "result": "端面 6.8 mm、凹陷沾鋅"
+   },
+   {
+    "step": "由控制器歷史頁讀取 weld_count_since_dress 與 tip_dress_count",
+    "result": "201 點／29 次，超過修磨上限"
+   },
+   {
+    "step": "確認點銲電流與加壓力讀值",
+    "result": "9.8 kA 與加壓力均在設定範圍內"
+   },
+   {
+    "step": "更換電極帽並以刮刀清潔電極座錐面鋅渣",
+    "result": "錐面貼合無偏擺"
+   },
+   {
+    "step": "以電極修磨器修磨端面並清除銅屑",
+    "result": "端面 5.2 mm ok"
+   },
+   {
+    "step": "局部排氣運轉下於圍欄外以報廢試片做剝離試驗",
+    "result": "熔核直徑合格、飛濺正常"
+   }
+  ],
+  "parts_replaced": [
+   "electrode_cap"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "修磨次數與端面直徑一起看，別只等到熔核變小才換電極帽。",
+  "escalation_note": null
+ }
+}

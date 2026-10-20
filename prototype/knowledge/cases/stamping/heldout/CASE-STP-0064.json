@@ -1,0 +1,128 @@
+{
+  "case_id": "CASE-STP-0064",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1063,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-08-22T08:25:18+08:00",
+  "closed_at": "2026-08-22T08:48:46+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 46,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2608-166"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-22T08:24:30+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01
+    },
+    {
+      "t": "2026-08-22T08:25:18+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-08-22T08:26:45+08:00",
+      "signal": "state",
+      "value": "running"
+    }
+  ],
+  "technician": {
+    "id": "TECH-13",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 MISFEED停一次 停機前誤差0.01 感測接頭沒鬆 感應面ok 問操作員 穿新料頭暫停送料 正常保護 重置ok",
+  "technician_report_normalized": "FD02 於 08:25 發生一次 MISFEED 停機，停機前送料長度誤差僅 0.01 mm。依第一判斷上鎖檢查誤送料感測器，接頭無鬆動、端子無氧化、感應面無油屑，訊號正常，排除感測器故障。向操作員確認，當時正在穿新料頭並暫停送料，感測器偵測不到料帶而依設計動作，屬正常保護。重置後 08:26 恢復運轉，觀察至結案未再觸發，無零件更換。",
+  "first_hypothesis": {
+    "failure_mode_id": "misfeed_sensor_fault",
+    "by": "jev",
+    "p": 0.65
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "誤送料停機、停機前誤差只有 0.01 mm，看起來像感測器誤報；但本班只觸發一次（感測器誤報通常一班內反覆觸發），接頭與感應面都正常，實際是操作員穿料頭暫停送料時感測器依設計動作，不是故障。",
+  "discriminating_evidence": [
+    "停機前 feed_length_error_mm 僅 0.01 mm，料帶實際位置正常",
+    "本班 MISFEED 只觸發一次，不符合感測器誤報「一班內反覆觸發」的特徵",
+    "感測器接頭無鬆動、端子無氧化、感應面無油屑",
+    "操作員確認當時正在穿新料頭並暫停送料，時間與停機吻合"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱 MISFEED 警報紀錄與停機前送料長度誤差",
+      "result": "誤差 0.01 mm，本班只觸發一次"
+    },
+    {
+      "step": "檢查誤送料感測器接頭、端子與感應面",
+      "result": "無鬆動、無油屑，排除感測器故障"
+    },
+    {
+      "step": "向操作員確認停機當下作業",
+      "result": "穿新料頭暫停送料，感測器依設計動作"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "重置並恢復運轉，觀察至結案",
+      "result": "未再跳 MISFEED"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-041"
+  ],
+  "downtime_min": 19,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "MISFEED 只跳一次先問操作員當下在做什麼；穿料、換捲暫停送料會讓感測器正常動作，不必每次都拆接頭。",
+  "related_failure_mode_ids": [
+    "misfeed_sensor_fault"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

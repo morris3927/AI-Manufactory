@@ -1,0 +1,181 @@
+{
+  "case_id": "CASE-STP-0120",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1119,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-08-12T14:57:57+08:00",
+  "closed_at": "2026-08-12T19:08:59+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "lube_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 48,
+    "recent_changes": [
+      "換模 13:12（D-2U-TOP-03）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2608-350"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-12T11:38:11+08:00",
+      "signal": "bearing_temp_c",
+      "value": 39
+    },
+    {
+      "t": "2026-08-12T12:58:25+08:00",
+      "signal": "lube_pressure_bar",
+      "value": 0.7
+    },
+    {
+      "t": "2026-08-12T13:03:46+08:00",
+      "signal": "motor_current_a",
+      "value": 95
+    },
+    {
+      "t": "2026-08-12T13:13:11+08:00",
+      "signal": "die_change",
+      "value": "D-2U-TOP-03"
+    },
+    {
+      "t": "2026-08-12T13:16:33+08:00",
+      "signal": "counterbalance_bar",
+      "value": 3.5
+    },
+    {
+      "t": "2026-08-12T13:28:13+08:00",
+      "signal": "bearing_temp_c",
+      "value": 52
+    },
+    {
+      "t": "2026-08-12T14:56:07+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.7
+    },
+    {
+      "t": "2026-08-12T14:56:14+08:00",
+      "signal": "motor_current_a",
+      "value": 115
+    },
+    {
+      "t": "2026-08-12T14:57:57+08:00",
+      "signal": "bearing_temp_c",
+      "value": 61
+    },
+    {
+      "t": "2026-08-12T14:57:57+08:00",
+      "signal": "alarm_code",
+      "value": "CENTRAL_LUBE_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-14",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR03 集中潤滑低油位警報 先懷疑換模後平衡缸跑掉 量3.5bar 對模重差0.4 調回3.9 電流仍115 軸承61度 查油路 分配閥前油管壓扁+濾網塞 換油管濾網 補油 壓力回1.8 試沖ok",
+  "technician_report_normalized": "PR03 出現集中潤滑低油位警報，軸承溫度升至 61 °C、主馬達電流 115 A。因 13:12 剛換模，先懷疑平衡缸壓力設定不當，實測 3.5 bar 較模具資料低 0.4 bar，調整至 3.9 bar 後電流與溫度未改善。續查集中潤滑，油位低於下限、泵浦壓力僅 0.7 bar，分配閥入口油管壓扁且吸入濾網阻塞。更換油管與濾網並補油後，壓力回復 1.8 bar，軸承溫度降至 48 °C、滑塊異音消失，試沖正常。主因為集中潤滑異常，次因為平衡缸壓力偏差。",
+  "first_hypothesis": {
+    "failure_mode_id": "counterbalance_misset",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "central_lube_fault",
+  "contributing_causes": [
+    "counterbalance_misset"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "換模後才發生、平衡缸壓力 3.5 bar 偏離模具資料、氣源總壓 5.7 bar 正常且主馬達電流上升，完全符合平衡缸設定不當的模式；但調回 3.9 bar 後電流與軸承溫度都沒降，且軸承溫度從 11:38 的 39 °C 就一路緩升、潤滑壓力只剩 0.7 bar，才轉向集中潤滑。",
+  "discriminating_evidence": [
+    "平衡缸壓力調回 3.9 bar 後，主馬達電流仍 115 A、軸承溫度仍 61 °C",
+    "軸承溫度 11:38 已 39 °C、13:28 達 52 °C，緩升時序早於換模與平衡缸影響",
+    "集中潤滑壓力僅 0.7 bar 並跳出 CENTRAL_LUBE_LOW，分配閥入口油管壓扁、吸入濾網阻塞",
+    "成形件表面、模仁與脫料板無拉痕或料屑附著，排除模具潤滑與模具端問題"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依模具資料核對平衡缸壓力，實測 3.5 bar，較上模重量對應值低 0.4 bar，調整至 3.9 bar",
+      "result": "未改善，主馬達電流仍 115 A、軸承溫度 61 °C"
+    },
+    {
+      "step": "查看集中潤滑油箱油位計與泵浦壓力表",
+      "result": "油位低於下限、壓力僅 0.7 bar，符合 CENTRAL_LUBE_LOW"
+    },
+    {
+      "step": "沿泵浦至分配閥、導軌與曲軸軸承油路查漏，拆分配閥出口接頭看出油",
+      "result": "分配閥入口油管壓扁、吸入濾網阻塞"
+    },
+    {
+      "step": "更換油管與濾網，補油至油位計標示範圍並清潔加油口",
+      "result": "潤滑壓力回復 1.8 bar"
+    },
+    {
+      "step": "以點溫計量測導軌與曲軸軸承座，同時聽診滑塊",
+      "result": "溫度降至 48 °C、異音消失"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖首件，檢查成形面、模仁與脫料板",
+      "result": "無拉痕黏模，ok 恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-056",
+    "SOP-STP-057"
+  ],
+  "downtime_min": 250,
+  "parts_replaced": [
+    "central_lube_filter",
+    "lube_hose"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後看到電流升高別只顧平衡缸，軸承溫度是慢慢爬上來的，先翻潤滑壓力趨勢再動手。",
+  "related_failure_mode_ids": [
+    "central_lube_fault",
+    "counterbalance_misset"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-056",
+    "SOP-STP-057"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

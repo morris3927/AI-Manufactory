@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1012
+ },
+ "output": {
+  "technician_report_raw": "PR01 換料捲後misfeed 噸位168→182 料厚偏薄 換回前捲ok",
+  "technician_report_normalized": "夜班 02:23 MES 通報 PR01 發生 MISFEED 停機。調閱換料紀錄，01:58 更換料捲 C-2511-333 後開始異常，噸位峰值由換料前 168 噸升至 182 噸，02:00 送料長度誤差 0.1 mm。停機上鎖後，於問題料捲前、中、後段各取三點量測，料厚與硬度均低於進料驗收值，研判為材料厚度偏差。將問題料捲標示隔離退料，換回前一捲合格料帶，依 LOTO 程序寸動試沖，噸位與送料誤差恢復正常，03:28 復線生產。",
+  "actions": [
+   {
+    "step": "調閱換料紀錄與噸位峰值趨勢，比對換料前後平均值",
+    "result": "確認換料後階躍 +14 噸"
+   },
+   {
+    "step": "停機後量測問題料捲前、中、後段料厚與硬度",
+    "result": "料厚偏薄、硬度偏低"
+   },
+   {
+    "step": "核對整平機壓下量與料帶側彎、進模偏移",
+    "result": "設定相符，排除整平機"
+   },
+   {
+    "step": "隔離問題料捲，換回前一捲合格料帶",
+    "result": "完成換料"
+   },
+   {
+    "step": "依 LOTO 程序寸動試沖，量測噸位與送料長度誤差",
+    "result": "噸位 168 噸、誤差 0.02 mm"
+   },
+   {
+    "step": "恢復連續生產並觀察",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換料捲後噸位若一次性跳階，先量料厚與硬度，比急著調模高更快找到問題。",
+  "escalation_note": null
+ }
+}

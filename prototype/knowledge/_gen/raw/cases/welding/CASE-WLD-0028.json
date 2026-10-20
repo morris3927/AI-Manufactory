@@ -1,0 +1,49 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3027
+ },
+ "output": {
+  "technician_report_raw": "RC02 銲道整批偏同一邊 查FX-C間隙正常 校TCP偏1.5mm 換頸管重校 試銲ok",
+  "technician_report_normalized": "RC02 於生產硬碟籠框架時出現銲道偏移，成品整批偏向同一側，且各治具皆有相同現象。先依第一判斷檢查 FX-C 定位銷、夾爪與接合間隙，量測正常，排除治具貼合問題。調閱事件紀錄發現早上有輕微撞槍，TCP 校驗偏差 1.5 mm，電弧電壓變異 3.6% 屬穩定。目視槍頸管有撞擊後偏位，更換頸管並清潔接合面，依扭力鎖附，以教導模式降速重校 TCP，圍欄外試銲結果 ok，恢復生產。",
+  "actions": [
+   {
+    "step": "依第一判斷檢查 FX-C 定位銷、夾爪與接合間隙",
+    "result": "排除"
+   },
+   {
+    "step": "比對各治具已完成件的銲道偏移方向與量",
+    "result": "全數同向偏"
+   },
+   {
+    "step": "執行 TCP 校驗並調閱撞槍紀錄與電弧電壓波形",
+    "result": "偏差 1.5 mm、電壓穩"
+   },
+   {
+    "step": "目視檢查槍頸管、槍身固定座與防撞檢知座",
+    "result": "頸管撞擊後偏位"
+   },
+   {
+    "step": "更換銲槍頸管，清潔接合面並依扭力鎖附",
+    "result": "更換完成"
+   },
+   {
+    "step": "教導模式降速重校 TCP，局部排氣運轉下圍欄外試銲",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "torch_neck"
+  ],
+  "why_first_guess_wrong": "一開始因剛換工件批 L-2607-34，且偏移出現在銲道位置，懷疑 FX-C 治具定位間隙；但實測間隙正常，且偏移是整批同向、各治具都一樣，並非單一治具貼合不良，才排除。",
+  "discriminating_evidence": [
+   "bead_offset×3 顯示全治具同向偏移，不是單一 FX-C 治具或單一銲點。",
+   "TCP 校驗偏差 1.5 mm、alarm TCP_CHECK_NG，已超過 1.0 mm 門檻。",
+   "電弧電壓 CV 3.6%，電流與電壓穩定，不符合治具間隙造成的電弧不穩。",
+   "07:30 有 light collision_event，時間早於偏移發生，符合撞槍後 TCP 跑掉。"
+  ],
+  "lessons": "撞槍後先比對整批偏移方向並做 TCP 校驗，不要只在治具間隙上繞。",
+  "escalation_note": null
+ }
+}

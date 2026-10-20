@@ -1,0 +1,131 @@
+{
+  "case_id": "CASE-WLD-0026",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3025,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-07-03T22:49:41+08:00",
+  "closed_at": "2026-07-04T01:32:33+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 9,
+    "recent_changes": [
+      "撞槍 17:19"
+    ],
+    "part": "2U 機殼側框",
+    "fixture_id": "FX-B",
+    "program_id": "PRG-107"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-03T17:20:02+08:00",
+      "signal": "collision_event",
+      "value": "heavy"
+    },
+    {
+      "t": "2026-07-03T17:50:19+08:00",
+      "signal": "weld_defect",
+      "value": "bead_offset×8 全治具"
+    },
+    {
+      "t": "2026-07-03T22:49:41+08:00",
+      "signal": "tcp_check_delta_mm",
+      "value": 2.2
+    },
+    {
+      "t": "2026-07-03T22:49:41+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 3.1
+    }
+  ],
+  "technician": {
+    "id": "TECH-27",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 17:19撞槍後 銲道整批偏同一邊 8件全偏 TCP量2.2mm 電壓穩 換頸管 重新校正 試銲ok",
+  "technician_report_normalized": "RC01 於 17:19 發生撞槍後，陸續出現銲道偏邊，8 件工件全數偏向同一側。檢查銲槍本體與頸管，發現頸管受撞擊後有彎曲，TCP 校驗偏差達 2.2 mm，電弧電壓變異僅 3.1% 屬穩定。更換銲槍頸管並清潔接合面，依規定扭力鎖附後重新執行 TCP 校正。試銲後銲道位置恢復正常，確認可續產。",
+  "first_hypothesis": {
+    "failure_mode_id": "tcp_drift",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "tcp_drift",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱撞槍事件與銲道偏移紀錄，比對兩工位與各治具的偏移方向",
+      "result": "確認為同向偏移"
+    },
+    {
+      "step": "目視檢查銲槍本體、頸管與防撞檢知座有無撞擊凹痕或彎曲",
+      "result": "頸管撞擊後彎曲"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以 TCP 校驗治具量測銲絲尖端與校正棒偏差",
+      "result": "偏差 2.2 mm 超標"
+    },
+    {
+      "step": "更換銲槍頸管，清潔接合面並依 25 N·m 鎖附",
+      "result": "完成"
+    },
+    {
+      "step": "教導模式降速重新校正 TCP，並在局部排氣運轉、人員於圍欄外試銲",
+      "result": "銲道正常"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-021"
+  ],
+  "downtime_min": 159,
+  "parts_replaced": [
+    "torch_neck"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "撞槍後別急著調參數，先量 TCP；偏差超過 1 mm 就檢查頸管與槍身固定座。",
+  "related_failure_mode_ids": [
+    "tcp_drift"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

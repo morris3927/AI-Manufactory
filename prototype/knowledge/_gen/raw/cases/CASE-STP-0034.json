@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1033
+ },
+ "output": {
+  "technician_report_raw": "FD02 STRIP_EDGE跳 料帶右偏 擦側導板 換料捲後才這樣 料架重對中ok",
+  "technician_report_normalized": "夜班 FD02 送料機反覆出現 STRIP_EDGE 料帶邊緣警報，04:42 首度觸發後約每十分鐘再現。現場見料帶持續往右偏，越到後段工站偏移越大，側導板有磨痕；送料長度誤差僅 0.03 mm，且異常只在 02:13 換上料捲 C-2608-214 後才發生。取 1 m 料帶放平量測，最大側彎量超出允差，確認為料捲側彎。放鬆料架夾持，依料帶中心線重調料架左右位置，使進整平機前中心偏差小於 1 mm，並確認整平機輥輪壓下量正常。寸動低速送料確認料帶居中，試沖後未再警報，恢復生產。",
+  "actions": [
+   {
+    "step": "停機並調閱 STRIP_EDGE 警報紀錄與送料長度誤差",
+    "result": "誤差 0.03 mm，無明顯異常"
+   },
+   {
+    "step": "沿料帶路徑目視檢查側導板磨痕與後段工站擦痕",
+    "result": "料帶持續右偏、側導板有磨痕"
+   },
+   {
+    "step": "取 1 m 料帶放平於量測平台量測側彎量",
+    "result": "側彎量超出允差"
+   },
+   {
+    "step": "比對換料捲前後紀錄與沖壓力峰值",
+    "result": "異常只跟著料捲 C-2608-214"
+   },
+   {
+    "step": "放鬆料架夾持、依料帶中心線重調左右位置並確認整平機輥輪壓下量",
+    "result": "進模前中心偏差小於 1 mm"
+   },
+   {
+    "step": "寸動低速送料觀察料帶位置並試沖",
+    "result": "ok，未再觸發警報"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換料捲後警報只跟著某一捲跑，先放平量側彎再動送料參數，別急著調模具。",
+  "escalation_note": null
+ }
+}

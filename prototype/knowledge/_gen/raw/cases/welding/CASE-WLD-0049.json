@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3048
+ },
+ "output": {
+  "technician_report_raw": "RC01 冷卻水流量低 回水49度 跳WELD_OVERTEMP 已LOTO 查水機濾網髒+管路微折 清洗補水排氣 流量回正常 試銲ok",
+  "technician_report_normalized": "RC01 於夜班發生冷卻水流量低警報，流量由 2.0 L/min 逐步降至 0.8 L/min，回水溫度升至 49°C，並跳出 WELD_OVERTEMP。已依規定完成上鎖掛牌，檢查冷卻水機液位、濾網與管路，發現濾網髒污且水管有輕微折彎。清洗濾網、整理管路並補充冷卻液後排氣，啟動循環量測流量與回水溫度均恢復正常。最後在局部排氣運轉、人員於圍欄外進行試銲，結果 ok。",
+  "actions": [
+   {
+    "step": "依 SOP 檢查冷卻水機液位、濾網與管路",
+    "result": "濾網髒、管路微折"
+   },
+   {
+    "step": "清洗濾網並整理折彎管路",
+    "result": "完成"
+   },
+   {
+    "step": "補充冷卻液至液位範圍並排氣",
+    "result": "完成"
+   },
+   {
+    "step": "啟動冷卻水循環，量測流量與回水溫度",
+    "result": "恢復正常"
+   },
+   {
+    "step": "在局部排氣運轉下、人員於圍欄外試銲",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "夏天冷卻水流量掉到 1 L/min 以下就先查濾網與管路折彎，不要等過熱警報才停機。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,157 @@
+{
+  "case_id": "CASE-STP-0062",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1061,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2026-09-29T10:10:13+08:00",
+  "closed_at": "2026-09-29T10:41:10+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 36,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2609-140"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-29T09:11:42+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-09-29T09:12:19+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-09-29T09:14:58+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-09-29T09:15:36+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-09-29T09:58:16+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.05
+    },
+    {
+      "t": "2026-09-29T10:09:47+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02
+    },
+    {
+      "t": "2026-09-29T10:10:13+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-02",
+    "level": "L1"
+  },
+  "technician_report_raw": "FD04 MISFEED連跳 以為滾輪磨損 清滾輪無效 停機前誤差0.02 接頭鬆 重插ok",
+  "technician_report_normalized": "FD04 自 09:11 起 MISFEED 連跳三次，重置後均可立即恢復運轉。因 09:58 曾出現 0.05 mm 送料長度誤差，且距上次保養 36 天，先懷疑送料滾輪磨損打滑，清潔滾輪並檢視料帶，無亮帶也無滑痕，警報仍舊會跳。調閱紀錄發現停機前最後一筆長度誤差僅 0.02 mm，料帶位置、導正孔與模面皆正常，改判為感測器誤報。上鎖後檢查，接頭端子鬆動、感應面沾油屑，清潔並更換接頭壓著固定，試沖未再跳脫，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "feed_roller_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "misfeed_sensor_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "09:58 曾出現 0.05 mm 送料長度誤差，加上距上次保養已 36 天，看起來像滾輪磨損打滑造成的誤差累積；但 10:09 誤差已回到 0.02 mm 並未持續上升，滾輪表面也沒有亮帶、料帶沒有滑痕，實際上是感測器接頭鬆動造成間歇誤報。",
+  "discriminating_evidence": [
+    "停機前最後一筆送料長度誤差只有 0.02 mm，落在 ±0.03 mm 內，且沒有隨沖次逐步累積",
+    "同一顆 MISFEED 感測器在 09:11、09:14、10:10 一小時內跳三次，每次重置後狀態立刻回到 running",
+    "滾輪表面無亮帶、料帶無滑痕，清潔滾輪後警報照樣跳脫",
+    "感測器接頭端子鬆動、感應面沾附油屑，重新插緊固定後即未再觸發"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "清潔送料滾輪表面，檢查料帶有無滑痕、亮帶",
+      "result": "滾輪無明顯磨損，警報仍會跳"
+    },
+    {
+      "step": "調閱停機前送料長度誤差與運轉狀態紀錄",
+      "result": "最後一筆誤差 0.02 mm，未隨沖次累積"
+    },
+    {
+      "step": "上鎖後檢查誤送料感測器接頭、端子與感應面",
+      "result": "接頭端子鬆動、感應面沾附油屑"
+    },
+    {
+      "step": "清潔感應面並更換接頭重新壓著固定",
+      "result": "拉動接頭不再鬆動，導通正常"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並觀察運轉狀況",
+      "result": "未再跳 MISFEED，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-012",
+    "SOP-STP-041"
+  ],
+  "downtime_min": 29,
+  "parts_replaced": [
+    "sensor_connector"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "MISFEED 連跳先看停機前最後一筆送料長度誤差，誤差沒累積就往感測器接頭與感應面查，別急著拆滾輪。",
+  "related_failure_mode_ids": [
+    "misfeed_sensor_fault",
+    "feed_roller_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-012",
+    "SOP-STP-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

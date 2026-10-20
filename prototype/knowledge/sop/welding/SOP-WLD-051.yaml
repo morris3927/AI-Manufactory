@@ -1,0 +1,157 @@
+# SOP-WLD-051 排煙設備（局部排氣）異常之停止銲接與通報
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-WLD-051
+version: '0.1'
+title: 排煙設備（局部排氣）異常之停止銲接與通報
+line: welding
+machine_type:
+- robot_mig_cell
+- spot_welder
+failure_mode_ids:
+- fume_extraction_fault
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: safety
+safety_only: true
+generator:
+  model: null
+  prompt_ver: safety-template-wa-v1
+  seed: null
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-WELD-ROBOT-01
+  loto_checklist_ids:
+  - LOTO-WELD-ROBOT-01
+  - LOTO-SPOT-WELD-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - gravity
+  - pneumatic
+  - mechanical_stored
+  - shielding_gas
+  - coolant
+  - thermal
+  - mechanical
+  ppe:
+  - 安全鞋
+  - 防護手套（耐熱）
+  - 護目鏡（遮光）
+  - 防塵口罩（銲接燻煙）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第292條
+  - 職業安全衛生管理辦法第40、47條
+  - 設施規則第57條
+  - 設施規則第254條
+  - 職業安全衛生法第18條
+symptoms:
+- 排煙機沒在抽
+- 煙散不掉
+- 煙飄到走道
+- 濾筒壓差警報
+- 排氣風量低
+- 排煙機停了
+- 煙霧飄出工位
+prerequisites:
+  tools:
+  - Kanban 工單
+  - 「排氣異常・禁止銲接」標籤
+  - 個人鎖與標籤
+  parts: []
+  skill_level: 現場主管／廠務合格人員
+steps:
+- 'no': 1
+  phase: prepare
+  action: 立即停止銲接：機器人以循環停止停下、點銲機停止，不得在局部排氣異常時繼續銲接或試銲（設施規則第292條）
+  caution: 銲接進行中工位 ROI 內的火花與銲煙屬正常；本 SOP 處理的是排氣失效、煙霧滯留或擴散到工位外
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-292
+  - REG-OSHA-1910.252-c-1-iii
+- 'no': 2
+  phase: prepare
+  action: 煙霧已擴散到工位外時，請附近人員離開煙霧區到上風處；有人出現眼鼻喉刺激、頭暈或噁心，立即離開並就醫；通知現場主管與廠務
+  caution: 以人員安全為優先，先退避再處理設備
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - PUB-OSHA-FS-3647-health-effects
+  - REG-N0060001-18
+- 'no': 3
+  phase: isolate
+  action: 由現場主管指派人員依 LOTO-WELD-ROBOT-01（機器人銲接工作站）或 LOTO-SPOT-WELD-01（點銲機）將受影響的銲接設備停機上鎖，並在操作盤掛「排氣異常・禁止銲接」標籤
+  caution: 排氣恢復並經確認前，銲接設備不得復電試銲
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-OSHA-1910.147-d-4
+- 'no': 4
+  phase: inspect
+  action: 交由廠務或合格人員檢查局部排氣裝置（排風機、皮帶、濾筒、導管與氣罩），依職業安全衛生管理辦法第40、47條辦理；一般技術員與 AI 只記錄風量、濾筒壓差、排風機狀態與時間，AI 不提供排除方法
+  caution: 更換或清理濾筒時，濾筒內的粉塵可能含銲接燻煙金屬成分，依廠務規定處理
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060027-40
+  - REG-N0060027-47
+- 'no': 5
+  phase: verify
+  action: 合格人員修復後實施重點檢查（吸氣及排氣能力）並留下紀錄；現場主管確認風量回到設定範圍、煙霧不再擴散後，才在 Kanban 簽核
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060027-47
+  - REG-OSHA-1910.252-c-3
+- 'no': 6
+  phase: restore
+  action: 依 LOTO-WELD-ROBOT-01（或 LOTO-SPOT-WELD-01）解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+verify:
+- 合格人員修復後實施重點檢查（吸氣及排氣能力）並留下紀錄；現場主管確認風量回到設定範圍、煙霧不再擴散後，才在 Kanban 簽核
+restore:
+- 依 LOTO-WELD-ROBOT-01（或 LOTO-SPOT-WELD-01）解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+escalate_if:
+- 銲接機器人或點銲機已停止，煙霧仍持續產生、或工位外出現火光 → 疑似火災，依廠內緊急應變程序立即通報主管與廠務；火警自動警報設備為法定設備，AI 不得使其靜音，也不得把本事件當成一般維修
+- 有人出現吸入燻煙症狀或受傷 → 急救優先、保全現場，協助主管依規定通報（職安法第37條）
+- 同一排氣系統一週內重複異常 → 通知廠務安排局部排氣裝置定期檢查（管理辦法第40條）
+lessons: 排氣異常只做停止銲接、人員退避、通知與上鎖，修復交給廠務；機器人停了還在冒煙就當火警處理。
+references:
+- id: L1
+  title: 職業安全衛生設施規則
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060009
+  license: TW-law
+  use: quote
+- id: W1
+  title: OSHA Fact Sheet FS-3647 Controlling Hazardous Fume and Gases during Welding (2013)
+  url: https://www.osha.gov/sites/default/files/publications/OSHA_FS-3647_Welding.pdf
+  license: PD
+  use: quote
+- id: L21
+  title: OSHA 29 CFR 1910.252 / 1910.254 / 1910.255 Welding, cutting and brazing（General requirements; Arc welding; Resistance welding）
+  url: https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-Q
+  license: PD
+  use: quote
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060001-18、REG-N0060009-254-p2、REG-N0060009-292、REG-N0060009-57-p1、REG-N0060027-40、REG-N0060027-47、REG-OSHA-1910.147-d-4、REG-OSHA-1910.147-e-3、REG-OSHA-1910.252-c-1-iii、REG-OSHA-1910.252-c-3
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+- id: public/guidance_weld_asm.jsonl
+  title: 公開文件 chunk：PUB-OSHA-FS-3647-health-effects
+  url: https://www.osha.gov/ ; https://standards.nasa.gov/ ; https://www.hse.gov.uk/
+  license: PD / OGL
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

@@ -1,0 +1,263 @@
+# SOP-ASM-021 送釘機卡釘之檢查、排除與驗證
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-ASM-021
+version: '0.1'
+title: 送釘機卡釘之檢查、排除與驗證
+line: assembly
+machine_type:
+- screwdriving_station
+failure_mode_ids:
+- screw_feeder_jam
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 221
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-ASM-TOOL-01
+  loto_checklist_ids:
+  - LOTO-ASM-TOOL-01
+  energy_sources:
+  - electrical
+  - pneumatic
+  - mechanical_stored
+  - dut_power
+  ppe:
+  - 防割手套（鈑金銳邊）
+  - 護目鏡
+  - 靜電手環
+  - 口罩（清理金屬屑與粉塵時）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
+  - OSHA 1910.147(d)
+symptoms:
+- 送釘機卡住
+- 吸不到螺絲
+- 送釘逾時
+- 軌道卡釘
+- 補料後一直卡
+- 送釘機卡住，起子端等不到螺絲。
+- 吸嘴吸不到螺絲，一直出現送釘逾時。
+- 軌道卡釘，補料後特別容易發生。
+- 送釘逾時警報一直跳，但已鎖上的螺絲扭力與角度看起來正常。
+- 分離器那邊卡著歪斜的螺絲或異物，送釘不順。
+prerequisites:
+  tools:
+  - 十字起子頭（對應十字槽，通用）
+  - 塑膠鑷子或專用夾具（清除卡釘用）
+  - 放大鏡或照明燈
+  - 游標卡尺
+  - 扭力分析儀（校正有效期內）
+  - 零件盤與防靜電袋
+  parts:
+  - 送釘管（通用）
+  - 吸嘴（通用）
+  - 分離器護蓋（通用）
+  - 送釘軌道護蓋（通用）
+  skill_level: 維修技術員 L1
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知班長本站暫停，於 Kanban 開立維修單；記錄NOK 結果、孔位與近 30 件的鎖附扭力／角度紀錄
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 可疑工件先隔離：本站與下游已完成、可能受影響的機殼貼「待確認」標籤並移到隔離區，依序號追溯，判定前不得出貨
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+- 'no': 3
+  phase: prepare
+  action: 確認班長已核准簡化作業許可（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 4
+  phase: isolate
+  action: 依 LOTO-ASM-TOOL-01 執行輕量上鎖：拔下起子控制器插頭並套上插頭鎖蓋（充電式起子取下電池）、關閉送釘機氣源並洩壓，掛上個人標籤；插頭保持在自己的專屬控制下，並按啟動鍵確認不動作
+  caution: 拆送釘軌道或分離器護蓋前，須確認振動盤已完全停止且氣源球閥 V-A1 已關閉，避免殘壓或卡釘彈出。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 5
+  phase: inspect
+  action: 在已完成上鎖掛牌後，目視檢查送釘軌道、分離器、吸嘴與送料盤出口，確認是否有歪斜、重疊、異物或頭型／長度不同的螺絲卡住；同時核對最近一次補料紀錄與卡釘位置。
+  criteria: 若軌道或分離器可見 1 顆（模擬值）以上歪斜、重疊螺絲，或異物尺寸超過 0.5 mm（模擬值），且吸嘴內無螺絲，判定為本模式；若軌道與吸嘴無卡釘，但工單孔位有缺鎖且無送釘逾時紀錄，改懷疑 missing_screw；若卡住螺絲的頭型或長度與送料盤內其他螺絲明顯不同，改懷疑 wrong_screw_type。
+  caution: 拆護蓋或伸入軌道前，先確認振動盤已完全停止，避免卡釘彈出；不可用起子頭硬撬軌道。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A5
+- 'no': 6
+  phase: inspect
+  action: 查閱停機前已保存的控制器事件紀錄、鎖附報表與補料紀錄，確認是否出現 FEEDER_TIMEOUT、feeder_pick_fail_count 大於 10 次（模擬值）、screw_result 為 NOK_NO_SCREW，並核對已完成鎖附的扭力與角度紀錄。
+  criteria: 若最近 120 分鐘（模擬值）內出現 FEEDER_TIMEOUT 且取釘失敗次數大於 10 次（模擬值），但已完成鎖附的扭力在 0.8 N·m（模擬值）±10%（模擬值）且角度落在首件建立之正常範圍（模擬值），支持本模式；若完全沒有送釘逾時或取釘失敗紀錄，僅孔位缺螺絲，改懷疑 missing_screw；若已完成鎖附的角度偏離首件正常範圍超過 15%（模擬值），改懷疑 wrong_screw_type。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A5
+  - A4
+- 'no': 7
+  phase: inspect
+  action: 在隔離狀態下拆下送釘軌道出口護蓋或分離器護蓋，使用塑膠鑷子或專用夾具清除卡釘與異物，記錄卡釘數量、位置、螺絲頭型與長度；清除後檢查軌道內壁與分離器動作面有無毛邊、變形或磨耗。
+  criteria: 清除後軌道與分離器內無歪斜、重疊螺絲或異物，動作面無超過 0.2 mm（模擬值）之毛邊或變形，判定卡釘已排除；若同一位置反覆卡釘 3 次（模擬值）以上，改通知設備工程師檢查軌道與分離器。
+  caution: 清除卡釘時不可刮傷軌道內壁或分離器動作面；拆下零件應放零件盤，避免掉落壓鉚螺母孔牙。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A5
+- 'no': 8
+  phase: inspect
+  action: 抽檢送料盤與卡釘螺絲，使用游標卡尺量測長度、牙距與頭型，並比對工單 BOM 規格；同時核對工單要求鎖附次數與影像／鎖附計數紀錄，區分漏鎖與錯料／混料。
+  criteria: 若卡釘螺絲長度與 BOM 標稱值差異在 0.2 mm（模擬值）以內、牙距差異在 0.05 mm（模擬值）以內且頭型相符，送料盤無混料，並有 FEEDER_TIMEOUT 或軌道卡釘事實，判定本模式；若量測長度或牙距超出上述公差，或送料盤可見不同頭型／長度螺絲，判定 wrong_screw_type；若螺絲規格相符、軌道無卡釘且無送釘逾時，但工單孔位缺鎖，改懷疑 missing_screw。
+  caution: 量測前先將可疑螺絲批與受影響工件隔離並標示追溯，不可把抽檢後螺絲混回送料盤。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+  - A5
+- 'no': 9
+  phase: repair
+  action: 清除送釘軌道、分離器與吸嘴內之卡釘、異物與金屬屑；檢查送釘管、吸嘴與分離器護蓋，若有變形、破裂或磨耗超過 0.3 mm（模擬值）則更換通用件。
+  caution: 不可用尖銳工具刮傷軌道或吸嘴；更換零件前確認新件規格與原件相同，不可用不同孔徑吸嘴替代。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A5
+- 'no': 10
+  phase: repair
+  action: 若分離器或軌道位置跑掉，使用專用治具與手動方式復位，確認送釘路徑對正吸嘴中心；調整後以手動送釘路徑檢查無干涉。
+  caution: 不可修改安全相關參數或放寬扭力判定上下限；調整時不可讓彈簧或振動盤儲能突然釋放。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A5
+- 'no': 11
+  phase: repair
+  action: 若確認卡釘螺絲規格不符或送料盤混料，將可疑螺絲批與受影響工件隔離、標示批號與追溯，清理送料盤後換用合格螺絲批；若僅為單顆歪斜卡釘，清除後將該批列為觀察批。
+  caution: 不可將不同批或不同規格螺絲混入送料盤；隔離與追溯紀錄須保留至品保確認。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A5
+  - A1
+- 'no': 12
+  phase: verify
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-ASM-TOOL-01 測試／定位程序：需要通電試鎖、量測扭力或執行功能測試時：由原上鎖人取下自己的插頭鎖蓋並插回電源，班長知悉；只在治具上用試片或報廢件試鎖；手指不得放在起子頭與送釘吸嘴下方；完成後再拔插頭並套回插頭鎖蓋
+  caution: 通電期間手指不得放在起子頭、送釘吸嘴下方或受測機殼內
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 13
+  phase: verify
+  action: 以試片或報廢件試鎖 5 顆（模擬值）M3 螺絲，確認送釘機每次取釘成功、無 FEEDER_TIMEOUT，並以扭力分析儀確認鎖附扭力與角度。
+  criteria: 連續 5 顆（模擬值）送釘與鎖附成功，無卡釘、無 FEEDER_TIMEOUT；扭力在 0.8 N·m（模擬值）±10%（模擬值），角度落在首件建立之正常範圍（模擬值）。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A4
+  - A5
+- 'no': 14
+  phase: verify
+  action: 執行首件確認：在首件工件上依工單鎖附全部孔位，檢查有無漏鎖、浮鎖、斜牙、滑牙與 NOK_NO_SCREW，並核對鎖附計數與防錯結果。
+  criteria: 首件孔位全數鎖附且鎖附計數與工單要求一致；無浮鎖、斜牙、滑牙或 NOK_NO_SCREW；扭力與角度紀錄正常。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A4
+- 'no': 15
+  phase: verify
+  action: 確認送料盤與軌道無殘留卡釘、無混料，將可疑工件與螺絲批隔離標示追溯；連續取釘 20 次（模擬值）確認無失敗後，填寫維修與首件紀錄。
+  criteria: 送料盤與軌道目視無卡釘、無異物；連續 20 次（模擬值）取釘無失敗；隔離標示與追溯紀錄完成。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A5
+- 'no': 16
+  phase: restore
+  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+- 'no': 17
+  phase: restore
+  action: 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - none
+- 'no': 18
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-ASM-TOOL-01 測試／定位程序：需要通電試鎖、量測扭力或執行功能測試時：由原上鎖人取下自己的插頭鎖蓋並插回電源，班長知悉；只在治具上用試片或報廢件試鎖；手指不得放在起子頭與送釘吸嘴下方；完成後再拔插頭並套回插頭鎖蓋
+- 以試片或報廢件試鎖 5 顆（模擬值）M3 螺絲，確認送釘機每次取釘成功、無 FEEDER_TIMEOUT，並以扭力分析儀確認鎖附扭力與角度；判定：連續 5 顆（模擬值）送釘與鎖附成功，無卡釘、無 FEEDER_TIMEOUT；扭力在 0.8 N·m（模擬值）±10%（模擬值），角度落在首件建立之正常範圍（模擬值）。
+- 執行首件確認：在首件工件上依工單鎖附全部孔位，檢查有無漏鎖、浮鎖、斜牙、滑牙與 NOK_NO_SCREW，並核對鎖附計數與防錯結果；判定：首件孔位全數鎖附且鎖附計數與工單要求一致；無浮鎖、斜牙、滑牙或 NOK_NO_SCREW；扭力與角度紀錄正常。
+- 確認送料盤與軌道無殘留卡釘、無混料，將可疑工件與螺絲批隔離標示追溯；連續取釘 20 次（模擬值）確認無失敗後，填寫維修與首件紀錄；判定：送料盤與軌道目視無卡釘、無異物；連續 20 次（模擬值）取釘無失敗；隔離標示與追溯紀錄完成。
+restore:
+- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+- 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 若清除卡釘後 120 分鐘（模擬值）內同一位置重複卡釘 3 次（模擬值）以上 → 通知設備工程師檢查送釘軌道與分離器。
+- 若卡釘螺絲量測長度、牙距或頭型與 BOM 不符，或送料盤可見混料 → 改走 SOP-ASM-022（錯料／混料）並通知品保工程師。
+- 若軌道無卡釘、無 FEEDER_TIMEOUT，但工單孔位缺鎖 → 改走 SOP-ASM-023（漏鎖）。
+lessons: 補料後先核對螺絲批規格與送料盤有無混料，再讓送釘機連續取釘；卡釘不可硬撬，先隔離可疑螺絲批與受影響工件並追溯。
+references:
+- id: A5
+  title: 'Atlas Copco: electric screwdriver troubleshooting (online manual)'
+  url: https://picontent.atlascopco.com/cont/external/dir/41/15384642827_A2390001_html5_external/en-US/14503108875.html
+  license: ©
+  use: paraphrase
+- id: A1
+  title: NASA RP-1228 Fastener Design Manual (1990)
+  url: https://ntrs.nasa.gov/citations/19900009424
+  license: PD
+  use: reference
+- id: A4
+  title: 'Atlas Copco: Pocket Guide to Tightening Technique'
+  url: https://www.atlascopco.com/zh-tw/itba/expert-hub/pocket-guide/tightening-technique
+  license: ©
+  use: paraphrase
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

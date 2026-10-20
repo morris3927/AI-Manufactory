@@ -1,0 +1,39 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3005
+ },
+ "output": {
+  "technician_report_raw": "RC01 ARC_LOST 跳警 先查送絲 無鳥巢 送絲6.0穩定 機器人running 影像把ROI火花誤判 復歸ok",
+  "technician_report_normalized": "夜班時 RC01 出現 ARC_LOST 警報，第一時間依規則懷疑送絲鳥巢。檢查送絲機送絲狀況與導管入口，未見銲絲纏繞或卡阻，送絲速度維持 6.0 m/min，機器人於 04:57:41 回到 running。比對影像與現場後，確認是影像將銲接工位 ROI 內正常火花誤判為異常，設備無故障，清潔確認後恢復生產。",
+  "actions": [
+   {
+    "step": "依第一判斷檢查送絲機有無銲絲纏繞成團",
+    "result": "排除"
+   },
+   {
+    "step": "確認送絲速度與機器人狀態",
+    "result": "正常"
+   },
+   {
+    "step": "比對影像畫面與現場 ROI 火花",
+    "result": "誤報"
+   },
+   {
+    "step": "清潔工位並恢復生產",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因 ARC_LOST 斷弧警報與送絲警報，依規則懷疑送絲鳥巢；但送絲速度穩定在 6.0 m/min、送絲輪與導管入口無纏繞，機器人隨後恢復 running，才確認是影像將 ROI 內正常火花誤判。",
+  "discriminating_evidence": [
+   "送絲速度維持 6.0 m/min，沒有低於設定值 10% 或忽快忽慢的現象",
+   "送絲輪與導管入口未見銲絲纏繞成團，也無鐵屑卡阻",
+   "04:57:41 機器人狀態為 running，後續起弧正常",
+   "現場 ROI 內僅見正常銲接火花，無工位外火光或持續冒煙"
+  ],
+  "lessons": "ARC_LOST 先比對送絲速度與現場火花，數值穩就別急著拆送絲機。",
+  "escalation_note": null
+ }
+}

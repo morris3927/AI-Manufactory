@@ -1,0 +1,171 @@
+{
+  "case_id": "CASE-STP-0051",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1050,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-03-01T01:17:39+08:00",
+  "closed_at": "2026-03-01T06:18:16+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_trend",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 39,
+    "recent_changes": [
+      "換模 00:21（D-4U-SIDE-02）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2603-116"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-23T01:18:23+08:00",
+      "signal": "tonnage_peak",
+      "value": 186
+    },
+    {
+      "t": "2026-02-26T01:17:57+08:00",
+      "signal": "tonnage_peak",
+      "value": 192
+    },
+    {
+      "t": "2026-03-01T00:21:49+08:00",
+      "signal": "die_change",
+      "value": "D-4U-SIDE-02"
+    },
+    {
+      "t": "2026-03-01T00:25:53+08:00",
+      "signal": "shut_height_mm",
+      "value": 425.2
+    },
+    {
+      "t": "2026-03-01T00:27:47+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 17
+    },
+    {
+      "t": "2026-03-01T01:17:04+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 92990
+    },
+    {
+      "t": "2026-03-01T01:17:20+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 17
+    },
+    {
+      "t": "2026-03-01T01:17:27+08:00",
+      "signal": "tonnage_peak",
+      "value": 199
+    }
+  ],
+  "technician": {
+    "id": "TECH-07",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 換模後左右噸位差17% 查定位銷重鎖回2% 毛邊仍高 履歷92990沖次 拆衝子刃口磨耗 換衝子+模仁鑲塊 試沖ok",
+  "technician_report_normalized": "PR01 換模後首批出現毛邊偏高，左右噸位平衡一度達 17%，先依模具定位偏移檢查定位銷並重新鎖緊，平衡回到 2%，但毛邊仍未改善。調閱模具履歷發現沖次 92990 已超過 80000 基準，噸位峰值由 186 緩升至 199；停機量測毛邊高度偏高、斷面光亮帶變窄，拆檢沖頭與模仁刃口發現磨耗及崩缺。主因為沖頭刃口磨耗，次因為換模後定位微偏；更換沖頭與模仁刃口鑲塊並調整後試沖，毛邊恢復正常、噸位峰值正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "die_misalignment",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "punch_edge_wear",
+  "contributing_causes": [
+    "die_misalignment"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到換模後左右噸位平衡曾達17%，很符合模具定位偏移的模式；但平衡回到2%後毛邊仍偏高，且沖次92990、噸位峰值186→192→199緩升，才確認主因是刃口磨耗，定位偏移只是次因。",
+  "discriminating_evidence": [
+    "噸位平衡由17%回到2%，但毛邊仍偏高，定位偏移不足以解釋全部症狀。",
+    "stroke_count_since_regrind 達92990，已超過80000次研磨基準。",
+    "tonnage_peak 由186→192→199緩升，符合刃口磨耗的漸進趨勢。",
+    "量測毛邊偏高且斷面光亮帶變窄，拆檢見沖頭刃口磨耗與模仁刃口崩缺。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查換模定位銷與左右噸位平衡（17%）",
+      "result": "定位偏移校正，平衡回2%，毛邊未改善"
+    },
+    {
+      "step": "調閱模具履歷與噸位趨勢",
+      "result": "沖次92990超過80000，峰值186→192→199緩升"
+    },
+    {
+      "step": "停機量測毛邊高度與斷面光亮帶",
+      "result": "毛邊偏高、光亮帶變窄"
+    },
+    {
+      "step": "拆檢沖頭與模仁刃口並著色檢查",
+      "result": "沖頭刃口磨耗、模仁刃口崩缺"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "更換沖頭與模仁刃口鑲塊後試沖",
+      "result": "毛邊正常、噸位峰值正常"
+    },
+    {
+      "step": "恢復生產觀察首批",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-021",
+    "SOP-STP-033"
+  ],
+  "downtime_min": 296,
+  "parts_replaced": [
+    "punch",
+    "die_insert"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後看到噸位不平衡，別只追定位銷；毛邊高度、履歷沖次與噸位趨勢一起看，才不會漏掉刃口磨耗。",
+  "related_failure_mode_ids": [
+    "punch_edge_wear",
+    "die_misalignment"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-021",
+    "SOP-STP-033"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

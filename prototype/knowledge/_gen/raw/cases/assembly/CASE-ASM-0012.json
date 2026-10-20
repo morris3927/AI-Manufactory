@@ -1,0 +1,49 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4011
+ },
+ "output": {
+  "technician_report_raw": "ST02 H12一直角度高 bit 53855次 LOTO換bit仍NOK 拆看壓鉚螺母斜牙毛邊 換pem nut清孔 首件ok 停28分",
+  "technician_report_normalized": "ST02 於 H12 連續出現角度過高與鎖附 NOK，NOK 率升至 4.0%。先依第一判斷檢查 SD-02-2 起子頭，使用次數 53,855 次已偏高，LOTO 後更換起子頭，但 H12 仍重複 NOK。續拆檢 H12 壓鉚螺母，發現孔口斜牙、毛邊與鋅渣，判定主因為壓鉚螺母斜牙／滑牙，起子頭磨耗為次因。已隔離 NOK 工件與同批螺絲，清除孔口異物並更換同規格壓鉚螺母，首件確認 OK，停機 28 分鐘後復線。",
+  "actions": [
+   {
+    "step": "讀取鎖附控制器紀錄與 NOK 清單，核對孔位與角度曲線",
+    "result": "確認 H12 重複 NOK"
+   },
+   {
+    "step": "更換磨耗起子頭，以報廢件試鎖比對",
+    "result": "H12 仍 NOK 未改善"
+   },
+   {
+    "step": "以放大鏡檢查 H12 壓鉚螺母與孔口",
+    "result": "發現斜牙、毛邊與鋅渣"
+   },
+   {
+    "step": "隔離 H12 NOK 工件與同批螺絲，記錄批號並追溯",
+    "result": "完成隔離"
+   },
+   {
+    "step": "清除孔口異物並更換同規格壓鉚螺母",
+    "result": "完成"
+   },
+   {
+    "step": "執行首件試鎖與功能確認",
+    "result": "ok 復線"
+   }
+  ],
+  "parts_replaced": [
+   "pem_nut"
+  ],
+  "why_first_guess_wrong": "一開始看到起子頭累計 53,855 次、NOK 率升至 4.0%，加上打滑模式常見，才先懷疑起子頭磨耗；但換 bit 後 H12 仍重複角度過高（final_angle_deg 2247），且孔口有斜牙毛邊，才確認為壓鉚螺母斜牙／滑牙。",
+  "discriminating_evidence": [
+   "H12 在 15:53、16:11、16:29 連續出現 NOK_ANGLE_HIGH，NOK 集中同一孔位而非分散各孔。",
+   "final_angle_deg 達 2247，角度已超過上限仍到不了目標扭力。",
+   "更換磨耗起子頭後 H12 仍重複 NOK，未隨新 bit 立即改善。",
+   "H12 壓鉚螺母孔口目視可見斜牙、毛邊與鋅渣。"
+  ],
+  "lessons": "同一孔重複 NOK 時，先看 hole_id 與角度曲線，不要只被起子頭使用次數牽著走。",
+  "escalation_note": null
+ }
+}

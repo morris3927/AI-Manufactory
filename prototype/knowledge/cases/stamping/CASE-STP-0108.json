@@ -1,0 +1,134 @@
+{
+  "case_id": "CASE-STP-0108",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1107,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-05-25T22:33:32+08:00",
+  "closed_at": "2026-05-26T00:52:41+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "light_curtain_fault",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 4,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2605-271"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-25T22:09:10+08:00",
+      "signal": "alarm_code",
+      "value": "LC_FAULT"
+    },
+    {
+      "t": "2026-05-25T22:24:04+08:00",
+      "signal": "alarm_code",
+      "value": "LC_FAULT"
+    },
+    {
+      "t": "2026-05-25T22:33:32+08:00",
+      "signal": "light_curtain_status",
+      "value": "FAULT"
+    },
+    {
+      "t": "2026-05-25T22:33:32+08:00",
+      "signal": "alarm_code",
+      "value": "LC_FAULT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-07",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR01 光幕LC_FAULT 重複跳 停機 通知課長 等電氣合格人員 診斷接收器NG 換新+校正 功能測試ok 復機",
+  "technician_report_normalized": "PR01 於夜班多次出現光幕故障警報，光幕狀態顯示 FAULT，機台無法起動。技術員先停機並通知現場主管與電氣合格人員，記錄警報時間與自我診斷訊息。經合格人員檢查，確認光幕接收器自我診斷異常，更換接收器並確認線路後執行功能測試，光幕恢復正常，試運轉無異常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "light_curtain_fault",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "light_curtain_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停機並通知現場主管與電氣合格人員到場",
+      "result": "已通知"
+    },
+    {
+      "step": "記錄光幕故障警報與自我診斷發生時間",
+      "result": "完成記錄"
+    },
+    {
+      "step": "由電氣合格人員檢查光幕接收器與線路",
+      "result": "接收器自我診斷異常"
+    },
+    {
+      "step": "由合格人員更換光幕接收器並固定線路",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "由合格人員執行光幕功能測試與試運轉",
+      "result": "測試正常，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-071"
+  ],
+  "downtime_min": 136,
+  "parts_replaced": [
+    "light_curtain_receiver"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "光幕重複跳 FAULT 時先記錄自我診斷與發生時間，別只清鏡片；檢修與更換交給合格人員，這次就是接收器異常。",
+  "related_failure_mode_ids": [
+    "light_curtain_fault"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-STP-071"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

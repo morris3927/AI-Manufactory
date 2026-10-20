@@ -1,0 +1,168 @@
+{
+  "case_id": "CASE-WLD-0030",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3029,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-04-29T18:03:41+08:00",
+  "closed_at": "2026-04-29T20:19:04+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 0,
+    "recent_changes": [
+      "撞槍 11:40",
+      "換工件批 15:54（L-2604-44）"
+    ],
+    "part": "電源支架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-129"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-29T11:41:02+08:00",
+      "signal": "collision_event",
+      "value": "heavy"
+    },
+    {
+      "t": "2026-04-29T12:11:02+08:00",
+      "signal": "weld_defect",
+      "value": "bead_offset×3 全治具"
+    },
+    {
+      "t": "2026-04-29T15:54:59+08:00",
+      "signal": "part_lot_change",
+      "value": "L-2604-44"
+    },
+    {
+      "t": "2026-04-29T16:10:01+08:00",
+      "signal": "weld_defect",
+      "value": "burn_through×4 FX-C"
+    },
+    {
+      "t": "2026-04-29T18:03:41+08:00",
+      "signal": "tcp_check_delta_mm",
+      "value": 1.7
+    },
+    {
+      "t": "2026-04-29T18:03:41+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 3.4
+    },
+    {
+      "t": "2026-04-29T18:03:41+08:00",
+      "signal": "alarm_code",
+      "value": "TCP_CHECK_NG"
+    },
+    {
+      "t": "2026-04-29T18:03:41+08:00",
+      "signal": "weld_defect",
+      "value": "lack_of_fusion×3 FX-C"
+    },
+    {
+      "t": "2026-04-29T18:03:41+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 2.9
+    }
+  ],
+  "technician": {
+    "id": "TECH-21",
+    "level": "L1"
+  },
+  "technician_report_raw": "RC02 撞槍後偏邊 未熔 TCP1.7 換頸管+絕緣座 FX-C間隙大 換定位銷 試銲ok",
+  "technician_report_normalized": "RC02 於 11:40 發生撞槍後，陸續出現銲道偏邊、未熔合，以及 FX-C 治具燒穿。檢查發現銲槍頸管與槍身固定座有撞擊後錯位，TCP 校驗偏差 1.7 mm，電弧電流與電壓穩定（變異 2.9～3.4%），判定 TCP 偏移為主因。另量測 FX-C 接合間隙偏大，是造成局部燒穿的次因。已更換頸管與槍身絕緣座並依扭力鎖附，FX-C 更換磨耗定位銷並調整夾爪，試銲外觀與熔深正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "tcp_drift",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "tcp_drift",
+  "contributing_causes": [
+    "fixture_fitup_gap"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "確認銲道偏邊與未熔合分布，並調閱撞槍及換批紀錄",
+      "result": "偏邊同方向、集中 FX-C"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "機器人切教導模式降速，以校正棒執行 TCP 校驗",
+      "result": "偏差 1.7 mm"
+    },
+    {
+      "step": "檢查銲槍頸管與槍身固定座，發現撞擊後錯位",
+      "result": "確認主因"
+    },
+    {
+      "step": "更換頸管與槍身絕緣座，清潔接合面並依扭力鎖附",
+      "result": "更換完成"
+    },
+    {
+      "step": "量測 FX-C 治具接合間隙偏大，更換磨耗定位銷並調整夾爪",
+      "result": "間隙改善"
+    },
+    {
+      "step": "局部排氣運轉下於圍欄外試銲，確認外觀與熔深",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-021",
+    "SOP-WLD-031"
+  ],
+  "downtime_min": 131,
+  "parts_replaced": [
+    "torch_neck",
+    "torch_mount_insulator",
+    "locating_pin"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "撞槍後不要只補銲道，先量 TCP；偏邊同方向就是槍系幾何跑掉，治具間隙也要一起看。",
+  "related_failure_mode_ids": [
+    "tcp_drift",
+    "fixture_fitup_gap"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-021",
+    "SOP-WLD-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

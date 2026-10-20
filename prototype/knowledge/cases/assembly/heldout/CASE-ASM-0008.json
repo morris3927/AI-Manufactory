@@ -1,0 +1,149 @@
+{
+  "case_id": "CASE-ASM-0008",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4007,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-01-19T14:26:52+08:00",
+  "closed_at": "2026-01-19T14:51:12+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 36,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2601-75"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-19T13:46:52+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2026-01-19T13:47:15+08:00",
+      "signal": "nok_hole_id",
+      "value": "H04"
+    },
+    {
+      "t": "2026-01-19T14:05:05+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2026-01-19T14:05:30+08:00",
+      "signal": "nok_hole_id",
+      "value": "H04"
+    },
+    {
+      "t": "2026-01-19T14:22:53+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2026-01-19T14:23:31+08:00",
+      "signal": "nok_hole_id",
+      "value": "H04"
+    },
+    {
+      "t": "2026-01-19T14:26:52+08:00",
+      "signal": "rundown_torque_nm",
+      "value": 0.38
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L3"
+  },
+  "technician_report_raw": "ST01 H04 連續3次NOK 初段扭力衝高 rundown 0.38 同孔換新螺絲仍斜牙 目視pem nut孔口毛邊 隔離可疑件 手動壓鉚換pem nut 通止規確認 首件OK 停機22分",
+  "technician_report_normalized": "ST01 鎖附站 H04 孔位連續三次 NOK_HIGH_TORQUE_EARLY，初段扭力即偏高，rundown_torque_nm 為 0.38 N·m。放大鏡檢查 H04 壓鉚螺母與孔口，見螺紋損傷及毛邊；同孔換新螺絲重試仍斜牙。已隔離 NOK 機殼與同批可疑螺絲、壓鉚螺母，記錄孔位、批號與鎖附曲線送品保。依 LOTO-ASM-TOOL-01 斷電後更換同規格壓鉚螺母，清孔口碎屑並以通規、止規確認；首件試鎖 OK，恢復生產，停機 22 分。",
+  "first_hypothesis": {
+    "failure_mode_id": "cross_thread_strip",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "cross_thread_strip",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "讀取鎖附控制器紀錄與 NOK 清單，核對 H04 的 screw_result 與 rundown_torque_nm",
+      "result": "確認為同一孔重複初段扭力過高"
+    },
+    {
+      "step": "以放大鏡目視 H04 壓鉚螺母與孔口，並檢查 NOK 螺絲及送料盤螺絲外觀、長度、牙距",
+      "result": "孔口見螺紋損傷與毛邊"
+    },
+    {
+      "step": "以螺紋通規、止規檢查 H04 孔牙，並用報廢件比對旋入手感",
+      "result": "孔牙不合格"
+    },
+    {
+      "step": "隔離 NOK 機殼、同批可疑螺絲與壓鉚螺母並掛標，記錄孔位、批號、時間與鎖附曲線",
+      "result": "完成隔離與追溯"
+    },
+    {
+      "step": "以手動壓鉚工具更換同規格壓鉚螺母與該孔 NOK 螺絲，清潔孔口碎屑並確認端面齊平",
+      "result": "更換完成"
+    },
+    {
+      "step": "恢復量產前確認：清點工具與螺絲、恢復送釘機護蓋，由原上鎖人取下自己的插頭鎖蓋並插回電源，首件由班長確認",
+      "result": "ok"
+    },
+    {
+      "step": "執行首件試鎖與功能確認，恢復生產",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-012"
+  ],
+  "downtime_min": 22,
+  "parts_replaced": [
+    "pem_nut",
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "同一孔位重複初段扭力偏高時，先查壓鉚螺母孔牙與毛邊，別只換螺絲就放行。",
+  "related_failure_mode_ids": [
+    "cross_thread_strip"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

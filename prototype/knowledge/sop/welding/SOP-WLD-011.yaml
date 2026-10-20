@@ -1,0 +1,286 @@
+# SOP-WLD-011 送絲不順／鳥巢之檢查與排除
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-WLD-011
+version: '0.1'
+title: 送絲不順／鳥巢之檢查與排除
+line: welding
+machine_type:
+- robot_mig_cell
+failure_mode_ids:
+- wire_feed_birdnest
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 111
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-WELD-ROBOT-01
+  loto_checklist_ids:
+  - LOTO-WELD-ROBOT-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - gravity
+  - pneumatic
+  - mechanical_stored
+  - shielding_gas
+  - coolant
+  - thermal
+  ppe:
+  - 安全鞋
+  - 防護手套（耐熱）
+  - 護目鏡（遮光）
+  - 防塵口罩（銲接燻煙）
+  - 銲接面罩或遮光面罩（試銲觀察時，設施規則第284條）
+  - 銲接用防護面罩
+  - 耐切割手套（處理銲絲與剪線時）
+  - 防割袖套
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - 工業用機器人危害預防標準第26、33條
+  - 工業用機器人危害預防標準第27條（教導作業）
+  - OSHA 1910.147(d)
+  - 設施規則第292條（試銲時局部排氣須運轉）
+symptoms:
+- 送絲卡卡的
+- 銲絲在送絲輪纏成一團
+- 斷弧
+- 電流忽大忽小
+- 送絲馬達過負荷
+- 送絲卡卡的，銲絲時走時停，銲起來聲音斷斷續續
+- 打開送絲機就看到銲絲在送絲輪與導管入口之間纏成一團
+- 銲到一半斷弧，電流忽大忽小，面板跳送絲過負荷
+- 送絲馬達摸起來偏熱、聲音變重，過負荷一直跳
+- 導管口一堆鐵屑，銲絲推不進去、拉也拉不動
+prerequisites:
+  tools:
+  - 斜口鉗與銲絲剪
+  - 送絲輪間隙厚薄規
+  - 送絲張力計（彈簧拉力計）
+  - 導管清潔軟管刷與內視鏡
+  - 勾表式萬用電錶
+  - 教導器
+  parts:
+  - 送絲輪（成對）
+  - 送絲導管
+  - 導電嘴
+  - 銲絲捲（新料）
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼、近 15 分鐘訊號趨勢與不良銲道位置（治具、工位）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-WELD-ROBOT-01（機器人銲接工作站）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量
+  caution: 上鎖時要特別注意送絲機到導電嘴之間仍存有銲絲張力（R10），且銲槍、導電嘴與噴嘴可能仍高溫（R9）；須待冷卻並依程序釋放銲絲張力後才能拆導管，避免銲絲彈出或燙傷。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: 進入機器人圍欄前，在啟動開關處掛「禁止觸動」標示並攜帶自己的安全栓（模式鑰匙），圍欄外安排監視人員；銲槍、導電嘴與工件可能仍高溫，等待冷卻或戴耐熱手套（工業用機器人危害預防標準第26、33條）
+  caution: 機器人停在維修姿勢，不得手動鬆開各軸煞車
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060025-33
+  - REG-N0060025-26
+- 'no': 5
+  phase: inspect
+  action: 打開送絲機上蓋，目視送絲輪與導管入口之間有無銲絲纏繞成團，導管入口、導管接頭有無鐵屑或銲絲削堆積；同時看導電嘴端部有無熔黏的銲絲回燒痕跡。
+  criteria: 看到銲絲在送絲輪與導管入口之間纏繞成團，或導管入口有鐵屑卡阻 → 判定為本模式（送絲不順／鳥巢）。若無纏絲、無鐵屑，但導電嘴孔口已磨成橢圓或端部有銲絲熔黏（回燒） → 改懷疑 contact_tip_wear，改走 SOP-WLD-012。
+  caution: 開蓋前先確認送絲機已上鎖且銲絲張力已釋放，避免剪斷的銲絲彈出傷人。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 6
+  phase: inspect
+  action: 檢查送絲輪溝槽磨耗、上下輪對齊與加壓臂彈簧張力，並用厚薄規量測送絲輪間隙。
+  criteria: 送絲輪溝槽已磨平、銲絲陷進溝底，或上下輪左右偏移超過 0.3 mm（模擬值）、加壓臂張力明顯不足 → 判定為本模式。若送絲輪溝槽與加壓張力都正常、銲絲在輪上不打滑 → 送絲機構無異常，改往導管與導電嘴方向追查。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W5
+  - W6
+- 'no': 7
+  phase: inspect
+  action: 查閱維修紀錄與停機前讀值，確認導電嘴累積起弧時間與每百次起弧的重試次數；並用游標卡尺量測導電嘴孔徑。
+  criteria: 導電嘴累積起弧時間尚未達 300 分鐘（模擬值）、孔徑未超過 1.2 mm（模擬值） → 支持本模式。若累積起弧時間已超過 300 分鐘（模擬值）、每百次起弧重試次數超過 8 次（模擬值），或孔口磨成橢圓 → 改懷疑 contact_tip_wear，改走 SOP-WLD-012。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 8
+  phase: inspect
+  action: 檢查兩個工位的治具接地夾與回路電纜接頭，有無銲渣、鬆脫或發熱變色；比對停機前紀錄中送絲速度、送絲馬達電流與電弧電壓變異，並確認問題是否只在某一工位出現。
+  criteria: 若送絲速度比設定值低 10% 以上（模擬值）、送絲馬達電流超過 4.5 A（模擬值），且兩個工位都發生 → 判定為本模式。若送絲速度與送絲馬達電流都正常，但電弧電壓變異超過 10%（模擬值）、問題只出現在變位機某一側，且接地夾有銲渣或接頭變色 → 改懷疑 ground_poor，改走 SOP-WLD-015。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 9
+  phase: inspect
+  action: 放鬆加壓臂後，手動拉一段銲絲通過送絲導管，用拉力計感受並量測全程阻力，必要時以內視鏡查看導管內壁。
+  criteria: 手拉阻力超過 15 N（模擬值），或某一段有明顯卡阻、內視鏡看到鐵屑附著 → 判定為導管內鐵屑卡阻，屬本模式。若全程阻力低於 15 N（模擬值）且滑順，但送絲馬達電流仍偏高 → 改往送絲馬達與驅動器方向追查，通知設備工程師。
+  caution: 手動拉線時手指不要靠近送絲輪咬合處，避免夾傷。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W5
+- 'no': 10
+  phase: repair
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-WELD-ROBOT-01 測試／定位程序：清除圍欄內工具；需留在可動範圍內的人員只限持教導器者；由原上鎖人取下自己的鎖，現場主管在場，並在圍欄外安排監視人員（第26條）；只用教導模式降速操作，持教導器者握住致能開關，放手即停（第5、9條）；試銲時人員退到圍欄外並確認局部排氣運轉；完成後立即停機，重新上鎖並驗證零能量，才能再次進入圍欄
+  caution: 通電期間手不得進入機器人可動範圍或電極之間；試銲前確認局部排氣運轉、人員退到圍欄或遮光簾外（設施規則第292條）
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060025-26
+  - REG-N0060009-292
+- 'no': 11
+  phase: repair
+  action: 需要移動機器人（修正教導點、校正 TCP、移到換件姿勢）時，一律在教導模式降速操作，持教導器者握住致能開關、放手即停，圍欄外有監視人員；不得修改機器人的安全相關參數（工業用機器人危害預防標準第26、27條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - REG-N0060025-27
+  - REG-N0060025-26
+- 'no': 12
+  phase: repair
+  action: 剪除鳥巢段與受壓變形的銲絲（剪除長度至少 300 mm（模擬值）），以軟管刷配合乾燥壓縮空氣清除導管內鐵屑；導管內壁已刮傷或清不乾淨時整條更換送絲導管。
+  caution: 剪線時務必戴耐切割手套與防護面罩，銲絲剪斷後會回彈；不得用尖嘴鉗硬拉卡死的銲絲，以免導管斷裂或銲絲射出。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 13
+  phase: repair
+  action: 更換磨耗的送絲輪，依 0.9 mm（模擬值）實心銲絲設定加壓臂張力，並將送絲輪間隙調整到 0.1～0.2 mm（模擬值），確認上下輪溝槽對齊同一條銲絲路徑。
+  caution: 加壓過大會把銲絲壓成橢圓，後段導電嘴反而更容易卡阻；調整後要手動盤動確認銲絲不會被壓扁。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W5
+- 'no': 14
+  phase: repair
+  action: 整理銲絲捲與送絲路徑：確認銲絲捲煞車張力適當、銲絲沒有交叉疊繞，導管彎曲半徑不得小於 300 mm（模擬值），導管接頭重新鎖緊並確認插入到底。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W5
+  - W6
+- 'no': 15
+  phase: verify
+  action: 由原上鎖人暫時解除上鎖、主管在場，於教導模式降速並握住致能開關，做低速空送絲（不引弧），連續送絲 5 m（模擬值），同時觀察送絲實際速度與送絲馬達電流。
+  criteria: 送絲實際速度與設定值差異在 ±5% 以內（模擬值），1 分鐘內沒有忽快忽慢；送絲馬達電流穩定低於 4.5 A（模擬值），未出現 WIRE_FEED_OVERLOAD。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W6
+  - L20
+- 'no': 16
+  phase: verify
+  action: 確認局部排氣運轉正常、人員退到圍欄或遮光簾外後，在試片或報廢件上試銲，觀察起弧與電弧穩定度。
+  criteria: 連續 3 次起弧皆成功（模擬值），未出現 ARC_LOST 或 ARC_START_FAIL；電弧電流變異不超過 12%（模擬值）；銲道外觀無氣孔、燒穿、未熔合，飛濺量與平常相當。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W6
+  - W5
+  - REG-OSHA-1910.252-c-3
+- 'no': 17
+  phase: verify
+  action: 設備停止後量測首件試片的銲道寬度與熔深，並核對送絲速度紀錄，完成首件確認。
+  criteria: 銲道寬度與熔深落在首件標準範圍內（模擬值），送絲速度紀錄在 1 分鐘內無忽快忽慢；首件確認合格才可交還生產。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 18
+  phase: restore
+  action: 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+  - REG-N0060025-32
+- 'no': 19
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 由原上鎖人暫時解除上鎖、主管在場，於教導模式降速並握住致能開關，做低速空送絲（不引弧），連續送絲 5 m（模擬值），同時觀察送絲實際速度與送絲馬達電流；判定：送絲實際速度與設定值差異在 ±5% 以內（模擬值），1 分鐘內沒有忽快忽慢；送絲馬達電流穩定低於 4.5 A（模擬值），未出現 WIRE_FEED_OVERLOAD。
+- 確認局部排氣運轉正常、人員退到圍欄或遮光簾外後，在試片或報廢件上試銲，觀察起弧與電弧穩定度；判定：連續 3 次起弧皆成功（模擬值），未出現 ARC_LOST 或 ARC_START_FAIL；電弧電流變異不超過 12%（模擬值）；銲道外觀無氣孔、燒穿、未熔合，飛濺量與平常相當。
+- 設備停止後量測首件試片的銲道寬度與熔深，並核對送絲速度紀錄，完成首件確認；判定：銲道寬度與熔深落在首件標準範圍內（模擬值），送絲速度紀錄在 1 分鐘內無忽快忽慢；首件確認合格才可交還生產。
+restore:
+- 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 清潔並更換送絲輪、送絲導管後，送絲馬達電流仍超過 4.5 A（模擬值）或反覆出現 WIRE_FEED_OVERLOAD → 通知設備工程師檢查送絲馬達與驅動器。
+- 送絲速度與送絲馬達電流都正常，但電弧電壓變異超過 10%（模擬值）且只出現在單一工位 → 改走 SOP-WLD-015（接地不良）。
+- 導電嘴累積起弧時間超過 300 分鐘（模擬值）或孔口已磨成橢圓 → 改走 SOP-WLD-012（導電嘴磨耗／回燒）。
+lessons: 鳥巢八成不是送絲馬達壞掉，先看送絲輪溝槽、加壓張力與導管內的鐵屑；剪線清導管通常比換馬達快得多，但別忘了最後還是要試銲與首件確認。
+references:
+- id: W6
+  title: 'Miller: Tips for Troubleshooting Common MIG Weld Defects'
+  url: https://www.millerwelds.com/resources/article-library/troubleshooting-weld-defects
+  license: ©
+  use: paraphrase
+- id: W5
+  title: NAVEDTRA 14250 Steelworker Volume 1 (Gas Shielded-Arc Welding)
+  url: https://everyspec.com/USN/NAVEDTRA/NAVEDTRA_14250_VOLUME-1_NOV1996_18385/
+  license: PD（🔬 發行聲明未確認）
+  use: reference
+- id: L20
+  title: 工業用機器人危害預防標準
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060025
+  license: TW-law
+  use: quote
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-292、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060025-26、REG-N0060025-27、REG-N0060025-32、REG-N0060025-33、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1、REG-OSHA-1910.252-c-3
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

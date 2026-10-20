@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4006
+ },
+ "output": {
+  "technician_report_raw": "ST02 H08連續NOK_ANGLE_HIGH 同一孔 拆檢壓鉚螺母孔牙崩+毛邊 LOTO後換pem nut 換NOK螺絲 清孔 試片ok 首件pass",
+  "technician_report_normalized": "鎖附站 ST02 於 H08 孔連續出現 NOK_ANGLE_HIGH，角度達 2160 度仍無法達到目標扭力。讀取控制器紀錄並以放大鏡檢查，發現 H08 壓鉚螺母孔牙崩壞、孔口有毛邊與鋅渣；同一孔換新螺絲仍重複 NOK。已依 LOTO-ASM-TOOL-01 斷電，隔離 NOK 工件與同批螺絲並掛標追溯，以手動壓鉚工具更換同規格壓鉚螺母及受損螺絲，清除孔口碎屑。以報廢件試鎖正常，首件確認 PASS，恢復生產。",
+  "actions": [
+   {
+    "step": "讀取鎖附控制器紀錄與 NOK 清單，核對 hole_id、扭力與角度資料",
+    "result": "確認 H08 重複 NOK"
+   },
+   {
+    "step": "以放大鏡檢查 H08 壓鉚螺母與孔口狀況",
+    "result": "孔牙崩壞、有毛邊"
+   },
+   {
+    "step": "隔離 NOK 工件與同批螺絲，掛標並追溯批號",
+    "result": "可疑品已隔離"
+   },
+   {
+    "step": "以手動壓鉚工具更換同規格壓鉚螺母及受損螺絲，清除孔口碎屑",
+    "result": "端面齊平無鬆動"
+   },
+   {
+    "step": "以報廢件試鎖並執行首件確認",
+    "result": "試鎖 ok 首件 pass"
+   }
+  ],
+  "parts_replaced": [
+   "pem_nut",
+   "screw_m3"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "同一孔連續 NOK 先查孔牙與壓鉚螺母，不要只換螺絲或調扭力。",
+  "escalation_note": null
+ }
+}

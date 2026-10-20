@@ -1,0 +1,144 @@
+{
+  "case_id": "CASE-WLD-0018",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3017,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "heldout",
+  "case_type": "escalated",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-02-23T09:34:37+08:00",
+  "closed_at": "2026-02-23T12:49:14+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "gas_low_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 25,
+    "recent_changes": [
+      "換氣瓶 08:48"
+    ],
+    "part": "硬碟籠框架",
+    "fixture_id": "FX-B",
+    "program_id": "PRG-101"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-23T08:48:43+08:00",
+      "signal": "consumable_change",
+      "value": "gas_cylinder"
+    },
+    {
+      "t": "2026-02-23T08:54:22+08:00",
+      "signal": "gas_supply_bar",
+      "value": 6.1
+    },
+    {
+      "t": "2026-02-23T09:04:52+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 17.6
+    },
+    {
+      "t": "2026-02-23T09:29:44+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 11.2
+    },
+    {
+      "t": "2026-02-23T09:31:40+08:00",
+      "signal": "weld_defect",
+      "value": "porosity×4 各治具"
+    },
+    {
+      "t": "2026-02-23T09:34:37+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 7.6
+    },
+    {
+      "t": "2026-02-23T09:34:37+08:00",
+      "signal": "alarm_code",
+      "value": "GAS_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-29",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC02 0934 GAS_LOW 換瓶後流量11.2→7.6 各治具氣孔x4 查接頭無漏 匯流排6.1 殘壓疑不足 等原廠",
+  "technician_report_normalized": "09:34 RC02 出現 GAS_LOW 警報，保護氣流量由 09:04 的 17.6 L/min 降至 11.2、再降至 7.6 L/min，匯流排壓力 6.1 bar；09:31 起各治具銲道出現 4 處氣孔。現場於 08:48 更換氣瓶後開始異常，檢查瓶閥、匯流排壓力表、保護氣軟管、接頭與束環，未見明顯鬆脫或漏氣，噴嘴出口亦無堵塞。因流量仍低且供氣控制與銲接電源連動部分需原廠確認，現場無法完成修復，已移交銲接電源原廠技師處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "shielding_gas_low",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "shielding_gas_low",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 GAS_LOW 警報檢查氣瓶瓶閥與匯流排壓力表，記錄匯流排壓力 6.1 bar",
+      "result": "壓力偏低"
+    },
+    {
+      "step": "沿保護氣管路檢查氣瓶接頭、匯流排閥、電磁閥 V-G1、送絲機與銲槍間軟管、接頭與束環",
+      "result": "未見漏點"
+    },
+    {
+      "step": "在局部排氣運轉下量測保護氣流量，讀值僅 7.6 L/min",
+      "result": "流量不足"
+    },
+    {
+      "step": "檢查流量計浮球與供氣控制作動，現場無法排除供氣控制異常",
+      "result": "需原廠"
+    },
+    {
+      "step": "移交銲接電源原廠技師，因供氣控制與銲接電源連動檢查超出現場能力",
+      "result": "已移交"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-013"
+  ],
+  "downtime_min": 191,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "銲接電源原廠技師",
+  "escalation_note": "已把換瓶後流量持續下降、各治具氣孔與供氣控制檢查結果移交銲接電源原廠技師，待原廠確認供氣控制與銲接電源連動。",
+  "lessons": "換氣瓶後要對匯流排壓力與流量做首件確認，等氣孔出來才追都太晚。",
+  "related_failure_mode_ids": [
+    "shielding_gas_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-013"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

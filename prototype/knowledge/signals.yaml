@@ -1,0 +1,126 @@
+# 訊號詞彙表：failure_modes/*.yaml 的 log_signals 與 cases 的 log_signals 只能使用這裡列出的名稱。
+# data_label: 模擬資料 —— 所有正常範圍與門檻皆為模擬值，用於 MES Log 模擬器與規則引擎，非任何原廠規格。
+# status:
+#   existing —— 08_系統設計.md §5.1 已定義，模擬器已規劃產生
+#   event    —— 事件／機台脈絡（非每秒訊號）
+#   proposed —— 本知識庫需要、模擬器尚未產生，請 backend 依此補上（README「需要新增的 MES 訊號」）
+mes:
+  spm:                   {status: existing, unit: 次/分, normal: "30～45（伺服沖床）；25～40（機械沖床）"}
+  feed_rate:             {status: existing, unit: 次/分, normal: "與 spm 相同；停機時為 0（假設與 feed_jam 劇本一致）"}
+  feed_length_error_mm:  {status: existing, unit: mm, normal: "±0.02 以內", alarm: "> 0.15"}
+  motor_temp_c:          {status: existing, unit: °C, normal: "45～65", alarm: "> 75"}
+  motor_current_a:       {status: existing, unit: A, normal: "沖床主馬達 80～140；送料機 4～8"}
+  tonnage_peak:          {status: existing, unit: t, normal: "依製品 120～190（250 t 機）", alarm: "> 225（250 t 機，90%）；> 180（200 t 機）"}
+  state:                 {status: existing, values: [running, idle, alarm]}
+  alarm_code:            {status: existing, values_ref: alarm_codes}
+  tonnage_balance_pct:   {status: proposed, unit: "%", normal: "< 5", alarm: "> 10", note: 左右（或四角）沖壓力差／平均}
+  stroke_count_since_regrind: {status: proposed, unit: 次, normal: "< 80,000", note: 模具管理系統的沖頭研磨後沖次}
+  die_stroke_total:      {status: proposed, unit: 次, note: 模具累積沖次（彈簧更換週期參考 500,000）}
+  stop_angle_deg:        {status: proposed, unit: °, normal: "8～12", alarm: "> 15", note: 停止角度監視器每次停機量測}
+  stop_time_ms:          {status: proposed, unit: ms, normal: "160～200", alarm: "> 230"}
+  air_pressure_bar:      {status: proposed, unit: bar, normal: "5.5～6.0", alarm: "< 4.8"}
+  counterbalance_bar:    {status: proposed, unit: bar, normal: "依模具資料上模重量對應值 ±0.1", alarm: "差 > 0.3"}
+  shut_height_mm:        {status: proposed, unit: mm, normal: "與 die_master.shut_height_mm 差 < 0.05", alarm: "差 > 0.2"}
+  lube_pressure_bar:     {status: proposed, unit: bar, normal: "1.5～3.0", alarm: "< 1.0", note: 機台集中潤滑}
+  bearing_temp_c:        {status: proposed, unit: °C, normal: "35～50", alarm: "> 60"}
+  die_lube_pulse_per_min: {status: proposed, unit: 次/分, normal: "5～7", alarm: "< 2", note: 模具噴油器}
+  scrap_conveyor_current_a: {status: proposed, unit: A, normal: "1.0～1.4", alarm: "> 2.0 或 0（停止）"}
+  light_curtain_status:  {status: proposed, values: [OK, FAULT, MUTED]}
+  pilot_release_angle_deg: {status: proposed, unit: °, normal: "依模具設定表，例如 200～240", note: 送料機導正釋放角度（設定值）}
+  straightener_setting_mm: {status: proposed, unit: mm, note: 整平輥壓下量設定值，依料厚設定表}
+  # ---- 銲接線（welding）：status: proposed，line: welding。數值皆為模擬值（以 1.0～2.0 mm SECC／SGCC 薄板、0.9 mm 實心銲絲、Ar／CO2 混合氣為假設）
+  wire_feed_speed_mpm:   {status: proposed, line: welding, unit: m/min, normal: "設定值 ±5%（銲接程式設定 6.0 時 5.7～6.3）", alarm: "低於設定 10% 以上，或 1 分鐘內忽快忽慢"}
+  wire_feed_motor_current_a: {status: proposed, line: welding, unit: A, normal: "1.5～3.0", alarm: "> 4.5（送絲阻力大）"}
+  arc_current_a:         {status: proposed, line: welding, unit: A, normal: "110～150（依銲接程式）"}
+  arc_current_cv_pct:    {status: proposed, line: welding, unit: "%", normal: "< 5", alarm: "> 12", note: 每道銲道電流變異係數（標準差／平均）}
+  arc_voltage_v:         {status: proposed, line: welding, unit: V, normal: "17～20（依銲接程式）"}
+  arc_voltage_cv_pct:    {status: proposed, line: welding, unit: "%", normal: "< 4", alarm: "> 10", note: 每道銲道電壓變異係數}
+  arc_start_retry_per_100: {status: proposed, line: welding, unit: 次/百次起弧, normal: "< 2", alarm: "> 8"}
+  tip_arc_on_min:        {status: proposed, line: welding, unit: 分鐘, normal: "< 300（導電嘴更換基準）", note: 導電嘴更換後累積起弧時間}
+  gas_flow_lpm:          {status: proposed, line: welding, unit: L/min, normal: "15～20", alarm: "< 12"}
+  gas_supply_bar:        {status: proposed, line: welding, unit: bar, normal: "> 20（氣瓶）；匯流排供氣 3～5", alarm: "氣瓶 < 10；匯流排 < 2"}
+  torch_clean_interval_min: {status: proposed, line: welding, unit: 分鐘, normal: "≤ 20（每 8 件清槍一次）", alarm: "> 45", note: 距上次清槍站執行的時間}
+  tcp_check_delta_mm:    {status: proposed, line: welding, unit: mm, normal: "< 0.5", alarm: "> 1.0", note: 以固定校驗尖點或雷射檢查 TCP 的偏差}
+  defect_rate_pct:       {status: proposed, line: welding, unit: "%", normal: "< 1.5", alarm: "> 4", note: 近 1 小時銲道外觀 NG 率（品質站／影像）}
+  weld_current_ka:       {status: proposed, line: welding, unit: kA, normal: "9.0～11.0（SGCC 1.0＋1.0 mm）", note: 點銲二次電流}
+  electrode_force_kn:    {status: proposed, line: welding, unit: kN, normal: "2.2～2.8"}
+  weld_count_since_dress: {status: proposed, line: welding, unit: 點, normal: "< 250", alarm: "> 350", note: 電極頭上次修磨後的銲點數}
+  tip_dress_count:       {status: proposed, line: welding, unit: 次, normal: "< 20", alarm: "> 25（電極帽更換基準）", note: 電極帽更換後的修磨次數}
+  coolant_flow_lpm:      {status: proposed, line: welding, unit: L/min, normal: "點銲機 4.0～6.0；水冷銲槍 1.5～2.5", alarm: "點銲機 < 3.0；水冷銲槍 < 1.0"}
+  coolant_return_temp_c: {status: proposed, line: welding, unit: °C, normal: "25～35", alarm: "> 45"}
+  exhaust_flow_m3h:      {status: proposed, line: welding, unit: m3/h, normal: "1,800～2,200（每個工作站）", alarm: "< 1,400（設定 70%）"}
+  exhaust_dp_pa:         {status: proposed, line: welding, unit: Pa, normal: "300～900", alarm: "> 1,200（濾筒阻塞）"}
+  exhaust_fan_state:     {status: proposed, line: welding, values: [running, stopped]}
+  robot_state:           {status: proposed, line: welding, values: [running, cycle_stop, teach, estop, stopped]}
+  # ---- 組裝線（assembly）：status: proposed，line: assembly。以 M3 機殼螺絲鎖入壓鉚螺母、目標扭力 0.8 N·m 為假設（模擬值）
+  screw_result:          {status: proposed, line: assembly, values: [OK, NOK_LOW_TORQUE, NOK_HIGH_TORQUE_EARLY, NOK_ANGLE_HIGH, NOK_ANGLE_LOW, NOK_NO_SCREW]}
+  final_torque_nm:       {status: proposed, line: assembly, unit: N·m, normal: "0.72～0.88（目標 0.8 ±10%）"}
+  final_angle_deg:       {status: proposed, line: assembly, unit: °, normal: "1,080～1,800（M3×6，約 3～5 圈）", note: 旋入到達目標扭力時的累積角度}
+  rundown_torque_nm:     {status: proposed, line: assembly, unit: N·m, normal: "< 0.15", alarm: "> 0.30（旋入初段扭力早期上升）"}
+  nok_hole_id:           {status: proposed, line: assembly, note: "NOK 發生的孔位代號，例如 H07（每個工件 12 孔：H01～H12）"}
+  nok_rate_pct:          {status: proposed, line: assembly, unit: "%", normal: "< 1", alarm: "> 3", note: 近 100 次鎖附 NOK 率}
+  bit_cycle_count:       {status: proposed, line: assembly, unit: 次, normal: "< 40,000（起子頭更換基準）"}
+  feeder_pick_fail_count: {status: proposed, line: assembly, unit: 次/小時, normal: "< 3", alarm: "> 10", note: 送釘機吸附／供釘失敗}
+  screw_count_actual:    {status: proposed, line: assembly, unit: 顆, note: 該工件實際完成鎖附次數}
+  screw_count_required:  {status: proposed, line: assembly, unit: 顆, note: 工單要求鎖附次數（例：12）}
+  torque_audit_dev_pct:  {status: proposed, line: assembly, unit: "%", normal: "±5 以內", alarm: "超過 ±10", note: 以扭力分析儀抽測，實測值相對設定值}
+  insulation_mohm:       {status: proposed, line: assembly, unit: MΩ, normal: "> 100", alarm: "< 10", note: 測試站絕緣電阻}
+  test_result:           {status: proposed, line: assembly, values: [PASS, DEVICE_NOT_FOUND, HIPOT_FAIL, LINK_INTERMITTENT]}
+  esd_check:             {status: proposed, line: assembly, values: [PASS, FAIL], note: 靜電手環／腳跟帶測試站}
+events:
+  coil_change:  {status: event, payload: "{coil_id, grade, thickness_mm, spec_changed: bool}"}
+  die_change:   {status: event, payload: "{die_id, shut_height_mm, upper_die_weight_kg}"}
+  days_since_pm: {status: event, unit: 天, note: 機台脈絡；保養週期沖壓 60 天、銲接 30 天、組裝 90 天（模擬值）}
+  param_change: {status: proposed, payload: "{param, old, new}", note: 例如 pilot_release_angle_deg、spm}
+  # ---- 銲接線／組裝線事件（proposed）
+  weld_defect:      {status: proposed, line: welding, payload: "{type: porosity|burn_through|lack_of_fusion|bead_offset|spatter|undersize_nugget, fixture_id, count}"}
+  collision_event:  {status: proposed, line: welding, payload: "{robot_id, severity: light|heavy}", note: 撞槍偵測}
+  consumable_change: {status: proposed, line: welding, payload: "{item: contact_tip|nozzle|liner|torch_neck|electrode_cap|wire_drum|gas_cylinder}"}
+  part_lot_change:  {status: proposed, line: welding, payload: "{lot_id, part}", note: 換工件批號（沖壓件來料）}
+  screw_lot_change: {status: proposed, line: assembly, payload: "{lot_id, spec}", note: 送釘機補充新批螺絲}
+  calib_due_days:   {status: proposed, line: assembly, unit: 天, note: 扭力工具距校正到期日（負值＝逾期）；校正週期 180 天（模擬值）}
+  ppe_stock_count:  {status: proposed, line: assembly, unit: 份, note: 該站防護具（手套、護目鏡、靜電手環）庫存，對應設施規則第277條}
+vision:
+  person_in_zone: {status: proposed, values: [true, false], note: 影像偵測人員進入危險區 ROI（沖壓模區；銲接線為機器人圍欄內）}
+  smoke:            {status: proposed, line: welding, values: [none, in_cell, outside_cell], note: "銲接工位 ROI 內的銲煙與火花屬正常；outside_cell＝工位 ROI 以外出現煙霧（01_初選問題處理.md C1）"}
+  flame:            {status: proposed, line: welding, values: [true, false], note: 工位 ROI 以外的火光（疑似火災，走緊急應變，不是維修 SOP）}
+  cable_out_of_path: {status: proposed, line: assembly, values: [true, false], note: 影像比對走線路徑與作業指導書}
+  connector_unlatched: {status: proposed, line: assembly, values: [true, false], note: 影像偵測連接器卡扣未扣上}
+  screw_missing:    {status: proposed, line: assembly, values: [true, false], note: 影像檢出孔位無螺絲}
+  ppe_missing:      {status: proposed, line: assembly, values: [none, cut_gloves, safety_glasses, esd_strap], note: 影像偵測未戴的防護具類別（人臉模糊）}
+alarm_codes:   # 通用類別碼（自訂），刻意不使用任何真實廠牌的警報碼
+  MISFEED: 誤送料偵測
+  DIE_PROTECT: 模具保護（廢料、異物、製品未排出）
+  STRIP_LIFT: 料帶上浮
+  STRIP_EDGE: 料帶邊緣偏移
+  OVERLOAD: 過負荷保護動作
+  DOUBLE_BLANK: 雙料偵測
+  OVERRUN: 停止角度／停止時間超限
+  AIR_LOW: 氣源壓力低
+  FD_OVERCURRENT: 送料機驅動器過電流
+  FD_POS_DEV: 送料機位置偏差過大
+  LOOP_FAULT: 料環偵測異常
+  SCRAP_CONV_OVERLOAD: 廢料輸送帶過載
+  LC_FAULT: 光幕自我診斷錯誤
+  DIE_LUBE_LOW: 模具潤滑油位低
+  CENTRAL_LUBE_LOW: 機台集中潤滑壓力／油位低
+  # 銲接線
+  ARC_START_FAIL: 起弧失敗
+  ARC_LOST: 斷弧
+  WIRE_STICK: 銲絲黏住（回燒／黏導電嘴）
+  WIRE_FEED_OVERLOAD: 送絲馬達過負荷
+  GAS_LOW: 保護氣體流量低
+  CLEAN_STATION_FAULT: 清槍站未執行或故障
+  COLLISION: 撞槍偵測
+  TCP_CHECK_NG: TCP 校驗超差
+  COOLANT_LOW: 冷卻水流量低
+  WELD_OVERTEMP: 銲槍／電極過熱
+  SPOT_CURRENT_DEV: 點銲電流偏差
+  FUME_EXH_LOW: 局部排氣風量低
+  # 組裝線
+  SCREW_NOK: 鎖附結果 NOK
+  FEEDER_TIMEOUT: 送釘逾時
+  COUNT_MISMATCH: 鎖附數量不符
+  CALIB_OVERDUE: 扭力工具校正逾期
+  TEST_NG: 功能測試站不通過
+  ESD_CHECK_FAIL: 靜電防護測試未通過

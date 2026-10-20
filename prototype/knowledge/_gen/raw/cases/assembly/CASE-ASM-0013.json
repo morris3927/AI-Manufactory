@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4012
+ },
+ "output": {
+  "technician_report_raw": "ST02 H09/H12 NOK_LOW_TORQUE 打滑 bit 41597次 起子投磨圓 LOTO拔插頭關氣源 換bit 試片5顆ok",
+  "technician_report_normalized": "ST02本班NOK率升至3.8%，H09、H12連續出現NOK_LOW_TORQUE。試鎖有起子頭打滑聲，螺絲十字槽磨花、起子頭刃口圓化；控制器顯示累計使用41597次，已超過40000次。依LOTO-ASM-TOOL-01拔插頭並關送釘機氣源，拆下磨耗起子頭，清潔固定座、夾頭、吸嘴與送釘軌道，裝新起子頭並確認定位無偏擺。隔離H09、H12可疑工件並追溯，以報廢件試鎖5顆正常，首件確認後恢復生產。",
+  "actions": [
+   {
+    "step": "依LOTO-ASM-TOOL-01拔除電源插頭並關閉送釘機氣源，確認設備停止。",
+    "result": "完成"
+   },
+   {
+    "step": "調閱NOK紀錄並以報廢件試鎖，H09／H12出現cam-out打滑聲，十字槽磨花、起子頭刃口圓化，bit_cycle_count為41597次。",
+    "result": "確認起子頭磨耗"
+   },
+   {
+    "step": "拆下舊起子頭，清潔起子頭固定座、夾頭、吸嘴及送釘軌道。",
+    "result": "完成"
+   },
+   {
+    "step": "裝上新起子頭，確認完全卡入定位、無偏擺與鬆動。",
+    "result": "ok"
+   },
+   {
+    "step": "隔離H09／H12可疑工件並追溯，以報廢件試鎖5顆並做首件確認。",
+    "result": "5/5 ok 恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "driver_bit"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "起子頭累計次數快到四萬次就先檢查刃口，不要等NOK率爬上來才換。",
+  "escalation_note": null
+ }
+}

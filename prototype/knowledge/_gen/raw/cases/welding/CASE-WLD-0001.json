@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3000
+ },
+ "output": {
+  "technician_report_raw": "RC01 斷弧ARC_LOST 送絲速度掉到4.5 馬達電流5.7 開送絲機上蓋見鳥巢 剪纏繞段300mm 導管入口鐵屑清乾淨 送絲輪間隙ok 導電嘴178min未達換 重穿絲 圍欄外試銲ok",
+  "technician_report_normalized": "RC01 於 11:52 出現斷弧警報（ARC_LOST），送絲速度降至 4.5 m/min、馬達電流升至 5.7 A。上鎖掛牌後開送絲機上蓋，見銲絲在送絲輪與導管入口間纏繞成團。剪除纏繞段約 300 mm，以軟管刷與乾燥壓縮空氣清理導管；送絲輪溝槽、對齊與加壓臂張力正常，間隙量測 OK。導電嘴累積起弧 178 分鐘，未達更換基準。重新穿絲後阻力正常，局部排氣運轉下圍欄外試銲，電弧穩定，恢復生產。",
+  "actions": [
+   {
+    "step": "開送絲機上蓋，目視檢查送絲輪與導管入口",
+    "result": "發現鳥巢"
+   },
+   {
+    "step": "剪除纏繞段與受壓變形銲絲約 300 mm，以軟管刷及乾燥壓縮空氣清理導管入口鐵屑",
+    "result": "排除"
+   },
+   {
+    "step": "檢查送絲輪溝槽磨耗、上下輪對齊與加壓臂張力，並用厚薄規量測間隙",
+    "result": "ok"
+   },
+   {
+    "step": "量測導電嘴孔徑並查閱累積起弧時間 178 分鐘",
+    "result": "未達更換基準"
+   },
+   {
+    "step": "重新穿絲，手動拉絲確認全程阻力",
+    "result": "正常"
+   },
+   {
+    "step": "教導模式降速確認槍姿，局部排氣運轉下由人員在圍欄外試銲",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "送絲速度掉、馬達電流同時升高時，先開上蓋找鳥巢，比一直重試起弧快。",
+  "escalation_note": null
+ }
+}

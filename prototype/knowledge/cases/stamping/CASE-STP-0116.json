@@ -1,0 +1,144 @@
+{
+  "case_id": "CASE-STP-0116",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1115,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-08-12T02:54:41+08:00",
+  "closed_at": "2026-08-12T04:46:16+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "lube_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 23,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2608-198"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-11T23:35:12+08:00",
+      "signal": "bearing_temp_c",
+      "value": 42
+    },
+    {
+      "t": "2026-08-12T00:55:15+08:00",
+      "signal": "lube_pressure_bar",
+      "value": 0.6
+    },
+    {
+      "t": "2026-08-12T01:25:12+08:00",
+      "signal": "bearing_temp_c",
+      "value": 55
+    },
+    {
+      "t": "2026-08-12T02:54:41+08:00",
+      "signal": "bearing_temp_c",
+      "value": 66
+    },
+    {
+      "t": "2026-08-12T02:54:41+08:00",
+      "signal": "alarm_code",
+      "value": "CENTRAL_LUBE_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-05",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 集中潤滑低壓 軸承溫66 油位低 濾網塞 油管滲油 換濾網+油管 補油 試機ok",
+  "technician_report_normalized": "PR01 夜班發生集中潤滑低壓警報，現場查看油箱油位低於下限，泵浦壓力表僅 0.6 bar，曲軸軸承溫度由 42 °C 一路升至 66 °C，滑塊有輕微異音。沿油路檢查發現吸入濾網阻塞，泵浦至分配閥間一段油管硬化並滲油，模具與製品表面無異常。更換濾網與油管、清潔加油口及油位計後，補充指定潤滑油並排氣，壓力恢復正常。試沖後軸承溫度回落、異音消失，觀察生產警報未再發生，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "central_lube_fault",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "central_lube_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查看集中潤滑油箱油位與泵浦壓力表，確認油位低於下限、壓力僅 0.6 bar。",
+      "result": "油位低、壓力 0.6 bar"
+    },
+    {
+      "step": "沿泵浦至分配閥、導軌與曲軸軸承油路檢查，發現吸入濾網阻塞及一段油管硬化滲油。",
+      "result": "濾網阻塞、油管滲漏"
+    },
+    {
+      "step": "更換 central_lube_filter 與 lube_hose，清潔加油口及油位計。",
+      "result": "更換完成"
+    },
+    {
+      "step": "補充現場指定潤滑油至油位計範圍，手動運轉泵浦排氣並確認供油壓力。",
+      "result": "壓力恢復正常"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "以點溫計量測軸承座溫度並聽診滑塊，試沖確認異音與溫升狀況。",
+      "result": "溫度回落、異音消失"
+    },
+    {
+      "step": "觀察夜班生產，集中潤滑低壓警報未再發生。",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-057"
+  ],
+  "downtime_min": 110,
+  "parts_replaced": [
+    "central_lube_filter",
+    "lube_hose"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "軸承溫度連續上升時，先看集中潤滑油位與泵浦壓力，不要等到低壓警報才停機。",
+  "related_failure_mode_ids": [
+    "central_lube_fault"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-057"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

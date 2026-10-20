@@ -1,0 +1,132 @@
+{
+  "case_id": "CASE-STP-0082",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1081,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2025-12-01T13:23:55+08:00",
+  "closed_at": "2025-12-01T14:55:35+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "air_low_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 22,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2512-155"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-01T13:12:26+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.8
+    },
+    {
+      "t": "2025-12-01T13:21:37+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.2
+    },
+    {
+      "t": "2025-12-01T13:23:55+08:00",
+      "signal": "air_pressure_bar",
+      "value": 4.4
+    },
+    {
+      "t": "2025-12-01T13:23:55+08:00",
+      "signal": "alarm_code",
+      "value": "AIR_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-07",
+    "level": "L1"
+  },
+  "technician_report_raw": "FD02 AIR_LOW 氣壓4.4 三點組合濾杯積水 調壓閥漂移 洩水調整後5.9 ok",
+  "technician_report_normalized": "FD02 於 13:23 出現 AIR_LOW 氣壓低警報，機台氣壓由 5.8 bar 逐步降至 4.4 bar。檢查氣源三點組合，發現濾杯積水且調壓閥設定有漂移，管路接頭測漏無明顯洩漏，比對同管路其他機台無同步壓降。洩水並重新調整調壓閥至設定值後，氣壓回升至 5.9 bar，試運轉送料與壓輪釋放動作正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "air_pressure_low",
+    "by": "jev",
+    "p": 0.66
+  },
+  "final_root_cause": "air_pressure_low",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "讀取機台氣壓表與 HMI 氣壓值，記錄 AIR_LOW 發生時間",
+      "result": "4.4 bar 低於下限"
+    },
+    {
+      "step": "比對同一供氣管路其他機台壓力與停機紀錄",
+      "result": "無同步壓降"
+    },
+    {
+      "step": "檢查氣源三點組合壓力設定、濾杯積水與調壓閥",
+      "result": "濾杯積水 調壓閥偏低"
+    },
+    {
+      "step": "洩除濾杯積水並調整調壓閥至設定值，管路接頭測漏",
+      "result": "壓力回升 5.9 bar 無洩漏"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試運轉觀察送料與壓輪釋放動作",
+      "result": "ok 恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-055"
+  ],
+  "downtime_min": 89,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "氣壓緩降先看三點組合濾杯與調壓閥，別只 reset 警報。",
+  "related_failure_mode_ids": [
+    "air_pressure_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-055"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

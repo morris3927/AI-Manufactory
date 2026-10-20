@@ -1,0 +1,133 @@
+{
+  "case_id": "CASE-WLD-0060",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3059,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "escalated",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-04-09T15:06:34+08:00",
+  "closed_at": "2026-04-09T20:50:18+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "fused",
+    "event_type": "smoke_outside_cell",
+    "rule_severity": "S3"
+  },
+  "context": {
+    "days_since_pm": 14,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-111"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-09T14:42:03+08:00",
+      "signal": "exhaust_flow_m3h",
+      "value": 1960
+    },
+    {
+      "t": "2026-04-09T15:06:34+08:00",
+      "signal": "exhaust_fan_state",
+      "value": "stopped"
+    },
+    {
+      "t": "2026-04-09T15:06:34+08:00",
+      "signal": "exhaust_flow_m3h",
+      "value": 72
+    },
+    {
+      "t": "2026-04-09T15:06:34+08:00",
+      "signal": "alarm_code",
+      "value": "FUME_EXH_LOW"
+    },
+    {
+      "t": "2026-04-09T15:08:01+08:00",
+      "signal": "smoke",
+      "value": "outside_cell"
+    },
+    {
+      "t": "2026-04-09T15:09:09+08:00",
+      "signal": "robot_state",
+      "value": "cycle_stop"
+    }
+  ],
+  "technician": {
+    "id": "TECH-24",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 排煙低警報 排風機stopped 風量72 煙飄出圍欄 停銲cycle_stop LOTO 通知廠務 等合格人員查風機皮帶+濾筒",
+  "technician_report_normalized": "RC01 銲接工作站於 15:06 出現排煙風量低警報，排風機狀態為停止，風量由 1960 m³/h 降至 72 m³/h，隨後工位外出現煙霧，機器人進入循環停止。現場立即停止銲接並完成上鎖掛牌，通報主管與廠務；技術員僅記錄與警戒，未自行拆卸或修復排煙設備，等待廠務合格人員檢查排風機、皮帶、濾筒與導管。",
+  "first_hypothesis": {
+    "failure_mode_id": "fume_extraction_fault",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "fume_extraction_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停止銲接作業並確認機器人進入循環停止",
+      "result": "已停止"
+    },
+    {
+      "step": "通報主管與廠務，說明排風機停止、風量 72 m³/h 及煙霧外洩狀況",
+      "result": "已通報"
+    },
+    {
+      "step": "記錄警報與現場狀況，維持停工警戒，未自行拆卸設備",
+      "result": "已記錄"
+    },
+    {
+      "step": "將排煙設備檢修移交廠務，由合格人員檢查排風機、皮帶、濾筒與導管",
+      "result": "移交廠務"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-051"
+  ],
+  "downtime_min": 342,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "廠務",
+  "escalation_note": "已將排煙風機停止、風量低及煙霧外洩狀況移交廠務，由合格人員檢修排風機、皮帶、濾筒與導管。",
+  "lessons": "排煙風量掉到設定值以下又飄煙時，先停銲通報廠務，不要為了趕產能自行拆排風機。",
+  "related_failure_mode_ids": [
+    "fume_extraction_fault"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-WLD-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

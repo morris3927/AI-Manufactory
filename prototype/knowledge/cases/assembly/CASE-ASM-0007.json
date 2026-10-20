@@ -1,0 +1,145 @@
+{
+  "case_id": "CASE-ASM-0007",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4006,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-02-04T13:08:17+08:00",
+  "closed_at": "2026-02-04T13:59:04+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 29,
+    "recent_changes": [],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-02-1",
+    "screw_lot": "SL-2602-71"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-04T12:28:23+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-02-04T12:28:39+08:00",
+      "signal": "nok_hole_id",
+      "value": "H08"
+    },
+    {
+      "t": "2026-02-04T12:46:36+08:00",
+      "signal": "nok_hole_id",
+      "value": "H08"
+    },
+    {
+      "t": "2026-02-04T12:46:50+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-02-04T13:04:33+08:00",
+      "signal": "nok_hole_id",
+      "value": "H08"
+    },
+    {
+      "t": "2026-02-04T13:04:42+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-02-04T13:08:17+08:00",
+      "signal": "final_angle_deg",
+      "value": 2160
+    }
+  ],
+  "technician": {
+    "id": "TECH-46",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 H08連續NOK_ANGLE_HIGH 同一孔 拆檢壓鉚螺母孔牙崩+毛邊 LOTO後換pem nut 換NOK螺絲 清孔 試片ok 首件pass",
+  "technician_report_normalized": "鎖附站 ST02 於 H08 孔連續出現 NOK_ANGLE_HIGH，角度達 2160 度仍無法達到目標扭力。讀取控制器紀錄並以放大鏡檢查，發現 H08 壓鉚螺母孔牙崩壞、孔口有毛邊與鋅渣；同一孔換新螺絲仍重複 NOK。已依 LOTO-ASM-TOOL-01 斷電，隔離 NOK 工件與同批螺絲並掛標追溯，以手動壓鉚工具更換同規格壓鉚螺母及受損螺絲，清除孔口碎屑。以報廢件試鎖正常，首件確認 PASS，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "cross_thread_strip",
+    "by": "jev",
+    "p": 0.67
+  },
+  "final_root_cause": "cross_thread_strip",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "讀取鎖附控制器紀錄與 NOK 清單，核對 hole_id、扭力與角度資料",
+      "result": "確認 H08 重複 NOK"
+    },
+    {
+      "step": "以放大鏡檢查 H08 壓鉚螺母與孔口狀況",
+      "result": "孔牙崩壞、有毛邊"
+    },
+    {
+      "step": "隔離 NOK 工件與同批螺絲，掛標並追溯批號",
+      "result": "可疑品已隔離"
+    },
+    {
+      "step": "以手動壓鉚工具更換同規格壓鉚螺母及受損螺絲，清除孔口碎屑",
+      "result": "端面齊平無鬆動"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以報廢件試鎖並執行首件確認",
+      "result": "試鎖 ok 首件 pass"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-012"
+  ],
+  "downtime_min": 46,
+  "parts_replaced": [
+    "pem_nut",
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "同一孔連續 NOK 先查孔牙與壓鉚螺母，不要只換螺絲或調扭力。",
+  "related_failure_mode_ids": [
+    "cross_thread_strip"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

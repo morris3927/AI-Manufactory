@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1109
+ },
+ "output": {
+  "technician_report_raw": "PR01 光幕MUTED 19:29有人入危險區 立即停機 通知主管+電氣合格人員 記錄時間 合格人員查自我診斷 換光幕接收器 測試ok",
+  "technician_report_normalized": "PR01 於 19:15 顯示光幕狀態為 MUTED，19:29 影像偵測到人員進入危險區。現場立即停機並通知主管與電氣合格人員，同時記錄光幕狀態與人員進入時間。合格人員到場後確認光幕自我診斷異常，查明停用原因並更換光幕接收器，完成功能測試與復歸。試運轉確認光幕遮斷與起動連鎖正常，恢復生產。",
+  "actions": [
+   {
+    "step": "發現光幕 MUTED 且人員進入危險區，立即按停機",
+    "result": "已停機"
+   },
+   {
+    "step": "通知現場主管與電氣合格人員到場",
+    "result": "已通知"
+   },
+   {
+    "step": "記錄光幕狀態、人員進入時間與現場狀況",
+    "result": "已記錄"
+   },
+   {
+    "step": "由合格人員檢查光幕自我診斷與停用原因",
+    "result": "確認光幕接收器異常"
+   },
+   {
+    "step": "由合格人員更換光幕接收器並執行功能測試",
+    "result": "測試正常"
+   },
+   {
+    "step": "由合格人員完成復歸與試運轉，確認遮斷及起動連鎖正常",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "light_curtain_receiver"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "光幕出現 MUTED 就先當成安全異常處理，不要只看當下有沒有人員訊號。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,144 @@
+{
+  "case_id": "CASE-STP-0117",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1116,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-09-15T10:07:26+08:00",
+  "closed_at": "2026-09-15T11:24:53+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "lube_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 22,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2609-243"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-15T06:47:38+08:00",
+      "signal": "bearing_temp_c",
+      "value": 39
+    },
+    {
+      "t": "2026-09-15T08:07:30+08:00",
+      "signal": "lube_pressure_bar",
+      "value": 0.6
+    },
+    {
+      "t": "2026-09-15T08:37:31+08:00",
+      "signal": "bearing_temp_c",
+      "value": 54
+    },
+    {
+      "t": "2026-09-15T10:07:26+08:00",
+      "signal": "bearing_temp_c",
+      "value": 68
+    },
+    {
+      "t": "2026-09-15T10:07:26+08:00",
+      "signal": "alarm_code",
+      "value": "CENTRAL_LUBE_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR03 集中潤滑低油位 軸承溫68 泵壓0.6 油管接頭滲 換油管+濾網 補油 試機ok",
+  "technician_report_normalized": "PR03 上午十時七分觸發集中潤滑低油位警報，軸承溫度由三十九度逐步升至六十八度，潤滑泵壓力僅零點六 bar。檢查油箱油位偏低，泵浦至分配閥的油管接頭有滲漏，吸入濾網也有堵塞。補充現場指定潤滑油並清潔加油口與油位計，更換濾網及滲漏油管後，潤滑壓力恢復正常，軸承溫度回落，試沖確認無異音且生產正常。",
+  "first_hypothesis": {
+    "failure_mode_id": "central_lube_fault",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "central_lube_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查看集中潤滑油箱油位計與泵浦壓力表",
+      "result": "油位偏低、壓力 0.6 bar"
+    },
+    {
+      "step": "沿泵浦至分配閥、導軌與曲軸軸承油路檢查",
+      "result": "接頭滲漏、濾網堵塞"
+    },
+    {
+      "step": "以點溫計量測導軌與曲軸軸承並聽診滑塊",
+      "result": "軸承 68 °C、有異音"
+    },
+    {
+      "step": "補充指定潤滑油並清潔加油口、油位計",
+      "result": "油位回到範圍"
+    },
+    {
+      "step": "更換吸入濾網與滲漏油管",
+      "result": "出油恢復"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並觀察潤滑壓力、軸承溫度與警報",
+      "result": "警報解除、溫度回落、ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-057"
+  ],
+  "downtime_min": 77,
+  "parts_replaced": [
+    "central_lube_filter",
+    "lube_hose"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "集中潤滑警報不要只補油，油管接頭滲漏與濾網堵塞要一起查，否則軸承溫度還是會爬。",
+  "related_failure_mode_ids": [
+    "central_lube_fault"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-057"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,136 @@
+{
+  "case_id": "CASE-ASM-0041",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4040,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-02-18T12:28:20+08:00",
+  "closed_at": "2026-02-18T13:33:25+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "calibration_overdue",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 66,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2602-46"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-18T12:19:00+08:00",
+      "signal": "screw_result",
+      "value": "OK"
+    },
+    {
+      "t": "2026-02-18T12:28:04+08:00",
+      "signal": "bit_cycle_count",
+      "value": 38177
+    },
+    {
+      "t": "2026-02-18T12:28:20+08:00",
+      "signal": "torque_audit_dev_pct",
+      "value": 13.0
+    }
+  ],
+  "technician": {
+    "id": "TECH-50",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 抽測扭力偏13% 先查bit 38177次 刃口無花 打滑排除 校正逾期 LOTO後換校正品起子 試鎖ok 原工具送校",
+  "technician_report_normalized": "ST01 鎖附結果多顯示 OK，但扭力抽測偏差 13.0%。起初因起子頭累計 38,177 次接近 40,000 次更換門檻，先檢查起子頭刃口與螺絲十字槽，未見明顯圓化、缺角或打滑磨花，排除起子頭磨耗。核對工具校正履歷後發現校正已逾期；完成 LOTO 後更換同規格且校正合格之備品起子，於試片試鎖並抽測恢復正常，原起子掛待校正送校，相關批次已隔離待判定。",
+  "first_hypothesis": {
+    "failure_mode_id": "bit_wear_camout",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "tool_calibration_due",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "看到起子頭累計 38,177 次接近 40,000 次上限，先懷疑起子頭磨耗打滑；但刃口與十字槽未見磨花，且抽測偏差 13.0%、校正逾期才是主因。",
+  "discriminating_evidence": [
+    "起子頭累計 38,177 次，尚未超過 40,000 次更換門檻。",
+    "鎖附結果仍顯示 OK，無明顯 cam-out 打滑或螺絲頭磨花。",
+    "扭力抽測偏差 13.0%，超過 ±10% 判定線。",
+    "工具校正已逾期，換上校正合格備品後抽測恢復正常。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "檢查起子頭刃口與螺絲十字槽磨耗，並於報廢件試鎖確認有無打滑",
+      "result": "排除"
+    },
+    {
+      "step": "以扭力分析儀抽測試片，實測扭力偏差 13.0%",
+      "result": "異常"
+    },
+    {
+      "step": "核對起子控制器校正標籤、報告與到期日",
+      "result": "校正逾期"
+    },
+    {
+      "step": "更換同規格且校正合格之備品起子，原起子掛待校正送校",
+      "result": "ok"
+    },
+    {
+      "step": "以試片或報廢件試鎖並抽測，確認目標扭力 0.8 N·m",
+      "result": "恢復正常"
+    },
+    {
+      "step": "隔離校正逾期期間鎖附之機殼批次，貼待判定標籤並追溯",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-013",
+    "SOP-ASM-031"
+  ],
+  "downtime_min": 65,
+  "parts_replaced": [
+    "calibrated_spare_screwdriver"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "抽測偏差超過 ±10% 時先核對校正履歷與到期日，不要只憑起子頭使用次數判斷。",
+  "related_failure_mode_ids": [
+    "tool_calibration_due",
+    "bit_wear_camout"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-013",
+    "SOP-ASM-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

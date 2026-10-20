@@ -1,0 +1,164 @@
+{
+  "case_id": "CASE-WLD-0048",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3047,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "welding",
+  "machine_type": "spot_welder",
+  "machine_id": "WLD-L2-SP02",
+  "opened_at": "2026-07-17T10:16:13+08:00",
+  "closed_at": "2026-07-17T10:46:01+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 22,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-A",
+    "program_id": "PRG-121"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-17T08:46:15+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 4.9
+    },
+    {
+      "t": "2026-07-17T09:46:31+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 3.1
+    },
+    {
+      "t": "2026-07-17T09:46:39+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 37
+    },
+    {
+      "t": "2026-07-17T10:06:24+08:00",
+      "signal": "weld_defect",
+      "value": "undersize_nugget×4"
+    },
+    {
+      "t": "2026-07-17T10:16:13+08:00",
+      "signal": "tip_dress_count",
+      "value": 29
+    },
+    {
+      "t": "2026-07-17T10:16:13+08:00",
+      "signal": "weld_count_since_dress",
+      "value": 166
+    },
+    {
+      "t": "2026-07-17T10:16:13+08:00",
+      "signal": "weld_current_ka",
+      "value": 10.0
+    },
+    {
+      "t": "2026-07-17T10:16:13+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 2.5
+    },
+    {
+      "t": "2026-07-17T10:16:13+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 48
+    },
+    {
+      "t": "2026-07-17T10:16:13+08:00",
+      "signal": "alarm_code",
+      "value": "WELD_OVERTEMP"
+    }
+  ],
+  "technician": {
+    "id": "TECH-26",
+    "level": "L2"
+  },
+  "technician_report_raw": "SP02 熔核小 剝離NG×4 電極帽端面6.7mm 修磨29次 冷卻水2.5L/min 回水48度 換cap 清濾網 通水試銲ok",
+  "technician_report_normalized": "SP02 點銲機在生產電源支架時連續 4 點出現熔核偏小、剝離試驗不合格。檢查發現上下電極帽端面直徑已擴大至 6.7 mm、端面沾鋅變色，修磨次數累計 29 次，超過 25 次上限；點銲電流 10.0 kA 與加壓力仍在設定範圍內。同時電極冷卻水流量由 4.9 降至 2.5 L/min，回水溫度達 48 °C 並觸發過熱警報，這是加劇電極帽磨耗的次要原因。上鎖停電後更換電極帽並修磨至 5.0～5.5 mm，另清洗冷卻水濾網、排除管路折曲，恢復通水後以報廢試片做剝離試驗合格，已恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "spot_electrode_wear",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "spot_electrode_wear",
+  "contributing_causes": [
+    "cooling_water_low"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-SPOT-WELD-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "上鎖停電後以游標卡尺量測上下電極帽端面直徑並目視端面狀況",
+      "result": "6.7 mm、沾鋅變色、邊緣翻邊"
+    },
+    {
+      "step": "由控制器歷史頁讀取修磨次數與上次修磨後銲點數",
+      "result": "修磨 29 次、已銲 166 點"
+    },
+    {
+      "step": "在通水運轉下以流量計與溫度計量測電極冷卻水流量與回水溫度",
+      "result": "2.5 L/min、48 °C，過熱警報成立"
+    },
+    {
+      "step": "拆下磨耗電極帽，以刮刀清潔電極座錐面鋅渣後裝入新帽並修磨端面",
+      "result": "端面回復 5.0～5.5 mm、無偏擺"
+    },
+    {
+      "step": "清洗冷卻水機濾網並整理折曲水管，恢復通水",
+      "result": "流量回穩、回水降溫"
+    },
+    {
+      "step": "局部排氣運轉下、人員退至遮光簾外以報廢試片做剝離試驗",
+      "result": "熔核直徑合格、恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-041",
+    "SOP-WLD-042"
+  ],
+  "downtime_min": 29,
+  "parts_replaced": [
+    "electrode_cap"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "修磨次數已到 29 次、端面 6.7 mm 才換帽，等於讓熔核一路變小；次數逼近 25 次就先備帽，順手看一下冷卻水流量，兩件事一起做才不會再來一次。",
+  "related_failure_mode_ids": [
+    "spot_electrode_wear",
+    "cooling_water_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-041",
+    "SOP-WLD-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

@@ -1,0 +1,152 @@
+{
+  "case_id": "CASE-STP-0037",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1036,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "escalated",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2025-11-28T13:53:27+08:00",
+  "closed_at": "2025-11-29T00:16:46+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "strip_edge_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 31,
+    "recent_changes": [
+      "換料捲 13:06（C-2511-320）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2511-320"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2025-11-28T13:07:02+08:00",
+      "signal": "coil_change",
+      "value": "C-2511-320",
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2025-11-28T13:30:08+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE",
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2025-11-28T13:43:45+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE",
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2025-11-28T13:51:52+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02,
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2025-11-28T13:53:27+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE",
+      "machine_id": "STP-L2-FD04"
+    }
+  ],
+  "technician": {
+    "id": "TECH-03",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR03 STRIP_EDGE連跳 換C-2511-320後開始 料帶一路往操作側偏 後段工站擦側導版 FD04送料長度誤差0.02mm正常 料捲放平量側彎超標 料架左右對中調過還是偏 現場無法處理 移交設備工程師",
+  "technician_report_normalized": "PR03 於換料捲 C-2511-320 後，STRIP_EDGE 警報連續觸發三次，料帶行進時持續往操作側偏移，越到後段工站偏移越明顯，並在側導板留下磨痕。檢查送料長度誤差僅 0.02 mm，無明顯異常；將料帶取樣放平量測，最大側彎量超出允差，研判為料捲側彎造成料帶偏移。已重新對中料架左右位置並調整整平機輥輪壓下量，偏移仍未改善，線邊無同料號替換捲，已移交設備工程師會同品保辦理退料換捲。",
+  "first_hypothesis": {
+    "failure_mode_id": "coil_camber",
+    "by": "jev",
+    "p": 0.55
+  },
+  "final_root_cause": "coil_camber",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌（送料機 FD04 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱 MES 警報與換料紀錄，比對 STRIP_EDGE 首次觸發時點",
+      "result": "與換料捲 C-2511-320 時點吻合"
+    },
+    {
+      "step": "目視檢查整平機出口至模具入口的料帶行進路徑與側導板",
+      "result": "料帶持續往操作側偏，後段工站有擦痕"
+    },
+    {
+      "step": "量測送料長度誤差並比對換料前後沖壓力峰值",
+      "result": "誤差 0.02 mm，無明顯變化"
+    },
+    {
+      "step": "取 1 m 料帶放平於量測平台量測最大側彎偏移量",
+      "result": "側彎量超出允差"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-MECH-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "重新對中料架左右位置並調整整平機輥輪壓下量，寸動低速送料觀察",
+      "result": "偏移未改善"
+    },
+    {
+      "step": "回報主管並彙整量測數據，移交設備工程師",
+      "result": "移交設備工程師"
+    },
+    {
+      "step": "機台維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-009"
+  ],
+  "downtime_min": 621,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "設備工程師",
+  "escalation_note": "料捲 C-2511-320 側彎超出允差，重新對中料架也補償不了，線邊又無同料號替換捲，已將側彎量測數據、側導板磨痕與換料紀錄移交設備工程師，會同品保辦理退料換捲。",
+  "lessons": "換新料捲後才出現的單側偏移，先取樣放平量側彎，不要一直調側導板。",
+  "related_failure_mode_ids": [
+    "coil_camber"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-009"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

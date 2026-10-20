@@ -1,0 +1,150 @@
+{
+  "case_id": "CASE-STP-0033",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1032,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-09-02T23:15:42+08:00",
+  "closed_at": "2026-09-03T00:30:09+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "strip_edge_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 9,
+    "recent_changes": [
+      "換料捲 21:19（C-2609-244）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2609-244"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-02T21:19:53+08:00",
+      "signal": "coil_change",
+      "value": "C-2609-244",
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-09-02T22:51:59+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE",
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-09-02T23:02:26+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE",
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-09-02T23:14:11+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02,
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-09-02T23:15:42+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE",
+      "machine_id": "STP-L2-FD04"
+    }
+  ],
+  "technician": {
+    "id": "TECH-11",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 FD04 STRIP_EDGE連跳3次 送料長度0.02沒跑掉 料帶偏操作側 側導板磨痕 1m放平側彎超標 只跟新料捲有關 料架對中+換側導板 試沖ok",
+  "technician_report_normalized": "PR03 搭配 FD04 送料機，STRIP_EDGE 警報連跳三次，送料長度誤差僅 0.02 mm，無明顯異常。沿料帶路徑檢查，料帶持續往操作側偏移，後段工站側導板有明顯磨痕；取 1 m 料帶放平量測，最大側彎量超出允差，比對換料紀錄後確認異常只跟著 21:19 上線的料捲 C-2609-244 出現。重新對中料架，使料帶進整平機前中心偏差小於 1 mm，並更換磨損側導板。寸動送料確認位置正常，試沖後警報未再觸發，恢復生產，停機 74 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "coil_camber",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "coil_camber",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌（送料機 FD04 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停機後沿料帶路徑目視整平機出口到模具入口，並用手電筒確認後段工站有無擦痕",
+      "result": "料帶偏操作側，側導板有磨痕"
+    },
+    {
+      "step": "取 1 m 料帶放平於量測平台，量測最大側彎偏移量",
+      "result": "側彎量超出允差"
+    },
+    {
+      "step": "比對換料捲前後之沖壓力峰值與送料長度誤差紀錄",
+      "result": "異常只跟著新料捲 C-2609-244"
+    },
+    {
+      "step": "放鬆料架夾持，依料帶中心線調整料架左右位置",
+      "result": "進整平機前中心偏差小於 1 mm"
+    },
+    {
+      "step": "更換磨損之側導板",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動低速送料觀察料帶在側導板間的位置，再試沖一批",
+      "result": "STRIP_EDGE 未再觸發，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-009"
+  ],
+  "downtime_min": 74,
+  "parts_replaced": [
+    "strip_side_guide"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "同一顆料捲才反覆跳 STRIP_EDGE、送料長度卻沒跑掉時，先量料帶側彎，不要一直調送料參數。",
+  "related_failure_mode_ids": [
+    "coil_camber"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-009"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,136 @@
+{
+  "case_id": "CASE-ASM-0040",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4039,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2025-12-20T22:24:57+08:00",
+  "closed_at": "2025-12-21T00:01:34+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "rule",
+    "event_type": "calibration_overdue",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 73,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2512-76"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-20T22:15:47+08:00",
+      "signal": "screw_result",
+      "value": "OK"
+    },
+    {
+      "t": "2025-12-20T22:22:11+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2025-12-20T22:24:57+08:00",
+      "signal": "torque_audit_dev_pct",
+      "value": 16.1
+    }
+  ],
+  "technician": {
+    "id": "TECH-47",
+    "level": "L3"
+  },
+  "technician_report_raw": "ST02 鎖附NOK_LOW_TORQUE 初判浮鎖 試片補鎖未改善 bit外觀ok 查校正標籤過期 抽測偏差16.1% 換校正備品起子試鎖ok 逾期批隔離待判",
+  "technician_report_normalized": "ST02 於 22:22 出現鎖附低扭力 NOK，初判為浮鎖，檢查鎖附姿態、下壓與起子頭刃口，並在試片補鎖後仍未改善。續查起子控制器校正標籤，發現工具校正已逾期；以扭力分析儀抽測偏差達 16.1％，確認離合器跳脫點漂移。已依 LOTO-ASM-TOOL-01 斷電，換上校正合格之備品起子，試片試鎖正常；逾期期間鎖附之機殼與螺絲批號已隔離待判定。",
+  "first_hypothesis": {
+    "failure_mode_id": "torque_not_reached",
+    "by": "jev",
+    "p": 0.47
+  },
+  "final_root_cause": "tool_calibration_due",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到 22:22 出現 NOK_LOW_TORQUE、先前 22:15 仍有 OK，便先懷疑下壓不足造成浮鎖；但試片補鎖未改善、起子頭外觀正常，且抽測偏差 16.1％ 與校正逾期，才確認是工具校正到期使離合器跳脫點漂移，不是扭力未達。",
+  "discriminating_evidence": [
+    "22:15 曾有 OK、22:22 才出現 NOK_LOW_TORQUE，並非連續低扭力；試片補鎖與下壓檢查也未改善。",
+    "起子頭刃口與十字槽外觀正常，沒有圓化、缺角或磨花，排除起子頭磨耗與典型浮鎖。",
+    "扭力分析儀抽測偏差 16.1％，超過 ±10％ 門檻，且校正標籤已逾期，符合工具校正漂移。",
+    "換上校正合格備品起子後試片抽測正常，符合換工具就正常的校正逾期特徵。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依浮鎖方向檢查鎖附姿態、下壓與螺絲頭貼合，於試片補鎖驗證。",
+      "result": "未改善"
+    },
+    {
+      "step": "檢查起子頭刃口與十字槽磨耗，確認外觀無圓化或缺角。",
+      "result": "排除"
+    },
+    {
+      "step": "核對起子控制器校正標籤與到期日，發現校正已逾期。",
+      "result": "確認逾期"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以扭力分析儀抽測，實測偏差 16.1％，超過 ±10％。",
+      "result": "超標"
+    },
+    {
+      "step": "換上校正合格之備品起子，於試片試鎖並抽測。",
+      "result": "ok"
+    },
+    {
+      "step": "隔離校正逾期期間鎖附之機殼、螺絲批號與工具編號，貼待判定標籤。",
+      "result": "已隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-011",
+    "SOP-ASM-031"
+  ],
+  "downtime_min": 93,
+  "parts_replaced": [
+    "calibrated_spare_screwdriver"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "遇到 NOK_LOW_TORQUE 先查工具校正標籤與抽測偏差，不要只靠補鎖判斷浮鎖。",
+  "related_failure_mode_ids": [
+    "tool_calibration_due",
+    "torque_not_reached"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-011",
+    "SOP-ASM-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

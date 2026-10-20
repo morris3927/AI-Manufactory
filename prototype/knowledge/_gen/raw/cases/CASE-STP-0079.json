@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1078
+ },
+ "output": {
+  "technician_report_raw": "PR01 過負荷停機 噸位峰值240 先查雙料 模內料頭重疊 清料頭+擦滾輪 量料厚5點正常 沖頭導正銷無傷 寸動復歸試沖ok",
+  "technician_report_normalized": "PR01 於 17:06 發生過負荷停機，沖壓力峰值 240 噸，前一次為 166 噸，判斷為單一沖次尖峰。檢查模具內部發現料頭重疊，先清除料頭並清潔送料滾輪與料帶油污；以分釐卡量測料帶厚度五點皆為 1.0 mm，沖頭、導正銷與脫料板無崩刃或壓傷。復歸後以寸動確認滑塊動作正常，再試沖數件，噸位回到正常範圍，恢復生產。",
+  "actions": [
+   {
+    "step": "調閱已匯出之噸位監控歷史與過負荷警報記錄",
+    "result": "確認為單一沖次尖峰 240 噸"
+   },
+   {
+    "step": "停機後檢查模內與料帶，發現料頭重疊",
+    "result": "確認料頭重疊"
+   },
+   {
+    "step": "清除模內料頭，清潔送料滾輪與料帶油污",
+    "result": "排除"
+   },
+   {
+    "step": "以分釐卡量測料帶厚度五點並檢查沖頭、導正銷、脫料板",
+    "result": "厚度 1.0 mm，零件無損"
+   },
+   {
+    "step": "寸動復歸確認滑塊動作，試沖數件觀察噸位",
+    "result": "噸位正常 ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "過負荷先確認噸位是單一尖峰還是整段偏移，再開模找料頭，才不會白調模高。",
+  "escalation_note": null
+ }
+}

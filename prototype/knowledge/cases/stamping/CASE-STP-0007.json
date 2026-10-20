@@ -1,0 +1,190 @@
+{
+  "case_id": "CASE-STP-0007",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1006,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2026-06-03T05:57:17+08:00",
+  "closed_at": "2026-06-03T07:35:19+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 38,
+    "recent_changes": [
+      "換料捲 05:50（C-2606-290）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2606-290"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-03T05:43:26+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.04
+    },
+    {
+      "t": "2026-06-03T05:47:51+08:00",
+      "signal": "tonnage_peak",
+      "value": 155,
+      "machine_id": "STP-L2-PR03"
+    },
+    {
+      "t": "2026-06-03T05:48:45+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.08
+    },
+    {
+      "t": "2026-06-03T05:50:22+08:00",
+      "signal": "coil_change",
+      "value": "C-2606-290"
+    },
+    {
+      "t": "2026-06-03T05:52:19+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.07
+    },
+    {
+      "t": "2026-06-03T05:52:56+08:00",
+      "signal": "tonnage_peak",
+      "value": 168,
+      "machine_id": "STP-L2-PR03"
+    },
+    {
+      "t": "2026-06-03T05:53:17+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.13
+    },
+    {
+      "t": "2026-06-03T05:55:32+08:00",
+      "signal": "tonnage_peak",
+      "value": 167,
+      "machine_id": "STP-L2-PR03"
+    },
+    {
+      "t": "2026-06-03T05:57:17+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.19
+    },
+    {
+      "t": "2026-06-03T05:57:17+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-06-03T05:57:17+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-10",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD04 MISFEED 送料誤差累到0.19 先量料厚5點都合格 以為換料捲料硬 降速無效 拆看滾輪亮帶+油 彈簧軟 換上滾輪+軸承+彈簧 寸動ok",
+  "technician_report_normalized": "夜班 FD04 送料機發生 MISFEED 停機，送料長度誤差從 0.04 mm 逐步累積到 0.19 mm，步距偏短、料帶表面有滑痕。因 05:50 才剛換料捲，且沖壓力峰值由 155 噸升到 168 噸，原先懷疑是材料厚度或硬度偏差；但距料邊 20 mm 取 5 點量測，厚度 1.58～1.61 mm 都在公差內，且誤差在換料前就已斜坡上升，因此排除。續查送料滾輪，上滾輪表面有亮帶與油污，壓緊彈簧壓縮量不足、軸承徑向間隙偏大，為主因。已清潔滾輪與料帶路徑，更換上送料滾輪、軸承與壓緊彈簧，空轉與短料低速寸動各 10 次，50.00 mm 送料誤差 0.02 mm，試沖步距與導正孔正常，恢復生產。材料厚度偏上限列為次因，已調整壓緊力並記錄。",
+  "first_hypothesis": {
+    "failure_mode_id": "material_thickness_dev",
+    "by": "jev",
+    "p": 0.55
+  },
+  "final_root_cause": "feed_roller_wear",
+  "contributing_causes": [
+    "material_thickness_dev"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "05:50 才換料捲 C-2606-290，七分鐘後就跳 MISFEED，加上沖壓力峰值由 155 噸階躍到 168 噸，看起來像換料造成的料厚或硬度偏差；但 5 點料厚量測全在公差內，且送料誤差從 05:43 就開始斜坡累積，並非換料當下一次跳變。",
+  "discriminating_evidence": [
+    "送料長度誤差自 05:43 的 0.04 mm 一路斜坡上升到 05:57 的 0.19 mm，換料前就在惡化",
+    "距料邊 20 mm 取 5 點量測料厚 1.58～1.61 mm，全部在公差內",
+    "上送料滾輪表面出現亮帶與油污，料帶表面有滑痕",
+    "壓緊彈簧壓縮量不足、滾輪軸承徑向間隙偏大"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷沿料邊 20 mm 取 5 點量測料帶厚度，並查換料捲紀錄",
+      "result": "厚度 1.58～1.61 mm 在公差內"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "比對沖壓力峰值趨勢，降速試沖確認是否為料捲硬度偏差",
+      "result": "送料誤差仍累積到 0.19 mm，未改善"
+    },
+    {
+      "step": "停機後目視送料滾輪表面、料帶路徑與料帶表面",
+      "result": "上滾輪亮帶＋油污，料帶有滑痕"
+    },
+    {
+      "step": "清潔滾輪亮帶處，量測壓緊彈簧壓縮量與軸承徑向間隙",
+      "result": "彈簧壓縮量不足、軸承間隙偏大"
+    },
+    {
+      "step": "更換上送料滾輪、軸承與壓緊彈簧，清潔下滾輪後空轉 10 次、短料低速寸動 10 次",
+      "result": "送料長度 50.00 mm 誤差 0.02 mm"
+    },
+    {
+      "step": "試沖確認步距與導正孔，調整壓緊力並記錄料厚偏上限",
+      "result": "ok，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-007",
+    "SOP-STP-012"
+  ],
+  "downtime_min": 98,
+  "parts_replaced": [
+    "feed_roll_upper",
+    "feed_roll_bearing",
+    "pinch_spring"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換料捲後跳 MISFEED 不一定是料有問題，先看誤差是階躍還是斜坡，斜坡累積就去摸滾輪亮帶和彈簧。",
+  "related_failure_mode_ids": [
+    "feed_roller_wear",
+    "material_thickness_dev"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-007",
+    "SOP-STP-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

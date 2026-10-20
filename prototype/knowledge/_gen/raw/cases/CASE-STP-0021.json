@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1020
+ },
+ "output": {
+  "technician_report_raw": "PR03 換模後首批 左側毛邊大 噸位左右差16% 定位銷偏磨 換銷+襯套 試沖ok",
+  "technician_report_normalized": "PR03 換模後首批製品左側毛邊明顯，導正孔有單側壓痕並伴隨異音。檢查閉模高度 398.0 mm 與模具資料卡相符；左右沖壓力歷史值 17%／16%，左右差超過 10%。拆模檢視定位銷偏磨、襯套單邊磨亮，厚薄規量測單邊間隙過大。清潔定位面後更換定位銷與襯套，重新對位鎖緊，寸動空轉確認導正銷無單側干涉。試沖首批毛邊消失，噸位平衡恢復正常，恢復生產。",
+  "actions": [
+   {
+    "step": "檢視換模後首批製品與料帶，標記單側毛邊、導正孔壓痕與卡料位置",
+    "result": "缺陷集中在左側"
+   },
+   {
+    "step": "核對模具資料卡之閉模高度與滑塊讀值",
+    "result": "398.0 mm 相符"
+   },
+   {
+    "step": "調閱左右沖壓力歷史值",
+    "result": "17%／16%，左右差超過 10%"
+   },
+   {
+    "step": "以厚薄規量測定位銷與襯套單邊間隙，目視定位面磨亮與銷件偏磨",
+    "result": "單邊間隙過大、定位銷偏磨"
+   },
+   {
+    "step": "清潔模具定位面與襯套孔，更換定位銷與襯套後重新對位鎖緊，寸動空轉並試沖首批",
+    "result": "無單側干涉、毛邊消失、噸位平衡恢復"
+   }
+  ],
+  "parts_replaced": [
+   "die_locating_pin",
+   "locating_pin_bushing"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換模後首批先看左右噸位平衡，差超過 10% 就回頭查定位銷與襯套間隙，不要等毛邊整批出來才停線。",
+  "escalation_note": null
+ }
+}

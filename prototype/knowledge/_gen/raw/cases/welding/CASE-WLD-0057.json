@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3056
+ },
+ "output": {
+  "technician_report_raw": "SP01 排煙抽不動 煙散不掉 飄到走道 壓差1469 風量1343 先停焊 cycle stop 通報廠務 上鎖掛牌 等廠務查濾筒 廠務換濾筒後試抽ok 復線",
+  "technician_report_normalized": "SP01 點銲機出現排煙抽風不足，銲接時煙霧滯留且飄到工位外走道。檢查發現排氣壓差為 1469 Pa、風量為 1343 m3/h，已超過濾筒壓差設定值。現場立即停止銲接作業，完成上鎖掛牌並通報廠務與主管。後續由廠務合格人員檢查局部排氣裝置，確認濾筒阻塞並更換濾筒濾芯；處理後確認排煙恢復正常，已恢復生產。",
+  "actions": [
+   {
+    "step": "發現排煙風量不足、煙霧滯留並飄到工位外，立即停止銲接作業",
+    "result": "停止作業"
+   },
+   {
+    "step": "通報廠務與主管，記錄排氣壓差 1469 Pa、風量 1343 m3/h",
+    "result": "已通報"
+   },
+   {
+    "step": "由廠務／合格人員檢查排風機、皮帶、導管與濾筒",
+    "result": "確認濾筒阻塞"
+   },
+   {
+    "step": "由廠務／合格人員更換濾筒濾芯",
+    "result": "更換完成"
+   },
+   {
+    "step": "由廠務／合格人員完成排氣測試，確認排煙恢復正常",
+    "result": "恢復正常"
+   },
+   {
+    "step": "恢復生產",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "extraction_filter_cartridge"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "排煙壓差衝高時先停機查濾筒，別只調風量硬撐，煙霧外飄就是警訊。",
+  "escalation_note": null
+ }
+}

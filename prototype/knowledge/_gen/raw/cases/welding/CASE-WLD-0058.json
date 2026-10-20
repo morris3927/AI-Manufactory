@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3057
+ },
+ "output": {
+  "technician_report_raw": "RC01 跳FUME_EXH_LOW 焊煙散不掉飄到走道 壓差1525 風量1122 停銲LOTO 通知廠務 廠務換濾筒+清導管 壓差降回 試銲ok 復線",
+  "technician_report_normalized": "RC01 於搖班時段跳出排煙異常警報（FUME_EXH_LOW）。檢查發現濾筒壓差由前一日約 966 Pa 升至 1525 Pa，排氣風量僅 1122 m3/h，銲接工位煙霧滯留不散，並飄到工位以外的走道。隨即停止銲接作業，機器人進入停止狀態，完成上鎖掛牌後通知廠務。由廠務更換濾筒濾芯並清潔導管與氣罩，壓差與風量回復正常；復歸後試銲，排煙順暢，恢復生產。",
+  "actions": [
+   {
+    "step": "停止銲接作業，機器人切至 cycle_stop，撤出工件",
+    "result": "停機"
+   },
+   {
+    "step": "查看局部排氣壓差與風量，確認煙霧滯留並擴散到工位外",
+    "result": "確認異常"
+   },
+   {
+    "step": "通知廠務到場，記錄壓差 1525 Pa、風量 1122 m3/h",
+    "result": "移交廠務"
+   },
+   {
+    "step": "由廠務更換濾筒濾芯，並清潔導管與氣罩",
+    "result": "壓差下降"
+   },
+   {
+    "step": "復歸後試銲，確認排煙順暢、風量回到設定值",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "extraction_filter_cartridge"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "壓差從 966 Pa 一路爬到 1525 Pa 就是濾筒快塞死的預告，別等到煙飄出工位才處理。",
+  "escalation_note": null
+ }
+}

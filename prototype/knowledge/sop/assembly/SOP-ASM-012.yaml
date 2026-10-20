@@ -1,0 +1,260 @@
+# SOP-ASM-012 斜牙／滑牙之檢查與修復
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-ASM-012
+version: '0.1'
+title: 斜牙／滑牙之檢查與修復
+line: assembly
+machine_type:
+- screwdriving_station
+failure_mode_ids:
+- cross_thread_strip
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: quality
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 212
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-ASM-TOOL-01
+  loto_checklist_ids:
+  - LOTO-ASM-TOOL-01
+  energy_sources:
+  - electrical
+  - pneumatic
+  - mechanical_stored
+  - dut_power
+  ppe:
+  - 防割手套（鈑金銳邊）
+  - 護目鏡
+  - 靜電手環
+  - 安全鞋（搬運機殼）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
+  - OSHA 1910.147(d)
+symptoms:
+- 斜牙
+- 滑牙
+- 同一孔一直鎖不上
+- 螺絲歪著進去
+- 孔牙壞掉
+- 螺絲歪著進去，鎖起來卡卡的。
+- 同一孔一直鎖不上，換新螺絲也一樣。
+- 旋入沒幾圈扭力就飆高，控制器判 NOK。
+- 孔口看得到毛邊、鋅渣或塗料，壓鉚螺母好像受傷。
+- 角度一直轉卻到不了目標扭力，最後孔牙崩掉。
+prerequisites:
+  tools:
+  - 扭力分析儀（校正有效期內）
+  - 螺紋通規與止規
+  - 放大鏡
+  - 軟毛刷與手動吸球
+  - 細銼刀或倒角刀
+  - 游標卡尺
+  parts:
+  - 同規格 M3 螺絲
+  - 同規格壓鉚螺母
+  - 起子頭
+  - 無絨布清潔耗材
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知班長本站暫停，於 Kanban 開立維修單；記錄NOK 結果、孔位與近 30 件的鎖附扭力／角度紀錄
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 可疑工件先隔離：本站與下游已完成、可能受影響的機殼貼「待確認」標籤並移到隔離區，依序號追溯，判定前不得出貨
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+- 'no': 3
+  phase: prepare
+  action: 確認班長已核准簡化作業許可（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 4
+  phase: isolate
+  action: 依 LOTO-ASM-TOOL-01 執行輕量上鎖：拔下起子控制器插頭並套上插頭鎖蓋（充電式起子取下電池）、關閉送釘機氣源並洩壓，掛上個人標籤；插頭保持在自己的專屬控制下，並按啟動鍵確認不動作
+  caution: 上鎖前先保存 NOK 紀錄與 hole_id，並隔離同一孔位的可疑工件與同批螺絲，避免維修時混回產線。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 5
+  phase: inspect
+  action: 讀取鎖附控制器紀錄與 NOK 清單，核對 hole_id、rundown_torque_nm、screw_result 與角度曲線；確認是否固定同一孔位重複 NOK。
+  criteria: 若初段扭力大於 0.30 N·m（模擬值）即判 NOK_HIGH_TORQUE_EARLY，或角度超過上限仍到不了 0.8 N·m（模擬值）而判 NOK_ANGLE_HIGH，且 NOK 固定同一 hole_id，判定為本模式；若最終扭力低於 0.72 N·m（模擬值）、角度低於正常下限且 NOK 分散不同孔位或集中同班作業員，改懷疑 torque_not_reached；若換螺絲批或補料後才發生且最終角度明顯偏離，改懷疑 wrong_screw_type。
+  caution: 紀錄於上鎖前匯出或截取；紀錄先備份再維修，不得變更鎖附判定參數。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A4
+- 'no': 6
+  phase: inspect
+  action: 以放大鏡目視檢查同一 hole_id 的壓鉚螺母與攻牙孔口，查看斜牙、滑牙、毛邊、鋅渣、塗料堵塞或螺紋崩壞；同時隔離並標示該 NOK 工件。
+  criteria: 孔口可見斜牙、滑牙、毛邊、鋅渣或塗料堵塞，或壓鉚螺母歪斜、鬆動、端面未貼平，判定為本模式；若孔口完好、無異物且螺絲頭與工件間有可見間隙，改懷疑 torque_not_reached。
+  caution: 鈑金銳邊可能割傷，戴防割手套並使用照明；不可用手指直接探孔或強行刮除孔內異物。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+- 'no': 7
+  phase: inspect
+  action: 檢查 NOK 螺絲與送料盤內螺絲的長度、牙距、頭型與外觀，並檢查起子頭刃口、十字槽磨耗與使用次數。
+  criteria: 若螺絲長度、牙距或頭型與 BOM 不符，或送料盤混有不同規格螺絲，改懷疑 wrong_screw_type；若起子頭刃口圓化、缺角、使用次數超過 40000 次（模擬值），或鎖附時有 cam-out 打滑聲且 NOK 分散各孔位，改懷疑 bit_wear_camout；若螺絲規格正確、起子頭完好，但同一孔換新螺絲仍重複 NOK，支持本模式。
+  caution: 可疑螺絲批與起子頭要分開標示隔離，不可把混料螺絲倒回送釘機。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+  - A5
+- 'no': 8
+  phase: inspect
+  action: 在不通電狀態下，以螺紋通規與止規檢查該孔牙；若需比對旋入手感，僅使用報廢件或試片，不得拿生產中機殼試鎖。
+  criteria: 通規無法順利旋入，或止規可進入超過 2 牙（模擬值），判定孔牙損傷或滑牙，為本模式；若通規與止規判定正常，且手動比對無偏斜，但設備鎖附仍低扭力或浮鎖，改懷疑 torque_not_reached。
+  caution: 使用通規與止規時保持垂直，不可硬轉或擴孔；量規使用前確認無毛邊與汙物。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+- 'no': 9
+  phase: repair
+  action: 將 NOK 工件、同批可疑螺絲與壓鉚螺母隔離並掛標，記錄 hole_id、批號、時間、作業員與鎖附曲線，送品保工程師判定追溯範圍；不可直接放回產線。（現場經驗（模擬））
+  caution: 隔離標示要清楚，避免與良品混料；維修紀錄不得只寫「重鎖 OK」而無 hole_id 與批號。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+- 'no': 10
+  phase: repair
+  action: 以軟毛刷、無絨布與手動吸球清除孔口鋅渣、塗料或異物；若有毛邊，以細銼刀或倒角刀手工去除，碎屑立即收集，不得讓碎屑掉入機殼內。
+  caution: 不可用尖銳工具刮傷孔牙或擴大孔徑；清潔後以螺紋通規複查，禁止用壓縮空氣直接吹入機殼內部。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+- 'no': 11
+  phase: repair
+  action: 若壓鉚螺母或孔牙已崩壞，使用手動壓鉚工具依機殼維修標準更換同規格壓鉚螺母；更換後確認端面與鈑金齊平、無歪斜與鬆動。若孔牙無法更換修復，貼標隔離報廢，不得擴孔、改牙或強行鎖入。
+  caution: 更換壓鉚螺母時避免傷及周邊線材與連接器；壓鉚後不得有凸出超過 0.1 mm（模擬值）或凹陷造成螺絲頭無法貼平。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - A1
+- 'no': 12
+  phase: verify
+  action: 修復後首件之外觀與孔牙確認：檢查孔口無毛邊、鋅渣、塗料堵塞，壓鉚螺母端面齊平且凸出不得超過 0.1 mm（模擬值），螺絲頭與工件貼平無間隙；以螺紋通規與止規複查。
+  criteria: 孔口無毛邊與異物，壓鉚螺母無歪斜鬆動，凸出量不大於 0.1 mm（模擬值）；通規可順利旋入，止規不得進入超過 2 牙（模擬值）；螺絲頭與工件無可見間隙。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A1
+- 'no': 13
+  phase: verify
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-ASM-TOOL-01 測試／定位程序：需要通電試鎖、量測扭力或執行功能測試時：由原上鎖人取下自己的插頭鎖蓋並插回電源，班長知悉；只在治具上用試片或報廢件試鎖；手指不得放在起子頭與送釘吸嘴下方；完成後再拔插頭並套回插頭鎖蓋
+  caution: 通電期間手指不得放在起子頭、送釘吸嘴下方或受測機殼內
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 14
+  phase: verify
+  action: 先以試片或報廢件試鎖確認參數，再對修復後首件依首件程序鎖附並記錄初段扭力、最終扭力與角度。
+  criteria: 試片或報廢件試鎖初段扭力不得大於 0.30 N·m（模擬值），最終扭力達 0.8 N·m（模擬值）且判定 OK；修復後首件同一 hole_id 不得再出現 NOK_HIGH_TORQUE_EARLY 或 NOK_ANGLE_HIGH，最終角度落在作業標準範圍（模擬值），依現行扭力判定上下限判定，不得放寬。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A4
+- 'no': 15
+  phase: verify
+  action: 連續鎖附同一孔位 5 件（模擬值）進行首件追蹤與扭力抽測，確認 NOK 未重現；將更換件、螺絲批、起子頭與維修紀錄建檔後才放行。
+  criteria: 連續 5 件（模擬值）同一 hole_id 皆判定 OK，初段扭力均不大於 0.30 N·m（模擬值），最終扭力達 0.8 N·m（模擬值）且角度在標準範圍（模擬值）；若任一 NOK 重現，停止放行並通知品保工程師／設備工程師。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - A4
+- 'no': 16
+  phase: restore
+  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+- 'no': 17
+  phase: restore
+  action: 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - none
+- 'no': 18
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 修復後首件之外觀與孔牙確認：檢查孔口無毛邊、鋅渣、塗料堵塞，壓鉚螺母端面齊平且凸出不得超過 0.1 mm（模擬值），螺絲頭與工件貼平無間隙；以螺紋通規與止規複查；判定：孔口無毛邊與異物，壓鉚螺母無歪斜鬆動，凸出量不大於 0.1 mm（模擬值）；通規可順利旋入，止規不得進入超過 2 牙（模擬值）；螺絲頭與工件無可見間隙。
+- 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-ASM-TOOL-01 測試／定位程序：需要通電試鎖、量測扭力或執行功能測試時：由原上鎖人取下自己的插頭鎖蓋並插回電源，班長知悉；只在治具上用試片或報廢件試鎖；手指不得放在起子頭與送釘吸嘴下方；完成後再拔插頭並套回插頭鎖蓋
+- 先以試片或報廢件試鎖確認參數，再對修復後首件依首件程序鎖附並記錄初段扭力、最終扭力與角度；判定：試片或報廢件試鎖初段扭力不得大於 0.30 N·m（模擬值），最終扭力達 0.8 N·m（模擬值）且判定 OK；修復後首件同一 hole_id 不得再出現 NOK_HIGH_TORQUE_EARLY 或 NOK_ANGLE_HIGH，最終角度落在作業標準範圍（模擬值），依現行扭力判定上下限判定，不得放寬。
+- 連續鎖附同一孔位 5 件（模擬值）進行首件追蹤與扭力抽測，確認 NOK 未重現；將更換件、螺絲批、起子頭與維修紀錄建檔後才放行；判定：連續 5 件（模擬值）同一 hole_id 皆判定 OK，初段扭力均不大於 0.30 N·m（模擬值），最終扭力達 0.8 N·m（模擬值）且角度在標準範圍（模擬值）；若任一 NOK 重現，停止放行並通知品保工程師／設備工程師。
+restore:
+- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+- 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 若同一 hole_id 更換同規格壓鉚螺母與螺絲後仍重複 NOK，或孔牙崩壞無法更換修復 → 通知品保工程師／設備工程師。
+- 若發現起子頭刃口圓化、缺角、cam-out 打滑聲或使用次數超過 40000 次（模擬值） → 改走 SOP-ASM-013。
+- 若螺絲長度、牙距或頭型與 BOM 不符，或送料盤混有不同規格螺絲 → 改走 SOP-ASM-022。
+lessons: 斜牙／滑牙先確認是否固定同一孔位與孔口損傷，不要用加大扭力或硬鎖掩蓋；換件後務必做首件確認與追溯。
+references:
+- id: A1
+  title: NASA RP-1228 Fastener Design Manual (1990)
+  url: https://ntrs.nasa.gov/citations/19900009424
+  license: PD
+  use: reference
+- id: A4
+  title: 'Atlas Copco: Pocket Guide to Tightening Technique'
+  url: https://www.atlascopco.com/zh-tw/itba/expert-hub/pocket-guide/tightening-technique
+  license: ©
+  use: paraphrase
+- id: A5
+  title: 'Atlas Copco: electric screwdriver troubleshooting (online manual)'
+  url: https://picontent.atlascopco.com/cont/external/dir/41/15384642827_A2390001_html5_external/en-US/14503108875.html
+  license: ©
+  use: paraphrase
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

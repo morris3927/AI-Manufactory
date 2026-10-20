@@ -1,0 +1,142 @@
+{
+  "case_id": "CASE-STP-0038",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1037,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-07-14T11:28:29+08:00",
+  "closed_at": "2026-07-14T12:49:58+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "die_protect_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 19,
+    "recent_changes": [
+      "提速 32→40 spm 10:38"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2607-125"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-14T10:33:49+08:00",
+      "signal": "spm",
+      "value": 32
+    },
+    {
+      "t": "2026-07-14T10:39:17+08:00",
+      "signal": "spm",
+      "value": 40
+    },
+    {
+      "t": "2026-07-14T11:19:12+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    },
+    {
+      "t": "2026-07-14T11:25:58+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01,
+      "machine_id": "STP-L2-FD04"
+    },
+    {
+      "t": "2026-07-14T11:28:29+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-02",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR03 提速40後 DIE_PROTECT 間歇跳 送料誤差0.01正常 模面撿到廢料2片 沖頭端面油黏 清模面+落料孔 換防跳屑銷 降35試沖ok",
+  "technician_report_normalized": "10:38 提速由 32 spm 提高至 40 spm 後，11:19 與 11:28 兩次 DIE_PROTECT 間歇停機；檢查送料長度誤差僅 0.01 mm，排除送料偏短。開模後在模面與沖頭端面發現附著廢料及油污，確認是跳屑造成模具保護誤觸。以銅棒清除模面、沖頭端面與下模落料孔廢料，清潔油污並更換防跳屑銷，檢查脫料板動作正常。降速至 35 spm 試沖，未再出現跳屑，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "slug_pulling",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "slug_pulling",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查送料長度、導正銷與導正孔對位",
+      "result": "誤差 0.01 mm，送料正常"
+    },
+    {
+      "step": "開模目視模面、製品與沖頭端面",
+      "result": "確認廢料附著、跳屑"
+    },
+    {
+      "step": "以銅棒清除模面、沖頭端面與下模落料孔廢料並清潔油污",
+      "result": "廢料清除"
+    },
+    {
+      "step": "更換防跳屑銷並檢查脫料板動作與彈簧",
+      "result": "更換完成、動作正常"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "降速至 35 spm 試沖並觀察料帶",
+      "result": "試沖 ok，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-031"
+  ],
+  "downtime_min": 77,
+  "parts_replaced": [
+    "anti_slug_pin"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "提速後若 DIE_PROTECT 間歇跳、送料長度又正常，先開模看模面和沖頭端面有沒有帶屑，不要一直追送料。",
+  "related_failure_mode_ids": [
+    "slug_pulling"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

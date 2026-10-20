@@ -1,0 +1,137 @@
+{
+  "case_id": "CASE-STP-0019",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1018,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2025-12-17T03:49:45+08:00",
+  "closed_at": "2025-12-17T05:44:42+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 50,
+    "recent_changes": [
+      "換模 02:23（D-RAIL-11）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2512-220"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-17T02:24:02+08:00",
+      "signal": "die_change",
+      "value": "D-RAIL-11"
+    },
+    {
+      "t": "2025-12-17T02:27:57+08:00",
+      "signal": "shut_height_mm",
+      "value": 388.41
+    },
+    {
+      "t": "2025-12-17T02:30:07+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 16
+    },
+    {
+      "t": "2025-12-17T03:49:25+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 19
+    }
+  ],
+  "technician": {
+    "id": "TECH-03",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 換模後 D-RAIL-11 首批就單側毛邊 左邊導正孔壓痕 噸位左右差19% 異音 停機LOTO 定位銷偏磨 襯套亮單邊 間隙0.12 換銷+襯套 空轉試沖 噸位差回到4% ok",
+  "technician_report_normalized": "PR03 於 02:23 換上 D-RAIL-11 後，首批製品就出現單側毛邊，導正孔在左側有壓痕，沖製時伴隨異音，左右噸位平衡差達 19%。停機並執行 LOTO 後檢視模具定位面，發現定位銷偏磨、襯套孔單邊磨亮，厚薄規量得單邊間隙 0.12 mm。清潔定位面後更換定位銷與襯套，寸動空轉確認導正銷進孔無單側干涉，試沖後噸位平衡差降至 4%，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "die_misalignment",
+    "by": "jev",
+    "p": 0.71
+  },
+  "final_root_cause": "die_misalignment",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停機執行 LOTO，會同模具組檢視換模後首批料帶與製品",
+      "result": "左側單側毛邊、導正孔壓痕集中同一側"
+    },
+    {
+      "step": "核對模具資料卡閉模高度與滑塊讀值 388.41 mm",
+      "result": "相符，排除模高設定問題"
+    },
+    {
+      "step": "清潔定位面並以厚薄規量測定位銷與襯套單邊間隙",
+      "result": "單邊 0.12 mm，定位銷偏磨、襯套單邊磨亮"
+    },
+    {
+      "step": "更換模具定位銷與定位銷襯套",
+      "result": "安裝到位"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動無料空轉確認導正銷進孔狀態，再試沖",
+      "result": "無單側干涉，噸位平衡差 4%，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-021"
+  ],
+  "downtime_min": 110,
+  "parts_replaced": [
+    "die_locating_pin",
+    "locating_pin_bushing"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後首批要看毛邊是不是固定同一側，再量定位銷單邊間隙，比調模高更快抓到問題。",
+  "related_failure_mode_ids": [
+    "die_misalignment"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

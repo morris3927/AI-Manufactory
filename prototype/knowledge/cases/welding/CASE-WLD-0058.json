@@ -1,0 +1,134 @@
+{
+  "case_id": "CASE-WLD-0058",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3057,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-08-27T16:54:48+08:00",
+  "closed_at": "2026-08-27T20:51:40+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "exhaust_abnormal",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 4,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-A",
+    "program_id": "PRG-104"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-26T16:55:03+08:00",
+      "signal": "exhaust_dp_pa",
+      "value": 966
+    },
+    {
+      "t": "2026-08-27T16:54:48+08:00",
+      "signal": "exhaust_dp_pa",
+      "value": 1525
+    },
+    {
+      "t": "2026-08-27T16:54:48+08:00",
+      "signal": "exhaust_flow_m3h",
+      "value": 1122
+    },
+    {
+      "t": "2026-08-27T16:54:48+08:00",
+      "signal": "alarm_code",
+      "value": "FUME_EXH_LOW"
+    },
+    {
+      "t": "2026-08-27T16:56:54+08:00",
+      "signal": "robot_state",
+      "value": "cycle_stop"
+    }
+  ],
+  "technician": {
+    "id": "TECH-30",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 跳FUME_EXH_LOW 焊煙散不掉飄到走道 壓差1525 風量1122 停銲LOTO 通知廠務 廠務換濾筒+清導管 壓差降回 試銲ok 復線",
+  "technician_report_normalized": "RC01 於搖班時段跳出排煙異常警報（FUME_EXH_LOW）。檢查發現濾筒壓差由前一日約 966 Pa 升至 1525 Pa，排氣風量僅 1122 m3/h，銲接工位煙霧滯留不散，並飄到工位以外的走道。隨即停止銲接作業，機器人進入停止狀態，完成上鎖掛牌後通知廠務。由廠務更換濾筒濾芯並清潔導管與氣罩，壓差與風量回復正常；復歸後試銲，排煙順暢，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "fume_extraction_fault",
+    "by": "jev",
+    "p": 0.79
+  },
+  "final_root_cause": "fume_extraction_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停止銲接作業，機器人切至 cycle_stop，撤出工件",
+      "result": "停機"
+    },
+    {
+      "step": "查看局部排氣壓差與風量，確認煙霧滯留並擴散到工位外",
+      "result": "確認異常"
+    },
+    {
+      "step": "通知廠務到場，記錄壓差 1525 Pa、風量 1122 m3/h",
+      "result": "移交廠務"
+    },
+    {
+      "step": "由廠務更換濾筒濾芯，並清潔導管與氣罩",
+      "result": "壓差下降"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "復歸後試銲，確認排煙順暢、風量回到設定值",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-051"
+  ],
+  "downtime_min": 235,
+  "parts_replaced": [
+    "extraction_filter_cartridge"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "壓差從 966 Pa 一路爬到 1525 Pa 就是濾筒快塞死的預告，別等到煙飄出工位才處理。",
+  "related_failure_mode_ids": [
+    "fume_extraction_fault"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-WLD-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

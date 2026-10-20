@@ -1,0 +1,126 @@
+{
+  "case_id": "CASE-STP-0036",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1035,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2026-05-24T03:03:40+08:00",
+  "closed_at": "2026-05-24T03:16:20+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "vision",
+    "event_type": "strip_edge_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 28,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2605-326"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-24T03:03:40+08:00",
+      "signal": "state",
+      "value": "alarm"
+    },
+    {
+      "t": "2026-05-24T03:05:15+08:00",
+      "signal": "state",
+      "value": "running"
+    }
+  ],
+  "technician": {
+    "id": "TECH-11",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 STRIP_EDGE警報 先查側彎 放平量測正常 後段無擦痕 畫面見料架反光 無堆料 鏡頭加遮光 復歸試跑ok",
+  "technician_report_normalized": "夜班期間 PR03 觸發 STRIP_EDGE 料帶邊緣警報，系統顯示異常。技術員先依料捲側彎方向檢查料帶行進路徑、側導板與後段工站，並取料帶放平量測，未見明顯側彎、擦痕或堆料；送料長度與沖壓力也無異常。調閱攝影機畫面後發現料架反光造成影像誤判，實際料帶並無堆積。調整鏡頭角度並加裝遮光板後復歸，試跑觀察正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "coil_camber",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "STRIP_EDGE 警報與料帶邊緣偵測觸發容易讓人先聯想料帶側彎偏移，但放平量測、側導板與後段工站檢查皆正常，送料長度也沒有明顯變化，異常只存在於攝影機畫面，才確認為料架反光造成的影像誤判。",
+  "discriminating_evidence": [
+    "料帶放平量測側彎量未超過允差，行進路徑未見持續單側偏移",
+    "側導板無磨痕、後段工站無擦痕，送料長度誤差無明顯變化",
+    "攝影機畫面可見料架反光，實際料帶沒有堆積或卡料"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌（送料機 FD04 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查料帶側彎與行進路徑，取料帶放平量測",
+      "result": "排除"
+    },
+    {
+      "step": "檢查側導板磨痕、後段工站擦痕與送料長度誤差",
+      "result": "無異常"
+    },
+    {
+      "step": "調閱攝影機畫面比對實際料帶位置",
+      "result": "發現料架反光"
+    },
+    {
+      "step": "調整鏡頭角度並加裝遮光板",
+      "result": "影像恢復正常"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "復歸試跑並觀察料帶行進",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-009"
+  ],
+  "downtime_min": 11,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "STRIP_EDGE 警報先比對實際料帶與攝影機畫面，料架反光會讓影像誤判堆料，鏡頭遮光要先確認。",
+  "related_failure_mode_ids": [
+    "coil_camber"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-009"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

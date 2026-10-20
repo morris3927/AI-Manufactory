@@ -1,0 +1,129 @@
+{
+  "case_id": "CASE-ASM-0045",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4044,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA01",
+  "opened_at": "2025-11-26T23:03:14+08:00",
+  "closed_at": "2025-11-26T23:57:15+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 30,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-2",
+    "screw_lot": "SL-2511-75"
+  },
+  "log_signals": [
+    {
+      "t": "2025-11-26T22:43:51+08:00",
+      "signal": "cable_out_of_path",
+      "value": true
+    },
+    {
+      "t": "2025-11-26T22:57:34+08:00",
+      "signal": "test_result",
+      "value": "LINK_INTERMITTENT"
+    },
+    {
+      "t": "2025-11-26T23:03:14+08:00",
+      "signal": "test_result",
+      "value": "LINK_INTERMITTENT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L2"
+  },
+  "technician_report_raw": "MA01 測試LINK_INTERMITTENT 時好時壞 已LOTO開蓋 線被上蓋夾住 走線偏離SOP 重走線+護線套 束帶重綁 測3次ok",
+  "technician_report_normalized": "MA01 測試站出現 LINK_INTERMITTENT，訊號時有時無，MES 記錄 cable_out_of_path。依 SOP-ASM-041 掛牌開蓋檢查，發現線束在上蓋與支架蓋合處被夾住，走線偏離作業指導書，線材有壓痕但未傷導體。重新走線避開鈑金銳邊，更換護線套與束帶並調整鬆緊，使彎曲半徑符合要求；隔離可疑機殼與線束並追溯首件。重測裝置偵測與絕緣測試三次正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "cable_pinch_misroute",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "cable_pinch_misroute",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP-ASM-041 目視檢查上蓋與支架蓋合處、線束路徑及鈑金銳邊",
+      "result": "發現線材被上蓋夾住、走線偏離作業指導書"
+    },
+    {
+      "step": "量線束外徑並用半徑規確認最小彎曲半徑，檢查束帶與護線套",
+      "result": "彎曲半徑不足、護線套未到位"
+    },
+    {
+      "step": "目視並輕觸檢查連接器卡扣與公母端間隙",
+      "result": "卡扣已扣到位"
+    },
+    {
+      "step": "依作業指導書重新走線，避開鈑金銳邊，更換護線套與束帶並調整鬆緊",
+      "result": "走線符合 SOP、彎曲半徑達標"
+    },
+    {
+      "step": "隔離有壓痕之機殼與線束，記錄工單、序號、站別與測試結果並追溯首件",
+      "result": "可疑品已隔離"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "於測試站執行裝置偵測與絕緣測試三次",
+      "result": "LINK_INTERMITTENT 未再出現、pass"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-041"
+  ],
+  "downtime_min": 50,
+  "parts_replaced": [
+    "edge_grommet",
+    "cable_tie"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "上蓋蓋合前先確認線束走在導引槽內，束帶尾端不要留在鈑金銳邊旁。",
+  "related_failure_mode_ids": [
+    "cable_pinch_misroute"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

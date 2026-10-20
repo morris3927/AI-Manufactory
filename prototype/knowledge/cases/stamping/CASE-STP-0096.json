@@ -1,0 +1,144 @@
+{
+  "case_id": "CASE-STP-0096",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1095,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-05-15T19:15:15+08:00",
+  "closed_at": "2026-05-15T20:09:43+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 7,
+    "recent_changes": [
+      "換料捲 19:05（SECC 0.8 mm → SGCC 1.2 mm）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2605-355"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-15T19:05:15+08:00",
+      "signal": "coil_change",
+      "value": "C-2605-355 spec_changed"
+    },
+    {
+      "t": "2026-05-15T19:06:16+08:00",
+      "signal": "straightener_setting_mm",
+      "value": 0.96
+    },
+    {
+      "t": "2026-05-15T19:14:04+08:00",
+      "signal": "alarm_code",
+      "value": "LOOP_FAULT"
+    },
+    {
+      "t": "2026-05-15T19:15:15+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-01",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 換捲後LOOP_FAULT+一直misfeed 料頭翹起來卡進料口 整平壓下量還停在0.96 沒照1.2設定表 調到1.44 料環重設 刮板換掉 試沖ok",
+  "technician_report_normalized": "19:05 換料捲，由 SECC 0.8 mm 改為 SGCC 1.2 mm，隨後出現 LOOP_FAULT 與 MISFEED 警報，料帶在進料口卡住。現場檢查，整平機出口至進料口之間料帶有明顯翹頭與弓形殘留捲曲；以厚薄規量測輥隙為 0.96 mm，核對設定表後確認是沿用前一料捲的壓下量，與 1.2 mm 料厚不符。依設定表重新調整整平輥壓下量至 1.44 mm、間隙與背壓輥，並重設料環高度後鎖緊；同時清潔整平輥與料環檢出板，更換磨耗刮板。寸動建立料環後 LOOP_FAULT 未再出現，試沖與連續生產正常，20:09 恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "straightener_misset",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "straightener_misset",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查整平機出口至進料口間料帶外觀與手感，確認殘留捲曲狀況",
+      "result": "料頭翹起、中段呈弓形"
+    },
+    {
+      "step": "以厚薄規量測整平輥輥隙，並核對 SGCC 1.2 mm 之整平設定表",
+      "result": "實測 0.96 mm，與設定表不符"
+    },
+    {
+      "step": "依設定表重新調整整平輥壓下量、間隙與背壓輥，重設料環高度並鎖緊調整機構",
+      "result": "壓下量調整至 1.44 mm"
+    },
+    {
+      "step": "清潔整平輥與料環檢出板，檢查輥面黏料並更換磨耗刮板",
+      "result": "輥面異物與壓痕排除"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "寸動建立料環，觀察料環高度、張力與 LOOP_FAULT 是否再現",
+      "result": "未再出現"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖並連續生產確認送料與料環穩定",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-063"
+  ],
+  "downtime_min": 51,
+  "parts_replaced": [
+    "straightener_scraper"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換不同料厚或材質的料捲，整平壓下量一定要重新對設定表，不要沿用前一捲的數字。",
+  "related_failure_mode_ids": [
+    "straightener_misset"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-063"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,127 @@
+{
+  "case_id": "CASE-ASM-0032",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4031,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-03-20T03:17:52+08:00",
+  "closed_at": "2026-03-20T03:47:57+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "fused",
+    "event_type": "screw_count_mismatch",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 73,
+    "recent_changes": [
+      "補料 02:01"
+    ],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2603-34"
+  },
+  "log_signals": [
+    {
+      "t": "2026-03-20T03:17:52+08:00",
+      "signal": "screw_count_actual",
+      "value": 10
+    },
+    {
+      "t": "2026-03-20T03:17:52+08:00",
+      "signal": "screw_count_required",
+      "value": 12
+    },
+    {
+      "t": "2026-03-20T03:17:52+08:00",
+      "signal": "alarm_code",
+      "value": "COUNT_MISMATCH"
+    },
+    {
+      "t": "2026-03-20T03:17:52+08:00",
+      "signal": "screw_missing",
+      "value": true
+    }
+  ],
+  "technician": {
+    "id": "TECH-44",
+    "level": "L3"
+  },
+  "technician_report_raw": "ST02 COUNT_MISMATCH 10/12 少兩顆 0317 補料後漏打 送釘機無逾時 逐孔目視找到缺孔 畫記 隔離同批前後件 孔牙正常 補M3 首件ok",
+  "technician_report_normalized": "夜班03:17，ST02於補料後出現鎖附計數不符，控制器顯示實際10顆、需求12顆，警報為COUNT_MISMATCH。檢查送釘機軌道、分離器與吸嘴，未見卡釘，也沒有送釘逾時警報。依工單孔位逐孔目視，發現兩處缺孔並以記號筆標記，孔內無異物、壓鉚螺母無鬆動且孔牙完整。已隔離可疑工件並追溯同批前後件，補上M3螺絲後完成首件確認，恢復生產，停機30分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "missing_screw",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "missing_screw",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "核對工單需求與控制器鎖附計數，確認實際10顆、需求12顆",
+      "result": "數量不符"
+    },
+    {
+      "step": "檢查送釘機軌道、分離器、吸嘴與起子端有無卡釘或歪斜螺絲，並查送釘逾時紀錄",
+      "result": "無卡釘"
+    },
+    {
+      "step": "依工單孔位逐孔目視並以手電筒輔助，找到缺孔位置後用記號筆標記",
+      "result": "找到缺孔"
+    },
+    {
+      "step": "確認缺孔孔內無異物、壓鉚螺母無鬆動且孔牙完整",
+      "result": "孔牙正常"
+    },
+    {
+      "step": "隔離可疑工件並追溯同批前後件，補上M3螺絲後執行首件確認",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-023"
+  ],
+  "downtime_min": 30,
+  "parts_replaced": [
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "補料或換線後先核對鎖附計數與孔位，漏鎖就不會流到下一站。",
+  "related_failure_mode_ids": [
+    "missing_screw"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-023"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1032
+ },
+ "output": {
+  "technician_report_raw": "PR03 FD04 STRIP_EDGE連跳3次 送料長度0.02沒跑掉 料帶偏操作側 側導板磨痕 1m放平側彎超標 只跟新料捲有關 料架對中+換側導板 試沖ok",
+  "technician_report_normalized": "PR03 搭配 FD04 送料機，STRIP_EDGE 警報連跳三次，送料長度誤差僅 0.02 mm，無明顯異常。沿料帶路徑檢查，料帶持續往操作側偏移，後段工站側導板有明顯磨痕；取 1 m 料帶放平量測，最大側彎量超出允差，比對換料紀錄後確認異常只跟著 21:19 上線的料捲 C-2609-244 出現。重新對中料架，使料帶進整平機前中心偏差小於 1 mm，並更換磨損側導板。寸動送料確認位置正常，試沖後警報未再觸發，恢復生產，停機 74 分鐘。",
+  "actions": [
+   {
+    "step": "停機後沿料帶路徑目視整平機出口到模具入口，並用手電筒確認後段工站有無擦痕",
+    "result": "料帶偏操作側，側導板有磨痕"
+   },
+   {
+    "step": "取 1 m 料帶放平於量測平台，量測最大側彎偏移量",
+    "result": "側彎量超出允差"
+   },
+   {
+    "step": "比對換料捲前後之沖壓力峰值與送料長度誤差紀錄",
+    "result": "異常只跟著新料捲 C-2609-244"
+   },
+   {
+    "step": "放鬆料架夾持，依料帶中心線調整料架左右位置",
+    "result": "進整平機前中心偏差小於 1 mm"
+   },
+   {
+    "step": "更換磨損之側導板",
+    "result": "更換完成"
+   },
+   {
+    "step": "寸動低速送料觀察料帶在側導板間的位置，再試沖一批",
+    "result": "STRIP_EDGE 未再觸發，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "strip_side_guide"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "同一顆料捲才反覆跳 STRIP_EDGE、送料長度卻沒跑掉時，先量料帶側彎，不要一直調送料參數。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,139 @@
+{
+  "case_id": "CASE-STP-0092",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1091,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-09-17T02:51:43+08:00",
+  "closed_at": "2026-09-17T03:55:53+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "feeder_drive_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 12,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2609-232"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-17T02:47:11+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01
+    },
+    {
+      "t": "2026-09-17T02:49:00+08:00",
+      "signal": "motor_temp_c",
+      "value": 82
+    },
+    {
+      "t": "2026-09-17T02:51:43+08:00",
+      "signal": "motor_current_a",
+      "value": 15.4
+    },
+    {
+      "t": "2026-09-17T02:51:43+08:00",
+      "signal": "alarm_code",
+      "value": "FD_OVERCURRENT"
+    },
+    {
+      "t": "2026-09-17T02:51:43+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-12",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 送料機過電流 沖床連停 馬達82度 電流15.4A 風扇積塵卡轉 清潔+換散熱風扇 試送料ok",
+  "technician_report_normalized": "夜班FD02伺服送料機突然停止，沖床連動停機，驅動器出現過電流警報。檢查停機前送料長度誤差僅0.01 mm，無逐步累積；馬達外殼溫度約82°C，電流尖峰15.4 A。斷電後檢查驅動器散熱風扇與濾網，發現風扇積塵、轉動不順，清潔並更換散熱風扇，復電試送料及手動運轉正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "servo_feeder_drive_alarm",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "servo_feeder_drive_alarm",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱驅動器警報歷史與停機前10分鐘電流、溫度趨勢",
+      "result": "過電流尖峰、馬達溫度偏高"
+    },
+    {
+      "step": "手動檢查送料滾輪、聯軸器、軸承與傳動鏈",
+      "result": "無卡死、異物或鬆動"
+    },
+    {
+      "step": "檢查驅動器散熱風扇與濾網",
+      "result": "風扇積塵、轉動不順"
+    },
+    {
+      "step": "清潔散熱片與濾網並更換散熱風扇",
+      "result": "風扇運轉正常"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "復電試送料並量測三相電流與送料長度",
+      "result": "電流平衡、送料誤差0.01 mm、ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-061"
+  ],
+  "downtime_min": 60,
+  "parts_replaced": [
+    "drive_cooling_fan"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "送料機過電流先看停機前送料長度有沒有累積，再看馬達溫度與驅動器風扇，散熱不良常偽裝成送料異常。",
+  "related_failure_mode_ids": [
+    "servo_feeder_drive_alarm"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-061"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

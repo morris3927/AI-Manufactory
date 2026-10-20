@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3038
+ },
+ "output": {
+  "technician_report_raw": "SP02 FX-B 點銲飛濺一直來 都同一點 其他治具沒事 上鎖後看定位銷磨耗 夾爪鬆 塞尺量間隙0.8mm 換定位銷+夾爪 12Nm鎖緊 不通電加壓貼合ok 試銲5件ok 復線",
+  "technician_report_normalized": "夜班期間 SP02 在 FX-B 治具點銲時反覆出現飛濺，且集中在同一銲點位置，其他治具並無異常。調閱缺陷紀錄後，在已上鎖掛牌狀態下檢查，發現定位銷磨耗鬆動、夾爪齒面磨平；以塞尺量測工件與治具基準面間隙共三處，最大達 0.8 mm，超過 0.5 mm 判定值。清潔基準面與夾爪齒面去除銲渣後，更換定位銷與夾爪並依定位方向裝回，以 12 N·m 鎖緊。不通電加壓確認貼合，試銲五件外觀與熔核正常，恢復生產。",
+  "actions": [
+   {
+    "step": "調閱點銲缺陷紀錄與治具使用紀錄，比對飛濺發生位置",
+    "result": "確認集中在 FX-B 同一銲點，其他治具正常"
+   },
+   {
+    "step": "上鎖掛牌後目視並手動檢查 FX-B 基準面、定位銷與夾爪齒面",
+    "result": "定位銷磨耗鬆動、夾爪齒面磨平"
+   },
+   {
+    "step": "以塞尺量測工件與治具基準面間隙三處並記錄最大位置",
+    "result": "最大 0.8 mm，超過 0.5 mm"
+   },
+   {
+    "step": "清潔治具基準面、定位銷孔與夾爪齒面之銲渣飛濺油污",
+    "result": "ok"
+   },
+   {
+    "step": "更換定位銷與夾爪，依定位方向裝回並以 12 N·m 鎖緊",
+    "result": "ok"
+   },
+   {
+    "step": "不通電加壓確認工件貼合，再試銲五件檢查外觀與熔核",
+    "result": "飛濺未再發生，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "locating_pin",
+   "clamp_jaw"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換批號後若飛濺只集中在同一套治具、同一點，先拿塞尺量間隙，別急著調銲接參數。",
+  "escalation_note": null
+ }
+}

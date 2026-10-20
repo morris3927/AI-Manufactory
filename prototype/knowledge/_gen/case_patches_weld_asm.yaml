@@ -1,0 +1,211 @@
+# 銲接／組裝案例審稿修正與簽核（gen_cases_wa.py assemble 套用；approve 產生 hashes）
+cases:
+  CASE-WLD-0011:
+    replace:
+    - - 確認起弧與送絲匹配
+      - 確認起弧狀況並協助判定銲絲批次品質
+  CASE-WLD-0023:
+    set:
+      parts_replaced:
+      - nozzle
+      - contact_tip
+  CASE-WLD-0030:
+    replace:
+    - - FX-C間隙大 加墊片
+      - FX-C間隙大 換定位銷
+    - - 加墊片調整定位銷與夾爪
+      - 更換磨耗定位銷並調整夾爪
+    - - FX-C 加墊片調整間隙
+      - FX-C 更換磨耗定位銷並調整夾爪
+    set:
+      parts_replaced:
+      - torch_neck
+      - torch_mount_insulator
+      - locating_pin
+  CASE-WLD-0042:
+    replace:
+    - - 再看TCP校驗 尖點沾銲渣 讀值偏 清掉重測ok
+      - 再查品保量測治具 歸零錯誤 重新歸零複測ok
+    - - 檢視 TCP 校驗紀錄與校驗尖點
+      - 檢視品保量測治具與判定紀錄
+    - - 尖點沾銲渣，讀值偏
+      - 量測治具歸零錯誤
+    - - 清潔校驗尖點後重新校驗 TCP
+      - 量測治具重新歸零後複測
+    - - 後續在 TCP 校驗尖點找到銲渣造成的讀值偏差
+      - 後續查出品保量測治具歸零錯誤造成誤判
+    - - TCP 校驗尖點清潔後重測讀值恢復正常，偏差消失
+      - 品保量測治具重新歸零後複測，燒穿判定消失
+    - - 續查 TCP 校驗紀錄，發現校驗尖點沾附銲渣造成讀值偏差，清潔後重測恢復正常
+      - 續查品保量測治具，發現歸零錯誤造成誤判，重新歸零後複測正常
+    - - 就回頭查 TCP 校驗尖點是否沾渣
+      - 就回頭查品保量測治具有沒有歸零
+  CASE-ASM-0018:
+    replace:
+    - - 舊 bit 打滑，新 bit 改善
+      - 舊 bit 打滑；新 bit 仍偶發打滑，夾頭疑似偏擺
+    - - 換新bit試鎖ok 待工具原廠
+      - 換新bit仍偶發打滑 夾頭疑偏擺 待工具原廠
+    - - 換新後試鎖改善。惟後續仍需工具原廠技師確認工具狀態
+      - 換新後打滑減少但仍偶發，起子夾頭疑似偏擺，需工具原廠技師檢修
+    - - 因需原廠確認工具狀態
+      - 因起子夾頭偏擺需原廠檢修
+    - - 惟工具狀態仍需原廠確認
+      - 惟換新起子頭後仍偶發打滑、夾頭疑似偏擺，需原廠檢修
+  CASE-ASM-0028:
+    replace:
+    - - 11:52 角度 626 度偏高、12:27 又是角度過高 NOK
+      - 11:52 角度僅 626 度、12:27 又出現角度過高 NOK
+    - - 最終角度 626 度偏高
+      - 最終角度 626 度偏低
+    - - 角度626偏高又變低
+      - 角度626偏低又跳高
+  CASE-ASM-0032:
+    replace:
+    - - 少一顆
+      - 少兩顆
+    - - 發現一處缺孔
+      - 發現兩處缺孔
+  CASE-ASM-0034:
+    replace:
+    - - 确实
+      - 確實
+  CASE-ASM-0059:
+    set:
+      discriminating_evidence:
+      - 告警只有影像的 ppe_missing（safety_glasses）一筆，沒有設備停機或其他訊號
+      - 到場確認作業員剛到站、尚未開始作業，開工時已戴上護目鏡
+      - 該站護目鏡庫存 26 副，數量與尺寸足夠，不是沒有發放
+  CASE-ASM-0060:
+    replace:
+    - - 品保工程師
+      - 職安人員
+    - - 品保接手
+      - 職安接手
+review:
+  status: approved
+  reviewed_by:
+  - ai_sim_reviewer_weld_asm
+  note: AI 角色扮演審核，非真人專家審核
+  doc: reviews/2026-10-21_weld_asm.md
+  hashes:
+    CASE-ASM-0001: 1914daaa9c0e
+    CASE-ASM-0002: ae95fa3a01c6
+    CASE-ASM-0003: 7e09d1971db6
+    CASE-ASM-0004: 9a1d6539f2d8
+    CASE-ASM-0005: fff4ffd6bb02
+    CASE-ASM-0006: 96169fcce9c8
+    CASE-ASM-0007: bb5f0489572e
+    CASE-ASM-0008: bab484c037f1
+    CASE-ASM-0009: 2926e62187e6
+    CASE-ASM-0010: e11263a740c7
+    CASE-ASM-0011: c9f0914da74c
+    CASE-ASM-0012: 74cd1f88f027
+    CASE-ASM-0013: 6e35670b07a7
+    CASE-ASM-0014: b2dc6cd3c913
+    CASE-ASM-0015: 6dea6aec11a2
+    CASE-ASM-0016: a0be427ab9bc
+    CASE-ASM-0017: dacb0b1cd7ee
+    CASE-ASM-0018: 88a608ca36e0
+    CASE-ASM-0019: 64501511dfd6
+    CASE-ASM-0020: e6a2bcda05c7
+    CASE-ASM-0021: ebbf009ac18d
+    CASE-ASM-0022: a254ee8516ee
+    CASE-ASM-0023: ff7a1a378b82
+    CASE-ASM-0024: 730ccdc0820c
+    CASE-ASM-0025: 74fe5f237147
+    CASE-ASM-0026: 6468aff8a2ab
+    CASE-ASM-0027: 439131e3c07a
+    CASE-ASM-0028: 1a6ab70bbba9
+    CASE-ASM-0029: 76c91a00af73
+    CASE-ASM-0030: de12fd8bb84a
+    CASE-ASM-0031: c464f6145bf0
+    CASE-ASM-0032: 3febd6f3ce48
+    CASE-ASM-0033: d314d811c7fb
+    CASE-ASM-0034: dfe12424ed15
+    CASE-ASM-0035: c36976fa9948
+    CASE-ASM-0036: 30ed4455ea12
+    CASE-ASM-0037: cdb82f4f4f33
+    CASE-ASM-0038: 25598952dedd
+    CASE-ASM-0039: 0983c88649b5
+    CASE-ASM-0040: 577853505dc0
+    CASE-ASM-0041: 656e9c07d6c8
+    CASE-ASM-0042: 635b8d2a6190
+    CASE-ASM-0043: b27058fde287
+    CASE-ASM-0044: 9a879e67ca01
+    CASE-ASM-0045: b2666b2be5f9
+    CASE-ASM-0046: 71ecc6fc9a6b
+    CASE-ASM-0047: c8ca8b7a10c1
+    CASE-ASM-0048: 6d3c907e0e80
+    CASE-ASM-0049: d5b2e02eadcb
+    CASE-ASM-0050: 03201cab447b
+    CASE-ASM-0051: 5569f7ccd963
+    CASE-ASM-0052: 410b2d825f18
+    CASE-ASM-0053: 79875e443f46
+    CASE-ASM-0054: ee857a5eec7a
+    CASE-ASM-0055: 828cf1dbcb93
+    CASE-ASM-0056: 2d8827524c51
+    CASE-ASM-0057: 0efa8702ee28
+    CASE-ASM-0058: 562a5a7850f8
+    CASE-ASM-0059: c87460fd7262
+    CASE-ASM-0060: 8a046ab4b9b2
+    CASE-WLD-0001: 33a1a0926095
+    CASE-WLD-0002: ed19abc13420
+    CASE-WLD-0003: 60c61264cf45
+    CASE-WLD-0004: 6e08530175c6
+    CASE-WLD-0005: 2e20bb512213
+    CASE-WLD-0006: b1e41a9e315a
+    CASE-WLD-0007: 696ae83a4449
+    CASE-WLD-0008: d0be432815a7
+    CASE-WLD-0009: 67868d637c93
+    CASE-WLD-0010: 88b0725e9664
+    CASE-WLD-0011: a1dec43a2d6e
+    CASE-WLD-0012: dea01b28438a
+    CASE-WLD-0013: eed87d8a3125
+    CASE-WLD-0014: 56cb11e8cf9f
+    CASE-WLD-0015: a6d07fa92f7e
+    CASE-WLD-0016: 0c330d055027
+    CASE-WLD-0017: 450ebeea1261
+    CASE-WLD-0018: a2a77277c87b
+    CASE-WLD-0019: c6d59a0abcff
+    CASE-WLD-0020: d032ca850e9b
+    CASE-WLD-0021: f8e9b03dd3da
+    CASE-WLD-0022: 5f3087921a30
+    CASE-WLD-0023: 919cb05c97cb
+    CASE-WLD-0024: 27de62ee0f73
+    CASE-WLD-0025: a060b74edce2
+    CASE-WLD-0026: f44fb1cc292a
+    CASE-WLD-0027: c9e4dfb339e7
+    CASE-WLD-0028: 3ef9d6042ce1
+    CASE-WLD-0029: 1851846e1104
+    CASE-WLD-0030: b8866bdb0d2b
+    CASE-WLD-0031: 84ab29d8525f
+    CASE-WLD-0032: d9605f34ff0b
+    CASE-WLD-0033: d2d5bddc219f
+    CASE-WLD-0034: 4f44a9bdd602
+    CASE-WLD-0035: 48acdaebd56f
+    CASE-WLD-0036: 52a0e3f8290f
+    CASE-WLD-0037: fa3ae365f222
+    CASE-WLD-0038: ef413c083d31
+    CASE-WLD-0039: 22cd18e86508
+    CASE-WLD-0040: 66d5c69b3145
+    CASE-WLD-0041: 6cf359850a41
+    CASE-WLD-0042: 447e3eb8f01b
+    CASE-WLD-0043: 09b6f1b702d0
+    CASE-WLD-0044: 2819d06cf846
+    CASE-WLD-0045: e1b72191aeda
+    CASE-WLD-0046: 1fc35c743656
+    CASE-WLD-0047: 314db24e0fe3
+    CASE-WLD-0048: 2f9f79615047
+    CASE-WLD-0049: 23b7839c9d86
+    CASE-WLD-0050: e87f10c06390
+    CASE-WLD-0051: 8236a0d5a120
+    CASE-WLD-0052: 3834c5963387
+    CASE-WLD-0053: 2b60aa2bf9e9
+    CASE-WLD-0054: ca47843e4d5b
+    CASE-WLD-0055: 77befacdabee
+    CASE-WLD-0056: 4001119e1675
+    CASE-WLD-0057: 9cbeb716aa71
+    CASE-WLD-0058: 813509dfb1f9
+    CASE-WLD-0059: 8320d1f227f3
+    CASE-WLD-0060: 6453f8a763a9

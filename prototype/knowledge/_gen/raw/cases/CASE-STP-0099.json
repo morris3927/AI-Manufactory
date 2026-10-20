@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1098
+ },
+ "output": {
+  "technician_report_raw": "FD02 換SECC0.8 翹頭 LOOP→MISFEED 整平1.92調輥壓+清刮板ok",
+  "technician_report_normalized": "16:57 換料捲，材質由 SGCC 1.6 mm 改為 SECC 0.8 mm，整平機輥壓下量仍沿用前一料捲的 1.92 mm。17:44 先出現料環異常，17:46 再出現送料異常。至現場檢查，料帶在整平機出口至進料口之間仍有翹頭與弓形殘留捲曲，料環高度不穩，進料口有卡料情形。核對該料厚設定表後，重新調整整平輥壓下量與間隙，清潔整平輥及刮板，並以厚薄規量測輥隙確認。調整後以寸動建立料環，試沖數件無異常，恢復生產。停機約 45 分鐘。",
+  "actions": [
+   {
+    "step": "核對換料捲紀錄與整平機設定，確認 SECC 0.8 mm 之輥壓下量",
+    "result": "發現仍沿用 1.92 mm，與設定表不符"
+   },
+   {
+    "step": "目視並手感檢查整平機出口至進料口之料帶",
+    "result": "翹頭與弓形殘留，進料口卡料"
+   },
+   {
+    "step": "依 SECC 0.8 mm 設定表調整整平輥壓下量、間隙與背壓輥，鎖緊調整機構",
+    "result": "設定恢復"
+   },
+   {
+    "step": "清潔整平輥、刮板與料環檢出板，以厚薄規量測輥隙",
+    "result": "輥隙符合設定"
+   },
+   {
+    "step": "寸動建立料環，觀察料環異常並試沖",
+    "result": "料環穩定，試沖 ok"
+   },
+   {
+    "step": "恢復量產並觀察",
+    "result": "無再發，ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換料捲改料厚時，整平機設定表要重新核對，不能沿用前一捲的輥壓下量。",
+  "escalation_note": null
+ }
+}

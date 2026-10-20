@@ -1,0 +1,276 @@
+# SOP-STP-065 廢料滑道／輸送帶堵塞之檢查與排除
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核）
+sop_id: SOP-STP-065
+version: '0.1'
+title: 廢料滑道／輸送帶堵塞之檢查與排除
+line: stamping
+machine_type:
+- servo_press
+- mechanical_power_press
+failure_mode_ids:
+- scrap_chute_jam
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+review_status: approved
+reviewed_by:
+- ai_sim_reviewer_press_chief
+review_note: AI 角色扮演審核（模擬資深維修課長），非真人專家審核
+review_date: '2026-10-21'
+review_doc: reviews/2026-10-21_press_chief.md
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-v1
+  seed: 65
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-PRESS-SERVO-01
+  loto_checklist_ids:
+  - LOTO-PRESS-SERVO-01
+  - LOTO-PRESS-MECH-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - pneumatic
+  - hydraulic
+  - gravity_slide
+  - feed_line
+  - mechanical_stored
+  - electrical_aux
+  - pneumatic_hydraulic
+  - kinetic_flywheel
+  ppe:
+  - 安全鞋
+  - 防割手套
+  - 護目鏡
+  - 耳塞（設施規則第300條）
+  - 防塵口罩（清理鐵屑與粉塵時）
+  - 耐切割袖套
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第69條
+  - 設施規則第254條
+  - OSHA 1910.147(d)
+symptoms:
+- 模具內廢料堆積
+- 廢料輸送帶停止
+- 落料孔塞住
+- 模具保護停機
+- 模具內廢料堆積，下模落料孔塞住，廢料回堆到模仁附近。
+- 廢料排不出去、滑道卡料，集料箱沒有正常進料。
+- 廢料輸送帶停止或不動，運轉聲音異常。
+- 模具保護停機（DIE_PROTECT），伴隨廢料輸送帶過載（SCRAP_CONV_OVERLOAD）。
+- 落料孔回堵後沖壓力升高，現場感覺沖壓聲音變重。
+prerequisites:
+  tools:
+  - 內六角扳手組
+  - 塑膠刮板
+  - 手電筒
+  - 捲尺
+  - 塞尺
+  - 輸送帶張力計
+  parts:
+  - 廢料滑道導板
+  - 刮料板
+  - 廢料輸送帶
+  - 集料箱
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼與近 15 分鐘訊號趨勢（之後判讀趨勢用 MES／Sentinel 已記錄的資料，不需要為了看紀錄對機台送電）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-PRESS-SERVO-01（伺服沖床） 或 LOTO-PRESS-MECH-01（機械沖床）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量；送料機依各檢查表的送料線隔離點連動上鎖（兩台都要上鎖，不是擇一）
+  caution: 本模式常同時涉及沖床與廢料輸送帶，沖床主電源與廢料輸送帶／送料機電源須同時上鎖掛牌，並確認輸送帶完全停止、滑道內無殘留廢料後才可伸手。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: 手要進入上下模之間前：滑塊停在上死點（開模位置），於上下模之間放入安全塊（設施規則第69條）；滑塊停在下死點附近、無法退回時不得進入模區，保持上鎖並通知設備工程師
+  caution: 安全塊放置位置與規格依模具資料；未放安全塊不得作業。平衡缸要等安全塊放妥後才洩壓；制動器有疑慮（停止角度變大、寸動會滑行）時，放安全塊前先通知設備工程師
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-69
+  - REG-OSHA-1910.147-d-5
+- 'no': 5
+  phase: inspect
+  action: 目視檢查廢料滑道、廢料輸送帶、集料箱與下模落料孔，確認有無廢料堆積、卡料或回堵。
+  criteria: 滑道內有廢料堆積、輸送帶上有卡料、落料孔見廢料回堵，即判定為本模式；若滑道暢通、落料孔無回堵，但模面或製品上可撿到被沖頭帶上的廢料，改懷疑 slug_pulling（SOP-STP-031）。
+  caution: 廢料邊緣銳利，須戴防割手套；確認已於上下模之間放入安全塊，不得把手伸入模仁與沖頭之間。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+- 'no': 6
+  phase: inspect
+  action: 需要通電量測或移動滑塊時，依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區內工具與人員；滑塊需要移動時先撤出安全塊；由原上鎖人取下自己的鎖，現場主管在場；只用寸動模式操作（第70條），完成後立即停機；重新上鎖、放回安全塊並驗證零能量後，才能再把手伸入上下模之間
+  caution: 通電期間手不得進入模具區或滾輪夾捲點；測試／定位只限寸動調整與讀值，不得用來試沖或連續生產
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060009-70
+- 'no': 7
+  phase: inspect
+  action: 以寸動方式短暫運轉廢料輸送帶，量測輸送帶電流並觀察是否運轉、有無異常音。
+  criteria: 輸送帶電流為 0 A 或較正常約 1.2 A（模擬值）明顯升高超過 2.0 A（模擬值），且輸送帶不轉、斷續或異音，判定為輸送帶／滑道堵塞；若電流正常但模具保護間歇觸發，改查 slug_pulling（SOP-STP-031）。
+  caution: 只可寸動，手不得靠近輸送帶滾輪與滑道出口；護罩未復原前不得運轉。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S7
+- 'no': 8
+  phase: inspect
+  action: 調閱 MES 已記錄的沖壓力峰值與模具保護紀錄（不需送電），確認異常是單次尖峰還是與廢料回堆同時出現
+  criteria: 沖壓力峰值未超過過負荷設定值（250 t 機台 225 t、200 t 機台 180 t，模擬值），且異常前後沖次平穩，但落料孔有廢料回堆 → 判定為本模式；若單次峰值超過過負荷設定值並伴隨雙料、料頭重疊或模內異物 → 改懷疑 overload_tonnage（SOP-STP-053）
+  caution: 僅查看紀錄，不得起動滑塊或試沖；讀取畫面時不得變更任何保護設定。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+- 'no': 9
+  phase: inspect
+  action: 量測廢料滑道導板間隙、滑道變形量與輸送帶偏移量，檢查刮料板是否磨損或翹曲。
+  criteria: 導板間隙小於廢料厚度 1.5 倍（模擬值）、滑道變形超過 2 mm（模擬值）或輸送帶偏移超過 5 mm（模擬值），判定滑道／輸送帶造成堵塞；若間隙與變形量正常，但沖孔廢料被帶上模面，改懷疑 slug_pulling（SOP-STP-031）。
+  caution: 量測前確認滑塊已固定，勿以手指伸入落料孔；使用塞尺時避免刮傷模仁。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+  - S4
+- 'no': 10
+  phase: repair
+  action: 以塑膠刮板清除廢料滑道、輸送帶、集料箱與下模落料孔內之堵塞廢料，並確認落料孔出口暢通。
+  caution: 戴防割手套，使用非金屬刮板，不得把手伸入模仁與沖頭之間；確認已於上下模之間放入安全塊。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+- 'no': 11
+  phase: repair
+  action: 調整或更換變形之廢料滑道導板、刮料板，鎖緊固定螺栓至 25 N·m（模擬值），並確認導板間隙與廢料厚度匹配。
+  caution: 不得以鐵鎚直接敲擊模仁或滑道本體；更換件須與廢料厚度匹配，避免間隙過小再次卡料。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+  - S4
+- 'no': 12
+  phase: repair
+  action: 清除輸送帶滾輪纏料，調整輸送帶張力與置中，必要時更換破損輸送帶，並復原傳動側護罩。
+  caution: 輸送帶傳動側護罩復原後才可送電；不得拆除護罩或使護罩連鎖失效。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+- 'no': 13
+  phase: verify
+  action: 以同厚度試片模擬廢料投入滑道 3 次（模擬值），確認可順利落入集料箱。
+  criteria: 試片應在 5 秒內（模擬值）落入集料箱，滑道與落料孔不得回堆；若試片停滯或回堵，重新檢查導板間隙與滑道變形。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S7
+- 'no': 14
+  phase: verify
+  action: 以寸動方式運轉廢料輸送帶，確認電流、聲音與運轉狀態。
+  criteria: 輸送帶電流穩定在 1.0～1.4 A（模擬值），無異常音與偏移；若電流超過 2.0 A（模擬值）或再次堵塞，停止並回查輸送帶張力與滑道。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S7
+- 'no': 15
+  phase: verify
+  action: 試沖與連續生產屬於恢復生產，不是測試／定位：先清點工具、撤出安全塊、恢復護圍、光幕與所有安全裝置並確認功能正常、確認人員離開危險區與滾輪夾捲點；由原上鎖人取下自己的鎖（連動上鎖的送料機／沖床一併確認）後，才由操作員以正常操作模式（單動、光幕與雙手操作有效）試沖。試沖中發現異常，須重新依 LOTO 上鎖後才能再進入模區或滾輪夾捲點
+  caution: AI 不得宣告可以復電或可以生產；是否恢復試沖由現場主管決定
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-e-1
+  - REG-OSHA-1910.147-e-2
+  - REG-N0060009-254-p2
+- 'no': 16
+  phase: verify
+  action: 以寸動方式試沖 5 次（模擬值），觀察模具保護、沖壓力峰值與落料孔排出狀況。
+  criteria: 模具保護不動作，沖壓力峰值低於過負荷設定值（250 t 機台 225 t、200 t 機台 180 t，模擬值），落料孔無廢料回堆；若重複觸發 DIE_PROTECT，改查 slug_pulling（SOP-STP-031）或 overload_tonnage（SOP-STP-053）。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S6
+  - S7
+- 'no': 17
+  phase: restore
+  action: 依 LOTO-PRESS-SERVO-01 解除程序（連動上鎖的送料機／沖床依各自檢查表一併解除）：清點工具、恢復護圍與光幕、取出安全塊、確認人員離開後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內異常解鎖程序由主管處理；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+- 'no': 18
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 以同厚度試片模擬廢料投入滑道 3 次（模擬值），確認可順利落入集料箱；判定：試片應在 5 秒內（模擬值）落入集料箱，滑道與落料孔不得回堆；若試片停滯或回堵，重新檢查導板間隙與滑道變形。
+- 以寸動方式運轉廢料輸送帶，確認電流、聲音與運轉狀態；判定：輸送帶電流穩定在 1.0～1.4 A（模擬值），無異常音與偏移；若電流超過 2.0 A（模擬值）或再次堵塞，停止並回查輸送帶張力與滑道。
+- 試沖與連續生產屬於恢復生產，不是測試／定位：先清點工具、撤出安全塊、恢復護圍、光幕與所有安全裝置並確認功能正常、確認人員離開危險區與滾輪夾捲點；由原上鎖人取下自己的鎖（連動上鎖的送料機／沖床一併確認）後，才由操作員以正常操作模式（單動、光幕與雙手操作有效）試沖。試沖中發現異常，須重新依 LOTO 上鎖後才能再進入模區或滾輪夾捲點
+- 以寸動方式試沖 5 次（模擬值），觀察模具保護、沖壓力峰值與落料孔排出狀況；判定：模具保護不動作，沖壓力峰值低於過負荷設定值（250 t 機台 225 t、200 t 機台 180 t，模擬值），落料孔無廢料回堆；若重複觸發 DIE_PROTECT，改查 slug_pulling（SOP-STP-031）或 overload_tonnage（SOP-STP-053）。
+restore:
+- 依 LOTO-PRESS-SERVO-01 解除程序（連動上鎖的送料機／沖床依各自檢查表一併解除）：清點工具、恢復護圍與光幕、取出安全塊、確認人員離開後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內異常解鎖程序由主管處理；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 清除堵塞後 24 小時內（模擬值）同一滑道再次堵塞 → 改走 SOP-STP-033 檢查刃口／沖頭磨耗，並通知設備工程師。
+- 落料孔反覆回堵且伴隨毛邊變大 → 改走 SOP-STP-033；若沖壓力峰值單次超過過負荷設定值（模擬值） → 改走 SOP-STP-053。
+- 輸送帶電流持續超過 2.0 A（模擬值），或減速機有異音、軸承過熱 → 通知設備工程師／原廠技師。
+lessons: 廢料排出不順不要只清一次就走，滑道變形、導板間隙與輸送帶張力沒處理，下一次堵塞會把廢料回堆到模仁，變成模具保護停機甚至模具損傷。
+references:
+- id: S7
+  title: MetalForming Magazine 2022-11 p.13（十大模具問題）
+  url: https://www.metalformingmagazine.com/public/Images/2022/11/digital/files/basic-html/page13.html
+  license: ©
+  use: paraphrase
+- id: S4
+  title: 'Durant Tool: Progressive die misfeed troubleshooting'
+  url: https://www.durantco.com/blog/progressive-die-misfeed-troubleshooting-feed-accuracy/
+  license: ©
+  use: paraphrase
+- id: S6
+  title: 'The Fabricator: How can I avoid die crashes?'
+  url: https://www.thefabricator.com/thefabricator/article/bending/ask-the-stamping-expert-how-can-i-avoid-die-crashes-
+  license: ©
+  use: paraphrase
+- id: public/regulations.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060009-69、REG-N0060009-70、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-5、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-1、REG-OSHA-1910.147-e-2、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote

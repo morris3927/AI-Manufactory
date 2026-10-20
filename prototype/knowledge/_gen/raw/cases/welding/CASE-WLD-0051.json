@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3050
+ },
+ "output": {
+  "technician_report_raw": "SP01 冷卻水流量低 過熱警報 回水48度 濾網塞 清洗補水 流量回5 試銲ok",
+  "technician_report_normalized": "SP01 點銲機出現冷卻水流量低與過熱警報，回水溫度達 48 °C、流量降至 1.9 L/min。在完成上鎖掛牌後，檢查冷卻水機液位、濾網與管路，發現濾網堵塞、液位偏低，電極帽溫度偏高。清洗濾網與水盤、補充冷卻液並確認管路無折彎滲漏，啟動循環後流量恢復至 5.0 L/min，回水溫度下降，試銲正常。",
+  "actions": [
+   {
+    "step": "檢查冷卻水機液位、濾網與管路",
+    "result": "濾網堵塞 液位偏低"
+   },
+   {
+    "step": "清洗濾網與水盤並補充冷卻液",
+    "result": "流量回升"
+   },
+   {
+    "step": "確認水管無折彎、壓扁或接頭滲漏",
+    "result": "ok"
+   },
+   {
+    "step": "啟動冷卻水循環 量測點銲機流量與回水溫度",
+    "result": "流量5.0 回水降"
+   },
+   {
+    "step": "以紅外線測溫槍確認電極帽與頸管溫度並試銲",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "冷卻水流量掉到下限以下時，先看濾網與管路，不要等電極帽變形才處理。",
+  "escalation_note": null
+ }
+}

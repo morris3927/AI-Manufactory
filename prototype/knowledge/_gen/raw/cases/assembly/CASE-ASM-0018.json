@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4017
+ },
+ "output": {
+  "technician_report_raw": "ST01 H03 H01 低扭力NOK NOK率4.9 bit 45717次 打滑 十字槽花 拆bit刃口圓化 換新bit試鎖ok 待工具原廠",
+  "technician_report_normalized": "2026-04-27 11:16，ASM-L1-ST01 鎖附站 NOK 率升至 4.9%，H03、H01 出現 NOK_LOW_TORQUE，起子頭累計 45717 次。現場鎖附時有打滑聲，螺絲十字槽磨花；依 SOP-ASM-013 完成上鎖掛牌後拆檢起子頭，刃口已圓化，清潔固定座、吸嘴與送釘軌道，並以試片比較舊、新起子頭，換新後試鎖改善。惟後續仍需工具原廠技師確認工具狀態，現場已隔離可疑工件並追溯，移交原廠處理。",
+  "actions": [
+   {
+    "step": "依 SOP-ASM-013 離線讀取控制器維修紀錄，核對 bit_cycle_count 與 NOK 率趨勢。",
+    "result": "45717 次，NOK 率上升"
+   },
+   {
+    "step": "拆下起子頭，以放大鏡檢視十字槽刃口並檢查螺絲頭磨花狀況。",
+    "result": "刃口圓化，確認磨耗"
+   },
+   {
+    "step": "清潔起子頭固定座、夾頭、吸嘴及送釘軌道與壓鉚螺母孔牙周邊。",
+    "result": "清潔完成"
+   },
+   {
+    "step": "以試片先用舊起子頭試鎖 5 顆，再換新起子頭試鎖 5 顆比較打滑次數。",
+    "result": "舊 bit 打滑，新 bit 改善"
+   },
+   {
+    "step": "隔離 H03、H01 可疑工件並追溯；因需原廠確認工具狀態，移交工具原廠技師。",
+    "result": "已移交"
+   }
+  ],
+  "parts_replaced": [
+   "driver_bit"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "起子頭累計次數超過 4 萬次就應列入更換點檢，不要等 NOK 率衝高才處理。",
+  "escalation_note": "起子頭磨耗已確認，惟工具狀態仍需原廠確認，現場已移交工具原廠技師處理。"
+ }
+}

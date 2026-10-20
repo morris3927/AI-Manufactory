@@ -1,0 +1,127 @@
+{
+  "case_id": "CASE-STP-0055",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1054,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-07-13T13:32:22+08:00",
+  "closed_at": "2026-07-13T13:50:01+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "vision",
+    "event_type": "die_lube_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 53,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2607-365"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-13T13:32:22+08:00",
+      "signal": "state",
+      "value": "alarm"
+    },
+    {
+      "t": "2026-07-13T13:34:02+08:00",
+      "signal": "state",
+      "value": "running"
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 影像判模具噴嘴沒油霧 油箱液位ok 脈衝6正常 上鎖近看噴嘴有霧 補光燈被碰歪 調回 誤報 復歸ok",
+  "technician_report_normalized": "PR01 影像系統判定模具噴油嘴無油霧並發出模具潤滑警報。現場檢查模具潤滑油箱液位在正常刻度、油品無異常，HMI 噴油脈衝維持每分鐘約 6 次；沿油路查看油管無折扁、接頭無滲油，上鎖後近看噴油嘴確認有油霧。比對攝影畫面，發現補光燈角度被碰歪，油霧在畫面中看不出來，造成影像誤判。調回補光燈角度後影像恢復正常，警報復歸並恢復生產，停機約十五分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "die_lubrication_insufficient",
+    "by": "jev",
+    "p": 0.59
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "影像判定噴油嘴沒有油霧，直覺懷疑模具潤滑不足；但油箱液位、噴油脈衝與噴嘴霧化都正常，真正原因是補光燈角度改變讓影像看不到油霧，並非潤滑問題。",
+  "discriminating_evidence": [
+    "模具潤滑油箱液位在正常刻度",
+    "油管與接頭沒有折扁或滲油",
+    "噴油嘴噴口無堵塞且確認有油霧",
+    "攝影畫面補光燈角度改變，調回後影像可見油霧"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依模具潤滑不足警報，檢查模具潤滑油箱液位與油品，讀取噴油脈衝",
+      "result": "液位正常、脈衝約 6 次/分，排除"
+    },
+    {
+      "step": "查看油管、接頭與噴油嘴是否折扁、滲油或堵塞",
+      "result": "無折扁滲油，噴嘴有油霧"
+    },
+    {
+      "step": "比對攝影畫面與補光燈角度",
+      "result": "補光燈被碰歪，影像看不到油霧"
+    },
+    {
+      "step": "調回補光燈角度並確認影像",
+      "result": "影像可見油霧"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "判定誤報，警報復歸並恢復生產",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-035"
+  ],
+  "downtime_min": 15,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "影像說噴嘴沒霧，先看液位和脈衝，再上鎖近看噴嘴；畫面看不到不等於真的沒噴，補光燈角度也要檢查。",
+  "related_failure_mode_ids": [
+    "die_lubrication_insufficient"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-035"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

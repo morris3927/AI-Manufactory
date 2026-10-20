@@ -1,0 +1,155 @@
+{
+  "case_id": "CASE-STP-0100",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1099,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2026-07-30T23:13:13+08:00",
+  "closed_at": "2026-07-31T00:09:23+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 35,
+    "recent_changes": [
+      "換料捲 23:00（SECC 1.2 mm → SGCC 1.0 mm）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2607-187"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-30T23:00:40+08:00",
+      "signal": "coil_change",
+      "value": "C-2607-187 spec_changed"
+    },
+    {
+      "t": "2026-07-30T23:01:58+08:00",
+      "signal": "straightener_setting_mm",
+      "value": 1.44
+    },
+    {
+      "t": "2026-07-30T23:11:25+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01
+    },
+    {
+      "t": "2026-07-30T23:11:38+08:00",
+      "signal": "alarm_code",
+      "value": "LOOP_FAULT"
+    },
+    {
+      "t": "2026-07-30T23:13:13+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-07-30T23:13:13+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE"
+    }
+  ],
+  "technician": {
+    "id": "TECH-11",
+    "level": "L1"
+  },
+  "technician_report_raw": "FD04 換料後料頭翹 進料口卡 MISFEED 壓下量沿用上捲1.2 重調1.0+換刮板 ok",
+  "technician_report_normalized": "23:00 更換料捲（SECC 1.2 mm 改為 SGCC 1.0 mm）後，連續出現 STRIP_EDGE、LOOP_FAULT 及 MISFEED，料頭卡在進料口。檢查送料長度誤差僅 0.01 mm，送料本體無異常；以厚薄規量測整平輥隙得 1.44 mm，核對設定表確認仍沿用前一料捲 1.2 mm 的壓下量，整平機出口料帶殘留翹頭與弓形，造成進料口卡料與料環異常。已依 SGCC 1.0 mm 設定表重新調整壓下量、間隙與背壓輥並鎖緊，同時更換整平機刮板、清潔輥面與料環檢出板。另將料帶放平量測，側彎偏向同一側，屬該料捲殘留側彎，已調整入口導向並回報料捲狀況。寸動建立料環後 LOOP_FAULT 未再發生，試沖正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "straightener_misset",
+    "by": "jev",
+    "p": 0.44
+  },
+  "final_root_cause": "straightener_misset",
+  "contributing_causes": [
+    "coil_camber"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停機確認 MISFEED／STRIP_EDGE 警報，清除卡在進料口的料頭",
+      "result": "卡料排除"
+    },
+    {
+      "step": "量測送料長度誤差並檢查送料滾輪與壓輪",
+      "result": "誤差 0.01 mm，送料本體正常"
+    },
+    {
+      "step": "以厚薄規量測整平輥隙，核對 SGCC 1.0 mm 整平設定表",
+      "result": "輥隙 1.44 mm，沿用前一料捲設定"
+    },
+    {
+      "step": "依設定表重新調整整平輥壓下量、間隙與背壓輥後鎖緊",
+      "result": "翹頭與弓形消除"
+    },
+    {
+      "step": "更換整平機刮板，清潔整平輥面與料環檢出板",
+      "result": "ok"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動建立料環，量測料帶側彎並調整入口導向後試沖",
+      "result": "LOOP_FAULT 未再出現，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-063",
+    "SOP-STP-009"
+  ],
+  "downtime_min": 52,
+  "parts_replaced": [
+    "straightener_scraper"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換料厚或換材質後，整平輥壓下量一定要照設定表重設，不能沿用上一捲的數值。",
+  "related_failure_mode_ids": [
+    "straightener_misset",
+    "coil_camber"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-063",
+    "SOP-STP-009"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

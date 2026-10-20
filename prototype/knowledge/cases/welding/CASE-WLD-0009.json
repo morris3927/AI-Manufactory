@@ -1,0 +1,143 @@
+{
+  "case_id": "CASE-WLD-0009",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3008,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-05-18T06:51:03+08:00",
+  "closed_at": "2026-05-18T07:25:04+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "arc_start_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 19,
+    "recent_changes": [],
+    "part": "2U 機殼側框",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-111"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-17T10:51:15+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 1.6
+    },
+    {
+      "t": "2026-05-17T22:51:19+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 4.0
+    },
+    {
+      "t": "2026-05-18T06:51:03+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 9.2
+    },
+    {
+      "t": "2026-05-18T06:51:03+08:00",
+      "signal": "tip_arc_on_min",
+      "value": 338
+    },
+    {
+      "t": "2026-05-18T06:51:03+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 6.1
+    },
+    {
+      "t": "2026-05-18T06:51:03+08:00",
+      "signal": "alarm_code",
+      "value": "ARC_START_FAIL"
+    }
+  ],
+  "technician": {
+    "id": "TECH-23",
+    "level": "L1"
+  },
+  "technician_report_raw": "RC02 起弧一直重試 昨晚4次今早9次多 NG 開護蓋看導電嘴孔變大又橢圓 端部有回燒變色 送絲正常 換新導電嘴 試銲ok",
+  "technician_report_normalized": "夜班接獲 RC02 起弧重試次數偏高的告警，每百次起弧重試由前一班的 4.0 次升到 9.2 次，起弧經常失敗。依 SOP 隔離電源後打開護蓋檢查，導電嘴累積起弧時間已達 338 分鐘，孔口磨成橢圓且明顯擴大，端部有銲絲熔黏與回燒變色；送絲速度 6.1 m/min 與送絲馬達電流皆正常，排除送絲問題。以專用扳手拆下舊導電嘴，清潔嘴座螺紋與端面飛濺後換上新導電嘴並依扭力鎖緊，試銲起弧正常，重試次數降回正常範圍，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "contact_tip_wear",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "contact_tip_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依告警調閱起弧重試與導電嘴使用時數紀錄，確認每百次起弧重試 9.2 次、累積起弧 338 分鐘",
+      "result": "確認異常"
+    },
+    {
+      "step": "電源隔離並完成上鎖掛牌後，開護蓋目視檢查導電嘴孔口並以孔徑規量測",
+      "result": "孔口橢圓擴大"
+    },
+    {
+      "step": "檢查送絲輪、送絲導管與送絲速度 6.1 m/min、馬達電流",
+      "result": "正常 排除送絲"
+    },
+    {
+      "step": "以導電嘴專用扳手拆下舊導電嘴，清潔嘴座螺紋與端面飛濺熔黏物",
+      "result": "清潔完成"
+    },
+    {
+      "step": "裝入新導電嘴，手旋到底後以扭力起子鎖緊",
+      "result": "更換完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "復歸解鎖後試銲，觀察起弧重試次數",
+      "result": "ok 恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-012"
+  ],
+  "downtime_min": 30,
+  "parts_replaced": [
+    "contact_tip"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "起弧重試次數連續幾班往上爬，先看導電嘴累積起弧時數與孔口，不要等到 ARC_START_FAIL 才停機。",
+  "related_failure_mode_ids": [
+    "contact_tip_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

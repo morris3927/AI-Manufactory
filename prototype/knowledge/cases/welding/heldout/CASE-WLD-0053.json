@@ -1,0 +1,131 @@
+{
+  "case_id": "CASE-WLD-0053",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3052,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "heldout",
+  "case_type": "false_alarm",
+  "line": "welding",
+  "machine_type": "spot_welder",
+  "machine_id": "WLD-L1-SP01",
+  "opened_at": "2026-07-16T04:11:30+08:00",
+  "closed_at": "2026-07-16T04:28:04+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "vision",
+    "event_type": "coolant_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 3,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-134"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-16T04:11:30+08:00",
+      "signal": "alarm_code",
+      "value": "COOLANT_LOW"
+    },
+    {
+      "t": "2026-07-16T04:11:30+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 2.8
+    },
+    {
+      "t": "2026-07-16T04:12:50+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 4.8
+    }
+  ],
+  "technician": {
+    "id": "TECH-21",
+    "level": "L2"
+  },
+  "technician_report_raw": "SP01 COOLANT_LOW 流量2.8 查液位濾網管路都ok 回水溫正常 cap無變形 流量計接頭有氣泡 排氣後回4.8 觀察10分沒再警報 誤報復線",
+  "technician_report_normalized": "夜班期間 SP01 點銲機出現 COOLANT_LOW 警報，冷卻水流量一度降至 2.8 L/min。依冷卻水不足的方向，先檢查冷卻水機液位、濾網與管路，未發現堵塞、折彎或滲漏，回水溫度與電極帽溫度皆正常，電極帽端面也沒有變形或變色。進一步檢視流量計，發現接頭處有氣泡，排氣後流量回升至 4.8 L/min 並保持穩定。觀察約十分鐘未再出現警報，試銲銲點正常，確認無實際故障後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "cooling_water_low",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "警報當下流量只有 2.8 L/min，又正值夏季，符合冷卻水不足的典型情境，因此先懷疑濾網堵塞或水管折彎；但液位、濾網與管路都正常，回水與電極帽溫度無異常，流量還在數十秒內自行回升至 4.8 L/min，與真正缺水會持續低流量、溫度上升的特徵不符。",
+  "discriminating_evidence": [
+    "警報後約 80 秒流量由 2.8 回升至 4.8 L/min，沒有持續低流量",
+    "回水溫度與電極帽表面溫度正常，電極帽端面無變形或變色",
+    "冷卻水機液位、濾網與管路目視正常，無堵塞、折彎或滲漏",
+    "流量計接頭排氣後讀值穩定，未再出現 COOLANT_LOW"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-SPOT-WELD-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查冷卻水機液位、濾網與管路有無折彎或滲漏",
+      "result": "未發現異常"
+    },
+    {
+      "step": "以測溫槍量測回水管與電極帽溫度，並檢查電極帽端面",
+      "result": "溫度正常無變形"
+    },
+    {
+      "step": "檢視流量計接頭，發現有氣泡，排氣後觀察讀值變化",
+      "result": "回升至 4.8 L/min"
+    },
+    {
+      "step": "通電測試前依 LOTO-SPOT-WELD-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "觀察十分鐘警報狀態並試銲確認銲點",
+      "result": "未再警報，銲點 ok"
+    },
+    {
+      "step": "恢復生產前確認：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區，由原上鎖人取下自己的鎖後以正常模式復機",
+      "result": "ok"
+    },
+    {
+      "step": "確認無實際故障後恢復生產",
+      "result": "復線"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-042"
+  ],
+  "downtime_min": 15,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "流量計讀值瞬間掉一下先別急著拆濾網，先看趨勢有沒有自己回來，順手排掉接頭氣泡往往就恢復了。",
+  "related_failure_mode_ids": [
+    "cooling_water_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

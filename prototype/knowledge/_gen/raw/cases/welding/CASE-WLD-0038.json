@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3037
+ },
+ "output": {
+  "technician_report_raw": "RC01 FX-D 燒穿+未熔合 集中同一治具 量間隙超過0.5mm 定位銷磨耗 夾爪鬆 換銷+夾爪 扭力12Nm 試銲ok",
+  "technician_report_normalized": "RC01 機器人銲接工作站於 FX-D 治具生產電源支架時，接連出現燒穿與未熔合缺陷，且集中於同一治具。調閱紀錄後確認電弧電壓穩定，排除銲接參數問題。進入圍欄檢查發現定位銷磨耗、夾爪鬆動，以塞尺量測工件與基準面間隙超過 0.5 mm。清潔基準面與夾爪齒面後，更換定位銷與夾爪，依標示扭力鎖緊，無標示處以 12 N·m 鎖附。重新量測間隙合格，試銲首件檢查 ok，恢復生產。",
+  "actions": [
+   {
+    "step": "調閱銲接缺陷紀錄與治具使用紀錄，比對缺陷位置。",
+    "result": "確認集中 FX-D"
+   },
+   {
+    "step": "進入圍欄目視檢查 FX-D 基準面、定位銷與夾爪。",
+    "result": "定位銷磨耗、夾爪鬆動"
+   },
+   {
+    "step": "以塞尺量測工件與治具基準面間隙，至少量 3 處。",
+    "result": "最大間隙超過 0.5 mm"
+   },
+   {
+    "step": "清潔基準面、定位銷孔與夾爪齒面，更換定位銷與夾爪，依標示扭力鎖緊。",
+    "result": "更換完成"
+   },
+   {
+    "step": "重新量測間隙，並在局部排氣運轉下、人員於圍欄外試銲。",
+    "result": "間隙合格、試片 ok"
+   },
+   {
+    "step": "恢復生產。",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "locating_pin",
+   "clamp_jaw"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換批後若燒穿與未熔合集中在同一治具，先量間隙、查定位銷與夾爪，比先調銲接參數更快找到問題。",
+  "escalation_note": null
+ }
+}

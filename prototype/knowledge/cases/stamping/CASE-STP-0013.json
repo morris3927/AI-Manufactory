@@ -1,0 +1,150 @@
+{
+  "case_id": "CASE-STP-0013",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1012,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2025-11-18T02:23:00+08:00",
+  "closed_at": "2025-11-18T03:28:35+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 56,
+    "recent_changes": [
+      "換料捲 01:58（C-2511-333）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2511-333"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2025-11-18T01:55:50+08:00",
+      "signal": "tonnage_peak",
+      "value": 168
+    },
+    {
+      "t": "2025-11-18T01:58:42+08:00",
+      "signal": "coil_change",
+      "value": "C-2511-333",
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2025-11-18T02:00:11+08:00",
+      "signal": "tonnage_peak",
+      "value": 182
+    },
+    {
+      "t": "2025-11-18T02:00:22+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.1,
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2025-11-18T02:21:22+08:00",
+      "signal": "tonnage_peak",
+      "value": 181
+    },
+    {
+      "t": "2025-11-18T02:23:00+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-10",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 換料捲後misfeed 噸位168→182 料厚偏厚 換回前捲ok",
+  "technician_report_normalized": "夜班 02:23 MES 通報 PR01 發生 MISFEED 停機。調閱換料紀錄，01:58 更換料捲 C-2511-333 後開始異常，噸位峰值由換料前 168 噸升至 182 噸，02:00 送料長度誤差 0.1 mm。停機上鎖後，於問題料捲前、中、後段各取三點量測，料厚與硬度均高於進料驗收值，研判為材料厚度偏差。將問題料捲標示隔離退料，換回前一捲合格料帶，依 LOTO 程序寸動試沖，噸位與送料誤差恢復正常，03:28 復線生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "material_thickness_dev",
+    "by": "jev",
+    "p": 0.75
+  },
+  "final_root_cause": "material_thickness_dev",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌（送料機 FD02 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱換料紀錄與噸位峰值趨勢，比對換料前後平均值",
+      "result": "確認換料後階躍 +14 噸"
+    },
+    {
+      "step": "停機後量測問題料捲前、中、後段料厚與硬度",
+      "result": "料厚偏厚、硬度偏高"
+    },
+    {
+      "step": "核對整平機壓下量與料帶側彎、進模偏移",
+      "result": "設定相符，排除整平機"
+    },
+    {
+      "step": "隔離問題料捲，換回前一捲合格料帶",
+      "result": "完成換料"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "依 LOTO 程序寸動試沖，量測噸位與送料長度誤差",
+      "result": "噸位 168 噸、誤差 0.02 mm"
+    },
+    {
+      "step": "恢復連續生產並觀察",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-007"
+  ],
+  "downtime_min": 61,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換料捲後噸位若一次性跳階，先量料厚與硬度，比急著調模高更快找到問題。",
+  "related_failure_mode_ids": [
+    "material_thickness_dev"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-007"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

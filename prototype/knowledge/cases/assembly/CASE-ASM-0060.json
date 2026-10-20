@@ -1,0 +1,109 @@
+{
+  "case_id": "CASE-ASM-0060",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4059,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "escalated",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-04-21T10:57:47+08:00",
+  "closed_at": "2026-04-21T16:07:13+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "vision",
+    "event_type": "ppe_violation",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 38,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-01-2",
+    "screw_lot": "SL-2604-39"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-21T10:57:47+08:00",
+      "signal": "ppe_missing",
+      "value": "cut_gloves"
+    },
+    {
+      "t": "2026-04-21T10:57:47+08:00",
+      "signal": "ppe_stock_count",
+      "value": 1
+    }
+  ],
+  "technician": {
+    "id": "TECH-46",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 影像告警 cut gloves 沒戴 先停線 庫存只剩1副 班長確認 記錄Kanban 職安接手",
+  "technician_report_normalized": "影像辨識發現 ST01 作業員未配戴防割手套，立即停止該站作業並通知班長。現場清點防護具庫存，防割手套僅剩 1 副，尺寸與發放狀況需進一步確認，已記錄於看板並提醒人員依規定配戴。因庫存不足且涉及靜電防護與後續補發，現場無法完成修復，移交職安人員協調處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "ppe_esd_missing",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "ppe_esd_missing",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "停止 ST01 起子作業，確認現場人員暫停作業並離開作業位置",
+      "result": "停止作業"
+    },
+    {
+      "step": "通知班長確認未配戴防割手套的原因，並依規定記錄",
+      "result": "已通知"
+    },
+    {
+      "step": "清點該站防護具庫存，防割手套僅剩 1 副",
+      "result": "庫存不足"
+    },
+    {
+      "step": "將缺料與未配戴情形記錄於看板，提醒人員依規定配戴防護具",
+      "result": "已記錄"
+    },
+    {
+      "step": "防割手套補發與靜電防護確認由職安人員執行，現場停止作業待命",
+      "result": "移交"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-051"
+  ],
+  "downtime_min": 308,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "職安人員",
+  "escalation_note": "移交職安人員協調防割手套補發與靜電防護確認，現場待庫存補足後再恢復作業。",
+  "lessons": "防護具庫存低於安全量就先補發，影像告警只是最後一道提醒。",
+  "related_failure_mode_ids": [
+    "ppe_esd_missing"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-ASM-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

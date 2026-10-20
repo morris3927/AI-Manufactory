@@ -1,0 +1,131 @@
+{
+  "case_id": "CASE-WLD-0027",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3026,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-08-05T06:45:09+08:00",
+  "closed_at": "2026-08-05T07:46:36+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 8,
+    "recent_changes": [
+      "更換銲槍頸管 03:38"
+    ],
+    "part": "電源支架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-112"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-05T03:38:43+08:00",
+      "signal": "consumable_change",
+      "value": "torch_neck"
+    },
+    {
+      "t": "2026-08-05T04:08:12+08:00",
+      "signal": "weld_defect",
+      "value": "bead_offset×6 全治具"
+    },
+    {
+      "t": "2026-08-05T06:45:09+08:00",
+      "signal": "tcp_check_delta_mm",
+      "value": 2.4
+    },
+    {
+      "t": "2026-08-05T06:45:09+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 2.6
+    }
+  ],
+  "technician": {
+    "id": "TECH-25",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC02 焊道偏邊×6 全治具同方向 03:38換頸管 TCP偏差2.4mm 電壓穩 換新頸管+校正TCP 試銲ok",
+  "technician_report_normalized": "RC02 於夜班生產電源支架時，MES 通報連續 6 件銲道偏邊，且全治具皆朝同一方向偏移。查閱紀錄發現 03:38 曾更換銲槍頸管，TCP 校驗偏差達 2.4 mm，電弧電壓變異僅 2.6% 屬穩定。檢視槍身與頸管接合面後，清潔接合面並更換頸管，依 25 N·m 扭力鎖緊，於教導模式降速重新校正 TCP，並在局部排氣運轉下由圍欄外試銲，偏移已消除，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "tcp_drift",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "tcp_drift",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查閱 MES 與維修紀錄，比對 6 件銲道偏邊分布及 03:38 更換頸管事件",
+      "result": "全治具同方向偏移"
+    },
+    {
+      "step": "目視檢查銲槍本體、頸管與防撞檢知座",
+      "result": "外觀無撞痕"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以 TCP 校驗治具量測，機器人切教導模式降速並握住致能開關讀取各軸偏差",
+      "result": "偏差 2.4 mm"
+    },
+    {
+      "step": "清潔頸管與槍身接合面，更換頸管並依 25 N·m 扭力鎖緊",
+      "result": "完成"
+    },
+    {
+      "step": "重新執行 TCP 校正，於局部排氣運轉下、人員在圍欄外試銲",
+      "result": "偏移消除 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-021"
+  ],
+  "downtime_min": 61,
+  "parts_replaced": [
+    "torch_neck"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "更換頸管後要清潔錐面並確認扭力，TCP 校驗沒過就不放行。",
+  "related_failure_mode_ids": [
+    "tcp_drift"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

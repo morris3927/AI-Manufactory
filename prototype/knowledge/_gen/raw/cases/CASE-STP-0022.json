@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1021
+ },
+ "output": {
+  "technician_report_raw": "PR01 換模後首批左側毛邊大 左右噸位差16→14% 模高425.21對資料ok 定位銷偏磨 襯套單邊亮 換銷+襯套 試沖平衡ok",
+  "technician_report_normalized": "PR01 於 18:11 完成 D-4U-SIDE-02 換模後，首批製品左側出現明顯毛邊，並伴隨沖切異音；噸位平衡顯示左右差 16%，19:42 仍為 14%。核對模具資料卡閉模高度 425.21 mm 與滑塊讀值相符，排除模高設定問題。停機檢查模具定位面，發現定位銷偏磨、定位銷襯套單邊磨亮，判定為換模時定位偏移。清潔定位面後更換定位銷與襯套，寸動空轉確認導正銷無單側干涉，試沖後噸位平衡恢復正常，毛邊消除，移交生產。",
+  "actions": [
+   {
+    "step": "確認換模後首批製品，標記毛邊與導正孔壓痕位置",
+    "result": "集中在左側"
+   },
+   {
+    "step": "核對模具資料卡閉模高度與滑塊讀值",
+    "result": "425.21 mm 相符"
+   },
+   {
+    "step": "檢查模具定位面、定位銷與襯套間隙",
+    "result": "定位銷偏磨、襯套單邊亮"
+   },
+   {
+    "step": "清潔定位面並更換定位銷與定位銷襯套",
+    "result": "完成"
+   },
+   {
+    "step": "寸動空轉確認導正銷干涉與噸位平衡",
+    "result": "無干涉、平衡恢復"
+   },
+   {
+    "step": "試沖首批確認毛邊",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "die_locating_pin",
+   "locating_pin_bushing"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換模後首批一定要看左右噸位平衡與單側毛邊，定位銷偏磨常是換模夾傷造成。",
+  "escalation_note": null
+ }
+}

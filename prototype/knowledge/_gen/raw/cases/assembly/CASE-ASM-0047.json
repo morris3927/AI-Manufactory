@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4046
+ },
+ "output": {
+  "technician_report_raw": "MA02 上蓋夾線 走線不符 壓痕 HIPOT FAIL 絕緣3.5MΩ connector扣好 ok LOTO隔離 移交測試工程師",
+  "technician_report_normalized": "MA02 於 19:08 出現 cable_out_of_path 訊號，19:27 測試站 HIPOT FAIL，絕緣電阻 3.5 MΩ。依 SOP-ASM-041 在 LOTO 下檢查上蓋與支架蓋合處，發現線材未依作業指導書走線，靠近鈑金銳邊且有壓痕，量測最小彎曲半徑不足線束外徑 3 倍。連接器卡扣已扣到位。已將可疑機殼與線束貼不良標籤、記錄並隔離，因需進一步確認絕緣失效範圍與更換後驗證，移交測試工程師處理。",
+  "actions": [
+   {
+    "step": "依 SOP-ASM-041 在 LOTO 下目視檢查上蓋與支架蓋合處及線束路徑",
+    "result": "夾線、走線不符"
+   },
+   {
+    "step": "量測線束外徑與最小彎曲半徑，檢查護線套與束帶狀態",
+    "result": "彎曲半徑不足"
+   },
+   {
+    "step": "檢查連接器卡扣、公母端間隙與線材出線方向",
+    "result": "扣到位"
+   },
+   {
+    "step": "於測試站重測裝置偵測與絕緣測試",
+    "result": "HIPOT FAIL、3.5 MΩ"
+   },
+   {
+    "step": "隔離可疑機殼與線束，記錄工單、序號、站別、時間與測試結果",
+    "result": "已隔離"
+   },
+   {
+    "step": "移交測試工程師複判絕緣失效範圍與更換後驗證",
+    "result": "待複判"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "上蓋蓋合前先照走線圖確認線束路徑與彎曲半徑，看到壓痕就先隔離，不要直接放進測試站。",
+  "escalation_note": "已隔離可疑機殼與線束，移交測試工程師複判絕緣失效範圍及更換後驗證。"
+ }
+}

@@ -1,0 +1,198 @@
+{
+  "case_id": "CASE-ASM-0012",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4011,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-06-01T16:33:09+08:00",
+  "closed_at": "2026-06-01T17:03:20+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 56,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-02-2",
+    "screw_lot": "SL-2606-38"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-31T10:33:33+08:00",
+      "signal": "nok_rate_pct",
+      "value": 0.5
+    },
+    {
+      "t": "2026-06-01T06:33:14+08:00",
+      "signal": "nok_rate_pct",
+      "value": 2.1
+    },
+    {
+      "t": "2026-06-01T15:53:21+08:00",
+      "signal": "nok_hole_id",
+      "value": "H12"
+    },
+    {
+      "t": "2026-06-01T15:53:46+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-06-01T16:11:15+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-06-01T16:11:25+08:00",
+      "signal": "nok_hole_id",
+      "value": "H12"
+    },
+    {
+      "t": "2026-06-01T16:25:31+08:00",
+      "signal": "nok_hole_id",
+      "value": "H11"
+    },
+    {
+      "t": "2026-06-01T16:25:48+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-06-01T16:29:30+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-06-01T16:29:44+08:00",
+      "signal": "nok_hole_id",
+      "value": "H12"
+    },
+    {
+      "t": "2026-06-01T16:30:29+08:00",
+      "signal": "nok_hole_id",
+      "value": "H02"
+    },
+    {
+      "t": "2026-06-01T16:30:59+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-06-01T16:33:09+08:00",
+      "signal": "final_angle_deg",
+      "value": 2247
+    },
+    {
+      "t": "2026-06-01T16:33:09+08:00",
+      "signal": "nok_rate_pct",
+      "value": 4.0
+    },
+    {
+      "t": "2026-06-01T16:33:09+08:00",
+      "signal": "bit_cycle_count",
+      "value": 53855
+    }
+  ],
+  "technician": {
+    "id": "TECH-47",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 H12一直角度高 bit 53855次 LOTO換bit仍NOK 拆看壓鉚螺母斜牙毛邊 換pem nut清孔 首件ok 停28分",
+  "technician_report_normalized": "ST02 於 H12 連續出現角度過高與鎖附 NOK，NOK 率升至 4.0%。先依第一判斷檢查 SD-02-2 起子頭，使用次數 53,855 次已偏高，LOTO 後更換起子頭，但 H12 仍重複 NOK。續拆檢 H12 壓鉚螺母，發現孔口斜牙、毛邊與鋅渣，判定主因為壓鉚螺母斜牙／滑牙，起子頭磨耗為次因。已隔離 NOK 工件與同批螺絲，清除孔口異物並更換同規格壓鉚螺母，首件確認 OK，停機 28 分鐘後復線。",
+  "first_hypothesis": {
+    "failure_mode_id": "bit_wear_camout",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "cross_thread_strip",
+  "contributing_causes": [
+    "bit_wear_camout"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到起子頭累計 53,855 次、NOK 率升至 4.0%，加上打滑模式常見，才先懷疑起子頭磨耗；但換 bit 後 H12 仍重複角度過高（final_angle_deg 2247），且孔口有斜牙毛邊，才確認為壓鉚螺母斜牙／滑牙。",
+  "discriminating_evidence": [
+    "H12 在 15:53、16:11、16:29 連續出現 NOK_ANGLE_HIGH，NOK 集中同一孔位而非分散各孔。",
+    "final_angle_deg 達 2247，角度已超過上限仍到不了目標扭力。",
+    "更換磨耗起子頭後 H12 仍重複 NOK，未隨新 bit 立即改善。",
+    "H12 壓鉚螺母孔口目視可見斜牙、毛邊與鋅渣。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "讀取鎖附控制器紀錄與 NOK 清單，核對孔位與角度曲線",
+      "result": "確認 H12 重複 NOK"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "更換磨耗起子頭，以報廢件試鎖比對",
+      "result": "H12 仍 NOK 未改善"
+    },
+    {
+      "step": "以放大鏡檢查 H12 壓鉚螺母與孔口",
+      "result": "發現斜牙、毛邊與鋅渣"
+    },
+    {
+      "step": "隔離 H12 NOK 工件與同批螺絲，記錄批號並追溯",
+      "result": "完成隔離"
+    },
+    {
+      "step": "清除孔口異物並更換同規格壓鉚螺母",
+      "result": "完成"
+    },
+    {
+      "step": "執行首件試鎖與功能確認",
+      "result": "ok 復線"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-013",
+    "SOP-ASM-012"
+  ],
+  "downtime_min": 28,
+  "parts_replaced": [
+    "pem_nut"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "同一孔重複 NOK 時，先看 hole_id 與角度曲線，不要只被起子頭使用次數牽著走。",
+  "related_failure_mode_ids": [
+    "cross_thread_strip",
+    "bit_wear_camout"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-013",
+    "SOP-ASM-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4050
+ },
+ "output": {
+  "technician_report_raw": "MA02 測試抓無裝置 連2次NG 接頭卡釦沒扣 有間隙 重插扣上 pass",
+  "technician_report_normalized": "功能測試站連續兩次顯示 DEVICE_NOT_FOUND，絕緣測試為 753 MΩ，初步排除絕緣異常。現場目視發現故障連接器的卡扣未扣上，公母端之間有可見間隙。已先隔離該機殼與同批可疑線束並記錄位置、序號及線束批號，接著對正防呆鍵，握住連接器本體重新插接到卡扣完全扣上，確認無間隙且線材外皮完好。重新測試後裝置可正常偵測，未再出現 DEVICE_NOT_FOUND，恢復生產。",
+  "actions": [
+   {
+    "step": "調閱功能測試紀錄與絕緣測試值，確認連續兩次 DEVICE_NOT_FOUND、絕緣 753 MΩ。",
+    "result": "確認非絕緣異常"
+   },
+   {
+    "step": "目視檢查故障連接器之公母端、卡扣、防呆鍵與線材外皮，發現卡扣未扣且有可見間隙。",
+    "result": "找到未插到位"
+   },
+   {
+    "step": "隔離故障機殼與同批可疑線束，貼不良標示並記錄機殼序號、連接器位置與線束批號。",
+    "result": "完成隔離追溯"
+   },
+   {
+    "step": "對正防呆鍵，握住連接器本體重新插接到卡扣完全扣上，確認公母端無間隙。",
+    "result": "連接器到位"
+   },
+   {
+    "step": "重新執行功能測試與首件確認，確認裝置可偵測且未再出現 DEVICE_NOT_FOUND。",
+    "result": "測試 pass"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "連接器有咔一聲不等於到位，還是要目視卡扣與公母端間隙。",
+  "escalation_note": null
+ }
+}

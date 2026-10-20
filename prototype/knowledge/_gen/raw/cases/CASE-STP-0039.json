@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1038
+ },
+ "output": {
+  "technician_report_raw": "PR03 提速40後 DIE_PROTECT 連跳2次 模面撿到廢料2片 沖子端面油黏 銅棒壓脫料板回彈慢 清模面+落料孔 降回35 加防跳屑銷 試沖50模ok",
+  "technician_report_normalized": "PR03 於 12:42、12:55 兩度觸發模具保護停機，12:34 曾將沖速由 32 提高到 40 spm。送料長度誤差僅 0.02 mm，排除送料偏短。目視模面與製品，在模面及下模落料孔撿到廢料 2 片，沖頭端面有油膜黏附；以銅棒輕壓脫料板，四角回彈偏慢，研判沖孔廢料被沖頭帶上模面造成跳屑。已清潔模面、沖頭端面與落料孔，加裝防跳屑銷，沖速降回 35 spm，試沖 50 模無異常後恢復生產，停機 26 分鐘。",
+  "actions": [
+   {
+    "step": "調閱 DIE_PROTECT 兩次觸發時點與送料長度誤差",
+    "result": "誤差 0.02 mm，正常"
+   },
+   {
+    "step": "目視檢查模面、製品、沖頭端面與下模落料孔",
+    "result": "模面與落料孔撿到廢料 2 片，沖頭端面油膜黏附"
+   },
+   {
+    "step": "以銅棒輕壓脫料板，檢查四角回彈與彈簧狀態",
+    "result": "回彈偏慢，料帶有被帶起痕跡"
+   },
+   {
+    "step": "以銅棒清除模面、沖頭端面與落料孔廢料並擦拭油污",
+    "result": "排除"
+   },
+   {
+    "step": "加裝防跳屑銷，沖速由 40 降回 35 spm 試沖",
+    "result": "試沖 50 模無異常，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "anti_slug_pin"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "提速前先確認沖頭端面油膜與脫料板回彈，跳屑多半是速度帶出來的，別一頭先怪送料。",
+  "escalation_note": null
+ }
+}

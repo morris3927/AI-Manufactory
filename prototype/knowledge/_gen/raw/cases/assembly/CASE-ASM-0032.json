@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4031
+ },
+ "output": {
+  "technician_report_raw": "ST02 COUNT_MISMATCH 10/12 少一顆 0317 補料後漏打 送釘機無逾時 逐孔目視找到缺孔 畫記 隔離同批前後件 孔牙正常 補M3 首件ok",
+  "technician_report_normalized": "夜班03:17，ST02於補料後出現鎖附計數不符，控制器顯示實際10顆、需求12顆，警報為COUNT_MISMATCH。檢查送釘機軌道、分離器與吸嘴，未見卡釘，也沒有送釘逾時警報。依工單孔位逐孔目視，發現一處缺孔並以記號筆標記，孔內無異物、壓鉚螺母無鬆動且孔牙完整。已隔離可疑工件並追溯同批前後件，補上M3螺絲後完成首件確認，恢復生產，停機30分鐘。",
+  "actions": [
+   {
+    "step": "核對工單需求與控制器鎖附計數，確認實際10顆、需求12顆",
+    "result": "數量不符"
+   },
+   {
+    "step": "檢查送釘機軌道、分離器、吸嘴與起子端有無卡釘或歪斜螺絲，並查送釘逾時紀錄",
+    "result": "無卡釘"
+   },
+   {
+    "step": "依工單孔位逐孔目視並以手電筒輔助，找到缺孔位置後用記號筆標記",
+    "result": "找到缺孔"
+   },
+   {
+    "step": "確認缺孔孔內無異物、壓鉚螺母無鬆動且孔牙完整",
+    "result": "孔牙正常"
+   },
+   {
+    "step": "隔離可疑工件並追溯同批前後件，補上M3螺絲後執行首件確認",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "screw_m3"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "補料或換線後先核對鎖附計數與孔位，漏鎖就不會流到下一站。",
+  "escalation_note": null
+ }
+}

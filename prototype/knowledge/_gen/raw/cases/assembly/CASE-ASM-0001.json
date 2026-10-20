@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4000
+ },
+ "output": {
+  "technician_report_raw": "ST02 H09/H01/H10 低扭力NOK 角度偏短 螺絲頭浮高有間隙 bit正常 孔牙無傷 清孔正確下壓補鎖3孔 ok 同批隔離",
+  "technician_report_normalized": "夜班期間 ST02 於 H09、H01、H10 等孔位連續出現低扭力 NOK，最終扭力約 0.57～0.67 N·m、最終角度偏短，MES 通報 S2。目視發現螺絲頭與工件間有間隙、未貼平，起子頭與十字槽完好，壓鉚螺母孔牙無損、孔內僅少量鋅渣。清除孔內異物後，以正確下壓力與垂直姿態在試片及報廢件試鎖三次，並以扭力分析儀抽測，最終扭力達標；NOK 機殼與同批可疑件已貼標隔離並完成首件確認，恢復生產。",
+  "actions": [
+   {
+    "step": "目視檢查 H09、H01、H10 螺絲頭與工件間隙、十字槽、壓鉚螺母孔牙及孔內鋅渣。",
+    "result": "浮高有間隙"
+   },
+   {
+    "step": "調閱已匯出鎖附紀錄，核對低扭力 NOK、最終角度與旋入初段扭力分布。",
+    "result": "確認低扭力"
+   },
+   {
+    "step": "檢查起子頭使用次數、刃口狀態與工具校正到期日。",
+    "result": "正常"
+   },
+   {
+    "step": "清除孔內鋅渣，以正確下壓力與垂直姿態於試片及報廢件試鎖三次，並以扭力分析儀抽測。",
+    "result": "扭力達標"
+   },
+   {
+    "step": "將 NOK 機殼與同批可疑機殼貼標隔離，記錄批號、孔位、班別並完成首件確認。",
+    "result": "完成追溯"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "低扭力且角度偏短又分散孔位時，先查下壓與垂直姿態，不要急著換起子頭。",
+  "escalation_note": null
+ }
+}

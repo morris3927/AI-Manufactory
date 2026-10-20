@@ -1,0 +1,143 @@
+{
+  "case_id": "CASE-STP-0067",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1066,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-07-01T13:09:22+08:00",
+  "closed_at": "2026-07-01T15:20:14+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "strip_lift_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 41,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2607-242"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-01T12:00:02+08:00",
+      "signal": "die_stroke_total",
+      "value": 768379
+    },
+    {
+      "t": "2026-07-01T12:34:24+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2026-07-01T12:39:41+08:00",
+      "signal": "spm",
+      "value": 30
+    },
+    {
+      "t": "2026-07-01T13:01:31+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2026-07-01T13:09:22+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-02",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 STRIP_LIFT跳 料帶上浮 脫料板彈簧軟 突出量不足 換彈簧組 試沖ok",
+  "technician_report_normalized": "PR01 於 12:34、13:01 及 13:09 連續發生料帶上浮停機，SPM 已降至 30 仍未改善。拆開上模護蓋檢查，脫料板無明顯歪斜或卡滯，但以深度規量測脫料板突出量不足，彈簧座壓縮量不一致，彈簧有縮短與疲勞跡象；沖頭端面及模仁面未見黏附廢料。更換脫料板彈簧組，清潔彈簧座與導柱後依對角順序鎖回，寸動確認動作正常，試沖後料帶不再被帶起，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "stripper_spring_fatigue",
+    "by": "jev",
+    "p": 0.65
+  },
+  "final_root_cause": "stripper_spring_fatigue",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "確認 STRIP_LIFT 警報與料帶狀況，降速至 30 spm 觀察",
+      "result": "仍反覆上浮停機"
+    },
+    {
+      "step": "拆上模護蓋檢查脫料板與彈簧",
+      "result": "脫料板無卡滯，彈簧縮短疲勞"
+    },
+    {
+      "step": "以深度規量測脫料板突出量與各彈簧座壓縮量",
+      "result": "突出量不足、壓縮量不一致"
+    },
+    {
+      "step": "更換脫料板彈簧組並清潔彈簧座與導柱",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動試模並試沖確認脫料狀況",
+      "result": "料帶不再上浮 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-036"
+  ],
+  "downtime_min": 130,
+  "parts_replaced": [
+    "stripper_spring_set"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "料帶反覆上浮且降速無效時，先量脫料板突出量與彈簧壓縮量，不要一直調送料。",
+  "related_failure_mode_ids": [
+    "stripper_spring_fatigue"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-036"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

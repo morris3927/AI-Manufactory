@@ -1,0 +1,138 @@
+{
+  "case_id": "CASE-STP-0111",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1110,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-08-10T01:06:59+08:00",
+  "closed_at": "2026-08-10T02:11:24+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 21,
+    "recent_changes": [
+      "換模 00:57（D-2U-TOP-03）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2608-214"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-10T00:58:16+08:00",
+      "signal": "die_change",
+      "value": "D-2U-TOP-03"
+    },
+    {
+      "t": "2026-08-10T01:01:28+08:00",
+      "signal": "shut_height_mm",
+      "value": 397.7
+    },
+    {
+      "t": "2026-08-10T01:03:23+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 3
+    },
+    {
+      "t": "2026-08-10T01:03:27+08:00",
+      "signal": "tonnage_peak",
+      "value": 163
+    }
+  ],
+  "technician": {
+    "id": "TECH-11",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 換模D-2U-TOP-03後首件壓印過深 模高讀397.7與模具卡不符 噸位163平衡3%正常 重設模高 試沖ok",
+  "technician_report_normalized": "夜班 00:57 完成 D-2U-TOP-03 換模後，首件 2U 上蓋壓印過深，研判為閉模高度設定問題。查閱換模紀錄與模具資料卡，HMI 閉模高度讀值 397.7 mm 與模具主檔不符；沖壓力峰值 163 噸、左右平衡 3%，平衡正常。依 LOTO 程序上鎖並以安全塊支撐滑塊，量測調整機構發現刻度偏移、鎖固狀態正常。清除模區人員與工具後，依模具資料卡重設閉模高度並鎖緊，寸動微調後試沖，首件成形高度與壓印深度恢復正常，量測合格，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "shut_height_misset",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "shut_height_misset",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查閱換模紀錄與模具資料卡，於 HMI 比對閉模高度讀值",
+      "result": "讀值 397.7 mm，與模具主檔不符"
+    },
+    {
+      "step": "調閱沖壓力監控歷史，檢視換模後首件前後峰值與左右平衡",
+      "result": "峰值 163 噸、左右平衡 3%，平衡正常"
+    },
+    {
+      "step": "以安全塊支撐滑塊於下死點，量測閉模高度調整機構機械指示",
+      "result": "刻度偏移，鎖固狀態正常"
+    },
+    {
+      "step": "依模具資料卡重新設定閉模高度並鎖緊",
+      "result": "設定完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動微調後試沖首件",
+      "result": "成形高度與壓印深度恢復正常"
+    },
+    {
+      "step": "量測首件成形高度、壓印深度與毛邊高度",
+      "result": "合格，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-023"
+  ],
+  "downtime_min": 60,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後首件不良，先比對 HMI 模高讀值與模具資料卡；噸位平衡正常不代表模高設定正確。",
+  "related_failure_mode_ids": [
+    "shut_height_misset"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-023"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

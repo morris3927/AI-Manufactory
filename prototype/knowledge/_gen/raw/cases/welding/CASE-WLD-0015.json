@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3014
+ },
+ "output": {
+  "technician_report_raw": "RC02 GAS_LOW 警報 換瓶後流量 17.7→9.2 氣孔×4 各治具都有 查氣瓶匯流排 送絲機接頭鬆 軟管龜裂 換接頭+軟管 漏液測ok 流量調15 試銲ok",
+  "technician_report_normalized": "RC02 機器人銲接站於夜班出現 GAS_LOW 警報，保護氣流量由 17.7 L/min 降至 9.2 L/min，且各治具銲道均出現氣孔。檢查氣瓶瓶閥與匯流排壓力正常，沿管路查得送絲機側接頭鬆脫、軟管端龜裂漏氣。更換接頭與軟管並重新鎖緊束環後，以中性漏液檢查無氣泡，流量調整至 15 L/min；在局部排氣運轉下於圍欄外試銲，氣孔未再出現，警報解除並恢復生產。",
+  "actions": [
+   {
+    "step": "查看換瓶紀錄與匯流排壓力表，確認瓶閥全開、殘壓正常",
+    "result": "壓力正常，排除氣瓶殘壓不足"
+   },
+   {
+    "step": "沿保護氣管路檢查接頭、束環與軟管，發現送絲機側接頭鬆脫、軟管端龜裂",
+    "result": "確認漏氣點"
+   },
+   {
+    "step": "更換龜裂軟管與鬆脫接頭，重新鎖緊束環",
+    "result": "完成更換"
+   },
+   {
+    "step": "以中性漏液檢查各接頭並調整保護氣流量",
+    "result": "無氣泡，流量 15 L/min ok"
+   },
+   {
+    "step": "在局部排氣運轉、人員於圍欄外試銲",
+    "result": "氣孔未再出現，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "gas_hose",
+   "gas_fitting"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換氣瓶後若流量往下掉，先摸接頭聽漏氣聲，比一直調流量更快抓到漏點。",
+  "escalation_note": null
+ }
+}

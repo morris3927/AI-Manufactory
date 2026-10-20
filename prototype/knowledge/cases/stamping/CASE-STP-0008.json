@@ -1,0 +1,118 @@
+{
+  "case_id": "CASE-STP-0008",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1007,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-06-09T01:34:34+08:00",
+  "closed_at": "2026-06-09T01:58:02+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "vision",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 32,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2606-343"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-09T01:29:11+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02
+    },
+    {
+      "t": "2026-06-09T01:34:34+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-03",
+    "level": "L1"
+  },
+  "technician_report_raw": "FD02 影像誤判堆料 到場料帶正常 pitch誤差0.02 鏡頭反光 擦鏡頭調角度 ok",
+  "technician_report_normalized": "夜班期間 FD02 伺服滾輪送料機出現送料卡料疑似警報，係由影像辨識觸發。到場檢查料帶與送料路徑均正常，送料長度誤差僅 0.02 mm，沒有偏短或步距異常，滾輪表面也無異常亮帶。檢視攝影機畫面後發現料架反光造成影像誤判料帶堆積。清潔鏡頭並調整拍攝角度後復歸，試送正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "feed_roller_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因警報顯示送料卡料且送料速率為 0，直覺懷疑送料滾輪磨損打滑；但送料長度誤差僅 0.02 mm、滾輪無亮帶且料帶無滑痕，加上攝影機畫面可見料架反光，確認是影像誤判而非滾輪故障。",
+  "discriminating_evidence": [
+    "送料長度誤差僅 0.02 mm，未出現滾輪磨損典型的 5～15 分鐘斜坡累積。",
+    "feed_rate 為 0 的時間點與警報觸發同時，屬停機狀態，並非送料打滑造成的逐步偏短。",
+    "攝影機畫面確認料架反光造成料帶堆積誤判，實際料帶與送料路徑正常。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "到場檢查料帶、送料路徑與滾輪表面",
+      "result": "外觀正常，無卡料"
+    },
+    {
+      "step": "讀取送料長度誤差與送料速率紀錄",
+      "result": "誤差 0.02 mm，在公差內"
+    },
+    {
+      "step": "調閱攝影機畫面並檢查鏡頭",
+      "result": "料架反光造成誤判"
+    },
+    {
+      "step": "清潔鏡頭並調整拍攝角度",
+      "result": "影像恢復正常"
+    },
+    {
+      "step": "復歸並試送料",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-012"
+  ],
+  "downtime_min": 21,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "影像警報先比對實際料帶與送料誤差，別讓反光畫面牽著走。",
+  "related_failure_mode_ids": [
+    "feed_roller_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

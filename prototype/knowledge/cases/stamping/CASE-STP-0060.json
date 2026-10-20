@@ -1,0 +1,164 @@
+{
+  "case_id": "CASE-STP-0060",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1059,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-02-13T21:35:15+08:00",
+  "closed_at": "2026-02-13T22:07:06+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 36,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2602-202"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-13T18:31:59+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-02-13T18:32:35+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-02-13T19:55:56+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-02-13T19:56:42+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-02-13T19:59:57+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-02-13T20:00:36+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-02-13T20:41:53+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-02-13T20:42:39+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-02-13T21:34:38+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02
+    },
+    {
+      "t": "2026-02-13T21:35:15+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-10",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 MISFEED一班跳5次 料帶沒卡 導正孔ok 停機前送料誤差0.02 感測面有油屑 接頭拉會晃 清潔+換接頭+束線 試跑30分ok",
+  "technician_report_normalized": "FD02 於本班多次觸發 MISFEED 停機，每次重置後即可恢復運轉。現場檢查料帶位置與導正孔均正常，停機前送料長度誤差僅 0.02 mm，並無實際卡料。進一步檢查發現誤送料感測器感應面沾附油屑，接頭輕拉有鬆動現象。已清潔感應面，更換同規格接頭並以固定夾束線固定，試運轉 30 分鐘未再跳脫。",
+  "first_hypothesis": {
+    "failure_mode_id": "misfeed_sensor_fault",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "misfeed_sensor_fault",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱警報與狀態紀錄，確認 MISFEED 是否為間歇性反覆觸發",
+      "result": "一班內多次觸發，重置後立即回到運轉"
+    },
+    {
+      "step": "檢查料帶位置、導正孔與停機前送料長度誤差",
+      "result": "料帶正常、導正孔無變形，誤差 0.02 mm"
+    },
+    {
+      "step": "以無絨布清潔誤送料感測器感應面油屑",
+      "result": "感應面油屑清除"
+    },
+    {
+      "step": "輕拉感測器接頭檢查鬆動，更換接頭並束線固定",
+      "result": "接頭固定確實、無晃動"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試運轉觀察送料與感測訊號",
+      "result": "30 分鐘未再跳脫，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-041"
+  ],
+  "downtime_min": 28,
+  "parts_replaced": [
+    "sensor_connector"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "MISFEED 反覆跳但料帶、導正孔與送料誤差都正常時，先去看感測器接頭和感應面，不要急著拆模具。",
+  "related_failure_mode_ids": [
+    "misfeed_sensor_fault"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,230 @@
+# 銲接線故障模式目錄（J3 根因選擇、J5 結案回寫共用）
+# data_label: 模擬資料 —— 本檔所有故障模式、門檻與 SOP 編號皆為團隊依公開資料自行撰寫之模擬資料，
+# 與任何企業實際製程無關。數值門檻一律為模擬值，未經現場驗證。
+# 規格：02_規格定義/07_RAG知識庫資料.md §4.3、§5.2；01_初選問題處理.md C1（銲接工位內的火花與銲煙屬正常，不是異常）
+# 欄位說明同 failure_modes/stamping.yaml：criteria 直接交給 Jev（照字面讀），log_signals 對齊 signals.yaml，
+# distinguish_from 是錯誤第一判斷案例的抽樣來源，safety_only_sop: true 的 SOP 只寫停機、通知與交給合格人員。
+# 共 10 個模式。review_status: approved（AI 角色扮演審核，非真人專家審核；見 reviews/2026-10-21_weld_asm.md）
+welding:
+  wire_feed_birdnest:
+    label: 送絲不順／鳥巢
+    criteria: 送絲實際速度比設定值低 10% 以上（模擬值）或忽快忽慢，送絲馬達電流同時升高超過 4.5 A（模擬值）；電弧電流跟著波動，出現斷弧或送絲過負荷警報；打開送絲機可見銲絲在送絲輪與導管入口之間纏繞成團、或送絲導管內有鐵屑卡阻；導電嘴累積起弧時間尚未到更換基準
+    symptoms: [送絲卡卡的, 銲絲在送絲輪纏成一團, 斷弧, 電流忽大忽小, 送絲馬達過負荷]
+    log_signals:
+      - {signal: wire_feed_speed_mpm, pattern: drop_or_unstable, note: 比設定值低 10% 以上或 1 分鐘內忽快忽慢（模擬值）}
+      - {signal: wire_feed_motor_current_a, op: ">", value: 4.5}
+      - {signal: arc_current_cv_pct, op: ">", value: 12}
+      - {signal: alarm_code, value: WIRE_FEED_OVERLOAD}
+      - {signal: alarm_code, value: ARC_LOST}
+    distinguish_from: [contact_tip_wear, ground_poor]
+    machine_types: [robot_mig_cell]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-011
+    sources: [W6, W5, L20]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  contact_tip_wear:
+    label: 導電嘴磨耗／回燒
+    criteria: 每百次起弧的重試次數在數班內逐步增加（超過 8 次，模擬值），飛濺變多；導電嘴累積起弧時間超過 300 分鐘（模擬值）；導電嘴孔口磨成橢圓，或銲絲熔黏在導電嘴端部（回燒）；送絲速度與送絲馬達電流正常；換新導電嘴後立即改善
+    symptoms: [起弧不良, 飛濺變多, 銲絲黏在導電嘴, 導電嘴孔變大, 起弧要重試好幾次]
+    log_signals:
+      - {signal: arc_start_retry_per_100, pattern: ramp_up, note: 由 1～2 次逐步升到 8 次以上（模擬值）}
+      - {signal: tip_arc_on_min, op: ">", value: 300}
+      - {signal: wire_feed_speed_mpm, pattern: normal, note: 與送絲不順區分}
+      - {signal: alarm_code, value: ARC_START_FAIL}
+      - {signal: alarm_code, value: WIRE_STICK}
+    distinguish_from: [wire_feed_birdnest, nozzle_spatter_buildup, ground_poor]
+    machine_types: [robot_mig_cell]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-012
+    sources: [W6, W5]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  shielding_gas_low:
+    label: 保護氣體不足
+    criteria: 銲道表面或內部出現氣孔，同時保護氣體流量低於 12 L/min（模擬值）或氣瓶／匯流排壓力下降並出現氣體流量低警報；氣孔在每一條銲道、每一個治具都出現，與清槍時間無關；常發生在換氣瓶後、氣管接頭鬆脫或破損漏氣時
+    symptoms: [銲道氣孔, 銲道表面發黑, 保護氣流量低, 換氣瓶後氣孔變多, 氣管接頭有漏氣聲]
+    log_signals:
+      - {signal: gas_flow_lpm, op: "<", value: 12}
+      - {signal: gas_supply_bar, pattern: drop, note: 氣瓶 < 10 bar 或匯流排 < 2 bar（模擬值）}
+      - {signal: alarm_code, value: GAS_LOW}
+      - {signal: weld_defect, pattern: present, note: "type: porosity，各治具都有"}
+      - {signal: consumable_change, pattern: present, window_min: 120, note: "item: gas_cylinder（若有）"}
+    distinguish_from: [nozzle_spatter_buildup]
+    machine_types: [robot_mig_cell]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-013
+    sources: [W6, W1, L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  nozzle_spatter_buildup:
+    label: 噴嘴積渣
+    criteria: 氣孔與飛濺隨生產件數逐步增加，不是突然出現；距上次清槍超過 45 分鐘（模擬值），或清槍站報錯、未執行清槍程式；噴嘴內壁可見銲渣堆積、遮住保護氣出口；保護氣體流量讀值仍在 15～20 L/min（模擬值）正常範圍；清槍或更換噴嘴後即改善
+    symptoms: [噴嘴塞渣, 氣孔慢慢變多, 清槍站沒動作, 飛濺黏在噴嘴, 銲道不漂亮]
+    log_signals:
+      - {signal: torch_clean_interval_min, op: ">", value: 45}
+      - {signal: alarm_code, value: CLEAN_STATION_FAULT}
+      - {signal: gas_flow_lpm, pattern: normal, note: 15～20 L/min（模擬值），與保護氣體不足區分}
+      - {signal: defect_rate_pct, pattern: ramp_up}
+    distinguish_from: [shielding_gas_low, contact_tip_wear]
+    machine_types: [robot_mig_cell]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-014
+    sources: [W6, L20]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  tcp_drift:
+    label: 銲槍 TCP 偏移
+    criteria: 銲道位置整批偏向同一個方向，兩個工位、所有治具與所有工件都一樣偏；偏移發生前有撞槍事件，或更換過銲槍頸管、銲槍本體；TCP 校驗偏差超過 1.0 mm（模擬值）；電弧電流與電壓穩定
+    symptoms: [銲道偏邊, 銲不到接縫, 撞槍後銲道跑掉, 換頸管後位置不準, 每一件都偏同一邊]
+    log_signals:
+      - {signal: collision_event, pattern: present, window_min: 480}
+      - {signal: consumable_change, pattern: present, note: "item: torch_neck（若有）"}
+      - {signal: tcp_check_delta_mm, op: ">", value: 1.0}
+      - {signal: weld_defect, pattern: present, note: "type: bead_offset，不分治具"}
+      - {signal: alarm_code, value: TCP_CHECK_NG}
+    distinguish_from: [fixture_fitup_gap]
+    machine_types: [robot_mig_cell]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-021
+    sources: [W4, L20, W10]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  ground_poor:
+    label: 接地不良
+    criteria: 電弧電壓變異超過 10%（模擬值），但電流設定、送絲速度與送絲馬達電流都正常；電弧聲音不穩、銲道寬窄不一；問題只在使用某一個工位（變位機某一側）時出現，與生產時間長短無關；治具接地夾或回路電纜接頭有銲渣、鬆脫或發熱變色
+    symptoms: [電弧不穩, 電壓跳動, 銲道寬窄不一, 接地夾發燙, 只有一側工位有問題]
+    log_signals:
+      - {signal: arc_voltage_cv_pct, op: ">", value: 10}
+      - {signal: arc_current_a, pattern: normal}
+      - {signal: wire_feed_motor_current_a, pattern: normal, note: 與送絲不順區分}
+    distinguish_from: [wire_feed_birdnest, contact_tip_wear, fixture_fitup_gap]
+    machine_types: [robot_mig_cell]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-015
+    sources: [L21, W6, L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  fixture_fitup_gap:
+    label: 治具定位不良／間隙過大
+    criteria: 燒穿、未熔合或點銲飛濺集中在某一個治具（fixture_id）或同一個銲點位置，其他治具正常；電弧電流、電壓穩定；換工件批號，或更換治具夾爪、定位銷後開始發生；實測接合間隙超過 0.5 mm（模擬值），或定位銷磨耗、夾爪鬆動
+    symptoms: [某一套治具一直燒穿, 單一位置未熔合, 換批工件後間隙大, 夾爪夾不緊, 定位銷鬆]
+    log_signals:
+      - {signal: weld_defect, pattern: present, note: "type: burn_through 或 lack_of_fusion，集中於同一 fixture_id"}
+      - {signal: part_lot_change, pattern: present, window_min: 240}
+      - {signal: arc_voltage_cv_pct, pattern: normal, note: 與接地不良區分}
+    distinguish_from: [tcp_drift, ground_poor]
+    machine_types: [robot_mig_cell, spot_welder]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-031
+    sources: [W6, W8, L21]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  spot_electrode_wear:
+    label: 點銲電極頭磨耗
+    criteria: 熔核變小、剝離試驗熔核直徑不足或飛濺增加；電極帽端面直徑擴大到 6.5 mm 以上（模擬值，新品 5.0～5.5 mm），或端面凹陷、沾鋅變色；修磨後銲點數超過 350 點或修磨次數超過 25 次（模擬值）；點銲電流與加壓力讀值都在設定範圍內
+    symptoms: [熔核變小, 剝離試驗不合格, 點銲飛濺多, 電極頭變大, 電極頭沾鋅發黑]
+    log_signals:
+      - {signal: weld_count_since_dress, op: ">", value: 350}
+      - {signal: tip_dress_count, op: ">", value: 25}
+      - {signal: weld_current_ka, pattern: normal, note: 9.0～11.0 kA（模擬值），電流正常但電流密度下降}
+      - {signal: weld_defect, pattern: present, note: "type: undersize_nugget 或 spatter"}
+    distinguish_from: [cooling_water_low, fixture_fitup_gap]
+    machine_types: [spot_welder]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-041
+    sources: [W8, W9, L21]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  cooling_water_low:
+    label: 冷卻水流量不足
+    criteria: 冷卻水流量低於下限（點銲機 3.0 L/min、水冷銲槍 1.0 L/min，模擬值），回水溫度超過 45 °C（模擬值），並出現流量低或過熱警報；電極帽或銲槍頸管發燙，電極帽在短時間內異常變形；夏季或冷卻水機濾網堵塞、水管折到時較常見
+    symptoms: [冷卻水流量低警報, 電極頭很燙, 銲槍過熱, 電極頭很快變形, 回水溫度高]
+    log_signals:
+      - {signal: coolant_flow_lpm, pattern: below_limit, note: 點銲機 < 3.0、水冷銲槍 < 1.0 L/min（模擬值）}
+      - {signal: coolant_return_temp_c, op: ">", value: 45}
+      - {signal: alarm_code, value: COOLANT_LOW}
+      - {signal: alarm_code, value: WELD_OVERTEMP}
+    distinguish_from: [spot_electrode_wear, contact_tip_wear]
+    machine_types: [robot_mig_cell, spot_welder]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-WLD-042
+    sources: [L21, W8]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  fume_extraction_fault:
+    label: 排煙設備異常
+    criteria: 局部排氣風量低於設定值的 70%（模擬值）或排風機停止，或濾筒壓差超過 1,200 Pa（模擬值）；銲接工位內煙霧滯留不散，並擴散到工位 ROI 以外。注意：銲接進行中工位 ROI 內的火花與銲煙屬正常現象，不屬於本模式
+    symptoms: [排煙機沒在抽, 煙散不掉, 煙飄到走道, 濾筒壓差警報, 排氣風量低]
+    log_signals:
+      - {signal: exhaust_flow_m3h, op: "<", value: 1400}
+      - {signal: exhaust_fan_state, value: stopped}
+      - {signal: exhaust_dp_pa, op: ">", value: 1200}
+      - {signal: smoke, value: outside_cell, note: 影像 ROI 比對（01_初選問題處理.md C1）}
+      - {signal: alarm_code, value: FUME_EXH_LOW}
+    distinguish_from: []
+    machine_types: [robot_mig_cell, spot_welder]
+    category: safety
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: true
+    sop: SOP-WLD-051
+    sources: [L1, W1, L21]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"

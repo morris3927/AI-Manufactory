@@ -1,0 +1,190 @@
+{
+  "case_id": "CASE-ASM-0004",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4003,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "heldout",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2025-11-11T03:37:21+08:00",
+  "closed_at": "2025-11-11T04:34:17+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 57,
+    "recent_changes": [],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2511-35"
+  },
+  "log_signals": [
+    {
+      "t": "2025-11-11T03:12:34+08:00",
+      "signal": "final_torque_nm",
+      "value": 0.55
+    },
+    {
+      "t": "2025-11-11T03:12:37+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2025-11-11T03:12:48+08:00",
+      "signal": "nok_hole_id",
+      "value": "H12"
+    },
+    {
+      "t": "2025-11-11T03:12:49+08:00",
+      "signal": "final_angle_deg",
+      "value": 774
+    },
+    {
+      "t": "2025-11-11T03:22:22+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2025-11-11T03:22:22+08:00",
+      "signal": "nok_hole_id",
+      "value": "H10"
+    },
+    {
+      "t": "2025-11-11T03:22:30+08:00",
+      "signal": "final_angle_deg",
+      "value": 958
+    },
+    {
+      "t": "2025-11-11T03:22:32+08:00",
+      "signal": "final_torque_nm",
+      "value": 0.63
+    },
+    {
+      "t": "2025-11-11T03:32:23+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2025-11-11T03:32:27+08:00",
+      "signal": "nok_hole_id",
+      "value": "H06"
+    },
+    {
+      "t": "2025-11-11T03:32:37+08:00",
+      "signal": "final_torque_nm",
+      "value": 0.66
+    },
+    {
+      "t": "2025-11-11T03:33:05+08:00",
+      "signal": "final_angle_deg",
+      "value": 919
+    },
+    {
+      "t": "2025-11-11T03:37:11+08:00",
+      "signal": "calib_due_days",
+      "value": 5
+    },
+    {
+      "t": "2025-11-11T03:37:21+08:00",
+      "signal": "rundown_torque_nm",
+      "value": 0.12
+    },
+    {
+      "t": "2025-11-11T03:37:21+08:00",
+      "signal": "nok_rate_pct",
+      "value": 3.2
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 H12 H10 H06 低扭力NOK 先懷疑校正快到期 抽測正常 bit槽OK 目視螺絲浮高沒貼平 清孔重鎖3次 ok",
+  "technician_report_normalized": "ST01 夜班出現多筆低扭力 NOK，孔位分散於 H12、H10、H06，最終扭力 0.55～0.66 N·m、角度偏低。初期因校正到期日僅剩 5 天而懷疑工具漂移，但調閱紀錄與扭力分析儀抽測均正常，起子頭十字槽也完好。掛牌後目視 NOK 孔位，螺絲頭與工件有間隙、未貼平，初段旋入扭力正常，判定為浮鎖／扭力未達。清潔壓鉚螺母孔內鋅渣後，以正確下壓力於試片試鎖 3 次並抽測達標；NOK 機殼與同批可疑件已隔離追溯，首件確認正常。",
+  "first_hypothesis": {
+    "failure_mode_id": "tool_calibration_due",
+    "by": "jev",
+    "p": 0.36
+  },
+  "final_root_cause": "torque_not_reached",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因校正到期日只剩 5 天且連續出現低扭力 NOK，懷疑是扭力工具校正逾期或漂移；但抽測無 ±10% 偏差、起子頭十字槽完好，且 NOK 分散在不同孔位並伴隨螺絲頭間隙與最終角度偏低，才確認為浮鎖／扭力未達。",
+  "discriminating_evidence": [
+    "校正到期日尚有 5 天，扭力分析儀抽測未見 ±10% 偏差。",
+    "最終扭力僅 0.55、0.63、0.66 N·m，低於 0.72 N·m 下限。",
+    "最終角度僅 774、958、919 度，未轉完應有圈數。",
+    "NOK 分散於 H12、H10、H06，目視螺絲頭與工件有間隙、未貼平，十字槽與起子頭完好。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "調閱鎖附紀錄與校正到期日，並以扭力分析儀抽測起子",
+      "result": "排除"
+    },
+    {
+      "step": "目視 H12、H10、H06 螺絲頭間隙、十字槽與壓鉚螺母孔牙",
+      "result": "發現浮高"
+    },
+    {
+      "step": "量測間隙並核對最終角度與初段旋入扭力",
+      "result": "確認為浮鎖"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "清潔壓鉚螺母孔內鋅渣，以正確下壓力於試片試鎖 3 次並抽測",
+      "result": "ok"
+    },
+    {
+      "step": "隔離 NOK 機殼與同批可疑件，記錄批號、孔位、班別並完成首件確認",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-031",
+    "SOP-ASM-011"
+  ],
+  "downtime_min": 54,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "低扭力 NOK 先看螺絲頭間隙與最終角度，別讓「校正快到期」把方向帶偏。",
+  "related_failure_mode_ids": [
+    "torque_not_reached",
+    "tool_calibration_due"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-031",
+    "SOP-ASM-011"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

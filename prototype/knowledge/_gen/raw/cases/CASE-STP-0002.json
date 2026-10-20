@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1001
+ },
+ "output": {
+  "technician_report_raw": "FD04 送料偏短 誤差從0.04爬到0.26 MISFEED跳停 滾論亮帶+油污 擦拭後試送還是偏 換上下送料滾輪 調壓緊彈簧 試沖ok",
+  "technician_report_normalized": "夜班期間 FD04 伺服滾輪送料機出現送料偏短，送料長度誤差在約十四分鐘內由 0.04 mm 逐步累積至 0.26 mm，隨後觸發 MISFEED 警報並停機。檢查送料滾輪表面發現亮帶與油污，料帶表面也有滑痕；清潔滾輪後低速試送，步距仍不穩。量測料帶厚度在公差內，確認非料厚或換料捲造成。更換上下送料滾輪並調整壓緊彈簧壓縮量，空轉與短料帶寸動測試送料長度恢復正常，試沖後生產 ok，停機約 56 分鐘。",
+  "actions": [
+   {
+    "step": "查看 HMI 送料長度誤差趨勢與 MISFEED 紀錄",
+    "result": "誤差呈斜坡累積，確認送料異常"
+   },
+   {
+    "step": "目視檢查送料滾輪表面與料帶路徑",
+    "result": "滾輪亮帶、油污，料帶有滑痕"
+   },
+   {
+    "step": "以無絨布清潔滾輪並低速寸動試送",
+    "result": "步距仍偏，未改善"
+   },
+   {
+    "step": "量測料帶厚度五點並查換料捲紀錄",
+    "result": "厚度在公差內，排除料厚因素"
+   },
+   {
+    "step": "更換上下送料滾輪並調整壓緊彈簧",
+    "result": "送料長度誤差恢復 0.02 mm"
+   },
+   {
+    "step": "空轉與短料帶試送後試沖",
+    "result": "ok，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "feed_roll_upper",
+   "feed_roll_lower"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "送料誤差若在十幾分鐘內慢慢爬升，先看滾輪亮帶與料帶滑痕，不要只調參數。",
+  "escalation_note": null
+ }
+}

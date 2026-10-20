@@ -1,0 +1,160 @@
+{
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "sop-gen-v1",
+    "seed": 55
+  },
+  "failure_mode_id": "air_pressure_low",
+  "output": {
+    "failure_mode_id": "air_pressure_low",
+    "title": "氣源壓力不足之檢查與修復",
+    "symptoms": [
+      "氣壓低警報（AIR_LOW）亮起，機台停機。",
+      "離合器結合不良，滑塊起動無力或行程變慢。",
+      "同一條供氣管路的多台機台一起停機。",
+      "停止角度變大，但氣壓恢復後又回到正常。",
+      "現場說「機台沒氣、行程軟軟的」。"
+    ],
+    "prerequisites": {
+      "tools": [
+        "壓力表（含檢定標籤）",
+        "皂液測漏瓶或超音波測漏器",
+        "扳手組",
+        "管束夾",
+        "抹布與接水盤",
+        "維修記錄表"
+      ],
+      "parts": [
+        "氣管快速接頭",
+        "O 型環",
+        "氣源三點組合濾芯",
+        "管束"
+      ],
+      "skill_level": "維修技術員 L2"
+    },
+    "ppe": [
+      "防護面罩（測漏時）"
+    ],
+    "inspect": [
+      {
+        "action": "讀取機台氣壓表與 HMI 氣壓值，記錄 AIR_LOW 警報時間，並比對同一條供氣管路其他機台。",
+        "criteria": "表壓低於 4.8 bar（模擬值），且同管路 3 台以上（模擬值）在 10 分鐘（模擬值）內同時壓降 → 判定為本模式；若本機低於 4.8 bar（模擬值）但其他機台正常 → 先查本機氣源支管與三點組合，仍屬本模式但範圍局部；若壓力達 4.8 bar（模擬值）以上且無 AIR_LOW → 排除本模式，改查 clutch_brake_wear 或 counterbalance_misset。",
+        "caution": "讀表時保持防護，不可拆卸接頭。",
+        "requires_energized": true,
+        "ref": [
+          "S3"
+        ]
+      },
+      {
+        "action": "檢查氣源三點組合的壓力設定、濾杯積水與調壓閥是否漂移，並比對機台資料設定值。",
+        "criteria": "設定值偏離 5.0 bar（模擬值）超過 0.2 bar（模擬值）、濾杯水位超過杯身 1/2（模擬值），或調壓閥自行下滑 → 判定為本模式；若設定正常且排水後壓力穩定 → 可能為上游供氣問題，仍列本模式並通知設備工程師／原廠技師。",
+        "caution": "拆卸濾杯前須確認氣源已洩壓。",
+        "requires_energized": true,
+        "ref": [
+          "L12"
+        ]
+      },
+      {
+        "action": "沿供氣管路、接頭、電磁閥、氣缸與離合器／制動器氣室以皂液或超音波測漏器測漏。",
+        "criteria": "找到連續氣泡或測漏器讀值上升 → 判定為本模式（局部洩漏）；若無洩漏且總壓正常，但停止角度超限或停止時間增加 → 改懷疑 clutch_brake_wear（SOP-STP-051）；若換模後才發生且平衡缸壓力與上模重量對應值差 0.3 bar（模擬值）以上 → 改懷疑 counterbalance_misset（SOP-STP-056）。",
+        "caution": "不可對電氣接頭噴皂液；測漏時戴防護面罩。",
+        "requires_energized": true,
+        "ref": [
+          "L13",
+          "S3"
+        ]
+      },
+      {
+        "action": "讀取平衡缸壓力與主馬達電流，並比對模具資料的上模重量對應值。",
+        "criteria": "氣源總壓低於 4.8 bar（模擬值）且平衡缸壓力也低 → 判定為本模式；若總壓正常、平衡缸壓力與模具資料差 0.3 bar（模擬值）以上且主馬達電流上升 10%（模擬值） → 改懷疑 counterbalance_misset；若總壓正常但停止角度超過上限 5%（模擬值）或停止時間連續 3 日（模擬值）增加 → 改懷疑 clutch_brake_wear。",
+        "caution": "平衡缸有儲壓，確認洩壓後再拆管。",
+        "requires_energized": true,
+        "ref": [
+          "S3",
+          "L13"
+        ]
+      },
+      {
+        "action": "調閱近 10 分鐘（模擬值）同管路多台機台的停機紀錄與停止角度趨勢。",
+        "criteria": "同管路多台在 10 分鐘（模擬值）內同時 AIR_LOW，且氣壓恢復後停止角度回到正常範圍 → 判定為本模式；若只有單台且氣壓正常但停止角度持續變大 → 改懷疑 clutch_brake_wear。",
+        "caution": null,
+        "requires_energized": false,
+        "ref": [
+          "S3"
+        ]
+      }
+    ],
+    "repair": [
+      {
+        "action": "更換局部洩漏的氣管快速接頭、O 型環與管束，重新鎖緊至不漏氣。",
+        "caution": "拆卸前確認氣源已洩壓至 0 bar（模擬值）。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "L13"
+        ]
+      },
+      {
+        "action": "清潔或更換氣源三點組合濾芯與濾杯，排水後將調壓閥調整至 5.0 bar（模擬值），確認調壓閥無自行下滑。",
+        "caution": "調整時由低往高，勿超過 5.5 bar（模擬值）。",
+        "requires_energized": true,
+        "requires_supervisor": false,
+        "ref": [
+          "L12"
+        ]
+      },
+      {
+        "action": "若為共用供氣管路壓降，會同廠務與設備工程師檢查空壓機、乾燥機、儲氣筒與主管路，必要時加裝穩壓儲氣筒或更換管徑。",
+        "caution": "不可擅自調整他台機台或關閉其他機台氣源。",
+        "requires_energized": false,
+        "requires_supervisor": true,
+        "ref": [
+          "L13"
+        ]
+      },
+      {
+        "action": "由電氣合格人員確認壓力開關設定值為 4.8 bar（模擬值）動作正常，並清潔接點。",
+        "caution": "壓力開關調整須由電氣合格人員執行，調整後做動作確認。",
+        "requires_energized": true,
+        "requires_supervisor": true,
+        "ref": [
+          "S3"
+        ]
+      }
+    ],
+    "verify": [
+      {
+        "action": "穩壓 5 分鐘（模擬值）後，讀取總壓與支管壓力。",
+        "criteria": "總壓維持 4.8 bar（模擬值）以上，支管壓降不超過 0.2 bar（模擬值），無 AIR_LOW。",
+        "requires_energized": true,
+        "ref": [
+          "S3"
+        ]
+      },
+      {
+        "action": "以寸動確認離合器／制動器結合與停止角度。",
+        "criteria": "寸動 3 次（模擬值），停止角度均在設定上限內（偏差不超過 5%（模擬值）），無離合器結合不良；若仍超限 → 改走 SOP-STP-051。",
+        "requires_energized": true,
+        "ref": [
+          "S3",
+          "L12"
+        ]
+      },
+      {
+        "action": "連續試沖 5 次（模擬值），觀察氣壓與同管路其他機台。",
+        "criteria": "氣壓維持 4.8 bar（模擬值）以上，同管路其他機台無同時壓降，AIR_LOW 未再出現；若重現 → 通知設備工程師／原廠技師。",
+        "requires_energized": true,
+        "ref": [
+          "S3"
+        ]
+      }
+    ],
+    "isolate_caution": "本模式常涉及共用供氣管路，沖床與送料機須同時上鎖，並確認 V1、V2 氣源閥已洩壓至 0 bar（模擬值），不可只鎖單一台。",
+    "escalate_if": [
+      "氣壓恢復至 4.8 bar（模擬值）以上後，停止角度仍超過設定上限 5%（模擬值）或停止時間持續增加 → 改走 SOP-STP-051。",
+      "氣源總壓正常，但平衡缸壓力與模具資料的上模重量對應值差 0.3 bar（模擬值）以上，且主馬達電流上升 10%（模擬值） → 改走 SOP-STP-056。",
+      "同管路多台同時壓降且無法於現場找到局部洩漏，或空壓機／乾燥機／儲氣筒異常 → 通知設備工程師／原廠技師。"
+    ],
+    "lessons": "先看別台有沒有一起掉壓，再決定拆接頭；共用管路問題不是單機修理就能結案。"
+  }
+}

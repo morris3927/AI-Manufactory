@@ -1,0 +1,109 @@
+{
+  "case_id": "CASE-ASM-0057",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4056,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2025-12-01T16:41:13+08:00",
+  "closed_at": "2025-12-01T16:49:11+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "vision",
+    "event_type": "ppe_violation",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 77,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-1",
+    "screw_lot": "SL-2512-77"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-01T16:41:13+08:00",
+      "signal": "ppe_missing",
+      "value": "safety_glasses"
+    },
+    {
+      "t": "2025-12-01T16:41:13+08:00",
+      "signal": "ppe_stock_count",
+      "value": 2
+    }
+  ],
+  "technician": {
+    "id": "TECH-50",
+    "level": "L3"
+  },
+  "technician_report_raw": "ST01 影像告警 護目鏡沒戴 停線 通知班長 查庫存2副 補發 提醒配戴 記錄Kanban ok",
+  "technician_report_normalized": "ST01 影像偵測到作業員未配戴護目鏡，立即停止該站作業並通知班長。檢查發現護目鏡庫存尚有 2 副，發放數量足夠；由班長補發護目鏡並提醒同仁配戴，同時將未落實項目記錄於 Kanban。確認防護具已配戴後恢復生產，停機 7 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "ppe_esd_missing",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "ppe_esd_missing",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "停止 ST01 作業並確認人員離開鎖附區",
+      "result": "已停線"
+    },
+    {
+      "step": "通知班長到場確認未配戴護目鏡的情況並記錄",
+      "result": "已通知"
+    },
+    {
+      "step": "清點該站護目鏡庫存",
+      "result": "庫存 2 副"
+    },
+    {
+      "step": "由班長補發護目鏡並提醒正確配戴",
+      "result": "已補發"
+    },
+    {
+      "step": "於 Kanban 記錄並確認防護具配戴後復工",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-051"
+  ],
+  "downtime_min": 7,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "護目鏡庫存還有 2 副，現場先補發、確認配戴再復工，比事後追問有效。",
+  "related_failure_mode_ids": [
+    "ppe_esd_missing"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-ASM-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

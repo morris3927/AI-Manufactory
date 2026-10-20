@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1040
+ },
+ "output": {
+  "technician_report_raw": "PR03 模保間歇停 提速40後跳屑 模面+沖頭端面撿到廢料 送料誤差0.02 ok 清模面落料孔 寸動3次無吸附 降回32試沖ok",
+  "technician_report_normalized": "10:35 提速至 40 spm 後，11:05 模具保護間歇觸發停機。檢查模面與沖頭端面發現廢料上跳，製品有壓痕；送料長度誤差 0.02 mm 正常，導正銷對位無異常。以銅棒輕壓脫料板，四角回彈與彈簧動作正常。清潔模面、沖頭端面與下模落料孔並擦拭油污，寸動滑塊上下 3 次未見廢料吸附。降回 32 spm 試沖，連續生產正常。",
+  "actions": [
+   {
+    "step": "檢查模面、製品與沖頭端面",
+    "result": "發現廢料上跳"
+   },
+   {
+    "step": "核對送料長度誤差與導正銷對位",
+    "result": "0.02 mm、正常"
+   },
+   {
+    "step": "以銅棒輕壓脫料板檢查四角回彈",
+    "result": "動作正常"
+   },
+   {
+    "step": "清潔模面、沖頭端面與下模落料孔",
+    "result": "清潔完成"
+   },
+   {
+    "step": "寸動滑塊上下 3 次觀察沖頭回程",
+    "result": "無廢料吸附"
+   },
+   {
+    "step": "降回 32 spm 試沖並連續生產",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "提速後跳屑先看模面與沖頭端面，送料誤差正常就別一直追送料。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4019
+ },
+ "output": {
+  "technician_report_raw": "ST02 送釘逾時 FEEDER_TIMEOUT 吸不到釘 pick fail 22 補料後卡住 LOTO後拆護蓋清歪釘 試打 ok",
+  "technician_report_normalized": "16:37 MES 觸發送釘逾時（FEEDER_TIMEOUT）警報，起子端無螺絲可鎖，送釘吸取失敗累計 22 次；16:27 曾補充螺絲。完成 LOTO 後目視檢查送釘軌道、分離器與吸嘴，發現軌道出口有歪斜螺絲卡住，並有少量金屬屑。以塑膠鑷子清除卡釘與異物，核對螺絲頭型、長度與批號規格；手動送釘路徑確認無干涉，並以試片試鎖正常。可疑螺絲批與受影響工件已隔離追溯，首件確認後恢復生產。",
+  "actions": [
+   {
+    "step": "查閱控制器事件紀錄、鎖附報表與補料紀錄，確認送釘逾時與吸取失敗次數。",
+    "result": "確認送釘異常"
+   },
+   {
+    "step": "目視檢查送釘軌道、分離器與吸嘴，發現軌道出口卡住歪斜螺絲。",
+    "result": "找到卡釘"
+   },
+   {
+    "step": "以塑膠鑷子清除卡釘與金屬屑，並核對螺絲頭型、長度與批號規格。",
+    "result": "卡釘排除"
+   },
+   {
+    "step": "手動檢查送釘路徑並以試片試鎖，確認無干涉且鎖附正常。",
+    "result": "試鎖 ok"
+   },
+   {
+    "step": "隔離可疑螺絲批與受影響工件，完成追溯與首件確認後恢復生產。",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "補料後先核對螺絲批與送釘軌道出口，吸取失敗次數上升就別再硬打。",
+  "escalation_note": null
+ }
+}

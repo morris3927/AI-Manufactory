@@ -1,0 +1,139 @@
+{
+  "case_id": "CASE-STP-0048",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1047,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-09-15T21:57:16+08:00",
+  "closed_at": "2026-09-16T01:43:21+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_trend",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 57,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2609-160"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-09T21:57:31+08:00",
+      "signal": "tonnage_peak",
+      "value": 168
+    },
+    {
+      "t": "2026-09-12T21:57:35+08:00",
+      "signal": "tonnage_peak",
+      "value": 173
+    },
+    {
+      "t": "2026-09-15T21:56:27+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 4
+    },
+    {
+      "t": "2026-09-15T21:56:52+08:00",
+      "signal": "tonnage_peak",
+      "value": 179
+    },
+    {
+      "t": "2026-09-15T21:56:59+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 98361
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR01 1U底板毛邊漸大 噸位峰值168→173→179 左右平衡4%正常 沖次98361超過8萬 停機量毛邊+看刃口 沖頭R磨耗 換沖頭 試沖毛邊ok 噸位回穩",
+  "technician_report_normalized": "PR01 生產 1U 機殼底板時，品檢反映毛邊有逐漸變高的趨勢。調閱模具履歷與噸位紀錄，沖次已達 98,361 次，超過刃口研磨基準 80,000 次；噸位峰值由 168 緩升至 179，左右平衡 4% 正常，排除換模偏載。停機後以毛邊高度規及放大鏡檢查，毛邊偏高、斷面光亮帶變窄，沖頭刃口呈圓角磨耗；模具潤滑油量正常，成形面無異常拉痕。更換沖頭後試沖，毛邊高度恢復正常，噸位峰值回穩，確認可繼續生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "punch_edge_wear",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "punch_edge_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱模具履歷與噸位趨勢，核對沖次 98,361 次及峰值 168→179",
+      "result": "刃口磨耗嫌疑"
+    },
+    {
+      "step": "停機量測毛邊高度與斷面光亮帶",
+      "result": "毛邊偏高、光亮帶窄"
+    },
+    {
+      "step": "檢查模具噴油次數、油箱液位與成形面",
+      "result": "潤滑正常、無拉痕"
+    },
+    {
+      "step": "以放大鏡檢查沖頭與模仁刃口",
+      "result": "沖頭刃口圓角磨耗"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "更換沖頭並試沖確認",
+      "result": "毛邊恢復、噸位回穩"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-033"
+  ],
+  "downtime_min": 226,
+  "parts_replaced": [
+    "punch"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "沖次逼近八萬時，噸位峰值緩升就是刃口在提醒，別只看毛邊有沒有超規。",
+  "related_failure_mode_ids": [
+    "punch_edge_wear"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-033"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

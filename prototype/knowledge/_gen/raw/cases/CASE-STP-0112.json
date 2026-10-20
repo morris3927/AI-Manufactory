@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1111
+ },
+ "output": {
+  "technician_report_raw": "PR01 換模首件高度不足 模高讀424.7 模具卡424.4 差0.3 噸位214偏高 鎖緊螺栓鬆 重設+換螺栓 試沖ok",
+  "technician_report_normalized": "PR01 於 14:32 完成 D-4U-SIDE-02 換模後，首件 4U 側板成形高度不足。查閱換模記錄並於 HMI 比對模具主檔，閉模高度讀值 424.7 mm，較模具資料卡 424.4 mm 高出 0.3 mm；沖壓力峰值 214 偏高，左右平衡 4% 正常。以安全塊支撐滑塊後量測閉模高度調整機構，發現鎖緊螺栓未鎖實。依模具資料卡重新設定閉模高度至 424.4 mm，更換鎖緊螺栓並依規定鎖固，試沖三件確認成形高度與壓印深度皆正常，恢復生產。",
+  "actions": [
+   {
+    "step": "查閱換模記錄與模具資料卡，於 HMI 比對閉模高度讀值",
+    "result": "差值 0.3 mm，讀值偏高"
+   },
+   {
+    "step": "以安全塊支撐滑塊，量測模高調整機構刻度與鎖固狀態",
+    "result": "鎖緊螺栓未鎖實"
+   },
+   {
+    "step": "依模具資料卡重新設定閉模高度至 424.4 mm",
+    "result": "設定完成"
+   },
+   {
+    "step": "更換 shut_height_lock_bolt 並依規定鎖固",
+    "result": "鎖固完成"
+   },
+   {
+    "step": "試沖首件並量測成形高度與壓印深度",
+    "result": "尺寸正常，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "shut_height_lock_bolt"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換模後閉模高度要跟模具主檔對到 0.1 mm 以內，噸位偏高就是第一個提醒，不要只看首件外觀。",
+  "escalation_note": null
+ }
+}

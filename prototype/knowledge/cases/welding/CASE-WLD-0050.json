@@ -1,0 +1,143 @@
+{
+  "case_id": "CASE-WLD-0050",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3049,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-06-12T10:23:57+08:00",
+  "closed_at": "2026-06-12T11:06:49+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "coolant_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 14,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-133"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-12T08:54:21+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 1.8
+    },
+    {
+      "t": "2026-06-12T09:54:32+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 38
+    },
+    {
+      "t": "2026-06-12T09:54:36+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 1.3
+    },
+    {
+      "t": "2026-06-12T10:23:57+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 0.5
+    },
+    {
+      "t": "2026-06-12T10:23:57+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 55
+    },
+    {
+      "t": "2026-06-12T10:23:57+08:00",
+      "signal": "alarm_code",
+      "value": "COOLANT_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-29",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC02 跳COOLANT_LOW 流量0.5 回水55度 槍頸燙 上鎖進圍欄查冷卻水機 濾網塞滿銲渣鋅粉 換新濾網+補水排氣 流量回2.6 試銲ok",
+  "technician_report_normalized": "RC02 上午出現冷卻水流量低警報，流量由 1.8 L/min 一路掉到 0.5 L/min，回水溫度升到 55 °C，銲槍頸管摸起來明顯發燙。上鎖掛牌後進入圍欄檢查冷卻水機，發現濾網被銲渣與鋅粉堵滿、水盤積泥，水路因此不足。清洗水盤、更換濾網並補充冷卻液至上下限之間，排氣後量測流量回升至 2.6 L/min，回水溫度降至 41 °C；檢查電極帽端面與導電嘴孔口無異常變形，在局部排氣運轉、人員於圍欄外完成試銲，確認恢復正常。",
+  "first_hypothesis": {
+    "failure_mode_id": "cooling_water_low",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "cooling_water_low",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "上鎖掛牌後進入圍欄，目視檢查冷卻水機液位、濾網與水管有無折彎滲漏",
+      "result": "濾網堵塞、水盤積銲渣鋅粉"
+    },
+    {
+      "step": "以紅外線測溫槍量測回水管、銲槍頸管與電極帽表面溫度",
+      "result": "回水55度、頸管發燙"
+    },
+    {
+      "step": "清洗水盤與濾網座，更換新濾網並補充冷卻液至上下限之間",
+      "result": "完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "啟動冷卻水循環排氣，以流量計量測流量並讀取回水溫度",
+      "result": "流量2.6L/min、溫度41度"
+    },
+    {
+      "step": "檢查電極帽端面直徑凹陷與導電嘴孔口磨耗",
+      "result": "無異常變形"
+    },
+    {
+      "step": "局部排氣運轉下、人員在圍欄外試銲確認",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-042"
+  ],
+  "downtime_min": 40,
+  "parts_replaced": [
+    "coolant_filter"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "夏天冷卻水濾網特別容易塞，流量掉到 1.5 L/min 以下就先去看濾網跟水管有沒有折到，不要等跳警報才停機。",
+  "related_failure_mode_ids": [
+    "cooling_water_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

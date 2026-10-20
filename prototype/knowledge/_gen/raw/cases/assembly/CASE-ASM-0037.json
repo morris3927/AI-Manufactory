@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4036
+ },
+ "output": {
+  "technician_report_raw": "ST02 校正標籤過期 抽測偏差11.9% 鎖附結果多OK 查起子投刃口正常 LOTO後換校正合格備品起子 試片0.8Nm抽測OK 隔離SL-2512-45批次 原工具送校 停機31分 ok",
+  "technician_report_normalized": "ST02 電動起子校正標籤已逾期，扭力分析儀抽測顯示偏差 11.9%，超過 ±10% 判定值；鎖附結果雖多為 OK，仍懷疑離合器跳脫點漂移。檢查起子頭刃口與十字槽外觀正常，依 LOTO-ASM-TOOL-01 完成斷電後更換校正合格備品起子，於試片以 0.8 N·m 試鎖抽測恢復正常。已隔離 SL-2512-45 對應批次並貼待判定標籤，原工具掛待校正送校，恢復生產，停機 31 分鐘。",
+  "actions": [
+   {
+    "step": "核對 SD-02-3 校正履歷與標籤到期日",
+    "result": "已逾期"
+   },
+   {
+    "step": "檢查起子頭刃口與十字槽磨耗",
+    "result": "外觀正常"
+   },
+   {
+    "step": "以扭力分析儀在試片抽測 0.8 N·m",
+    "result": "偏差11.9%"
+   },
+   {
+    "step": "更換校正合格備品起子並試鎖抽測",
+    "result": "恢復正常"
+   },
+   {
+    "step": "隔離 SL-2512-45 對應批次並將原工具送校",
+    "result": "待判定"
+   }
+  ],
+  "parts_replaced": [
+   "calibrated_spare_screwdriver"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "校正到期別只看鎖附 OK，抽測偏差 11.9% 就已經在提醒跳脫點漂了。",
+  "escalation_note": null
+ }
+}

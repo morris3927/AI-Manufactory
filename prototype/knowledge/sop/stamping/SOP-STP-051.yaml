@@ -1,0 +1,159 @@
+# SOP-STP-051 離合器／制動器異常（停止角度超限）之停機與通報
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核）
+sop_id: SOP-STP-051
+version: '0.1'
+title: 離合器／制動器異常（停止角度超限）之停機與通報
+line: stamping
+machine_type:
+- mechanical_power_press
+- servo_press
+failure_mode_ids:
+- clutch_brake_wear
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+review_status: approved
+reviewed_by:
+- ai_sim_reviewer_press_chief
+review_note: AI 角色扮演審核（模擬資深維修課長），非真人專家審核
+review_date: '2026-10-21'
+review_doc: reviews/2026-10-21_press_chief.md
+category: safety
+safety_only: true
+generator:
+  model: null
+  prompt_ver: safety-template-v1
+  seed: null
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-PRESS-SERVO-01
+  loto_checklist_ids:
+  - LOTO-PRESS-SERVO-01
+  - LOTO-PRESS-MECH-01
+  energy_sources:
+  - electrical
+  - pneumatic
+  - kinetic_flywheel
+  - gravity_slide
+  - feed_line
+  - hydraulic
+  - mechanical_stored
+  - electrical_aux
+  - pneumatic_hydraulic
+  - electrical_stored
+  ppe:
+  - 安全鞋
+  - 防割手套
+  - 護目鏡
+  - 耳塞（設施規則第300條）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第69條
+  - 設施規則第254條
+  - OSHA 1910.147(d)
+  - 職業安全衛生管理辦法第26條
+  - 機械設備器具安全標準第35、38條
+symptoms:
+- 滑塊停止位置偏移
+- 停止角度超限警報
+- 制動異音
+- 停止時間變長
+- 寸動時滑塊滑行
+prerequisites:
+  tools:
+  - Kanban 工單
+  - 「安全裝置異常・禁止使用」標籤
+  - 個人鎖與標籤
+  parts: []
+  skill_level: 現場主管／合格人員
+steps:
+- 'no': 1
+  phase: prepare
+  action: 立即停止生產：滑塊已停止時保持停止；若滑塊無法在正常位置停止，按緊急停止。不得重置停止角度超限警報後繼續生產
+  caution: 停止角度超限代表滑塊可能無法在設計位置停止，任何人不得把手伸入模具區
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060034-38
+  - REG-N0060034-20
+- 'no': 2
+  phase: prepare
+  action: 所有人員離開危險區；通知現場主管與設備工程師，在 Kanban 標記「安全裝置異常」並記錄停止角度、停止時間與氣源壓力讀值
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060001-18
+- 'no': 3
+  phase: isolate
+  action: 由現場主管指派人員依 LOTO-PRESS-MECH-01（機械沖床） 或 LOTO-PRESS-SERVO-01（伺服沖床）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量；送料機依各檢查表的送料線隔離點連動上鎖（兩台都要上鎖，不是擇一），並在操作盤掛「安全裝置異常・禁止使用」標籤
+  caution: 制動器異常時滑塊可能自行下滑：任何人身體不得進入滑塊下方；安全塊由合格人員在主電源隔離、飛輪完全停止後放入，平衡缸與制動器氣源要等安全塊放妥後才洩壓（先洩壓會讓滑塊重量全壓在可疑的制動器上）
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-69
+  - REG-OSHA-1910.147-d-4
+- 'no': 4
+  phase: inspect
+  action: 等待合格人員（設備工程師或原廠技師）依職業安全衛生管理辦法第26條（離合器及制動裝置、一行程一停止機構及緊急制動器）與機械設備器具安全標準第35、38條（氣壓離合器式曲軸沖床的彈簧緊固型制動器、超限運轉監視裝置）進行檢查。一般技術員不得自行調整離合器、制動器或停止角度監視器；AI 不提供排除方法
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060027-26
+  - REG-N0060034-35
+  - REG-N0060034-38
+- 'no': 5
+  phase: verify
+  action: 合格人員完成檢查並留下紀錄（管理辦法第80條，保存三年）；現場主管確認停止角度與停止時間量測回到設定範圍內後，才在 Kanban 簽核
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060027-80
+- 'no': 6
+  phase: restore
+  action: 依 LOTO-PRESS-SERVO-01 解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+verify:
+- 合格人員完成檢查並留下紀錄（管理辦法第80條，保存三年）；現場主管確認停止角度與停止時間量測回到設定範圍內後，才在 Kanban 簽核
+restore:
+- 依 LOTO-PRESS-SERVO-01 解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+escalate_if:
+- 停止角度超限時有人員在危險區或已有人受傷 → 依 S3 處理：急救優先、保全現場，協助主管於 8 小時內通報（職安法第37條）
+- 氣源壓力同時低於下限 → 由主管確認後另開 SOP-STP-055 工單（氣源壓力不足），但離合器／制動器檢查仍須由合格人員完成
+- 停止角度在數日內持續增加 → 通知設備工程師／原廠技師安排離合器與制動器定期檢查（管理辦法第26條）
+lessons: 安全裝置異常只做停機、通知、上鎖與記錄，排除交給合格人員。
+references:
+- id: L2
+  title: 職業安全衛生管理辦法 第26條（衝剪機械定期檢查）
+  url: https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0060027&flno=26
+  license: TW-law
+  use: quote
+- id: L3
+  title: 職業安全衛生管理辦法 第59條（衝剪機械作業前檢點）
+  url: https://law.moj.gov.tw/LawClass/LawSingle.aspx?pcode=N0060027&flno=59
+  license: TW-law
+  use: quote
+- id: L4
+  title: 機械設備器具安全標準
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060034
+  license: TW-law
+  use: quote
+- id: S3
+  title: OSHA 29 CFR 1910.217 Mechanical power presses
+  url: https://www.osha.gov/laws-regs/regulations/standardnumber/1910/1910.217
+  license: PD
+  use: reference
+- id: public/regulations.jsonl
+  title: 法規條文 chunk：REG-N0060001-18、REG-N0060009-254-p2、REG-N0060009-57-p1、REG-N0060009-69、REG-N0060027-26、REG-N0060027-80、REG-N0060034-20、REG-N0060034-35、REG-N0060034-38、REG-OSHA-1910.147-d-4、REG-OSHA-1910.147-e-3
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote

@@ -1,0 +1,127 @@
+{
+  "case_id": "CASE-STP-0074",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1073,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2025-10-24T15:03:29+08:00",
+  "closed_at": "2025-10-24T15:28:09+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "overrun_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 31,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2510-135"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2025-10-24T15:03:29+08:00",
+      "signal": "stop_angle_deg",
+      "value": 15.4
+    },
+    {
+      "t": "2025-10-24T15:03:29+08:00",
+      "signal": "air_pressure_bar",
+      "value": 5.7
+    },
+    {
+      "t": "2025-10-24T15:06:17+08:00",
+      "signal": "stop_angle_deg",
+      "value": 10.8
+    }
+  ],
+  "technician": {
+    "id": "TECH-02",
+    "level": "L3"
+  },
+  "technician_report_raw": "PR01 停止角超限 15.4° 以為離合器/煞車磨損 氣壓5.7 bar正常 無異音 會同設備工程師查MES 保養前測試訊號 復歸10.8° 試運轉ok 復線",
+  "technician_report_normalized": "PR01 於 15:03 發生停止角度超限警報，停止角度為 15.4°，現場先懷疑離合器或制動器磨耗。檢查氣源壓力 5.7 bar 正常，制動器無異音，會同設備工程師核對 MES 與保養排程後，確認為計畫性保養前的測試訊號，並非實際故障。復歸警報後試運轉，停止角度回到 10.8°，設備恢復生產，停機約 21 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "clutch_brake_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "停止角度監視器跳超限且數值 15.4° 超過上限，直覺像離合器／制動器磨耗；但氣壓 5.7 bar 正常、無制動異音，且 MES 紀錄顯示是計畫性保養前的測試訊號，重設後停止角度回到 10.8°，所以不是磨耗。",
+  "discriminating_evidence": [
+    "停止角度由 15.4° 回到 10.8°，未持續增加，與磨耗典型逐日惡化不符",
+    "同時段氣源壓力 5.7 bar 正常，無低壓造成停止異常的跡象",
+    "MES 事件與計畫性保養前測試紀錄吻合，確認為測試訊號"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "接獲停止角度超限警報，立即停機並記錄停止角度",
+      "result": "15.4° 超限"
+    },
+    {
+      "step": "通知課長與設備工程師，現場保持停機",
+      "result": "已通知"
+    },
+    {
+      "step": "由設備工程師檢查氣源壓力與制動器狀態",
+      "result": "5.7 bar 正常、無異音"
+    },
+    {
+      "step": "由設備工程師核對 MES 與保養排程",
+      "result": "確認為保養前測試訊號"
+    },
+    {
+      "step": "復歸警報後由設備工程師試運轉確認",
+      "result": "10.8° 正常"
+    },
+    {
+      "step": "恢復生產並記錄",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-051"
+  ],
+  "downtime_min": 21,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "停止角超限一律先停機通報，由設備工程師核對趨勢與保養排程後才可判定誤報，技術員不可自行復歸放行。",
+  "related_failure_mode_ids": [
+    "clutch_brake_wear"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-STP-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

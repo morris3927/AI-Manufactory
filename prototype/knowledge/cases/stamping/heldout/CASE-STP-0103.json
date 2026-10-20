@@ -1,0 +1,147 @@
+{
+  "case_id": "CASE-STP-0103",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1102,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-04-03T04:57:18+08:00",
+  "closed_at": "2026-04-03T05:25:19+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "scrap_conveyor_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 12,
+    "recent_changes": [
+      "提速 32→40 spm 04:35"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2604-124"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-03T04:35:36+08:00",
+      "signal": "spm",
+      "value": 40
+    },
+    {
+      "t": "2026-04-03T04:38:03+08:00",
+      "signal": "scrap_conveyor_current_a",
+      "value": 1.2
+    },
+    {
+      "t": "2026-04-03T04:53:51+08:00",
+      "signal": "scrap_conveyor_current_a",
+      "value": 0.0
+    },
+    {
+      "t": "2026-04-03T04:56:38+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    },
+    {
+      "t": "2026-04-03T04:57:18+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_PROTECT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-13",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 模具保護跳停 以為跳屑 模面乾淨 降速仍跳 輸送帶電流掉0 滑道塞住 清通ok",
+  "technician_report_normalized": "PR01 於 04:56 連續觸發模具保護停機。起初懷疑是提速後跳屑，檢查模面與沖頭端面均未見帶屑，降回 32 spm 試沖仍會跳停。調閱廢料輸送帶電流，04:53 由 1.2 A 掉至 0.0 A，目視下模落料孔與廢料滑道發現廢料回堵、滑道塞住。以塑膠刮板清除滑道、輸送帶及落料孔內堵塞廢料，寸動確認輸送帶運轉正常，復歸試沖後恢復生產，停機 26 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "slug_pulling",
+    "by": "jev",
+    "p": 0.48
+  },
+  "final_root_cause": "scrap_chute_jam",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "04:35 才剛把沖速由 32 提高到 40 spm，模具保護又間歇觸發，完全符合跳屑「提速後出現、降速即減少」的典型線索，但模面與沖頭端面都撿不到廢料，降速後照樣跳停；真正露餡的是廢料輸送帶電流在 04:53 掉到 0.0 A，廢料是回堵在滑道，不是被沖頭帶上模面。",
+  "discriminating_evidence": [
+    "降回 32 spm 試沖，模具保護仍持續觸發，與跳屑「降速即減少」的特性不符",
+    "模面與沖頭端面未撿到廢料，製品上也無壓痕",
+    "廢料輸送帶電流於 04:53:51 由 1.2 A 降至 0.0 A，顯示輸送帶已停止運轉",
+    "目視下模落料孔與廢料滑道有廢料回堆、滑道堵塞"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查模面與沖頭端面有無帶屑，並巡視模面有無撿到廢料",
+      "result": "未發現跳屑"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "降回 32 spm 試沖，觀察模具保護是否仍觸發",
+      "result": "未改善，照樣跳停"
+    },
+    {
+      "step": "調閱廢料輸送帶電流紀錄，04:53 由 1.2 A 掉到 0.0 A，目視下模落料孔與廢料滑道",
+      "result": "滑道回堵、落料孔塞住"
+    },
+    {
+      "step": "以塑膠刮板清除廢料滑道、輸送帶與下模落料孔堵塞廢料，寸動點動輸送帶確認運轉",
+      "result": "排除，電流恢復"
+    },
+    {
+      "step": "復歸連續試沖並觀察排料狀況",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-031",
+    "SOP-STP-065"
+  ],
+  "downtime_min": 26,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "提速後跳停別只往模面找，廢料輸送帶電流掉到 0 就是回堵訊號，先看滑道再拆沖頭。",
+  "related_failure_mode_ids": [
+    "scrap_chute_jam",
+    "slug_pulling"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-031",
+    "SOP-STP-065"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

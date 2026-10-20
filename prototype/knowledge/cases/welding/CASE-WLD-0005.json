@@ -1,0 +1,196 @@
+{
+  "case_id": "CASE-WLD-0005",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3004,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-08-31T16:38:47+08:00",
+  "closed_at": "2026-08-31T17:27:26+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "wire_feed_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 4,
+    "recent_changes": [],
+    "part": "2U 機殼側框",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-109"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-31T15:59:13+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 2.7
+    },
+    {
+      "t": "2026-08-31T16:18:57+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 6.0
+    },
+    {
+      "t": "2026-08-31T16:19:24+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 2.3
+    },
+    {
+      "t": "2026-08-31T16:27:16+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 11.4
+    },
+    {
+      "t": "2026-08-31T16:33:03+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 5.2
+    },
+    {
+      "t": "2026-08-31T16:33:24+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 4.7
+    },
+    {
+      "t": "2026-08-31T16:34:06+08:00",
+      "signal": "weld_defect",
+      "value": "spatter×4 工位A 側"
+    },
+    {
+      "t": "2026-08-31T16:38:05+08:00",
+      "signal": "arc_current_cv_pct",
+      "value": 14.5
+    },
+    {
+      "t": "2026-08-31T16:38:11+08:00",
+      "signal": "wire_feed_speed_mpm",
+      "value": 4.4
+    },
+    {
+      "t": "2026-08-31T16:38:47+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 5.7
+    },
+    {
+      "t": "2026-08-31T16:38:47+08:00",
+      "signal": "alarm_code",
+      "value": "WIRE_FEED_OVERLOAD"
+    },
+    {
+      "t": "2026-08-31T16:38:47+08:00",
+      "signal": "tip_arc_on_min",
+      "value": 96
+    },
+    {
+      "t": "2026-08-31T16:38:47+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 12.2
+    },
+    {
+      "t": "2026-08-31T16:38:47+08:00",
+      "signal": "arc_current_a",
+      "value": 129
+    },
+    {
+      "t": "2026-08-31T16:38:47+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 2.2
+    }
+  ],
+  "technician": {
+    "id": "TECH-25",
+    "level": "L3"
+  },
+  "technician_report_raw": "RC02 16:38 送絲過負荷警報 先猜接地 地線夾有銲渣 清完重鎖 電壓還是飄 開送絲機上蓋 導管入口一團鳥巢 剪300mm 軟管刷+空壓吹乾淨 重穿 送絲電流2.2 試銲ok",
+  "technician_report_normalized": "WLD-L1-RC02 送絲過負荷警報，電弧電壓變異由 2.7% 升到 12.2%。先懷疑接地不良，檢查兩工位接地夾與回路接頭，確有銲渣與鬆脫，清潔重鎖後電壓變異仍未收斂。續查送絲速度由 6.0 掉到 4.4 mpm、馬達電流升至 5.7 A，開上蓋見送絲輪與導管入口間銲絲纏繞成團。剪除鳥巢段約 300 mm，以軟管刷配合乾燥壓縮空氣清導管鐵屑後重穿絲，並確認送絲輪間隙與加壓臂張力；導電嘴累積起弧 96 分未達更換基準。試銲後送絲與電流回復正常。主因為送絲鳥巢，接地不良為次因。",
+  "first_hypothesis": {
+    "failure_mode_id": "ground_poor",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "wire_feed_birdnest",
+  "contributing_causes": [
+    "ground_poor"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "停機前電弧電壓變異一路從 2.7% 爬到 12.2%，工位A 側又出現 4 處飛濺，加上接地夾真的有銲渣與鬆脫，很自然先咬定是接地不良；但接地夾清潔重鎖後電壓變異並未收斂，且送絲速度已從 6.0 掉到 4.4 mpm、送絲馬達電流升到 5.7 A，送絲側的證據比接地更直接，接地不良只是同時存在的次因。",
+  "discriminating_evidence": [
+    "送絲速度由 6.0 降到 4.4 mpm，降幅約 27%，與接地不良「送絲速度正常」的判準不符",
+    "送絲馬達電流由 2.3 A 升到 5.7 A，超過 4.5 A 門檻，並在 16:38:47 觸發 WIRE_FEED_OVERLOAD",
+    "電弧電流變異達 14.5%，與送絲忽快忽慢同步波動，屬送絲側特徵",
+    "開啟送絲機上蓋即在送絲輪與導管入口間看到銲絲纏繞成團，導電嘴累積起弧僅 96 分未達更換基準"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查兩工位治具接地夾與回路電纜接頭，清除銲渣後重新鎖緊",
+      "result": "未改善，電弧電壓變異仍約 12%"
+    },
+    {
+      "step": "上鎖掛牌後進入圍欄，開啟送絲機上蓋目視送絲輪與導管入口",
+      "result": "發現銲絲在送絲輪與導管入口之間纏繞成團"
+    },
+    {
+      "step": "剪除鳥巢段與受壓變形銲絲約 300 mm，以軟管刷配合乾燥壓縮空氣清除導管入口鐵屑",
+      "result": "排除"
+    },
+    {
+      "step": "以厚薄規量測送絲輪間隙、檢查溝槽磨耗與加壓臂彈簧張力後重新穿絲",
+      "result": "ok"
+    },
+    {
+      "step": "查閱維修紀錄並量測導電嘴孔徑，累積起弧 96 分未達更換基準",
+      "result": "不更換"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "試銲確認送絲速度回到 6.0 mpm、送絲馬達電流 2.2 A，並複查接地夾無鬆脫",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-015",
+    "SOP-WLD-011"
+  ],
+  "downtime_min": 44,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "電弧電壓一飄別急著咬定接地，把送絲速度與送絲馬達電流一起拉出來對，兩個同時飄就先開送絲機上蓋看有沒有鳥巢。",
+  "related_failure_mode_ids": [
+    "wire_feed_birdnest",
+    "ground_poor"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-015",
+    "SOP-WLD-011"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

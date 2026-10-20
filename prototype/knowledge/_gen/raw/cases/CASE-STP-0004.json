@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1003
+ },
+ "output": {
+  "technician_report_raw": "FD02 送料一直偏短 0.03爬到0.25 跳MISFEED 停機LOTO 拆上滾輪看亮帶+油 擦過還是偏 量料厚ok 換上下送料滾輪 試送50.00十次誤差0.02 ok",
+  "technician_report_normalized": "FD02 送料偏短，送料長度誤差從 0.03 mm 在十餘分鐘內一路爬升到 0.25 mm，最後跳 MISFEED、送料停止。停機上鎖後檢查送料滾輪，滾輪表面有明顯亮帶與油污，料帶也有滑痕；以無絨布清潔滾輪與料帶路徑後低速寸動試送，誤差仍有 0.15 mm，未改善。量測料帶厚度五點皆為 0.80 mm，在公差內，排除料厚與換料捲因素。續查壓緊彈簧壓縮量與軸承間隙，判定為滾輪磨損打滑，更換上下送料滾輪後試送十次，誤差恢復 0.02 mm，恢復生產。",
+  "actions": [
+   {
+    "step": "目視檢查送料滾輪表面、料帶路徑與料帶表面",
+    "result": "滾輪有亮帶與油膜，料帶有滑痕"
+   },
+   {
+    "step": "以無絨布與中性清潔劑清潔滾輪表面及料帶路徑",
+    "result": "清潔完成"
+   },
+   {
+    "step": "低速寸動送料 10 次，每次設定 50.00 mm",
+    "result": "誤差仍 0.15 mm，未改善"
+   },
+   {
+    "step": "以分厘卡量測料帶厚度，距料邊 20 mm 取 5 點",
+    "result": "皆 0.80 mm，在公差內"
+   },
+   {
+    "step": "檢查壓緊彈簧壓縮量與滾輪軸承徑向間隙",
+    "result": "彈簧壓縮量不足、滾輪磨損，更換上下送料滾輪"
+   },
+   {
+    "step": "換輪後低速試送 10 次確認送料長度",
+    "result": "誤差恢復 0.02 mm，ok"
+   }
+  ],
+  "parts_replaced": [
+   "feed_roll_upper",
+   "feed_roll_lower"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "送料誤差是十幾分鐘慢慢爬上去的，先看滾輪亮帶與料帶滑痕，比一直調參數快得多。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,136 @@
+{
+  "case_id": "CASE-STP-0112",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1111,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-07-03T14:44:50+08:00",
+  "closed_at": "2026-07-03T15:39:30+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 43,
+    "recent_changes": [
+      "換模 14:32（D-4U-SIDE-02）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2607-240"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-03T14:33:17+08:00",
+      "signal": "die_change",
+      "value": "D-4U-SIDE-02"
+    },
+    {
+      "t": "2026-07-03T14:35:54+08:00",
+      "signal": "shut_height_mm",
+      "value": 424.7
+    },
+    {
+      "t": "2026-07-03T14:38:04+08:00",
+      "signal": "tonnage_peak",
+      "value": 214
+    },
+    {
+      "t": "2026-07-03T14:38:31+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 4
+    }
+  ],
+  "technician": {
+    "id": "TECH-04",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 換模首件壓印過深 模高讀424.7 模具卡425.2 差0.5 噸位214偏高 鎖緊螺栓鬆 重設+換螺栓 試沖ok",
+  "technician_report_normalized": "PR01 於 14:32 完成 D-4U-SIDE-02 換模後，首件 4U 側板壓印過深。查閱換模記錄並於 HMI 比對模具主檔，閉模高度讀值 424.7 mm，較模具資料卡 425.2 mm 低 0.5 mm；沖壓力峰值 214 偏高，左右平衡 4% 正常。以安全塊支撐滑塊後量測閉模高度調整機構，發現鎖緊螺栓未鎖實。依模具資料卡重新設定閉模高度至 425.2 mm，更換鎖緊螺栓並依規定鎖固，試沖三件確認成形高度與壓印深度皆正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "shut_height_misset",
+    "by": "jev",
+    "p": 0.64
+  },
+  "final_root_cause": "shut_height_misset",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查閱換模記錄與模具資料卡，於 HMI 比對閉模高度讀值",
+      "result": "差值 0.5 mm，讀值偏低"
+    },
+    {
+      "step": "以安全塊支撐滑塊，量測模高調整機構刻度與鎖固狀態",
+      "result": "鎖緊螺栓未鎖實"
+    },
+    {
+      "step": "依模具資料卡重新設定閉模高度至 425.2 mm",
+      "result": "設定完成"
+    },
+    {
+      "step": "更換 shut_height_lock_bolt 並依規定鎖固",
+      "result": "鎖固完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖首件並量測成形高度與壓印深度",
+      "result": "尺寸正常，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-023"
+  ],
+  "downtime_min": 52,
+  "parts_replaced": [
+    "shut_height_lock_bolt"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後閉模高度要跟模具主檔對到 0.1 mm 以內，噸位偏高就是第一個提醒，不要只看首件外觀。",
+  "related_failure_mode_ids": [
+    "shut_height_misset"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-023"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

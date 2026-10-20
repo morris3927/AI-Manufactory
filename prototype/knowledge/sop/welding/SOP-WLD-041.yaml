@@ -1,0 +1,282 @@
+# SOP-WLD-041 點銲電極頭磨耗之檢查、修磨與更換
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-WLD-041
+version: '0.1'
+title: 點銲電極頭磨耗之檢查、修磨與更換
+line: welding
+machine_type:
+- spot_welder
+failure_mode_ids:
+- spot_electrode_wear
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 141
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-SPOT-WELD-01
+  loto_checklist_ids:
+  - LOTO-SPOT-WELD-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - pneumatic
+  - gravity
+  - coolant
+  - thermal
+  - mechanical
+  ppe:
+  - 安全鞋
+  - 防護手套（耐熱）
+  - 護目鏡（遮光）
+  - 防塵口罩（銲接燻煙）
+  - 銲接面罩或遮光面罩（試銲觀察時，設施規則第284條）
+  - 耐熱袖套與防護圍裙（耐熱）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - OSHA 1910.147(d)
+  - OSHA 1910.255(b)(8)
+  - 設施規則第292條（試銲時局部排氣須運轉）
+symptoms:
+- 熔核變小
+- 剝離試驗不合格
+- 點銲飛濺多
+- 電極頭變大
+- 電極頭沾鋅發黑
+- 熔核變小，剝離試驗剝不開或鈕扣直徑不足
+- 點銲時飛濺變多，工件表面噴渣明顯
+- 電極帽端面越打越大、邊緣翻邊
+- 電極帽端面沾鋅發黑、有凹陷
+- 銲點數早就超過 350 點（模擬值）還在打，沒人修磨
+prerequisites:
+  tools:
+  - 游標卡尺
+  - 塞尺
+  - 專用對心規
+  - 電極帽拆卸專用扳手／拔帽器
+  - 流量計與溫度計
+  - 電極修磨器專用刮刀與銅屑刷
+  parts:
+  - 電極帽（上／下）
+  - 電極座（備品）
+  - 冷卻水接頭 O 型環
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼、近 15 分鐘訊號趨勢與不良銲道位置（治具、工位）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-SPOT-WELD-01（點銲機）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量
+  caution: 上鎖時須特別注意中頻控制器直流母線電容（S2）殘餘電荷要等待放電並驗電，上電極臂／加壓頭（S4）有重力落下風險須先降至下死點或加支撐，電極帽、電極座與工件（S6）仍有餘熱須待冷卻後再作業。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: 手要進入上下電極之間前，確認加壓氣缸已洩壓，並插入安全插銷或在電極之間放入墊塊，確認上電極不會下降；電極帽可能仍高溫
+  caution: 未插安全插銷或放墊塊前，手不得放在電極之間
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.255-b-8
+- 'no': 5
+  phase: inspect
+  action: 在上鎖停電狀態下，目視並以游標卡尺量測上下電極帽端面直徑與端面狀況，記錄凹陷、沾鋅變色與邊緣翻邊情形。
+  criteria: 端面直徑超過 6.5 mm（模擬值）、端面凹陷或沾鋅發黑 → 判定為本模式（點銲電極頭磨耗）；若端面直徑仍在 5.0～5.5 mm（模擬值）但電極座頸部發燙變色、冷卻水接頭有滲漏或水垢 → 改懷疑 cooling_water_low（SOP-WLD-042）。
+  caution: 電極帽、電極座與工件（S6）仍有餘熱，須待冷卻後再接觸，必要時戴耐熱手套。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+  - W9
+- 'no': 6
+  phase: inspect
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-SPOT-WELD-01 測試／定位程序：需要通電量測電流、加壓力或試銲時：手離開電極區、由原上鎖人取下自己的鎖、現場主管在場；量測加壓力或電極對心時只用「不通電加壓」模式（只加壓、不放電），以專用工具或試片操作，手不得放在電極之間；完成後重新上鎖並驗證零能量
+  caution: 通電期間手不得進入機器人可動範圍或電極之間；試銲前確認局部排氣運轉、人員退到圍欄或遮光簾外（設施規則第292條）
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060025-26
+  - REG-N0060009-292
+- 'no': 7
+  phase: inspect
+  action: 由教導器／控制器歷史頁讀取 weld_count_since_dress 與 tip_dress_count，並核對點銲電流設定值與實際讀值、加壓力設定值與實際讀值。
+  criteria: weld_count_since_dress > 350 點（模擬值）或 tip_dress_count > 25 次（模擬值），且點銲電流在 9.0～11.0 kA（模擬值）、加壓力讀值在設定範圍內 → 判定為本模式（電流正常但電流密度因端面變大而下降）；若電流或加壓力讀值偏離設定範圍 → 改懷疑控制器或氣壓系統異常，通知設備工程師。
+  caution: 讀取紀錄時只操作控制器顯示畫面，不得打開控制器機殼或觸碰端子。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W8
+- 'no': 8
+  phase: inspect
+  action: 在通水運轉下，以流量計與溫度計量測電極冷卻水進水流量與回水溫度，並確認有無流量低或過熱警報。
+  criteria: 流量 ≥ 3.0 L/min（模擬值）且回水溫度 ≤ 45 °C（模擬值）、無流量低或過熱警報 → 排除 cooling_water_low；若流量低於 3.0 L/min（模擬值）、回水溫度超過 45 °C（模擬值）或出現流量低／過熱警報 → 改走 SOP-WLD-042。
+  caution: 量測時手部與工具須遠離電極開合動作區，不得放在上下電極之間。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W9
+  - L21
+- 'no': 9
+  phase: inspect
+  action: 以塞尺量測治具上工件接合面間隙，檢查定位銷磨耗與夾爪鬆動，並比對不良（飛濺、燒穿、未熔合）是否集中在特定 fixture_id 或特定銲點位置。
+  criteria: 接合間隙 ≤ 0.5 mm（模擬值）、定位銷無明顯磨耗、夾爪無鬆動，且不良未集中於單一治具或單一銲點 → 排除 fixture_fitup_gap；若間隙超過 0.5 mm（模擬值）、定位銷磨耗或夾爪鬆動，或不良集中在同一 fixture_id、換批號或換夾爪後才發生 → 改走 SOP-WLD-031。
+  caution: 量測前須確認加壓氣缸氣源閥（S3）已上鎖且餘壓已洩，上電極臂／加壓頭（S4）已降至下死點或加支撐，防止重力落下。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+  - W9
+- 'no': 10
+  phase: inspect
+  action: 在局部排氣運轉正常、人員退至圍欄或遮光簾外後，以報廢試片進行剝離試驗，量測熔核直徑並觀察飛濺量。
+  criteria: 熔核直徑 ≥ 4.5 mm（模擬值）且飛濺量正常 → 非本模式或已改善；熔核直徑 < 4.5 mm（模擬值）、剝離面鈕扣不完整或飛濺明顯增加，且電流與加壓力讀值均在設定範圍內 → 判定為本模式。
+  caution: 試銲只能在局部排氣運轉正常、人員退到圍欄或遮光簾外時進行；手不得放在上下電極之間。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W8
+  - L21
+  - REG-OSHA-1910.255-b-8
+- 'no': 11
+  phase: repair
+  action: 拆除磨耗的電極帽，以專用刮刀清潔電極座錐面之鋅渣與氧化層，裝入新電極帽並確認錐面完全貼合、無偏擺。
+  caution: 不可敲擊或以異物擴孔；拆裝前確認電極冷卻水進回水閥（S5）已上鎖且管路餘壓已洩，避免熱水噴出燙傷。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+- 'no': 12
+  phase: repair
+  action: 以電極修磨器修磨電極帽端面，修磨至端面直徑回到 5.0～5.5 mm（模擬值）為止，並清除修磨產生之銅屑。
+  caution: 電極修磨器刀具（S7）運轉中手部不得靠近；須配戴護目鏡（遮光）；修磨後確認刀具完全停止再取出電極帽。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W8
+  - W9
+- 'no': 13
+  phase: repair
+  action: 以不通電加壓模式與專用對心規確認上下電極帽對心，並核對加壓力設定值與實際讀值一致。
+  caution: 手不得放在上下電極之間；僅可使用不通電加壓模式與專用工具量測加壓力與對心，不得以手動夾持方式量測。
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - W9
+- 'no': 14
+  phase: repair
+  action: 於控制器將 weld_count_since_dress 歸零、tip_dress_count 累加，並登錄本次更換與修磨紀錄。
+  caution: 僅歸零銲點計數，不得關閉電極管理計數或點銲電流監視功能。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W8
+- 'no': 15
+  phase: verify
+  action: 以報廢試片連續試銲 5 點（模擬值），逐點進行剝離試驗並量測熔核直徑。
+  criteria: 5 點（模擬值）熔核直徑皆 ≥ 4.5 mm（模擬值）、無燒穿、無未熔合、飛濺量正常 → 合格；任一點不足 → 重新修磨或更換電極帽後再驗，仍不合格則通知品保工程師。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W8
+  - L21
+- 'no': 16
+  phase: verify
+  action: 量測修磨後電極帽端面直徑與端面狀況，並核對修磨後累計銲點數。
+  criteria: 端面直徑在 5.0～5.5 mm（模擬值）、端面平整無凹陷、無沾鋅變色；修磨後累計銲點數未超過 350 點（模擬值）。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W8
+- 'no': 17
+  phase: verify
+  action: 會同品保進行首件確認，量測首件熔核直徑與外觀，並將結果登錄於首件檢查表。
+  criteria: 首件熔核直徑 ≥ 4.5 mm（模擬值）、外觀無飛濺、無氣孔、無燒穿，量測記錄完成並簽核 → 才可恢復量產。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W8
+  - REG-OSHA-1910.255-e
+- 'no': 18
+  phase: restore
+  action: 依 LOTO-SPOT-WELD-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+  - REG-N0060025-32
+- 'no': 19
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 以報廢試片連續試銲 5 點（模擬值），逐點進行剝離試驗並量測熔核直徑；判定：5 點（模擬值）熔核直徑皆 ≥ 4.5 mm（模擬值）、無燒穿、無未熔合、飛濺量正常 → 合格；任一點不足 → 重新修磨或更換電極帽後再驗，仍不合格則通知品保工程師。
+- 量測修磨後電極帽端面直徑與端面狀況，並核對修磨後累計銲點數；判定：端面直徑在 5.0～5.5 mm（模擬值）、端面平整無凹陷、無沾鋅變色；修磨後累計銲點數未超過 350 點（模擬值）。
+- 會同品保進行首件確認，量測首件熔核直徑與外觀，並將結果登錄於首件檢查表；判定：首件熔核直徑 ≥ 4.5 mm（模擬值）、外觀無飛濺、無氣孔、無燒穿，量測記錄完成並簽核 → 才可恢復量產。
+restore:
+- 依 LOTO-SPOT-WELD-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 更換電極帽並修磨後，剝離試驗熔核直徑仍 < 4.5 mm（模擬值）且電流、加壓力讀值正常 → 通知品保工程師，並改走 SOP-WLD-031 檢查治具貼合與接合間隙。
+- 冷卻水流量 < 3.0 L/min（模擬值）或回水溫度 > 45 °C（模擬值），或出現流量低／過熱警報 → 改走 SOP-WLD-042。
+- 電極座錐面燒蝕、冷卻水路滲漏、控制器電流輸出異常，或 SPOT_CURRENT_DEV 警報重複發生 → 通知設備工程師。
+lessons: 電極帽是耗材，與其反覆調高電流硬銲，不如照銲點數與端面直徑按時修磨更換，才不會把飛濺與熔核不足的帳算到治具或材料上。
+references:
+- id: W8
+  title: 'microJoining Solutions: Resistance Welding – Trouble Shooting Guide'
+  url: https://microjoining.com/wp-content/uploads/2025/12/microTips-%E2%80%93-Resistance-Welding-%E2%80%93-Troubleshooting.pdf
+  license: ©
+  use: paraphrase
+- id: W9
+  title: 'AMADA WELD TECH: Welding problems and solutions start with these 4 things'
+  url: https://amadaweldtech.com/blog/welding-problems-and-solutions-start-with-these-4-things/
+  license: ©
+  use: paraphrase
+- id: L21
+  title: OSHA 29 CFR 1910.252 / 1910.254 / 1910.255 Welding, cutting and brazing（General requirements; Arc welding; Resistance welding）
+  url: https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-Q
+  license: PD
+  use: quote
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-292、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060025-26、REG-N0060025-32、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1、REG-OSHA-1910.255-b-8、REG-OSHA-1910.255-e
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

@@ -1,0 +1,143 @@
+{
+  "case_id": "CASE-ASM-0028",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4027,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-05-12T12:32:51+08:00",
+  "closed_at": "2026-05-12T14:03:48+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 59,
+    "recent_changes": [
+      "換螺絲批 11:47（SL-2605-78）"
+    ],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-2",
+    "screw_lot": "SL-2605-39"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-12T11:48:23+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2605-78"
+    },
+    {
+      "t": "2026-05-12T11:52:54+08:00",
+      "signal": "final_angle_deg",
+      "value": 626
+    },
+    {
+      "t": "2026-05-12T12:27:08+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-05-12T12:32:51+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-47",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 11:47換批後連2顆NOK 角度626偏低又跳高 先猜斜牙 拆蓋看孔牙都正常 送釘盤混到短螺絲 整盤隔離清軌道 換回正確料 試鎖3顆ok",
+  "technician_report_normalized": "11:47 換螺絲批後，ST01 於 11:52 出現最終角度 626 度偏低，12:27 判為角度過高 NOK，12:32 又出現角度過低 NOK。原先懷疑斜牙或孔牙損傷，拆蓋檢查起子頭十字槽與壓鉚螺母孔牙均正常，同一孔位換新螺絲可正常鎖附，排除斜牙。核對換批紀錄並目視送釘盤，發現盤內混入長度不同的螺絲，量測長度與牙距與 BOM 不符。已將送釘盤、補料盒與待鎖螺絲整批隔離拍照，清空送釘軌道與分離器，換回正確料後試鎖三顆，角度與扭力均正常，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "cross_thread_strip",
+    "by": "jev",
+    "p": 0.5
+  },
+  "final_root_cause": "wrong_screw_type",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "換批後馬上出現角度異常，11:52 角度僅 626 度、12:27 又出現角度過高 NOK，符合斜牙時初段扭力提前升高的樣態，加上距前次保養已 59 天，才先懷疑孔牙損傷；但拆蓋後起子頭與壓鉚螺母孔牙完好，同一孔位換新螺絲可正常鎖附，且期間同時出現角度過高與過低兩種相反結果，與固定孔位的斜牙不符。",
+  "discriminating_evidence": [
+    "起子頭十字槽與壓鉚螺母孔牙無磨耗、毛邊或鋅渣，同一孔位換新螺絲可正常鎖附",
+    "NOK 未固定在同一孔位，且 12:27 為角度過高、12:32 為角度過低，偏差方向相反",
+    "送釘盤內可見長度不同的螺絲，量測長度與牙距與 BOM 規格不符",
+    "NOK 發生時序緊接 11:47 換批（SL-2605-78）之後"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷拆蓋檢查起子頭十字槽與壓鉚螺母孔牙，並在同一孔位換新螺絲重鎖",
+      "result": "排除"
+    },
+    {
+      "step": "讀取鎖附控制器的換批紀錄與最終角度時序",
+      "result": "NOK 集中在 11:47 換批後"
+    },
+    {
+      "step": "目視送釘盤與補料盒，量測螺絲長度、外徑與牙距並與 BOM 比對",
+      "result": "發現混入異規短螺絲"
+    },
+    {
+      "step": "隔離送釘盤、補料盒與已鎖可疑工件，貼疑似錯料標籤並拍照追溯批號",
+      "result": "ok"
+    },
+    {
+      "step": "清空送釘盤、送釘軌道與分離器，換回正確料號螺絲",
+      "result": "ok"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "試鎖三件並執行首件確認",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-012",
+    "SOP-ASM-022"
+  ],
+  "downtime_min": 88,
+  "parts_replaced": [
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換批後第一批先量螺絲長度與牙距再上線；角度同時出現過高與過低時，先查料，不要先拆孔牙。",
+  "related_failure_mode_ids": [
+    "wrong_screw_type",
+    "cross_thread_strip"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-012",
+    "SOP-ASM-022"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

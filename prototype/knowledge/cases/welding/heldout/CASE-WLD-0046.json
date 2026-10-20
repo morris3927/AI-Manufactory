@@ -1,0 +1,138 @@
+{
+  "case_id": "CASE-WLD-0046",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3045,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "heldout",
+  "case_type": "wrong_first",
+  "line": "welding",
+  "machine_type": "spot_welder",
+  "machine_id": "WLD-L2-SP02",
+  "opened_at": "2025-10-08T22:49:00+08:00",
+  "closed_at": "2025-10-08T23:28:36+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 10,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-113"
+  },
+  "log_signals": [
+    {
+      "t": "2025-10-08T22:39:07+08:00",
+      "signal": "weld_defect",
+      "value": "undersize_nugget×2"
+    },
+    {
+      "t": "2025-10-08T22:44:08+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 44
+    },
+    {
+      "t": "2025-10-08T22:49:00+08:00",
+      "signal": "tip_dress_count",
+      "value": 26
+    },
+    {
+      "t": "2025-10-08T22:49:00+08:00",
+      "signal": "weld_count_since_dress",
+      "value": 199
+    },
+    {
+      "t": "2025-10-08T22:49:00+08:00",
+      "signal": "weld_current_ka",
+      "value": 10.0
+    }
+  ],
+  "technician": {
+    "id": "TECH-27",
+    "level": "L1"
+  },
+  "technician_report_raw": "SP02 熔核小 先查冷卻水ok 回水44 電極帽6.8mm 修磨26 換cap 試片ok",
+  "technician_report_normalized": "SP02 點銲機出現熔核變小與剝離不良，先依冷卻水不足方向檢查，量測冷卻水流量正常、回水溫度 44°C 未達 45°C 警報值，且無過熱警報，故排除冷卻水問題。續查電極帽，發現端面直徑已擴大至 6.8 mm，修磨次數 26 次超過 25 次上限，點銲電流 10.0 kA 與加壓力均在設定範圍內。更換電極帽並清潔電極座錐面後，以報廢試片進行剝離試驗，熔核直徑恢復正常，試銲 ok。",
+  "first_hypothesis": {
+    "failure_mode_id": "cooling_water_low",
+    "by": "jev",
+    "p": 0.47
+  },
+  "final_root_cause": "spot_electrode_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因回水溫度 44°C 接近 45°C 警報值，且熔核變小可能與冷卻不良有關，故先懷疑冷卻水不足；但流量正常、無過熱警報，且電極帽端面已達 6.8 mm、修磨 26 次，才確認為電極帽磨耗。",
+  "discriminating_evidence": [
+    "冷卻水流量正常且無過熱警報，回水溫度 44°C 未超過 45°C 判定值",
+    "電極帽端面直徑 6.8 mm，超過 6.5 mm 判定值",
+    "修磨次數 26 次，超過 25 次上限",
+    "點銲電流 10.0 kA 在設定範圍內，排除電流異常"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-SPOT-WELD-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查冷卻水流量與回水溫度",
+      "result": "流量正常、回水 44°C，排除"
+    },
+    {
+      "step": "檢查電極帽端面直徑與修磨次數",
+      "result": "端面 6.8 mm、修磨 26 次，確認磨耗"
+    },
+    {
+      "step": "更換電極帽並清潔電極座錐面",
+      "result": "更換完成"
+    },
+    {
+      "step": "修磨電極帽端面至 5.0～5.5 mm",
+      "result": "端面 5.2 mm"
+    },
+    {
+      "step": "以報廢試片進行剝離試驗",
+      "result": "熔核合格、試片 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-042",
+    "SOP-WLD-041"
+  ],
+  "downtime_min": 36,
+  "parts_replaced": [
+    "electrode_cap"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "熔核變小先看電極帽端面與修磨次數，冷卻水溫度接近上限不一定就是冷卻問題。",
+  "related_failure_mode_ids": [
+    "spot_electrode_wear",
+    "cooling_water_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-042",
+    "SOP-WLD-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

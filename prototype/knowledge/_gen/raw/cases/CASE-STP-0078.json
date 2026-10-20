@@ -1,0 +1,46 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1077
+ },
+ "output": {
+  "technician_report_raw": "PR01 12:04 DIE_PROTECT 先查廢料滑道+輸送帶 沒塞 12:16噸位248 前次169 DOUBLE_BLANK 模內雙料 清掉 檢查沖子/導正銷/脫料板ok 試沖恢復",
+  "technician_report_normalized": "PR01 於 12:04 先出現 DIE_PROTECT，依第一判斷檢查廢料滑道與廢料輸送帶，未發現堵塞或回堆。調閱噸位記錄，12:15:34 峰值 169 t，12:16:02 單次尖峰 248 t，同時出現 OVERLOAD 與 DOUBLE_BLANK。開模發現模內雙料／料頭重疊，清除後檢查沖頭、導正銷與脫料板無崩刃或壓傷，並清潔送料滾輪與料帶。試沖後噸位恢復正常，復機生產。",
+  "actions": [
+   {
+    "step": "檢查廢料滑道與廢料輸送帶有無堵塞或回堆",
+    "result": "排除，無堵塞且輸送帶運轉正常"
+   },
+   {
+    "step": "調閱沖床噸位歷史與警報記錄",
+    "result": "12:15:34 峰值 169 t；12:16:02 單次尖峰 248 t 且出現 DOUBLE_BLANK"
+   },
+   {
+    "step": "開模檢查模內、下模落料孔與料頭",
+    "result": "發現雙料／料頭重疊，落料孔無回堆"
+   },
+   {
+    "step": "清除模內雙料與異物，檢查沖頭、導正銷、脫料板",
+    "result": "無崩刃、壓傷或變形，清潔完成"
+   },
+   {
+    "step": "清潔送料滾輪與料帶，確認步距設定與壓輪壓力",
+    "result": "正常"
+   },
+   {
+    "step": "試沖並觀察噸位與模具保護訊號",
+    "result": "噸位恢復正常，試沖 ok，恢復生產"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因 12:04 先出現 DIE_PROTECT，依規則懷疑廢料滑道堵塞；但滑道與輸送帶無堵塞，且噸位歷史顯示前次 169 t、12:16 單次尖峰 248 t 同時出現 DOUBLE_BLANK，較符合模內雙料造成的過負荷。",
+  "discriminating_evidence": [
+   "廢料滑道與廢料輸送帶無堵塞、無回堆，輸送帶運轉正常",
+   "12:15:34 噸位峰值 169 t，12:16:02 單次尖峰 248 t，屬單一沖次異常而非整段偏移",
+   "12:16:02 同時出現 DOUBLE_BLANK 與 OVERLOAD，符合模內雙料造成的瞬時過負荷"
+  ],
+  "lessons": "DIE_PROTECT 不等於廢料堵塞；噸位歷史若只有單沖尖峰，先查雙料與模內異物。",
+  "escalation_note": null
+ }
+}

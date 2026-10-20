@@ -1,0 +1,109 @@
+{
+  "case_id": "CASE-ASM-0056",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4055,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA02",
+  "opened_at": "2026-08-08T10:54:27+08:00",
+  "closed_at": "2026-08-08T11:04:22+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "vision",
+    "event_type": "ppe_violation",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 59,
+    "recent_changes": [],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-02-1",
+    "screw_lot": "SL-2608-45"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-08T10:54:27+08:00",
+      "signal": "ppe_missing",
+      "value": "esd_strap"
+    },
+    {
+      "t": "2026-08-08T10:54:27+08:00",
+      "signal": "ppe_stock_count",
+      "value": 23
+    }
+  ],
+  "technician": {
+    "id": "TECH-47",
+    "level": "L3"
+  },
+  "technician_report_raw": "MA02 影像 PPE ESD手環沒戴 先停線 查庫存23個夠 班長補發+確認戴好 記錄Kanban 復線 ok",
+  "technician_report_normalized": "MA02 手動組裝站影像偵測到作業員未配戴靜電手環，立即停止該站作業並通知班長。現場確認該站防護具庫存尚有二十三個，尺寸與發放數量足夠；由班長補發靜電手環並確認作業員正確配戴，同時將未落實原因記錄於 Kanban。完成後恢復生產，停機約六分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "ppe_esd_missing",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "ppe_esd_missing",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "停止 MA02 作業並通知班長",
+      "result": "已停線"
+    },
+    {
+      "step": "確認該站防護具庫存、尺寸與發放數量",
+      "result": "庫存23個足夠"
+    },
+    {
+      "step": "由班長補發靜電手環並確認作業員配戴",
+      "result": "已補發"
+    },
+    {
+      "step": "將未落實項目與原因記錄於 Kanban",
+      "result": "已記錄"
+    },
+    {
+      "step": "由班長確認防護具配戴後恢復生產",
+      "result": "復線"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-051"
+  ],
+  "downtime_min": 6,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "影像抓到 ESD 手環沒戴就先停線，現場庫存足夠就補發並確認配戴，記錄原因比追究個人更務實。",
+  "related_failure_mode_ids": [
+    "ppe_esd_missing"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-ASM-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

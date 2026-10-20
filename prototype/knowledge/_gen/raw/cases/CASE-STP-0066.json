@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1065
+ },
+ "output": {
+  "technician_report_raw": "PR03 料帶上浮警報連跳3次 降30spm仍跳 料帶被帶起 脫料不順 拆上模護蓋 脫料板歪斜 彈簧縮短+斷1條 沖次72萬超過更換週期 換整組脫料彈簧 試沖30spm ok 觀察1小時沒再跳",
+  "technician_report_normalized": "PR03 於 09:30、09:57、10:04 連續三次料帶上浮停機，降速至 30 spm 仍未改善。拆上模護蓋檢查，脫料板歪斜卡滯，脫料彈簧縮短且斷一條；模具累積沖次約 72.5 萬次，已超過更換週期。量測脫料板突出量與彈簧座壓縮量偏差過大，確認彈簧疲勞造成脫料不均、料帶被帶起。更換整組脫料彈簧並清潔彈簧座後，試沖以 30 spm 觀察一小時，未再上浮，恢復生產。",
+  "actions": [
+   {
+    "step": "拆上模護蓋，目視與手感檢查脫料板及彈簧",
+    "result": "脫料板歪斜、彈簧縮短且斷裂"
+   },
+   {
+    "step": "以深度規量測脫料板突出量及各彈簧座壓縮量",
+    "result": "偏差過大，確認彈簧疲勞"
+   },
+   {
+    "step": "查閱模具履歷與累積沖次",
+    "result": "724,653 沖次，超過更換週期"
+   },
+   {
+    "step": "更換脫料板彈簧組，清潔彈簧座與導柱",
+    "result": "更換完成"
+   },
+   {
+    "step": "試沖並以 30 spm 觀察料帶脫料",
+    "result": "恢復正常，未再上浮"
+   }
+  ],
+  "parts_replaced": [
+   "stripper_spring_set"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "脫料板彈簧要照沖次週期換，不要等到料帶上浮連跳才拆模。",
+  "escalation_note": null
+ }
+}

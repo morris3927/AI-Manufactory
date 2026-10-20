@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4054
+ },
+ "output": {
+  "technician_report_raw": "ST01 ESD check FAIL 影像抓靜電手環沒戴 庫存30 班長確認補發 提醒 ok",
+  "technician_report_normalized": "ST01 於夜班發生 ESD 檢查失敗，影像同時判定防護具未落實。現場先停止該站作業並通知班長，確認是靜電手環未配戴，防護具庫存尚有 30 件且尺寸足夠。由班長補發並提醒正確配戴，將原因與處理記錄於 Kanban，確認防護具配戴後恢復生產，未更換零件。",
+  "actions": [
+   {
+    "step": "停止該站作業並保留影像紀錄",
+    "result": "已停止"
+   },
+   {
+    "step": "通知班長確認未落實項目與原因",
+    "result": "班長確認"
+   },
+   {
+    "step": "核對防護具庫存與尺寸，庫存 30 件",
+    "result": "庫存足夠"
+   },
+   {
+    "step": "由班長補發靜電手環並提醒正確配戴",
+    "result": "已補發"
+   },
+   {
+    "step": "記錄於 Kanban，由班長確認配戴後恢復作業",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "ESD 檢查 FAIL 時先確認手環庫存與尺寸，補發後再開線。",
+  "escalation_note": null
+ }
+}

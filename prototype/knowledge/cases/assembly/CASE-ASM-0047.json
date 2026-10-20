@@ -1,0 +1,130 @@
+{
+  "case_id": "CASE-ASM-0047",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4046,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "escalated",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA02",
+  "opened_at": "2026-07-21T19:27:57+08:00",
+  "closed_at": "2026-07-21T23:04:57+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 41,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-02-1",
+    "screw_lot": "SL-2607-16"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-21T19:08:46+08:00",
+      "signal": "cable_out_of_path",
+      "value": true
+    },
+    {
+      "t": "2026-07-21T19:27:57+08:00",
+      "signal": "test_result",
+      "value": "HIPOT_FAIL"
+    },
+    {
+      "t": "2026-07-21T19:27:57+08:00",
+      "signal": "insulation_mohm",
+      "value": 3.5
+    }
+  ],
+  "technician": {
+    "id": "TECH-43",
+    "level": "L2"
+  },
+  "technician_report_raw": "MA02 上蓋夾線 走線不符 壓痕 HIPOT FAIL 絕緣3.5MΩ connector扣好 ok LOTO隔離 移交測試工程師",
+  "technician_report_normalized": "MA02 於 19:08 出現 cable_out_of_path 訊號，19:27 測試站 HIPOT FAIL，絕緣電阻 3.5 MΩ。依 SOP-ASM-041 在 LOTO 下檢查上蓋與支架蓋合處，發現線材未依作業指導書走線，靠近鈑金銳邊且有壓痕，量測最小彎曲半徑不足線束外徑 3 倍。連接器卡扣已扣到位。已將可疑機殼與線束貼不良標籤、記錄並隔離，因需進一步確認絕緣失效範圍與更換後驗證，移交測試工程師處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "cable_pinch_misroute",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "cable_pinch_misroute",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP-ASM-041 在 LOTO 下目視檢查上蓋與支架蓋合處及線束路徑",
+      "result": "夾線、走線不符"
+    },
+    {
+      "step": "量測線束外徑與最小彎曲半徑，檢查護線套與束帶狀態",
+      "result": "彎曲半徑不足"
+    },
+    {
+      "step": "檢查連接器卡扣、公母端間隙與線材出線方向",
+      "result": "扣到位"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "於測試站重測裝置偵測與絕緣測試",
+      "result": "HIPOT FAIL、3.5 MΩ"
+    },
+    {
+      "step": "隔離可疑機殼與線束，記錄工單、序號、站別、時間與測試結果",
+      "result": "已隔離"
+    },
+    {
+      "step": "移交測試工程師複判絕緣失效範圍與更換後驗證",
+      "result": "待複判"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-041"
+  ],
+  "downtime_min": 212,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "測試工程師",
+  "escalation_note": "已隔離可疑機殼與線束，移交測試工程師複判絕緣失效範圍及更換後驗證。",
+  "lessons": "上蓋蓋合前先照走線圖確認線束路徑與彎曲半徑，看到壓痕就先隔離，不要直接放進測試站。",
+  "related_failure_mode_ids": [
+    "cable_pinch_misroute"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

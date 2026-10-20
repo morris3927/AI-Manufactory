@@ -1,0 +1,41 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3024
+ },
+ "output": {
+  "technician_report_raw": "RC02 撞槍後銲道偏同一邊 TCP校驗2.0mm NG 換頸管+絕緣座 重校ok 試銲ok",
+  "technician_report_normalized": "RC02 先前發生輕微撞槍後，後續生產發現銲道整批偏向同一方向，全治具皆有相同偏移。TCP 校驗偏差達 2.0 mm，電弧電壓變異 3.7% 屬穩定，判定為銲槍 TCP 偏移。檢查銲槍頸管與槍身固定座，接合面受撞擊後產生偏移；更換頸管與絕緣座，清潔接合面並依扭力鎖附。重新執行 TCP 校驗，偏差降至 0.2 mm 以內，試銲三件確認銲道位置正常，恢復生產。",
+  "actions": [
+   {
+    "step": "目視檢查銲槍本體、頸管、槍身固定座與防撞檢知座，確認有無撞擊凹痕、彎曲或錯位",
+    "result": "頸管接合面偏移"
+   },
+   {
+    "step": "以教導模式降速執行 TCP 校驗，讀取各軸偏差",
+    "result": "偏差 2.0 mm"
+   },
+   {
+    "step": "更換銲槍頸管與槍身絕緣座，清潔接合面與錐面，依 25 N·m 扭力鎖附",
+    "result": "完成更換"
+   },
+   {
+    "step": "重新執行 TCP 校驗",
+    "result": "偏差 0.2 mm 內"
+   },
+   {
+    "step": "在局部排氣運轉下、人員於圍欄外試銲三件",
+    "result": "銲道位置正常"
+   }
+  ],
+  "parts_replaced": [
+   "torch_neck",
+   "torch_mount_insulator"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "撞槍後即使只顯示輕微，也要把 TCP 校驗列入復機條件，不要只看電弧穩不穩。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,135 @@
+{
+  "case_id": "CASE-WLD-0014",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3013,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-07-10T20:06:41+08:00",
+  "closed_at": "2026-07-10T20:54:58+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "gas_low_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 16,
+    "recent_changes": [],
+    "part": "1U 機殼後框支架",
+    "fixture_id": "FX-A",
+    "program_id": "PRG-130"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-10T19:37:26+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 16.9
+    },
+    {
+      "t": "2026-07-10T20:02:14+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 11.9
+    },
+    {
+      "t": "2026-07-10T20:03:53+08:00",
+      "signal": "weld_defect",
+      "value": "porosity×9 各治具"
+    },
+    {
+      "t": "2026-07-10T20:06:41+08:00",
+      "signal": "gas_flow_lpm",
+      "value": 10.4
+    },
+    {
+      "t": "2026-07-10T20:06:41+08:00",
+      "signal": "alarm_code",
+      "value": "GAS_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-27",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 GAS_LOW 流量掉到10.4 氣孔9處各治具都有 查瓶壓正常 送絲機端軟管接頭漏氣 換管+束環鎖緊 試銲流量回16 ok",
+  "technician_report_normalized": "RC01 晚班跳 GAS_LOW 警報，保護氣流量由 16.9 降到 10.4 L/min，同時各治具共出現 9 處銲道氣孔。依 SOP-WLD-013 先查氣瓶瓶閥、匯流排壓力表與換瓶紀錄，殘壓正常；再沿保護氣管路巡檢，於送絲機端軟管接頭聽到漏氣聲，以中性漏液確認接頭與束環處冒泡。更換龜裂軟管與接頭束環並重新鎖緊。局部排氣運轉下、人員退至圍欄外試銲，流量回到 16 L/min，銲道氣孔未再出現，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "shielding_gas_low",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "shielding_gas_low",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查看 GAS_LOW 警報與流量計浮球，比對 MES 流量趨勢 16.9→11.9→10.4 L/min",
+      "result": "確認流量偏低"
+    },
+    {
+      "step": "目視氣瓶瓶閥、匯流排壓力表指針與現場換瓶紀錄，記錄殘壓",
+      "result": "供氣源正常"
+    },
+    {
+      "step": "沿保護氣管路查接頭、束環與軟管，於送絲機端接頭聽出漏氣聲，再以中性漏液確認冒泡",
+      "result": "找到漏點"
+    },
+    {
+      "step": "更換龜裂之保護氣軟管與鬆脫接頭束環，重新鎖緊",
+      "result": "排除"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "局部排氣運轉下、人員在圍欄外試銲，確認流量與銲道",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-013"
+  ],
+  "downtime_min": 45,
+  "parts_replaced": [
+    "gas_hose",
+    "gas_fitting"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "流量是慢慢掉的，比一次掉光更難抓；各治具都冒氣孔時先量流量，再沿管路一節一節聽漏氣。",
+  "related_failure_mode_ids": [
+    "shielding_gas_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-013"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

@@ -1,0 +1,161 @@
+{
+  "case_id": "CASE-STP-0054",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1053,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-08-28T02:29:35+08:00",
+  "closed_at": "2026-08-28T03:29:12+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "die_lube_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 39,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2608-294"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-28T01:50:22+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 6
+    },
+    {
+      "t": "2026-08-28T02:00:14+08:00",
+      "signal": "bearing_temp_c",
+      "value": 53
+    },
+    {
+      "t": "2026-08-28T02:14:36+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 3.4
+    },
+    {
+      "t": "2026-08-28T02:27:48+08:00",
+      "signal": "die_lube_pulse_per_min",
+      "value": 0.6
+    },
+    {
+      "t": "2026-08-28T02:29:35+08:00",
+      "signal": "alarm_code",
+      "value": "DIE_LUBE_LOW"
+    },
+    {
+      "t": "2026-08-28T02:29:35+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 29457
+    }
+  ],
+  "technician": {
+    "id": "TECH-09",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 DIE_LUBE_LOW 先查機台集中潤滑 泵壓ok 軸承53度無異音 排除 模具潤滑脈衝6→0.6 濾網塞 噴嘴乾膠 換新+清洗 試沖ok",
+  "technician_report_normalized": "夜班 02:29 PR01 出現模具潤滑低液位警報。先依警報字樣查機台集中潤滑，泵浦壓力與油位正常，軸承溫度 53 °C 未達 60 °C、滑塊無異音，排除機台端問題。改查模具潤滑油路，脈衝數由每分鐘 6 次降至 3.4 次再掉到 0.6 次；拆檢油管發現吸入濾網堵塞、噴油嘴有乾涸油膠，模仁面已出現輕微拉痕與料屑。清洗油路、更換濾網與噴嘴，接頭鎖緊至 8 N·m，補油試沖後脈衝回復每分鐘 6 次，首件無拉痕，恢復生產，停機 58 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "central_lube_fault",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "die_lubrication_insufficient",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "警報字樣含潤滑、軸承溫度又已爬到 53 °C，直覺先懷疑機台集中潤滑泵；但泵浦壓力與油位正常、軸承未達 60 °C 且無異音，真正掉的是模具側噴油脈衝（6→0.6 次/分），拆檢後在濾網與噴嘴找到堵塞。",
+  "discriminating_evidence": [
+    "機台集中潤滑泵浦壓力與油位正常，滑塊運轉無異音",
+    "軸承溫度 53 °C，未達 60 °C 門檻且未持續爬升",
+    "模具潤滑脈衝由 6 次/分連續掉到 3.4、0.6 次/分，機台端訊號無異常",
+    "拆檢油路發現吸入濾網堵塞、噴嘴乾涸油膠，模仁面有拉痕與料屑；恢復噴油後下一批即改善"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查機台集中潤滑泵浦壓力與油位",
+      "result": "壓力、油位正常，排除"
+    },
+    {
+      "step": "檢查軸承溫度與滑塊運轉異音",
+      "result": "53 °C 未達 60 °C、無異音，排除"
+    },
+    {
+      "step": "調閱模具潤滑脈衝趨勢並拆檢油路",
+      "result": "脈衝 6→0.6 次/分，濾網堵塞、噴嘴乾涸油膠"
+    },
+    {
+      "step": "清洗油路、更換吸入濾網與噴油嘴，接頭鎖緊至 8 N·m",
+      "result": "油霧恢復正常"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "補油後無料空轉，確認噴油嘴霧化與脈衝訊號",
+      "result": "脈衝回復 6 次/分"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "試沖首件並檢查成形面",
+      "result": "無拉痕、無料屑，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-057",
+    "SOP-STP-035"
+  ],
+  "downtime_min": 58,
+  "parts_replaced": [
+    "die_lube_nozzle",
+    "die_lube_filter"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "DIE_LUBE 警報先看模具潤滑脈衝曲線，軸承溫度微升不等於機台集中潤滑故障。",
+  "related_failure_mode_ids": [
+    "die_lubrication_insufficient",
+    "central_lube_fault"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-STP-057",
+    "SOP-STP-035"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

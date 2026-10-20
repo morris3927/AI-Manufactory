@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1107
+ },
+ "output": {
+  "technician_report_raw": "PR01 光幕LC_FAULT 重複跳 停機 通知課長 等電氣合格人員 診斷接收器NG 換新+校正 功能測試ok 復機",
+  "technician_report_normalized": "PR01 於夜班多次出現光幕故障警報，光幕狀態顯示 FAULT，機台無法起動。技術員先停機並通知現場主管與電氣合格人員，記錄警報時間與自我診斷訊息。經合格人員檢查，確認光幕接收器自我診斷異常，更換接收器並確認線路後執行功能測試，光幕恢復正常，試運轉無異常，恢復生產。",
+  "actions": [
+   {
+    "step": "停機並通知現場主管與電氣合格人員到場",
+    "result": "已通知"
+   },
+   {
+    "step": "記錄光幕故障警報與自我診斷發生時間",
+    "result": "完成記錄"
+   },
+   {
+    "step": "由電氣合格人員檢查光幕接收器與線路",
+    "result": "接收器自我診斷異常"
+   },
+   {
+    "step": "由合格人員更換光幕接收器並固定線路",
+    "result": "更換完成"
+   },
+   {
+    "step": "由合格人員執行光幕功能測試與試運轉",
+    "result": "測試正常，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "light_curtain_receiver"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "光幕重複跳 FAULT 時先記錄自我診斷與發生時間，別只清鏡片；檢修與更換交給合格人員，這次就是接收器異常。",
+  "escalation_note": null
+ }
+}

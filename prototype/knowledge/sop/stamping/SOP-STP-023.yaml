@@ -1,0 +1,306 @@
+# SOP-STP-023 閉模高度設定錯誤之檢查與調整
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核）
+sop_id: SOP-STP-023
+version: '0.1'
+title: 閉模高度設定錯誤之檢查與調整
+line: stamping
+machine_type:
+- servo_press
+- mechanical_power_press
+failure_mode_ids:
+- shut_height_misset
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+review_status: approved
+reviewed_by:
+- ai_sim_reviewer_press_chief
+review_note: AI 角色扮演審核（模擬資深維修課長），非真人專家審核
+review_date: '2026-10-21'
+review_doc: reviews/2026-10-21_press_chief.md
+category: quality
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-v1
+  seed: 23
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-PRESS-SERVO-01
+  loto_checklist_ids:
+  - LOTO-PRESS-SERVO-01
+  - LOTO-PRESS-MECH-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - pneumatic
+  - hydraulic
+  - gravity_slide
+  - feed_line
+  - mechanical_stored
+  - electrical_aux
+  - pneumatic_hydraulic
+  - kinetic_flywheel
+  ppe:
+  - 安全鞋
+  - 防割手套
+  - 護目鏡
+  - 耳塞（設施規則第300條）
+  - 安全帽（進入模區上方作業時）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第69條
+  - 設施規則第70條
+  - 設施規則第254條
+  - OSHA 1910.147(d)
+symptoms:
+- 換模後首件不良
+- 成形高度不足
+- 壓印過深
+- 沖壓力異常
+- 換模後首件尺寸不良，成形高度不足或壓印過深。
+- 沖壓力峰值異常高或低，但左右沖壓力看起來正常。
+- 閉模高度讀值與模具資料卡對不上，差 0.2 mm（模擬值）以上。
+- 換模後第一批就出現尺寸偏差，但沒有明顯單側毛邊。
+- 首件外觀時好時壞，重新對閉模高度後才恢復正常。
+prerequisites:
+  tools:
+  - 模具資料卡
+  - 深度規
+  - 高度規
+  - 扭力扳手
+  - 滑塊安全塊
+  - 軟質清潔工具
+  parts:
+  - 閉模高度調整機構鎖固螺栓
+  - 刻度銷
+  - 閉模高度感測器支架
+  - 閉模高度感測器
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼與近 15 分鐘訊號趨勢（之後判讀趨勢用 MES／Sentinel 已記錄的資料，不需要為了看紀錄對機台送電）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-PRESS-SERVO-01（伺服沖床） 或 LOTO-PRESS-MECH-01（機械沖床）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量；送料機依各檢查表的送料線隔離點連動上鎖（兩台都要上鎖，不是擇一）
+  caution: 上鎖時除主電源外，須先於上下模之間放入安全塊，再關閉平衡缸氣源 V1 並洩壓，避免滑塊下滑；滑塊調整時要先撤出安全塊（依測試／定位程序）。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: 手要進入上下模之間前：滑塊停在上死點（開模位置），於上下模之間放入安全塊（設施規則第69條）；滑塊停在下死點附近、無法退回時不得進入模區，保持上鎖並通知設備工程師
+  caution: 安全塊放置位置與規格依模具資料；未放安全塊不得作業。平衡缸要等安全塊放妥後才洩壓；制動器有疑慮（停止角度變大、寸動會滑行）時，放安全塊前先通知設備工程師
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-69
+  - REG-OSHA-1910.147-d-5
+- 'no': 5
+  phase: inspect
+  action: 查閱換模紀錄與模具資料卡，以停機前 MES 已記錄的 shut_height_mm 比對模具主檔設定值並記錄差值（不需對機台送電）
+  criteria: 差值 ≥ 0.2 mm（模擬值）即判定為本模式；若差值 < 0.2 mm（模擬值）且讀值相符，則改懷疑 die_misalignment 或 punch_edge_wear。
+  caution: 只讀紀錄；必須現場讀 HMI 時依測試／定位程序，只讀值、不得移動滑塊
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+- 'no': 6
+  phase: inspect
+  action: 滑塊停止並上鎖後，在調整機構外側讀取閉模高度機械指示（刻度盤或指示器），核對刻度、鎖固狀態與兩側對稱性；不需伸手進入模區
+  criteria: 機械指示與 HMI 差 > 0.2 mm（模擬值）、刻度跑位或鎖固件鬆動 → 本模式；若左右調整機構不對稱或單側間隙差 > 0.05 mm（模擬值） → 改懷疑 die_misalignment（SOP-STP-021）。
+  caution: 讀刻度時身體不得進入滑塊下方；平衡缸要等安全塊放妥後才洩壓
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+  - L13
+- 'no': 7
+  phase: inspect
+  action: 調閱 MES 已記錄的沖壓力監控歷史，檢視換模後首件前後之峰值與左右平衡值（不需送電）
+  criteria: 峰值異常高或低且左右平衡 ≤ 5%（模擬值）→ 支持本模式；若單次峰值超過過負荷設定值（250 t 機台 225 t、200 t 機台 180 t，模擬值）且前後沖次正常 → 改懷疑 overload_tonnage（SOP-STP-053）；若左右差 > 10%（模擬值）→ 改懷疑 die_misalignment（SOP-STP-021）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+- 'no': 8
+  phase: inspect
+  action: 量測首件成形高度、壓印深度與毛邊高度，並目視導正孔壓痕與製品單側狀況。
+  criteria: 成形高度不足或壓印過深，毛邊均勻且無單側導正孔壓痕 → 本模式；若單側毛邊、單側導正孔壓痕或伴隨異音 → 改懷疑 die_misalignment（SOP-STP-021）；若毛邊隨沖次漸增且沖頭距上次研磨超過 80,000 次（模擬值） → 改懷疑 punch_edge_wear（SOP-STP-033）。
+  caution: 量測停機前已生產的首件即可，不要為了取件把手伸入模區
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+  - S7
+- 'no': 9
+  phase: inspect
+  action: 在安全塊支撐下檢查模面、脫料板與廢料孔，確認有無雙料、料頭重疊、異物或跳屑。
+  criteria: 無雙料、無異物且沖壓力非單一尖峰 → 排除 overload_tonnage；若發現跳屑或廢料上跳 → 改走 SOP-STP-031（廢料上跳（跳屑））。
+  caution: 檢查模區前須確認滑塊已由安全塊支撐，不得以手直接清除尖銳廢料，應使用軟質工具。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S5
+  - S7
+- 'no': 10
+  phase: repair
+  action: 需要通電量測或移動滑塊時，依 LOTO-PRESS-SERVO-01 測試／定位程序：清除危險區內工具與人員；滑塊需要移動時先撤出安全塊；由原上鎖人取下自己的鎖，現場主管在場；只用寸動模式操作（第70條），完成後立即停機；重新上鎖、放回安全塊並驗證零能量後，才能再把手伸入上下模之間
+  caution: 通電期間手不得進入模具區或滾輪夾捲點；測試／定位只限寸動調整與讀值，不得用來試沖或連續生產
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060009-70
+- 'no': 11
+  phase: repair
+  action: 依模具資料卡重新設定閉模高度：清點工具、撤出安全塊並確認模區無人後，依測試／定位程序由原上鎖人暫時解除、主管在場，以滑塊調整裝置寸動微調至模具主檔值（設施規則第70條），完成後鎖固調整機構、重新上鎖並放回安全塊
+  caution: 滑塊調整前安全塊必須先撤出，否則滑塊會壓到安全塊；調整期間手不得伸入模區；不得以墊片任意補償高度；鎖固後須確認刻度未跑位
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - S6
+- 'no': 12
+  phase: repair
+  action: 檢查閉模高度調整機構之鎖固螺栓、刻度銷與感測器支架，若有磨耗、滑牙或鬆動則更換。
+  caution: 使用正確規格件，不得以不同長度螺栓替代；更換後須重新確認機械指示零點。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+  - L13
+- 'no': 13
+  phase: repair
+  action: 清潔模面、模墊與調整機構接觸面，去除料屑與油污，並檢查脫料板彈簧有無斷裂或疲勞。
+  caution: 清潔時使用軟質工具，避免刮傷模仁與感測器；彈簧更換須成對確認。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - S6
+  - S7
+- 'no': 14
+  phase: repair
+  action: 若閉模高度感測器讀值與機械指示仍不一致，由電氣合格人員調整或更換感測器並校正零點，零點偏差須 ≤ 0.02 mm（模擬值）。
+  caution: 校正須通電，依程序由原上鎖人暫時解除、主管在場；不得停用或遮蔽感測器。
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - S6
+- 'no': 15
+  phase: verify
+  action: 由原上鎖人暫時解除、主管在場，以寸動將滑塊寸動至下死點，比對 HMI 閉模高度與機械指示。
+  criteria: 差值 ≤ 0.05 mm（模擬值），且左右調整機構刻度一致。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S6
+- 'no': 16
+  phase: verify
+  action: 以寸動走一次空行程（無料），確認滑塊到下死點時模具閉合無干涉、無異音
+  criteria: 無干涉、無異音；沖壓力峰值與左右平衡留到下一步有料試沖時確認（無料空打讀不到沖壓力）
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S6
+- 'no': 17
+  phase: verify
+  action: 試沖與連續生產屬於恢復生產，不是測試／定位：先清點工具、撤出安全塊、恢復護圍、光幕與所有安全裝置並確認功能正常、確認人員離開危險區與滾輪夾捲點；由原上鎖人取下自己的鎖（連動上鎖的送料機／沖床一併確認）後，才由操作員以正常操作模式（單動、光幕與雙手操作有效）試沖。試沖中發現異常，須重新依 LOTO 上鎖後才能再進入模區或滾輪夾捲點
+  caution: AI 不得宣告可以復電或可以生產；是否恢復試沖由現場主管決定
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-e-1
+  - REG-OSHA-1910.147-e-2
+  - REG-N0060009-254-p2
+- 'no': 18
+  phase: verify
+  action: 以寸動方式試沖首件 3 件（模擬值），量測成形高度、壓印深度與毛邊高度。
+  criteria: 尺寸落在圖面公差 ±0.05 mm（模擬值）內，毛邊高度 ≤ 0.08 mm（模擬值），無單側毛邊或導正孔壓痕；沖壓力峰值落在模具資料設定值 ±5%（模擬值）內、左右平衡 ≤ 5%（模擬值）
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - S6
+  - S7
+- 'no': 19
+  phase: restore
+  action: 依 LOTO-PRESS-SERVO-01 解除程序（連動上鎖的送料機／沖床依各自檢查表一併解除）：清點工具、恢復護圍與光幕、取出安全塊、確認人員離開後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內異常解鎖程序由主管處理；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+- 'no': 20
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 由原上鎖人暫時解除、主管在場，以寸動將滑塊寸動至下死點，比對 HMI 閉模高度與機械指示；判定：差值 ≤ 0.05 mm（模擬值），且左右調整機構刻度一致。
+- 以寸動走一次空行程（無料），確認滑塊到下死點時模具閉合無干涉、無異音；判定：無干涉、無異音；沖壓力峰值與左右平衡留到下一步有料試沖時確認（無料空打讀不到沖壓力）
+- 試沖與連續生產屬於恢復生產，不是測試／定位：先清點工具、撤出安全塊、恢復護圍、光幕與所有安全裝置並確認功能正常、確認人員離開危險區與滾輪夾捲點；由原上鎖人取下自己的鎖（連動上鎖的送料機／沖床一併確認）後，才由操作員以正常操作模式（單動、光幕與雙手操作有效）試沖。試沖中發現異常，須重新依 LOTO 上鎖後才能再進入模區或滾輪夾捲點
+- 以寸動方式試沖首件 3 件（模擬值），量測成形高度、壓印深度與毛邊高度；判定：尺寸落在圖面公差 ±0.05 mm（模擬值）內，毛邊高度 ≤ 0.08 mm（模擬值），無單側毛邊或導正孔壓痕；沖壓力峰值落在模具資料設定值 ±5%（模擬值）內、左右平衡 ≤ 5%（模擬值）
+restore:
+- 依 LOTO-PRESS-SERVO-01 解除程序（連動上鎖的送料機／沖床依各自檢查表一併解除）：清點工具、恢復護圍與光幕、取出安全塊、確認人員離開後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內異常解鎖程序由主管處理；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 若閉模高度調整後，左右沖壓力差仍 > 10%（模擬值）或出現單側毛邊 → 改走 SOP-STP-021（模具定位偏移）。
+- 若沖壓力峰值單次超過過負荷設定值（250 t 機台 225 t、200 t 機台 180 t，模擬值）且過負荷保護動作 → 改走 SOP-STP-053（過負荷（噸位超限））。
+- 若調整機構鎖固件損壞、刻度無法定位，或感測器校正後偏差仍 > 0.05 mm（模擬值） → 通知設備工程師／原廠技師。
+lessons: 換模後不要只看首件外觀，閉模高度讀值與模具資料卡一定要逐項核對，差 0.2 mm（模擬值）就可能壓壞模具。
+references:
+- id: S6
+  title: 'The Fabricator: How can I avoid die crashes?'
+  url: https://www.thefabricator.com/thefabricator/article/bending/ask-the-stamping-expert-how-can-i-avoid-die-crashes-
+  license: ©
+  use: paraphrase
+- id: L1
+  title: 職業安全衛生設施規則
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060009
+  license: TW-law
+  use: quote
+- id: L13
+  title: 'HSE HSG236 Power presses: Maintenance and thorough examination'
+  url: https://www.hse.gov.uk/pubns/books/hsg236.htm
+  license: OGL（🔬）
+  use: reference
+- id: S5
+  title: 'The Fabricator: Die Basics 101 — Resolving slug pulling problems'
+  url: https://www.thefabricator.com/article/stamping/die-basics-101-resolving-slug-pulling-problems
+  license: ©
+  use: paraphrase
+- id: S7
+  title: MetalForming Magazine 2022-11 p.13（十大模具問題）
+  url: https://www.metalformingmagazine.com/public/Images/2022/11/digital/files/basic-html/page13.html
+  license: ©
+  use: paraphrase
+- id: public/regulations.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060009-69、REG-N0060009-70、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-5、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-1、REG-OSHA-1910.147-e-2、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote

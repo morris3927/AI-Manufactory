@@ -1,0 +1,59 @@
+# 伺服送料機（含料架與整平機）上鎖掛牌（LOTO）檢查表 —— 07_RAG知識庫資料.md §4.4
+# data_label: 模擬資料。隔離點代號、壓力與電壓門檻皆為模擬值，非任何原廠規格。
+# 本檔不切塊、不進向量庫；kb.loto_for(machine_type) 直接讀取。
+# review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核）；審核紀錄見 reviews/2026-10-21_press_chief.md
+loto_id: LOTO-FEED-01
+version: "0.2"
+title: 伺服滾輪送料機（含料架、整平機）停機、隔離與上鎖掛牌程序
+machine_type: servo_roll_feeder
+applies_to_machines: [STP-L1-FD02, STP-L2-FD04]
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+review_status: approved
+reviewed_by: [ai_sim_reviewer_press_chief]
+review_note: "AI 角色扮演審核（模擬資深維修課長），非真人專家審核"
+review_date: "2026-10-21"
+legal_basis:
+  - 設施規則第57條：停止相關機械運轉「及送料」、上鎖及設置標示防止誤送料、殘壓（彈簧、氣壓）處理 [ref:REG-N0060009-57-p1, REG-N0060009-57-v20240801]
+  - 設施規則第254條：由原掛簽人取下鎖或掛牌後才能復電 [ref:REG-N0060009-254-p1]
+  - OSHA 29 CFR 1910.147(d)(5)：蓄積能量（料捲張力、彈簧、氣壓）須釋放或約束 [ref:REG-OSHA-1910.147-d-5]
+  - OSHA 29 CFR 1910.147(e)(3)、(f)(1)：由上鎖人自行取下鎖具；測試／定位時的暫時解除順序 [ref:REG-OSHA-1910.147-e-3, REG-OSHA-1910.147-f-1]
+permit:
+  required: true
+  approver_role: 現場主管
+  hazard_plan_ref: HPP-STP-03
+  permit_form: PTW-STP（作業許可單，模擬編號）
+  notes: 送料機與沖床屬連續送料生產機組；部分單元停機有困難時，依第57條須有安全機能設計並由現場主管在場監督
+energy_sources:
+  - {id: F1, type: electrical, device: 送料機主電源 QS2, method: 切斷＋個人鎖＋「禁止送電」標籤}
+  - {id: F2, type: electrical_stored, device: 送料伺服驅動器直流母線電容, method: 斷電後等待放電（至少 5 分鐘，模擬值），由電氣合格人員確認母線電壓 < 50 V（模擬值）}
+  - {id: F3, type: pneumatic, device: 滾輪抬升／導正釋放氣缸氣源閥 V2, method: 關閉＋洩壓＋鎖；洩壓後上滾輪會落下，手不得放在滾輪之間；需要上滾輪保持抬起時，以墊塊機械支撐}
+  - {id: F4, type: mechanical_stored, device: 料捲與料帶張力（料架、料環）及料捲本身的捲曲彈力, method: 料架剎車鎖定、壓料臂保持壓住料捲；剪斷料帶前先用夾具固定料頭；剪捆帶時人員站在料捲側面，防止外圈彈開}
+  - {id: F5, type: gravity, device: 料捲（數百公斤至數噸）, method: 料捲保持在料架上並鎖定，心軸保持脹緊；不得在懸吊料捲下方作業}
+  - {id: F6, type: press_interlock, device: 下游沖床（STP-L1-PR01／STP-L2-PR03）, method: 手需進入送料機與模具入口之間時，沖床同時依 LOTO-PRESS-SERVO-01 或 LOTO-PRESS-MECH-01 上鎖}
+  - {id: F7, type: electrical, device: 料架（開捲機）與整平機電源（獨立電控箱者）, method: 個別切斷＋個人鎖＋「禁止送電」標籤；與 QS2 同一電控箱者以 F1 涵蓋}
+  - {id: F8, type: pneumatic_hydraulic, device: 料架心軸脹縮與壓料臂氣壓／油壓, method: 作業中不得收縮心軸或抬起壓料臂；必須洩壓時，先以料捲車或吊具支撐料捲}
+steps:
+  - {"no": 1, action: 通知沖床操作員與班長，送料機與沖床將停機, check: 簽名}
+  - {"no": 2, action: 確認作業許可單已核准, check: 許可單號}
+  - {"no": 3, action: 以正常程序停止沖床與送料機（先停沖床，再停送料）, check: 目視}
+  - {"no": 4, action: 依 F1～F8 逐一隔離（料架剎車與壓料臂先確認，再切電源與洩氣壓）, check: 每項勾選}
+  - {"no": 5, action: 每位作業人員在每個隔離點掛個人鎖與標籤, check: 鎖號登記}
+  - {"no": 6, action: 洩除殘能：氣壓表歸零、料架剎車鎖定、壓料臂壓住、料頭固定；伺服母線放電完成, check: 壓力讀值、母線電壓讀值}
+  - {"no": 7, action: 驗證零能量：按送料寸動鈕、料架與整平機寸動鈕、沖床起動鈕，確認都不動作後歸回 OFF, check: 兩人確認}
+release:
+  - 清點工具，確認滾輪、整平輥之間沒有遺留物
+  - 恢復護罩與夾捲點防護
+  - 確認人員離開送料線、料環區與模具入口
+  - 各人取下自己的鎖（不得代取；第254條由原掛簽人取下）
+  - 原上鎖人不在場時，不得由他人剪鎖或代取；依廠內異常解鎖程序由主管確認該員不在廠內、聯絡本人並記錄後處理（參考 OSHA 1910.147(e)(3) 例外程序）
+  - 通知沖床操作員，由原上鎖人送電；先讓送料機單獨試送量測送料長度，再試沖
+testing_positioning:
+  - 需要通電量測送料長度時：清除人員、由原上鎖人取下自己的鎖、現場主管在場
+  - 只用寸動或送料機單獨試送（料帶不進模），手不得進入滾輪夾捲點；量劃線長度時送料機須停止
+  - 量測完成後重新上鎖並驗證零能量
+ai_constraints:
+  - AI 不得宣告「已完成上鎖」或「可以復電」，只能提示下一步並要求人員在 Kanban 勾選
+  - 任何步驟涉及 F1～F8 → J4 needs_loto 必須為 true
+  - 送料機與沖床的連動上鎖不可省略；AI 不得建議只停送料機就把手伸入模具入口

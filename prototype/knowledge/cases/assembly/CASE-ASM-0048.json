@@ -1,0 +1,150 @@
+{
+  "case_id": "CASE-ASM-0048",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4047,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA02",
+  "opened_at": "2026-01-18T22:20:51+08:00",
+  "closed_at": "2026-01-18T23:05:30+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 37,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-02-1",
+    "screw_lot": "SL-2601-49"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-18T22:16:55+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-01-18T22:20:51+08:00",
+      "signal": "test_result",
+      "value": "HIPOT_FAIL"
+    },
+    {
+      "t": "2026-01-18T22:20:51+08:00",
+      "signal": "insulation_mohm",
+      "value": 2.3
+    },
+    {
+      "t": "2026-01-18T22:20:51+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-01-18T22:20:51+08:00",
+      "signal": "insulation_mohm",
+      "value": 596
+    }
+  ],
+  "technician": {
+    "id": "TECH-44",
+    "level": "L2"
+  },
+  "technician_report_raw": "MA02 DEV_NOT_FOUND HIPOT 2.3M 查connector重插仍NG 拆蓋見線壓破皮 換線束護套束帶 測596M ok",
+  "technician_report_normalized": "MA02 功能測試出現 DEVICE_NOT_FOUND，絕緣測試 HIPOT FAIL、絕緣電阻僅 2.3 MΩ。先檢查連接器，發現卡扣未扣妥，重新插妥後裝置偵測仍偶發 NG。依 LOTO-ASM-TOOL-01 斷電掛牌拆上蓋，發現線束在上蓋蓋合處被夾住、外皮壓破，走線偏離作業指導書且彎曲半徑不足；已更換線束、加護線套並調整束帶，連接器重新扣妥。可疑機殼貼不良標籤隔離並追溯，完成首件確認；重測裝置偵測正常，絕緣 596 MΩ，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "connector_not_seated",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "cable_pinch_misroute",
+  "contributing_causes": [
+    "connector_not_seated"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因 DEVICE_NOT_FOUND 重複出現且接頭卡扣有間隙，先懷疑連接器未插到位；但重插後絕緣仍僅 2.3 MΩ，且上蓋蓋合處線束有壓痕破皮，才確認主因是夾線走線錯誤。",
+  "discriminating_evidence": [
+    "絕緣電阻 2.3 MΩ 在接頭重插後仍未恢復",
+    "上蓋與支架蓋合處可見線束被夾、外皮壓破",
+    "走線路徑與作業指導書不符，彎曲半徑小於線束外徑 3 倍",
+    "更換線束、加護線套並重新走線後，絕緣測試回到 596 MΩ"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "檢查連接器卡扣與公母端間隙，重新插妥",
+      "result": "裝置偵測仍偶發NG"
+    },
+    {
+      "step": "拆上蓋檢查線束路徑、蓋合處與鈑金銳邊",
+      "result": "發現線束被夾、外皮壓破"
+    },
+    {
+      "step": "比對走線作業指導書並量測最小彎曲半徑",
+      "result": "路徑不符、半徑不足"
+    },
+    {
+      "step": "更換線束、加裝護線套並調整束帶位置",
+      "result": "完成"
+    },
+    {
+      "step": "隔離可疑機殼與線束，記錄序號並做首件確認",
+      "result": "完成"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "重測裝置偵測與絕緣電阻",
+      "result": "596 MΩ pass"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-042",
+    "SOP-ASM-041"
+  ],
+  "downtime_min": 43,
+  "parts_replaced": [
+    "cable_harness",
+    "edge_grommet",
+    "cable_tie"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "蓋合前先目視線束是否避開鈑金銳邊並確認彎曲半徑，比事後重測更快抓到夾線。",
+  "related_failure_mode_ids": [
+    "cable_pinch_misroute",
+    "connector_not_seated"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-042",
+    "SOP-ASM-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

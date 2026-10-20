@@ -1,0 +1,159 @@
+# SOP-STP-071 光幕異常或停用中作業之停機與通報
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核（模擬資深維修課長），非真人專家審核）
+sop_id: SOP-STP-071
+version: '0.1'
+title: 光幕異常或停用中作業之停機與通報
+line: stamping
+machine_type:
+- servo_press
+- mechanical_power_press
+failure_mode_ids:
+- light_curtain_fault
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+review_status: approved
+reviewed_by:
+- ai_sim_reviewer_press_chief
+review_note: AI 角色扮演審核（模擬資深維修課長），非真人專家審核
+review_date: '2026-10-21'
+review_doc: reviews/2026-10-21_press_chief.md
+category: safety
+safety_only: true
+generator:
+  model: null
+  prompt_ver: safety-template-v1
+  seed: null
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-PRESS-SERVO-01
+  loto_checklist_ids:
+  - LOTO-PRESS-SERVO-01
+  - LOTO-PRESS-MECH-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - pneumatic
+  - hydraulic
+  - gravity_slide
+  - feed_line
+  - mechanical_stored
+  - electrical_aux
+  - pneumatic_hydraulic
+  - kinetic_flywheel
+  ppe:
+  - 安全鞋
+  - 防割手套
+  - 護目鏡
+  - 耳塞（設施規則第300條）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第69條
+  - 設施規則第254條
+  - OSHA 1910.147(d)
+  - 機械設備器具安全標準第11條之1、第12條
+  - 職業安全衛生法第18條
+symptoms:
+- 無法起動
+- 頻繁誤遮斷
+- 光幕停用中有人在危險區
+- 光幕自我診斷錯誤無法起動
+- 頻繁誤遮斷停機
+prerequisites:
+  tools:
+  - Kanban 工單
+  - 「安全裝置異常・禁止使用」標籤
+  - 個人鎖與標籤
+  parts: []
+  skill_level: 現場主管／合格人員
+steps:
+- 'no': 1
+  phase: prepare
+  action: 機台保持停止；不得嘗試重置、遮蔽、移動或調整光幕，也不得改用其他操作模式繼續生產
+  caution: 光幕屬法定安全裝置（機械設備器具安全標準第11條之1、第12條），AI 不提供任何排除方法
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060034-11-1
+  - REG-N0060034-12-p1
+- 'no': 2
+  phase: prepare
+  action: 若影像偵測到有人在光幕停用狀態下位於危險區：立即請人員退出危險區至安全位置（職安法第18條），並通知現場主管
+  caution: 以人員安全為優先，先退避再處理機台
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060001-18
+- 'no': 3
+  phase: isolate
+  action: 由現場主管指派人員依 LOTO-PRESS-SERVO-01（伺服沖床） 或 LOTO-PRESS-MECH-01（機械沖床）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量；送料機依各檢查表的送料線隔離點連動上鎖（兩台都要上鎖，不是擇一），並在操作盤掛「安全裝置異常・禁止使用」標籤
+  caution: 合格人員需在上下模之間作業時，須先放入安全塊（設施規則第69條）
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-69
+  - REG-OSHA-1910.147-d-4
+- 'no': 4
+  phase: inspect
+  action: 交由現場主管與合格人員（電氣合格人員或原廠技師）確認光幕狀態、自我診斷結果與停用原因；一般技術員與 AI 只負責記錄時間、畫面與狀態，不做排除
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060034-4
+  - REG-N0060034-6
+- 'no': 5
+  phase: verify
+  action: 合格人員完成檢修後，以測試棒遮光確認滑塊會停止，並留下紀錄；若屬人為停用，由主管了解原因並記錄（究責不究罰），確認後在 Kanban 簽核
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060034-12-p1
+  - REG-N0060027-59
+- 'no': 6
+  phase: restore
+  action: 依 LOTO-PRESS-SERVO-01 解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+verify:
+- 合格人員完成檢修後，以測試棒遮光確認滑塊會停止，並留下紀錄；若屬人為停用，由主管了解原因並記錄（究責不究罰），確認後在 Kanban 簽核
+restore:
+- 依 LOTO-PRESS-SERVO-01 解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+escalate_if:
+- 光幕停用狀態下偵測到人員在危險區 → 依 S3 處理，主管到場並保全影像紀錄
+- 有人員受傷 → 急救優先、保全現場，協助主管於 8 小時內通報（職安法第37條）
+- 同一光幕一週內重複異常 → 通知設備工程師／原廠技師安排檢查
+lessons: 安全裝置異常只做停機、通知、上鎖與記錄，排除交給合格人員。
+references:
+- id: L4
+  title: 機械設備器具安全標準
+  url: https://law.moj.gov.tw/LawClass/LawAll.aspx?pcode=N0060034
+  license: TW-law
+  use: quote
+- id: L5
+  title: 職安署南區中心《衝剪機械危害預防》單張
+  url: https://esh.ncut.edu.tw/var/file/7/1007/img/720104393.pdf
+  license: TW-OGDL（🔬 轉載檔）
+  use: reference
+- id: S1
+  title: 'OSHA Machine Guarding eTool: Mechanical Power Presses'
+  url: https://www.osha.gov/etools/machine-guarding/presses/mechanical-power
+  license: PD
+  use: reference
+- id: L12
+  title: HSE INDG316 Procedures for daily inspection and testing of mechanical power presses and press brakes
+  url: https://www.hse.gov.uk/pubns/indg316.pdf
+  license: OGL（文件內載：© Crown copyright, may be freely reproduced, except for advertising, endorsement or commercial purposes）
+  use: quote
+- id: public/regulations.jsonl
+  title: 法規條文 chunk：REG-N0060001-18、REG-N0060009-254-p2、REG-N0060009-57-p1、REG-N0060009-69、REG-N0060027-59、REG-N0060034-11-1、REG-N0060034-12-p1、REG-N0060034-4、REG-N0060034-6、REG-OSHA-1910.147-d-4、REG-OSHA-1910.147-e-3
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote

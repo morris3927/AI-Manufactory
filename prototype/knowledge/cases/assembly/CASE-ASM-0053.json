@@ -1,0 +1,121 @@
+{
+  "case_id": "CASE-ASM-0053",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4052,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA01",
+  "opened_at": "2026-06-17T06:30:41+08:00",
+  "closed_at": "2026-06-17T06:37:55+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 53,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-1",
+    "screw_lot": "SL-2606-59"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-17T06:30:41+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-06-17T06:35:00+08:00",
+      "signal": "test_result",
+      "value": "PASS"
+    }
+  ],
+  "technician": {
+    "id": "TECH-45",
+    "level": "L2"
+  },
+  "technician_report_raw": "MA01 測 DEVICE_NOT_FOUND 先查connector 卡扣有扣 無間隙 治具線鬆 重插 重測PASS 機殼OK",
+  "technician_report_normalized": "夜班接獲 MES 通知，ASM-L1-MA01 功能測試出現 DEVICE_NOT_FOUND。先依連接器未插到位方向檢查機殼內線材與接頭，卡扣已扣、公母端無可見間隙，端子無歪斜。再查測試站治具，發現治具線鬆脫，重新插緊後以同一機殼重測，結果 PASS，未發現機殼組立不良，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "connector_not_seated",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到 DEVICE_NOT_FOUND 就懷疑機殼內連接器未插到位，但目視卡扣已扣且公母端無間隙；後來確認機殼連接器正常，異常來源是測試站治具線鬆脫，重插後即 PASS。",
+  "discriminating_evidence": [
+    "MES 首筆訊號為 DEVICE_NOT_FOUND，但 06:35 同一機殼重測即 PASS。",
+    "機殼內連接器卡扣已扣、公母端無可見間隙，不符合 connector_not_seated 的可見間隙特徵。",
+    "重插測試站治具線後測試恢復正常，顯示訊號異常來自治具線鬆脫。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查機殼內連接器卡扣與公母端間隙",
+      "result": "排除"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "檢查測試站治具線與接頭",
+      "result": "發現鬆脫"
+    },
+    {
+      "step": "重新插緊治具線後以同一機殼重測",
+      "result": "PASS"
+    },
+    {
+      "step": "恢復量產前確認：清點工具與螺絲、恢復送釘機護蓋，由原上鎖人取下自己的插頭鎖蓋並插回電源，首件由班長確認",
+      "result": "ok"
+    },
+    {
+      "step": "確認無機殼組立不良並恢復生產",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-042"
+  ],
+  "downtime_min": 5,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "DEVICE_NOT_FOUND 先分機殼端或治具端，治具線鬆脫也會像接頭沒插好。",
+  "related_failure_mode_ids": [
+    "connector_not_seated"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

@@ -1,0 +1,287 @@
+# SOP-WLD-012 導電嘴磨耗／回燒之檢查與更換
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-WLD-012
+version: '0.1'
+title: 導電嘴磨耗／回燒之檢查與更換
+line: welding
+machine_type:
+- robot_mig_cell
+failure_mode_ids:
+- contact_tip_wear
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: equipment
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 112
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-WELD-ROBOT-01
+  loto_checklist_ids:
+  - LOTO-WELD-ROBOT-01
+  energy_sources:
+  - electrical
+  - electrical_stored
+  - gravity
+  - pneumatic
+  - mechanical_stored
+  - shielding_gas
+  - coolant
+  - thermal
+  ppe:
+  - 安全鞋
+  - 防護手套（耐熱）
+  - 護目鏡（遮光）
+  - 防塵口罩（銲接燻煙）
+  - 銲接面罩或遮光面罩（試銲觀察時，設施規則第284條）
+  - 耐熱袖套
+  - 防飛濺圍裙
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - 工業用機器人危害預防標準第26、33條
+  - 工業用機器人危害預防標準第27條（教導作業）
+  - OSHA 1910.147(d)
+  - 設施規則第292條（試銲時局部排氣須運轉）
+symptoms:
+- 起弧不良
+- 飛濺變多
+- 銲絲黏在導電嘴
+- 導電嘴孔變大
+- 起弧要重試好幾次
+- 起弧不良，起弧要重試好幾次。
+- 飛濺變多，銲道外觀變差。
+- 銲絲黏在導電嘴端部，甚至出現回燒。
+- 導電嘴孔變大或磨成橢圓。
+- 每百次起弧的重試次數在數班內逐步增加。
+prerequisites:
+  tools:
+  - 導電嘴專用扳手
+  - 扭力起子
+  - 游標卡尺或孔徑規
+  - 放大鏡或工作燈
+  - 銅刷與清潔布
+  parts:
+  - 導電嘴
+  - 導電嘴座
+  - 噴嘴
+  skill_level: 維修技術員 L2
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼、近 15 分鐘訊號趨勢與不良銲道位置（治具、工位）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 3
+  phase: isolate
+  action: 依 LOTO-WELD-ROBOT-01（機器人銲接工作站）執行停機、隔離、上鎖掛牌、洩除殘能並驗證零能量
+  caution: 本模式拆卸導電嘴前，須確認銲槍與導電嘴已冷卻、送絲張力已釋放，避免高溫端部或回彈銲絲造成燙傷與刺傷。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-N0060009-57-v20240801
+  - REG-OSHA-1910.147-d-6
+- 'no': 4
+  phase: isolate
+  action: 進入機器人圍欄前，在啟動開關處掛「禁止觸動」標示並攜帶自己的安全栓（模式鑰匙），圍欄外安排監視人員；銲槍、導電嘴與工件可能仍高溫，等待冷卻或戴耐熱手套（工業用機器人危害預防標準第26、33條）
+  caution: 機器人停在維修姿勢，不得手動鬆開各軸煞車
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060025-33
+  - REG-N0060025-26
+- 'no': 5
+  phase: inspect
+  action: 在電源隔離狀態下，目視檢查導電嘴端部與孔口，並用孔徑規量測孔口；確認有無橢圓、孔徑擴大、銲絲熔黏或回燒變色。
+  criteria: 孔口呈橢圓、孔徑超過 1.2 mm（模擬值），或端部有銲絲熔黏／回燒痕跡，判定為本模式；若孔口圓整、孔徑未超過 1.0 mm（模擬值）且無熔黏，先排除本模式，再查其他項目。
+  caution: 導電嘴與銲槍可能仍有餘熱，觸碰前確認已冷卻或戴耐熱手套。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 6
+  phase: inspect
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-WELD-ROBOT-01 測試／定位程序：清除圍欄內工具；需留在可動範圍內的人員只限持教導器者；由原上鎖人取下自己的鎖，現場主管在場，並在圍欄外安排監視人員（第26條）；只用教導模式降速操作，持教導器者握住致能開關，放手即停（第5、9條）；試銲時人員退到圍欄外並確認局部排氣運轉；完成後立即停機，重新上鎖並驗證零能量，才能再次進入圍欄
+  caution: 通電期間手不得進入機器人可動範圍或電極之間；試銲前確認局部排氣運轉、人員退到圍欄或遮光簾外（設施規則第292條）
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-N0060025-26
+  - REG-N0060009-292
+- 'no': 7
+  phase: inspect
+  action: 讀取教導器或維護紀錄中的每百次起弧重試次數、導電嘴累積起弧時間、送絲速度與送絲馬達電流歷史，以及警報歷史。
+  criteria: 每百次起弧重試次數由 1～2 次（模擬值）逐步升至超過 8 次（模擬值），或導電嘴累積起弧時間超過 300 分鐘（模擬值），支持本模式；若重試次數增加但累積起弧時間未達 300 分鐘（模擬值），仍列為疑似早期磨耗；若同時出現送絲實際速度比設定值低 10% 以上（模擬值）或送絲馬達電流超過 4.5 A（模擬值），改懷疑送絲不順／鳥巢（wire_feed_birdnest）。
+  caution: 讀取紀錄時不得移動機器人；若需查看教導器畫面，僅按顯示鍵，不可切換至動作模式。
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W6
+- 'no': 8
+  phase: inspect
+  action: 打開送絲機護蓋，目視檢查送絲輪、送絲導管入口與導電嘴之間有無銲絲纏繞成團、鐵屑卡阻或送絲輪溝槽磨損。
+  criteria: 無鳥巢、無鐵屑卡阻、送絲輪溝槽無明顯磨平，支持本模式；若看見銲絲在送絲輪與導管入口之間纏繞成團、或送絲導管內有鐵屑卡阻，改走 SOP-WLD-011（送絲不順／鳥巢）。
+  caution: 打開送絲機前確認銲絲張力已釋放，避免銲絲回彈傷人。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W5
+- 'no': 9
+  phase: inspect
+  action: 檢查噴嘴內壁、保護氣出口與清槍站紀錄，確認有無銲渣堆積遮住氣孔，並核對距上次清槍時間與清槍站狀態。
+  criteria: 噴嘴內壁無銲渣遮住保護氣出口，距上次清槍未超過 45 分鐘（模擬值），清槍站無報錯，支持本模式；若噴嘴內壁有銲渣堆積、距上次清槍超過 45 分鐘（模擬值）或清槍站報錯，改懷疑噴嘴積渣（nozzle_spatter_buildup），改走 SOP-WLD-014（噴嘴積渣）。
+  caution: 清槍站與噴嘴可能殘留銲渣，清理時戴護目鏡與耐熱手套。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 10
+  phase: inspect
+  action: 目視與手動檢查治具接地夾、回路電纜接頭與變位機兩側導電路徑，確認有無銲渣、鬆脫、氧化或發熱變色。
+  criteria: 接地夾與回路電纜接頭清潔、鎖固、無銲渣、無氧化或發熱變色，支持本模式；若接頭有銲渣、鬆脫、發熱變色，或先前紀錄顯示只有某一工位電弧電壓變異超過 10%（模擬值），改懷疑接地不良（ground_poor），改走 SOP-WLD-015（接地不良）。
+  caution: 檢查回路電纜接頭時不可拉扯電纜，避免接頭鬆脫或絕緣損傷。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 11
+  phase: repair
+  action: 需要移動機器人（修正教導點、校正 TCP、移到換件姿勢）時，一律在教導模式降速操作，持教導器者握住致能開關、放手即停，圍欄外有監視人員；不得修改機器人的安全相關參數（工業用機器人危害預防標準第26、27條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: true
+  ref:
+  - REG-N0060025-27
+  - REG-N0060025-26
+- 'no': 12
+  phase: repair
+  action: 更換導電嘴：以導電嘴專用扳手拆下舊導電嘴，清潔導電嘴座螺紋與端面之飛濺與熔黏物；裝入新導電嘴，先手旋到底，再以扭力起子鎖緊至 2.5 N·m（模擬值）。
+  caution: 不可用尖嘴鉗硬夾導電嘴，避免孔口變形；鎖緊時不可過度扭轉銲槍頸部。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 13
+  phase: repair
+  action: 檢查並清潔導電嘴座、噴嘴與送絲導管出口；若導電嘴座螺紋損傷、孔口偏磨或絕緣有回燒變色，更換導電嘴座。
+  caution: 清潔時避免銅刷屑掉入送絲導管；不可用鑽頭或擴孔工具修改導電嘴孔徑。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 14
+  phase: repair
+  action: 剪除銲絲回燒、熔黏或彎曲段，確認銲絲端部平齊、無毛邊，銲絲伸出導電嘴長度為 10～15 mm（模擬值），並檢查送絲輪壓力與導管出口對心。
+  caution: 剪斷銲絲時戴耐熱手套與護目鏡，防止銲絲彈跳；不可用手直接拉扯銲絲。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W5
+- 'no': 15
+  phase: repair
+  action: 若銲槍頸部或導電嘴座有回燒變色、絕緣損傷或 TCP 明顯偏移，更換受損件並記錄，後續 TCP 確認依 SOP-WLD-021 辦理。
+  caution: 不可自行調整機器人安全相關參數或手動鬆開各軸煞車；TCP 確認由機器人工程師執行。
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 16
+  phase: verify
+  action: 在局部排氣運轉正常、人員退到圍欄或遮光簾外之條件下進行試銲；若需移動機器人，僅在教導模式降速並握住致能開關。連續試銲 10 次（模擬值）起弧，觀察起弧、飛濺與銲道外觀。
+  criteria: 10 次（模擬值）起弧全部一次成功，重試次數 0 次（模擬值），無 ARC_START_FAIL 或 WIRE_STICK；飛濺量比更換前明顯減少，銲道無氣孔、燒穿、未熔合。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - L21
+  - W6
+- 'no': 17
+  phase: verify
+  action: 試銲後待銲槍冷卻，目視與量測新導電嘴孔口，確認無回燒、無銲絲熔黏，孔徑在 1.0～1.1 mm（模擬值）且孔口圓整。
+  criteria: 孔口圓整、孔徑在 1.0～1.1 mm（模擬值），端部無銲絲熔黏或回燒變色，判定更換有效；若孔口再次橢圓或孔徑超過 1.2 mm（模擬值），重新檢查導電嘴座與送絲對心。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - W6
+- 'no': 18
+  phase: verify
+  action: 讀取更換後之每百次起弧重試次數與導電嘴累積起弧時間，並完成首件確認紀錄。
+  criteria: 每百次起弧重試次數維持在 2 次以下（模擬值），導電嘴累積起弧時間重新計時且未異常跳增；首件確認合格。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - W6
+- 'no': 19
+  phase: restore
+  action: 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+  - REG-N0060025-32
+- 'no': 20
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 在局部排氣運轉正常、人員退到圍欄或遮光簾外之條件下進行試銲；若需移動機器人，僅在教導模式降速並握住致能開關。連續試銲 10 次（模擬值）起弧，觀察起弧、飛濺與銲道外觀；判定：10 次（模擬值）起弧全部一次成功，重試次數 0 次（模擬值），無 ARC_START_FAIL 或 WIRE_STICK；飛濺量比更換前明顯減少，銲道無氣孔、燒穿、未熔合。
+- 試銲後待銲槍冷卻，目視與量測新導電嘴孔口，確認無回燒、無銲絲熔黏，孔徑在 1.0～1.1 mm（模擬值）且孔口圓整；判定：孔口圓整、孔徑在 1.0～1.1 mm（模擬值），端部無銲絲熔黏或回燒變色，判定更換有效；若孔口再次橢圓或孔徑超過 1.2 mm（模擬值），重新檢查導電嘴座與送絲對心。
+- 讀取更換後之每百次起弧重試次數與導電嘴累積起弧時間，並完成首件確認紀錄；判定：每百次起弧重試次數維持在 2 次以下（模擬值），導電嘴累積起弧時間重新計時且未異常跳增；首件確認合格。
+restore:
+- 依 LOTO-WELD-ROBOT-01 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 更換導電嘴後，每百次起弧重試次數仍超過 8 次（模擬值）或 ARC_START_FAIL 持續發生 → 依序改查 SOP-WLD-011（送絲不順）與 SOP-WLD-015（接地不良），並通知設備工程師檢查銲接電源起弧參數
+- 送絲實際速度比設定值低 10% 以上（模擬值）或送絲馬達電流超過 4.5 A（模擬值），且送絲機內有銲絲纏繞成團 → 改走 SOP-WLD-011（送絲不順／鳥巢）
+- 銲槍頸管或導電嘴座有回燒變色、撞擊變形，或銲道位置整批偏移 → 改走 SOP-WLD-021（銲槍 TCP 偏移），由機器人工程師確認 TCP
+lessons: 導電嘴是消耗件，不要等到 ARC_START_FAIL 才換；看到孔口橢圓、孔徑變大或銲絲回燒就應更換，並順手確認送絲路徑、噴嘴與接地，避免把單一磨耗誤判成送絲或接地問題。
+references:
+- id: W6
+  title: 'Miller: Tips for Troubleshooting Common MIG Weld Defects'
+  url: https://www.millerwelds.com/resources/article-library/troubleshooting-weld-defects
+  license: ©
+  use: paraphrase
+- id: W5
+  title: NAVEDTRA 14250 Steelworker Volume 1 (Gas Shielded-Arc Welding)
+  url: https://everyspec.com/USN/NAVEDTRA/NAVEDTRA_14250_VOLUME-1_NOV1996_18385/
+  license: PD（🔬 發行聲明未確認）
+  use: reference
+- id: L21
+  title: OSHA 29 CFR 1910.252 / 1910.254 / 1910.255 Welding, cutting and brazing（General requirements; Arc welding; Resistance welding）
+  url: https://www.ecfr.gov/current/title-29/subtitle-B/chapter-XVII/part-1910/subpart-Q
+  license: PD
+  use: quote
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-292、REG-N0060009-57-p1、REG-N0060009-57-v20240801、REG-N0060025-26、REG-N0060025-27、REG-N0060025-32、REG-N0060025-33、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-d-6、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

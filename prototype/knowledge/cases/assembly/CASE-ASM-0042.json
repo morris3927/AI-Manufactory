@@ -1,0 +1,125 @@
+{
+  "case_id": "CASE-ASM-0042",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4041,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-01-17T21:56:12+08:00",
+  "closed_at": "2026-01-17T22:11:42+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "vision",
+    "event_type": "calibration_overdue",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 34,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2601-46"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-17T21:56:12+08:00",
+      "signal": "torque_audit_dev_pct",
+      "value": 11.2
+    },
+    {
+      "t": "2026-01-17T22:06:37+08:00",
+      "signal": "torque_audit_dev_pct",
+      "value": 2.1
+    }
+  ],
+  "technician": {
+    "id": "TECH-44",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 視覺校正逾期 S1 查起子校正標籤ok 抽測2.1%正常 料盤短暫空料誤觸 補料完 ok",
+  "technician_report_normalized": "接獲 ASM-L1-ST01 視覺校正逾期告警後，先核對起子控制器與扭力分析儀的校正標籤及到期日，確認仍在有效期內；再以試片抽測，扭力偏差約 2.1%，符合設定值，鎖附結果與計數皆正常。檢視告警時序發現，補料時料盤短暫空料造成訊號誤觸，補料後即恢復供料。本案為誤報，無故障、未更換零件，已恢復生產並持續觀察。",
+  "first_hypothesis": {
+    "failure_mode_id": "tool_calibration_due",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因視覺告警標示校正逾期，且抽測偏差曾達 11.2%，因此懷疑工具校正到期；但核對校正標籤仍在有效期內，重測偏差降至 2.1%，且告警時序對應補料空料，並非工具漂移。",
+  "discriminating_evidence": [
+    "起子控制器與扭力分析儀校正標籤仍在有效期內，未見校正逾期狀態。",
+    "同一工具重測 torque_audit_dev_pct 由 11.2% 降至 2.1%，在 ±10% 內。",
+    "告警時序對應補料時料盤短暫空料，補料後即恢復正常。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "核對起子控制器與扭力分析儀校正標籤及到期日",
+      "result": "排除"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以試片抽測扭力並比對鎖附紀錄",
+      "result": "正常"
+    },
+    {
+      "step": "檢視告警時序與補料紀錄",
+      "result": "料盤短暫空料"
+    },
+    {
+      "step": "補料並確認料盤供料狀態",
+      "result": "恢復"
+    },
+    {
+      "step": "恢復量產前確認：清點工具與螺絲、恢復送釘機護蓋，由原上鎖人取下自己的插頭鎖蓋並插回電源，首件由班長確認",
+      "result": "ok"
+    },
+    {
+      "step": "通知產線恢復生產並持續觀察",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-031"
+  ],
+  "downtime_min": 12,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "遇到校正逾期告警時，先核對校正標籤與重測扭力，再查告警時序，可避免把補料空料誤判成工具漂移。",
+  "related_failure_mode_ids": [
+    "tool_calibration_due"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

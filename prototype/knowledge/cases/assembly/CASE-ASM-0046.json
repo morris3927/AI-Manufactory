@@ -1,0 +1,137 @@
+{
+  "case_id": "CASE-ASM-0046",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4045,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA02",
+  "opened_at": "2026-09-07T23:14:10+08:00",
+  "closed_at": "2026-09-08T00:31:12+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 89,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-02-1",
+    "screw_lot": "SL-2609-69"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-07T23:04:29+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-09-07T23:08:49+08:00",
+      "signal": "test_result",
+      "value": "LINK_INTERMITTENT"
+    },
+    {
+      "t": "2026-09-07T23:14:10+08:00",
+      "signal": "test_result",
+      "value": "LINK_INTERMITTENT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-44",
+    "level": "L2"
+  },
+  "technician_report_raw": "MA02 測DEVICE_NOT_FOUND後時有時無 先查conn卡扣重插沒改善 拆蓋LOTO後見上蓋夾線 走線偏 彎曲半徑不足 重走線加護線套換束帶 複測3次ok",
+  "technician_report_normalized": "MA02 功能測試先出現 DEVICE_NOT_FOUND，後兩次為 LINK_INTERMITTENT。先依第一判斷檢查連接器卡扣與公母端間隙，重插後複測仍未改善，排除連接器未插到位。依 LOTO-ASM-TOOL-01 斷電掛牌拆上蓋，發現線束在上蓋蓋合處被夾住，走線偏離作業指導書，且彎曲半徑小於線束外徑三倍、銳邊缺少護線。已隔離標記可疑機殼與線束，依 SOP-ASM-041 重走線、加護線套並調整束帶，復電後測試三次均通過。",
+  "first_hypothesis": {
+    "failure_mode_id": "connector_not_seated",
+    "by": "jev",
+    "p": 0.5
+  },
+  "final_root_cause": "cable_pinch_misroute",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因測試先出現 DEVICE_NOT_FOUND、後續又時有時無，直覺懷疑連接器未插到位；但重插後卡扣已扣上、公母端無可見間隙仍複測失敗，拆蓋才確認是上蓋夾線與走線偏離造成。",
+  "discriminating_evidence": [
+    "重插連接器後卡扣已扣上、公母端無可見間隙，複測仍出現 LINK_INTERMITTENT／DEVICE_NOT_FOUND",
+    "拆上蓋目視線束在上蓋蓋合處被夾住，走線路徑與作業指導書不符",
+    "量測最小彎曲半徑小於線束外徑3倍，鈑金銳邊處缺少護線套",
+    "依 SOP-ASM-041 重走線並加護線套後，裝置偵測與絕緣測試恢復正常"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查 MA02 連接器卡扣與公母端間隙，重插後複測",
+      "result": "未改善"
+    },
+    {
+      "step": "依 LOTO-ASM-TOOL-01 斷電掛牌後拆上蓋，檢查線束路徑與蓋合處",
+      "result": "發現夾線"
+    },
+    {
+      "step": "量測線束外徑與最小彎曲半徑，比對走線作業指導書",
+      "result": "彎曲半徑不足"
+    },
+    {
+      "step": "隔離可疑機殼與線束，貼不良標籤並記錄序號、站別、時間",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP-ASM-041 重走線、避開鈑金銳邊、加裝護線套並調整束帶",
+      "result": "ok"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "復電後於測試站執行裝置偵測與絕緣測試三次並做首件確認",
+      "result": "pass"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-042",
+    "SOP-ASM-041"
+  ],
+  "downtime_min": 74,
+  "parts_replaced": [
+    "edge_grommet",
+    "cable_tie"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "測試先抓不到、後來時有時無時，別只重插連接器，拆蓋看線束有沒有被上蓋夾到。",
+  "related_failure_mode_ids": [
+    "cable_pinch_misroute",
+    "connector_not_seated"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-042",
+    "SOP-ASM-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

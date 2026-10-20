@@ -1,0 +1,137 @@
+{
+  "case_id": "CASE-STP-0095",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1094,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "escalated",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2026-06-16T20:42:37+08:00",
+  "closed_at": "2026-06-17T06:35:04+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "feeder_drive_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 51,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.6,
+      "coil_id": "C-2606-282"
+    },
+    "die_id": "D-RAIL-11",
+    "part": "滑軌內軌"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-16T20:38:23+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.01
+    },
+    {
+      "t": "2026-06-16T20:40:11+08:00",
+      "signal": "motor_temp_c",
+      "value": 80
+    },
+    {
+      "t": "2026-06-16T20:42:37+08:00",
+      "signal": "motor_current_a",
+      "value": 12.7
+    },
+    {
+      "t": "2026-06-16T20:42:37+08:00",
+      "signal": "alarm_code",
+      "value": "FD_OVERCURRENT"
+    },
+    {
+      "t": "2026-06-16T20:42:37+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-10",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD04 送料機驅動器過電流警報 沖床連動停 馬達溫度80 電流12.7 停機前送料誤差0.01無累積 查滾輪聯軸器軸承無卡死 風扇積塵清潔後仍報 等原廠技師",
+  "technician_report_normalized": "FD04 伺服滾輪送料機發生驅動器過電流警報，送料在單一沖次內瞬間停止，沖床連動停機。停機前送料長度誤差約 0.01 mm，沒有逐步累積；馬達溫度約 80°C，電流 12.7 A 出現尖峰。技術員檢查送料滾輪、聯軸器、軸承與傳動鏈，未發現卡死、異物或鬆動；清潔驅動器散熱風扇與濾網後風扇運轉正常，但通電測試仍出現電流尖峰與過電流警報。因驅動器內部異常超出現場能力，已移交原廠技師檢修。",
+  "first_hypothesis": {
+    "failure_mode_id": "servo_feeder_drive_alarm",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "servo_feeder_drive_alarm",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "讀取驅動器警報歷史與停機前十分鐘電流、溫度趨勢",
+      "result": "過電流尖峰、馬達溫度偏高"
+    },
+    {
+      "step": "檢查送料滾輪、聯軸器、軸承與傳動鏈",
+      "result": "無卡死、異物、鬆動"
+    },
+    {
+      "step": "清潔驅動器散熱風扇、濾網與散熱片",
+      "result": "積塵清除、風扇運轉正常"
+    },
+    {
+      "step": "量測馬達外殼溫度與三相電流平衡",
+      "result": "溫度偏高、電流尖峰重現"
+    },
+    {
+      "step": "移交原廠技師檢修驅動器",
+      "result": "超出現場能力"
+    },
+    {
+      "step": "機台維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-061"
+  ],
+  "downtime_min": 591,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "原廠技師",
+  "escalation_note": "驅動器過電流且馬達溫度偏高，現場檢查傳動與散熱後仍會重現，移交原廠技師檢修驅動器內部與電流控制。",
+  "lessons": "驅動器過電流若滾輪與軸承都正常，先看清散熱風扇與電流趨勢，不要一直重送料。",
+  "related_failure_mode_ids": [
+    "servo_feeder_drive_alarm"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-061"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

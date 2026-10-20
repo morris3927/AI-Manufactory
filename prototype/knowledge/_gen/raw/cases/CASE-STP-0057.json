@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1056
+ },
+ "output": {
+  "technician_report_raw": "PR03 misfeed連跳3次 料帶ok 導正孔沒歪 感測接頭鬆+感應面油 清潔換接頭 試沖ok",
+  "technician_report_normalized": "PR03 於夜班連續發生三次 MISFEED 停機，停機前送料長度誤差僅 0.01 mm。現場檢查料帶位置、導正孔與模面均正常，無卡料或廢料上跳。進一步檢視誤送料感測器，發現接頭鬆動且感應面沾附油屑，清潔感應面並更換接頭後重新插緊固定，試沖恢復正常，觀察未再跳警報。",
+  "actions": [
+   {
+    "step": "查閱停機前送料長度誤差與警報紀錄",
+    "result": "誤差 0.01 mm，屬間歇性誤報"
+   },
+   {
+    "step": "檢查料帶位置、導正孔與模面",
+    "result": "無卡料、無跳屑"
+   },
+   {
+    "step": "檢視誤送料感測器接頭與感應面",
+    "result": "接頭鬆動、感應面沾油屑"
+   },
+   {
+    "step": "清潔感應面、更換接頭並固定纜線",
+    "result": "重新送料測試正常"
+   },
+   {
+    "step": "試沖並觀察運轉",
+    "result": "未再跳 MISFEED"
+   }
+  ],
+  "parts_replaced": [
+   "sensor_connector"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "同一顆感測器反覆跳 MISFEED，先查接頭與感應面，比拆模快。",
+  "escalation_note": null
+ }
+}

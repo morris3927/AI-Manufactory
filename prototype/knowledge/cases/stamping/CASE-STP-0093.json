@@ -1,0 +1,157 @@
+{
+  "case_id": "CASE-STP-0093",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1092,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-07-13T06:03:23+08:00",
+  "closed_at": "2026-07-13T07:43:48+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "feeder_drive_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 6,
+    "recent_changes": [],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2607-111"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-13T05:12:50+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-07-13T05:34:07+08:00",
+      "signal": "state",
+      "value": "running"
+    },
+    {
+      "t": "2026-07-13T05:58:46+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.02
+    },
+    {
+      "t": "2026-07-13T06:00:23+08:00",
+      "signal": "motor_temp_c",
+      "value": 83
+    },
+    {
+      "t": "2026-07-13T06:03:23+08:00",
+      "signal": "motor_current_a",
+      "value": 14.5
+    },
+    {
+      "t": "2026-07-13T06:03:23+08:00",
+      "signal": "alarm_code",
+      "value": "FD_OVERCURRENT"
+    },
+    {
+      "t": "2026-07-13T06:03:23+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-14",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD02 05:12 MISFEED停 查感測器接頭 06:03又跳 FD_OVERCURRENT 馬達83度 風扇卡死 換風扇清濾網 試跑ok",
+  "technician_report_normalized": "凌晨五點十二分送料機跳出 MISFEED 停機，復歸後可運轉，先朝誤送料偵測器方向檢查，清潔感應面並重新插緊接頭，當時送料長度誤差僅 0.02 mm，導正孔與料帶位置都正常。六點零三分再度停機，這次驅動器出現 FD_OVERCURRENT，馬達外殼溫度達 83 度、電流 14.5 A，送料在單一沖次內瞬間停止。斷電後檢查發現驅動器散熱風扇卡死不轉、濾網積塵，更換風扇並清潔濾網與散熱片，通電試跑電流與溫度恢復正常，交班生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "misfeed_sensor_fault",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "servo_feeder_drive_alarm",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "第一次跳的是 MISFEED，且停機前送料長度誤差只有 0.02 mm、料帶與導正孔都正常，符合感測器誤報的典型樣態，所以先查接頭與感應面；但清潔重插後不到一小時又停，第二次伴隨 FD_OVERCURRENT、馬達 83 度與電流尖峰，送料是瞬間停止而非步距逐漸跑掉，才轉向驅動器散熱與馬達負載。",
+  "discriminating_evidence": [
+    "06:03 再次停機時驅動器跳出的是 FD_OVERCURRENT，不是 MISFEED",
+    "停機前送料長度誤差僅 0.02 mm，沒有逐步累積的步距偏差",
+    "馬達外殼溫度 83 度、電流 14.5 A 出現尖峰，送料率瞬間歸零",
+    "感測器感應面已清潔、接頭已重插仍再度跳機，誤報可能性排除"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "05:12 MISFEED 停機時，依 LOTO-FEED-01 上鎖後依第一判斷清潔誤送料偵測器感應面並重插接頭",
+      "result": "05:34 復機"
+    },
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "06:03 再停機，讀取驅動器警報歷史與停機前十分鐘電流、溫度紀錄",
+      "result": "FD_OVERCURRENT、馬達 83 度、電流 14.5 A"
+    },
+    {
+      "step": "檢查驅動器散熱風扇、濾網與散熱片",
+      "result": "風扇卡死不轉、濾網積塵"
+    },
+    {
+      "step": "更換驅動器散熱風扇並清潔濾網與散熱片",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "通電試跑，以鉤表量三相電流並量馬達外殼溫度",
+      "result": "電流平衡、溫度回落，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-041",
+    "SOP-STP-061"
+  ],
+  "downtime_min": 99,
+  "parts_replaced": [
+    "drive_cooling_fan"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "MISFEED 常常只是表象，同班第二次跳機若電流跟溫度一起上來，先去摸驅動器風扇跟濾網。",
+  "related_failure_mode_ids": [
+    "servo_feeder_drive_alarm",
+    "misfeed_sensor_fault"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-041",
+    "SOP-STP-061"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

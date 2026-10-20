@@ -1,0 +1,109 @@
+{
+  "case_id": "CASE-ASM-0006",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4005,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-07-28T04:17:55+08:00",
+  "closed_at": "2026-07-28T04:24:43+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "vision",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 23,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2607-17"
+  },
+  "log_signals": [
+    {
+      "t": "2026-07-28T04:17:55+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-07-28T04:19:12+08:00",
+      "signal": "screw_result",
+      "value": "OK"
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 04:17 視覺判NOK_LOW_TORQUE 工件放歪 重放正 補鎖OK 無重複NOK 誤報",
+  "technician_report_normalized": "夜班期間 ST02 於 04:17:55 出現一筆鎖附結果 NOK_LOW_TORQUE，系統以視覺判定螺絲低扭力。技術員調閱鎖附紀錄並會同作業員確認，發現工件放置位置偏斜，並非工具或螺絲異常；將工件重新放正後補鎖，04:19:12 回報 OK，後續未再出現重複 NOK。現場未動工具也未換件，判定為誤報，已恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "torque_not_reached",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到 screw_result=NOK_LOW_TORQUE，依規則先懷疑扭力未達／浮鎖；但重新放正工件後補鎖即 OK，且無重複 NOK、未見間隙或工具異常，因此不是真正的扭力未達。",
+  "discriminating_evidence": [
+    "04:17:55 僅一筆 screw_result=NOK_LOW_TORQUE，04:19:12 已回 OK，沒有連續低扭力。",
+    "工件放歪後重新放正再補鎖即正常，顯示與工件定位有關。",
+    "後續無重複 NOK，未見螺絲頭與工件間隙或起子頭打滑。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "調閱鎖附紀錄與視覺判定，確認 04:17:55 一筆 NOK_LOW_TORQUE、04:19:12 一筆 OK",
+      "result": "確認單筆異常"
+    },
+    {
+      "step": "會同作業員檢查工件定位與螺絲頭外觀，未見浮高、間隙或起子頭打滑",
+      "result": "未發現設備異常"
+    },
+    {
+      "step": "請作業員將工件重新放正後補鎖",
+      "result": "ok"
+    },
+    {
+      "step": "觀察後續鎖附結果，無重複 NOK",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-011"
+  ],
+  "downtime_min": 6,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "視覺 NOK 先看工件有沒有放正，單筆低扭力不一定是工具問題。",
+  "related_failure_mode_ids": [
+    "torque_not_reached"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-011"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

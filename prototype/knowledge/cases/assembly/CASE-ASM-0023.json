@@ -1,0 +1,159 @@
+{
+  "case_id": "CASE-ASM-0023",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4022,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-02-16T01:42:56+08:00",
+  "closed_at": "2026-02-16T02:03:22+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "feeder_timeout",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 64,
+    "recent_changes": [
+      "補充螺絲 01:12（SL-2602-70）",
+      "換螺絲批 01:12（SL-2602-24）"
+    ],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-01-1",
+    "screw_lot": "SL-2602-51"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-16T01:13:02+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2602-24"
+    },
+    {
+      "t": "2026-02-16T01:13:37+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2602-70"
+    },
+    {
+      "t": "2026-02-16T01:18:02+08:00",
+      "signal": "final_angle_deg",
+      "value": 2058
+    },
+    {
+      "t": "2026-02-16T01:38:12+08:00",
+      "signal": "feeder_pick_fail_count",
+      "value": 16
+    },
+    {
+      "t": "2026-02-16T01:42:56+08:00",
+      "signal": "alarm_code",
+      "value": "FEEDER_TIMEOUT"
+    },
+    {
+      "t": "2026-02-16T01:42:56+08:00",
+      "signal": "screw_result",
+      "value": "NOK_NO_SCREW"
+    },
+    {
+      "t": "2026-02-16T01:42:56+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 送釘逾時 吸不到螺絲 先猜補料混料 量頭型長度有異 隔離換批仍NG LOTO後拆護蓋 軌道分離器卡釘 清乾淨 試鎖ok",
+  "technician_report_normalized": "夜班 ST01 出現送釘逾時與吸不到螺絲，鎖附結果為無螺絲及角度偏高；因停機前剛補料換批，先懷疑錯料混料。檢查送料盤確有頭型與長度不一致的螺絲，已隔離可疑批號並換用合格螺絲批，但送釘仍 NG。完成 LOTO 後拆開軌道與分離器護蓋，發現歪斜螺絲及異物卡住，確認主因為送釘軌道卡釘、次因為螺絲混料；清除卡釘與金屬屑並確認吸嘴、軌道無變形、路徑對正，手動送釘與試鎖正常，首件確認 OK 後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "wrong_screw_type",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "screw_feeder_jam",
+  "contributing_causes": [
+    "wrong_screw_type"
+  ],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因停機前剛補料換批、最終角度 2058 偏高且出現 NOK_ANGLE_HIGH，加上送料盤有混料疑慮，才懷疑是錯料；但換用合格螺絲批並隔離可疑料後仍發生 FEEDER_TIMEOUT 與吸不到螺絲，拆檢確認主因是送釘軌道／分離器卡釘，錯料只是次要因素。",
+  "discriminating_evidence": [
+    "01:42:56 出現 FEEDER_TIMEOUT 與 NOK_NO_SCREW，代表起子端沒有螺絲可鎖，不是單純鎖附角度偏差。",
+    "01:38:12 feeder_pick_fail_count 已累積 16 次，顯示送釘吸附連續失敗。",
+    "拆開軌道與分離器護蓋後目視到歪斜螺絲與異物卡住，清除後手動送釘與試鎖恢復正常。",
+    "隔離並換用合格螺絲批後仍需清除卡釘才恢復，表示錯料只是次要因素。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷比對送料盤螺絲頭型、長度與 BOM 規格",
+      "result": "發現混料 未改善"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "隔離可疑螺絲批並換用合格螺絲批後試鎖",
+      "result": "未改善 仍送釘逾時"
+    },
+    {
+      "step": "拆送釘軌道出口護蓋與分離器護蓋，目視檢查軌道、分離器與吸嘴",
+      "result": "發現卡釘與異物"
+    },
+    {
+      "step": "以塑膠鑷子清除歪斜螺絲、異物與金屬屑，檢查護蓋與吸嘴磨耗",
+      "result": "卡釘排除"
+    },
+    {
+      "step": "復位分離器並確認送釘路徑對正吸嘴中心，手動送釘測試",
+      "result": "無干涉"
+    },
+    {
+      "step": "隔離可疑螺絲批與受影響工件並追溯批號，換用合格螺絲批，試鎖與首件確認",
+      "result": "ok 恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-022",
+    "SOP-ASM-021"
+  ],
+  "downtime_min": 18,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "補料或換批後一直送釘逾時，先查軌道與分離器卡釘，不要只追螺絲規格。",
+  "related_failure_mode_ids": [
+    "screw_feeder_jam",
+    "wrong_screw_type"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-022",
+    "SOP-ASM-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

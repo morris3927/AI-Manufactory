@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1028
+ },
+ "output": {
+  "technician_report_raw": "FD02 導正孔單向拉長 導正銷磨亮 查參數 釋放角09:08改205 無料空轉送料誤差0.02正常 調到匹配角度+換導正銷 試沖ok",
+  "technician_report_normalized": "FD02 送料機生產 1U 機殼底板時，發現導正孔有單向拉長、導正銷表面磨亮，料帶定位不穩。查閱參數紀錄發現 09:08 導正釋放角度由 220° 改為 205°，與目前沖速不匹配；無料空轉量測送料長度誤差為 0.02 mm，屬正常範圍。隨後以 0.5° 為一階調整釋放角度，並更換磨亮導正銷、清潔導正孔，試沖後定位恢復正常，重新投入生產。",
+  "actions": [
+   {
+    "step": "核對最近參數變更與導正釋放角度紀錄",
+    "result": "發現 09:08 由 220° 改為 205°"
+   },
+   {
+    "step": "檢查導正銷與導正孔磨耗",
+    "result": "導正銷磨亮、孔口單向拉長"
+   },
+   {
+    "step": "無料空轉連續量測送料長度與釋放角度",
+    "result": "送料誤差 0.02 mm 正常"
+   },
+   {
+    "step": "以 0.5° 為一階調整導正釋放角度至與目前沖速匹配",
+    "result": "定位改善"
+   },
+   {
+    "step": "更換磨亮導正銷並清潔導正孔後試沖",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "pilot_pin"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "參數變更後要先對照沖速 SPM 與導正釋放角度，不要只看送料誤差正常就放過。",
+  "escalation_note": null
+ }
+}

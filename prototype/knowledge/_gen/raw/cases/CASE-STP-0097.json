@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1096
+ },
+ "output": {
+  "technician_report_raw": "FD02 換1.0料捲 料頭翹 LOOP_FAULT+ misfeed 整平0.96沿用舊料 輥隙不對 調回設定表 清刮板 試沖ok",
+  "technician_report_normalized": "凌晨 1 點 44 分更換 SECC 料捲，料厚由 0.8 mm 改為 1.0 mm，整平機壓下量仍沿用前一料捲的 0.96 mm。隨後發生 LOOP_FAULT 與 MISFEED，料帶在進料口有翹頭及弓形。檢查發現整平輥隙與 1.0 mm 料厚設定表不符，研判為整平機設定不當。依設定表重新調整壓下量、間隙與背壓輥，並清潔整平輥、刮板及料環檢出板；以寸動建立料環後試沖，送料恢復穩定，未再出現警報。",
+  "actions": [
+   {
+    "step": "檢查換料後整平機設定與料帶外觀",
+    "result": "壓下量沿用 0.96 mm 且料帶翹頭"
+   },
+   {
+    "step": "以厚薄規量測整平輥隙並核對 1.0 mm 設定表",
+    "result": "輥隙與設定表不符"
+   },
+   {
+    "step": "依 SECC 1.0 mm 設定表調整整平輥壓下量、間隙與背壓輥",
+    "result": "調整完成"
+   },
+   {
+    "step": "清潔整平輥、刮板與料環檢出板",
+    "result": "清潔完成"
+   },
+   {
+    "step": "以寸動建立料環並試沖確認",
+    "result": "料環穩定，送料 ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換料厚時整平設定不能沿用前一捲，先核對設定表再送料。",
+  "escalation_note": null
+ }
+}

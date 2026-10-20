@@ -1,0 +1,162 @@
+{
+  "case_id": "CASE-STP-0024",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1023,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-06-13T12:50:15+08:00",
+  "closed_at": "2026-06-13T15:47:27+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 23,
+    "recent_changes": [
+      "換模 11:51（D-2U-TOP-03）",
+      "換料捲 11:13（C-2606-334）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2606-334"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-13T11:13:00+08:00",
+      "signal": "coil_change",
+      "value": "C-2606-334",
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-06-13T11:51:20+08:00",
+      "signal": "die_change",
+      "value": "D-2U-TOP-03"
+    },
+    {
+      "t": "2026-06-13T11:56:04+08:00",
+      "signal": "shut_height_mm",
+      "value": 398.0
+    },
+    {
+      "t": "2026-06-13T11:57:46+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 12
+    },
+    {
+      "t": "2026-06-13T12:45:35+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_EDGE",
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-06-13T12:49:31+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 16
+    }
+  ],
+  "technician": {
+    "id": "TECH-03",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 換模後左側毛邊 料帶一直偏左 以為料捲側彎 放平量測ok 送料長度也沒跑 FD02 edge alarm 誤導 查左右噸位差16% 定位銷偏磨 換銷+襯套 試沖ok 平衡3%",
+  "technician_report_normalized": "PR01 換模後首批即出現左側毛邊，料帶有往左偏移的現象，第一時間懷疑是料捲側彎。將料捲放平量測，側彎量在允差內，送料長度誤差也沒有明顯變化；另 FD02 於 12:45 的 STRIP_EDGE 只觸發一次，且 11:13 換上的料捲在 11:51 換模前生產正常，料帶左偏是模具偏載帶動的結果。改查左右沖壓力，噸位平衡由 12% 升至 16%，閉模高度 398.0 mm 與模具資料卡相符。停機上鎖後檢視模具定位面，左側定位銷有偏磨、襯套單邊磨亮，厚薄規量測單邊間隙過大。更換定位銷與襯套、清潔定位面後寸動空轉，導正銷無單側干涉，試沖首批毛邊消失，噸位平衡降至 3%，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "coil_camber",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "die_misalignment",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "因為料帶明顯往左偏、FD02 又跳出 STRIP_EDGE 邊緣警報，看起來就像料捲側彎造成料帶偏移；但放平量測側彎量在允差內、送料長度誤差也沒變，反而噸位平衡 12% 一路升到 16%，才轉向模具定位偏移。",
+  "discriminating_evidence": [
+    "料捲放平量測側彎量在允差內，送料長度誤差無明顯變化，不符合料捲側彎特徵",
+    "12:45 的 STRIP_EDGE 只觸發一次，不是同側反覆觸發；11:13 換上的料捲在 11:51 換模前生產正常，異常是換模後首批才出現",
+    "噸位平衡由 12% 升至 16%，左右沖壓力差超過 10%，指向模具單側受力",
+    "閉模高度 398.0 mm 與模具資料卡相符，且左側定位銷偏磨、襯套單邊磨亮、厚薄規間隙過大"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷檢查料帶側彎量與送料長度誤差",
+      "result": "側彎量在允差內、送料長度正常，排除料捲側彎"
+    },
+    {
+      "step": "核對 12:45 STRIP_EDGE 觸發次數與 11:13 換料後、11:51 換模前的生產紀錄",
+      "result": "邊緣警報僅單次，換模前生產正常"
+    },
+    {
+      "step": "讀取左右噸位平衡並核對閉模高度",
+      "result": "平衡 16% 超過 10%，閉模高度 398.0 mm 與模具資料卡相符"
+    },
+    {
+      "step": "停機上鎖後檢查模具定位銷、襯套與定位面",
+      "result": "左側定位銷偏磨、襯套單邊磨亮，厚薄規量測間隙過大"
+    },
+    {
+      "step": "更換定位銷與定位銷襯套，清潔定位面與銷孔",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動空轉確認導正銷無單側干涉，試沖首批",
+      "result": "毛邊消失，噸位平衡 3%，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-009",
+    "SOP-STP-021"
+  ],
+  "downtime_min": 173,
+  "parts_replaced": [
+    "die_locating_pin",
+    "locating_pin_bushing"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後首批先看左右噸位平衡，超過 10% 就拆定位銷檢查，單次邊緣警報別急著怪料捲。",
+  "related_failure_mode_ids": [
+    "die_misalignment",
+    "coil_camber"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-009",
+    "SOP-STP-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

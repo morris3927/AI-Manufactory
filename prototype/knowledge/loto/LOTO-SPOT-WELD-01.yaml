@@ -1,0 +1,57 @@
+# 座式氣動點銲機上鎖掛牌（LOTO）檢查表 —— 07_RAG知識庫資料.md §4.4
+# data_label: 模擬資料。隔離點代號、時間與電壓門檻皆為模擬值，非任何原廠規格。
+# 本檔不切塊、不進向量庫；kb.loto_for(machine_type) 直接讀取，固定附在維修代理回答最前面。
+loto_id: LOTO-SPOT-WELD-01
+version: "0.1"
+title: 座式氣動點銲機（中頻控制器、加壓氣缸、電極修磨器、冷卻水）停機、隔離與上鎖掛牌程序
+machine_type: spot_welder
+applies_to_machines: [WLD-L1-SP01, WLD-L2-SP02]
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by: [ai_sim_reviewer_weld_asm]
+review_status: approved
+review_note: "AI 角色扮演審核，非真人專家審核"
+legal_basis:
+  - 設施規則第57條（現行 113-08-01 版；115-06-30 修正版自 116-01-01 施行）：停止運轉、上鎖及設置標示、危害防止計畫（含作業許可程序）、殘壓（氣壓）處理 [ref:REG-N0060009-57-p1, REG-N0060009-57-v20240801]
+  - 設施規則第254條：停電作業上鎖或標示「禁止送電」，由原掛簽人取下後才能復電 [ref:REG-N0060009-254-p1]
+  - OSHA 29 CFR 1910.255(b)(3)、(b)(8)：點銲機門板連鎖；大型機台設安全插銷，插銷取下時機台不能動作（美國法規僅作參考） [ref:REG-OSHA-1910.255-b-3, REG-OSHA-1910.255-b-8]
+  - OSHA 29 CFR 1910.255(e)：由合格維修人員定期檢查並保存紀錄 [ref:REG-OSHA-1910.255-e]
+  - OSHA 29 CFR 1910.147(d)、(e)、(f)(1)（程序範本） [ref:REG-OSHA-1910.147-d-1, REG-OSHA-1910.147-e-3, REG-OSHA-1910.147-f-1]
+permit:
+  required: true
+  approver_role: 現場主管
+  hazard_plan_ref: HPP-WLD-02
+  permit_form: PTW-WLD（作業許可單，模擬編號）
+  hot_work: 在點銲機以外的位置研磨或補銲治具時，另依廠內規定申請動火許可並清除可燃物（設施規則第173條） [ref:REG-N0060009-173]
+  notes: 點銲作業區屬既有銲接作業區；試銲須在局部排氣運轉正常時進行（鍍鋅鋼板會產生鋅燻煙）
+energy_sources:
+  - {id: S1, type: electrical, device: 點銲機主電源 QS-S1（銲接變壓器一次側與控制器）, method: 切至 OFF＋個人鎖＋「禁止送電」標籤；腳踏開關隨主電源失效}
+  - {id: S2, type: electrical_stored, device: 中頻控制器直流母線電容, method: 斷電後等待放電（至少 5 分鐘，模擬值），由電氣合格人員確認無殘餘電壓；一般技術員不得打開控制器}
+  - {id: S3, type: pneumatic, device: 加壓氣缸氣源閥 V-S1, method: 關閉＋洩壓＋鎖；洩壓前上電極可能因殘壓或重力突然下降，手不得放在上下電極之間}
+  - {id: S4, type: gravity, device: 上電極臂／加壓頭, method: 洩壓後插入安全插銷或在電極之間放入硬木墊塊，確認上電極不會下降}
+  - {id: S5, type: coolant, device: 電極冷卻水進回水閥, method: 關閉；拆電極帽前以容器承接殘水}
+  - {id: S6, type: thermal, device: 電極帽、電極座與工件, method: 停機後等待冷卻（至少 5 分鐘，模擬值）或戴耐熱手套}
+  - {id: S7, type: mechanical, device: 電極修磨器刀具, method: 修磨器電源含在 S1；更換刀片時刀具保持靜止並戴防割手套}
+steps:
+  - {"no": 1, action: 通知操作員與班長即將停機維修，並在 Kanban 工單記錄, check: 受影響人員簽名}
+  - {"no": 2, action: 確認危害防止計畫與作業許可單已由現場主管核准, check: 許可單號}
+  - {"no": 3, action: 以正常程序停機：完成目前銲點、上電極回到上限位置後按停止, check: 目視電極靜止}
+  - {"no": 4, action: 依 S1～S7 逐一隔離, check: 每項勾選}
+  - {"no": 5, action: 每位作業人員在每個隔離點掛個人鎖與標籤, check: 鎖號登記}
+  - {"no": 6, action: 洩除殘能：氣壓表歸零、插入安全插銷或放入墊塊、冷卻水閥關閉；電容放電由電氣合格人員確認, check: 壓力讀值、插銷位置}
+  - {"no": 7, action: 驗證零能量：確認手離開電極區後踩腳踏開關、按起動鈕，確認電極不動作、控制器無輸出，再歸回 OFF, check: 兩人確認}
+release:
+  - 清點工具，確認電極之間與修磨器內沒有遺留物
+  - 取出安全插銷或墊塊，恢復護罩、腳踏開關護蓋與門板連鎖
+  - 確認人員手部離開電極區
+  - 各人取下自己的鎖與標籤，不得代取（第254條：由原掛簽人取下）
+  - 通知操作員，由原上鎖人送電；先空打確認電極對心，再以試片試銲並做剝離試驗
+testing_positioning:
+  - 需要通電量測電流、加壓力或試銲時：手離開電極區、由原上鎖人取下自己的鎖、現場主管在場
+  - 量測加壓力或電極對心時只用「不通電加壓」模式（只加壓、不放電），以專用工具或試片操作，手不得放在電極之間
+  - 完成後重新上鎖並驗證零能量
+ai_constraints:
+  - AI 不得宣告「已完成上鎖」或「可以復電」，只能提示下一步並要求人員在 Kanban 勾選
+  - 任何步驟涉及 S1～S7 → J4 needs_loto 必須為 true
+  - AI 不得建議使雙手操作、門板連鎖或腳踏開關護蓋失效的作法；控制器內部量測只能由電氣合格人員執行

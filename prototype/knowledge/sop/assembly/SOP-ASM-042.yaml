@@ -1,0 +1,275 @@
+# SOP-ASM-042 連接器未插到位（卡扣未扣）之檢查與修復
+# data_label: 模擬資料 —— 團隊依公開法規與公開技術文件撰寫之模擬 SOP，與任何企業實際製程無關；數值門檻皆為模擬值。review_status: approved（AI 角色扮演審核，非真人專家審核）
+sop_id: SOP-ASM-042
+version: '0.1'
+title: 連接器未插到位（卡扣未扣）之檢查與修復
+line: assembly
+machine_type:
+- manual_assembly_station
+failure_mode_ids:
+- connector_not_seated
+data_label: 模擬資料
+synthetic: true
+author: team_sentinel
+reviewed_by:
+- ai_sim_reviewer_weld_asm
+review_status: approved
+category: quality
+safety_only: false
+generator:
+  model: deepseek-v4.1-flash
+  prompt_ver: sop-gen-wa-v1
+  seed: 242
+safety:
+  loto_required: true
+  loto_checklist_id: LOTO-ASM-TOOL-01
+  loto_checklist_ids:
+  - LOTO-ASM-TOOL-01
+  energy_sources:
+  - electrical
+  - pneumatic
+  - mechanical_stored
+  - dut_power
+  ppe:
+  - 防割手套（鈑金銳邊）
+  - 護目鏡
+  - 靜電手環
+  - 安全鞋（搬運機殼）
+  danger_zone_entry: true
+  legal_basis:
+  - 設施規則第57條
+  - 設施規則第254條
+  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
+  - OSHA 1910.147(d)
+symptoms:
+- 測不到裝置
+- 連接器沒插好
+- 卡扣沒扣
+- 重插就好
+- 開機抓不到硬碟
+- 功能測試顯示 DEVICE_NOT_FOUND，開機抓不到硬碟或裝置。
+- 目視連接器卡扣沒扣上，公母端之間有可見間隙。
+- 連接器鬆鬆的，輕拉本體就脫開或出現縫隙。
+- 重插到卡扣扣上後就恢復；修復前每次測試都失敗，不是時有時無。
+- 線材外皮看起來完好，絕緣測試正常。
+prerequisites:
+  tools:
+  - 頭燈與放大鏡
+  - 厚薄規
+  - 非金屬連接器拔取工具
+  - 防靜電手環測試器
+  - 首件檢查表
+  - 無塵布與清潔棒
+  parts:
+  - 連接器（通用規格）
+  - 線束（通用規格）
+  - 束帶
+  - 護線套
+  skill_level: 維修技術員 L1
+steps:
+- 'no': 1
+  phase: prepare
+  action: 通知班長本站暫停，於 Kanban 開立維修單；記錄測試站結果、受影響機殼序號與畫面
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-d-1
+- 'no': 2
+  phase: prepare
+  action: 可疑工件先隔離：本站與下游已完成、可能受影響的機殼貼「待確認」標籤並移到隔離區，依序號追溯，判定前不得出貨
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+- 'no': 3
+  phase: prepare
+  action: 確認班長已核准簡化作業許可（設施規則第57條）
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+- 'no': 4
+  phase: isolate
+  action: 依 LOTO-ASM-TOOL-01 執行輕量上鎖：關閉測試站輸出並拔除受測機殼電源線、套上插頭鎖蓋與個人標籤，等待電源供應器放電時間到後才接觸機殼內線材與連接器；插頭保持在自己的專屬控制下
+  caution: 上鎖掛牌時要確認受測機殼 AC 電源與送釘機氣源均已隔離並洩壓，插拔連接器前不得有殘電或殘壓。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-57-p1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 5
+  phase: inspect
+  action: 調閱功能測試站紀錄與現場標示，確認故障是否為每次測試皆出現 DEVICE_NOT_FOUND，並記錄發生位置、機殼序號與線束批號。（現場經驗（模擬））
+  criteria: 紀錄顯示同一機殼每次測試皆為 DEVICE_NOT_FOUND，且 connector_unlatched 為 true；若時有時無或開機測試偶發失敗，先保留紀錄並改懷疑 cable_pinch_misroute。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+- 'no': 6
+  phase: inspect
+  action: 在 LOTO 完成後目視檢查故障連接器之公母端、卡扣、防呆鍵與端子，確認卡扣是否未扣、是否有可見間隙、端子是否歪斜或異物。
+  criteria: 卡扣未扣上或公母端有肉眼可見間隙，即符合本模式；若卡扣已完全扣上且無間隙，則本模式可能性低，改查線材夾線／走線錯誤或測試治具。
+  caution: 不可用金屬工具硬撬端子或卡扣，避免二次損傷。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - PUB-NASA-STD-8739.4A-C4-17.2.1-mating
+  - PUB-NASA-STD-8739.4A-C4-16.1-handling
+- 'no': 7
+  phase: inspect
+  action: 檢查線材外皮、走線路徑、彎曲半徑、護線套與束帶固定，並與作業指導書比對，專門區分是否為夾線／走線錯誤。
+  criteria: 若線材外皮完好、絕緣無破皮、彎曲半徑不小於線束外徑 3 倍（模擬值）、走線與作業指導書相符，則支持本模式；若看到上蓋或支架蓋合處夾線、壓痕、破皮、彎曲半徑小於線束外徑 3 倍（模擬值）或貼銳邊無護線，則改懷疑 cable_pinch_misroute，改走 SOP-ASM-041。
+  caution: 檢查時不可拉扯線材本體，應以連接器本體或線束固定點為施力點。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - PUB-NASA-STD-8739.4A-C4-table-7-1
+  - PUB-NASA-STD-8739.4A-C4-7.2.28-support
+  - PUB-NASA-STD-8739.4A-C4-20.5.1-ties-assemblies
+- 'no': 8
+  phase: inspect
+  action: 以手輕拉故障連接器本體，確認卡扣保持力與是否有鬆脫；必要時用放大鏡確認端子完全到位。
+  criteria: 輕拉時卡扣脫開或公母端出現間隙，判定本模式；若卡扣已扣但輕拉即脫開，檢查卡扣是否斷裂或尺寸異常並更換。
+  caution: 只能拉連接器本體，不可拉線材；拉力以不損傷卡扣為原則。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - PUB-NASA-STD-8739.4A-C4-17.2.1-mating
+- 'no': 9
+  phase: repair
+  action: 將故障機殼與可疑線束隔離，貼上不良標示，記錄工單、機殼序號、連接器位置、線束批號與測試紀錄，並依不良品流程追溯同批。
+  caution: 隔離品不得直接回流產線；搬運時避免壓迫連接器與線材。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - PUB-NASA-STD-8739.4A-C4-16.1-handling
+- 'no': 10
+  phase: repair
+  action: 使用放大鏡與非金屬工具檢查並清除公母端異物；若端子歪斜、卡扣斷裂、防呆鍵損傷或線材外皮破損，更換線束或連接器，不可硬扳端子。
+  caution: 不可用金屬尖物插入端子；更換件須為相同通用規格並經首件確認。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A2
+  - PUB-NASA-STD-8739.4A-C4-16.1-handling
+- 'no': 11
+  phase: repair
+  action: 對正防呆鍵，握住連接器本體重新插接至卡扣完全扣上，確認公母端無可見間隙；必要時整理線材走線與束帶／護線套。
+  caution: 不可拉線材硬塞或斜插；插接時避免壓到相鄰線材與卡扣。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - PUB-NASA-STD-8739.4A-C4-17.2.1-mating
+  - PUB-NASA-STD-8739.4A-C4-20.5.1-ties-assemblies
+- 'no': 12
+  phase: repair
+  action: 完成修復後整理走線與固定，確認束帶與護線套不壓迫線材，並建立首件待驗。
+  caution: 首件未通過前不得批量放行。
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - A2
+  - PUB-NASA-STD-8739.4A-C4-17.2.1-mating
+- 'no': 13
+  phase: verify
+  action: 執行首件確認：目視與輕拉檢查修復後連接器，確認卡扣完全扣上、公母端無可見間隙，線材走線與固定符合作業指導書。
+  criteria: 卡扣完全扣上；厚薄規量測公母端間隙不大於 0.2 mm（模擬值）；輕拉連接器本體位移不大於 0.5 mm（模擬值）且卡扣未脫開；束帶與護線套無壓迫線材。
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - PUB-NASA-STD-8739.4A-C4-17.2.1-mating
+  - PUB-NASA-STD-8739.4A-C4-20.5.1-ties-assemblies
+- 'no': 14
+  phase: verify
+  action: 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-ASM-TOOL-01 測試／定位程序：需要通電試鎖、量測扭力或執行功能測試時：由原上鎖人取下自己的插頭鎖蓋並插回電源，班長知悉；只在治具上用試片或報廢件試鎖；手指不得放在起子頭與送釘吸嘴下方；完成後再拔插頭並套回插頭鎖蓋
+  caution: 通電期間手指不得放在起子頭、送釘吸嘴下方或受測機殼內
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - REG-OSHA-1910.147-f-1
+  - REG-OSHA-1910.147-a-2-iii-A
+- 'no': 15
+  phase: verify
+  action: 在功能測試站執行裝置偵測測試。（現場經驗（模擬））
+  criteria: 連續 3 次（模擬值）測試皆偵測到裝置，無 DEVICE_NOT_FOUND；若仍偶發失敗或時好時壞，停止放行並改查 cable_pinch_misroute 或測試治具。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - none
+- 'no': 16
+  phase: verify
+  action: 執行絕緣測試並檢查線材外觀。
+  criteria: 絕緣電阻大於 100 MΩ（模擬值），線材外皮完好、無夾線壓痕；開機測試通過但絕緣異常或外觀有壓痕／破皮，改走 SOP-ASM-041。
+  caution: null
+  requires_supervisor: false
+  requires_energized: true
+  ref:
+  - PUB-NASA-STD-8739.4A-C4-table-7-1
+  - PUB-NASA-STD-8739.4A-C4-7.2.28-support
+- 'no': 17
+  phase: restore
+  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - REG-N0060009-254-p2
+  - REG-OSHA-1910.147-e-3
+- 'no': 18
+  phase: restore
+  action: 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+  caution: null
+  requires_supervisor: true
+  requires_energized: false
+  ref:
+  - none
+- 'no': 19
+  phase: restore
+  action: 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+  caution: null
+  requires_supervisor: false
+  requires_energized: false
+  ref:
+  - none
+verify:
+- 執行首件確認：目視與輕拉檢查修復後連接器，確認卡扣完全扣上、公母端無可見間隙，線材走線與固定符合作業指導書；判定：卡扣完全扣上；厚薄規量測公母端間隙不大於 0.2 mm（模擬值）；輕拉連接器本體位移不大於 0.5 mm（模擬值）且卡扣未脫開；束帶與護線套無壓迫線材。
+- 需要通電量測、移動設備、試銲或試鎖時，依 LOTO-ASM-TOOL-01 測試／定位程序：需要通電試鎖、量測扭力或執行功能測試時：由原上鎖人取下自己的插頭鎖蓋並插回電源，班長知悉；只在治具上用試片或報廢件試鎖；手指不得放在起子頭與送釘吸嘴下方；完成後再拔插頭並套回插頭鎖蓋
+- 在功能測試站執行裝置偵測測試；判定：連續 3 次（模擬值）測試皆偵測到裝置，無 DEVICE_NOT_FOUND；若仍偶發失敗或時好時壞，停止放行並改查 cable_pinch_misroute 或測試治具。
+- 執行絕緣測試並檢查線材外觀；判定：絕緣電阻大於 100 MΩ（模擬值），線材外皮完好、無夾線壓痕；開機測試通過但絕緣異常或外觀有壓痕／破皮，改走 SOP-ASM-041。
+restore:
+- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+- 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
+- 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
+escalate_if:
+- 若卡扣斷裂、端子歪斜或連接器本體損傷 → 更換線束並通知品保工程師。
+- 若同批連續 2 件（模擬值）出現連接器未插到位 → 通知品保工程師並追溯同批。
+- 若絕緣電阻小於 100 MΩ（模擬值）、線材有夾痕／破皮或彎曲半徑不足 → 改走 SOP-ASM-041。
+lessons: 連接器要握本體、對正防呆鍵插到卡扣聲，並目視無間隙；重插後仍須做首件與功能／絕緣驗證，不可只憑手感放行。
+references:
+- id: A2
+  title: NASA-STD-8739.4A Change 4 Workmanship Standard for Crimping, Interconnecting Cables, Harnesses, and Wiring
+  url: https://standards.nasa.gov/standard/nasa/nasa-std-87394
+  license: PD
+  use: quote
+- id: A3
+  title: 'NASA Workmanship: Cable and Harness General Requirements'
+  url: https://workmanship.nasa.gov/lib/insp/2%20books/links/sections/401%20General%20Requirements.html
+  license: PD（🔬）
+  use: reference
+- id: public/regulations*.jsonl
+  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
+  license: TW-law / PD
+  use: quote
+- id: public/guidance_weld_asm.jsonl
+  title: 公開文件 chunk：PUB-NASA-STD-8739.4A-C4-16.1-handling、PUB-NASA-STD-8739.4A-C4-17.2.1-mating、PUB-NASA-STD-8739.4A-C4-20.5.1-ties-assemblies、PUB-NASA-STD-8739.4A-C4-7.2.28-support、PUB-NASA-STD-8739.4A-C4-table-7-1
+  url: https://www.osha.gov/ ; https://standards.nasa.gov/ ; https://www.hse.gov.uk/
+  license: PD / OGL
+  use: quote
+review_note: AI 角色扮演審核，非真人專家審核（2026-10-21，見 reviews/2026-10-21_weld_asm.md）

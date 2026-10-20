@@ -1,0 +1,123 @@
+{
+  "case_id": "CASE-ASM-0038",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4037,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-01-19T00:26:12+08:00",
+  "closed_at": "2026-01-19T01:31:49+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "rule",
+    "event_type": "calibration_overdue",
+    "rule_severity": "S1"
+  },
+  "context": {
+    "days_since_pm": 13,
+    "recent_changes": [],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-02-2",
+    "screw_lot": "SL-2601-32"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-19T00:16:29+08:00",
+      "signal": "screw_result",
+      "value": "OK"
+    },
+    {
+      "t": "2026-01-19T00:26:12+08:00",
+      "signal": "torque_audit_dev_pct",
+      "value": 14.3
+    }
+  ],
+  "technician": {
+    "id": "TECH-42",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 扭力抽測偏差14.3% 校正標籤過期 鎖附OK 換校正合格起子 SD-02-2送校 試片0.8Nm ok",
+  "technician_report_normalized": "夜班發現 ASM-L1-ST02 扭力工具 SD-02-2 校正已逾期，扭力分析儀抽測偏差 14.3%，超過 ±10% 判定值；鎖附結果雖顯示 OK，但離合器跳脫點有漂移疑慮。依 SOP-ASM-031 核對校正履歷後，依 LOTO-ASM-TOOL-01 斷電，更換校正合格備用起子，於試片以 0.8 N·m 試鎖正常，原起子掛待校正送校。校正逾期期間鎖附之機殼與螺絲批號已隔離待判定，停機 62 分鐘後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "tool_calibration_due",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "tool_calibration_due",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "核對 SD-02-2 校正標籤、校正報告與到期日",
+      "result": "確認校正逾期"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以有效期內扭力分析儀抽測並比對鎖附紀錄",
+      "result": "偏差 14.3% 超標"
+    },
+    {
+      "step": "檢查起子頭刃口與離合器跳脫外觀",
+      "result": "無明顯磨耗"
+    },
+    {
+      "step": "更換校正合格備用起子，原起子掛待校正送校",
+      "result": "完成更換"
+    },
+    {
+      "step": "於試片或報廢件以 0.8 N·m 試鎖抽測",
+      "result": "正常"
+    },
+    {
+      "step": "隔離校正逾期期間鎖附機殼、螺絲批號與工具批次",
+      "result": "待判定"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-031"
+  ],
+  "downtime_min": 62,
+  "parts_replaced": [
+    "calibrated_spare_screwdriver"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "校正到期與抽測偏差 14.3% 要當停線訊號，先換校正合格備品再試片確認，不要只看鎖附 OK。",
+  "related_failure_mode_ids": [
+    "tool_calibration_due"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

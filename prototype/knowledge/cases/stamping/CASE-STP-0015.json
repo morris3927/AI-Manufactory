@@ -1,0 +1,160 @@
+{
+  "case_id": "CASE-STP-0015",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1014,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-02-09T16:32:03+08:00",
+  "closed_at": "2026-02-09T17:44:59+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "misfeed_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 19,
+    "recent_changes": [
+      "換料捲 16:18（C-2602-221）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2602-221"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-09T16:15:38+08:00",
+      "signal": "tonnage_peak",
+      "value": 168
+    },
+    {
+      "t": "2026-02-09T16:18:39+08:00",
+      "signal": "coil_change",
+      "value": "C-2602-221",
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-02-09T16:19:05+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.05,
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-02-09T16:20:25+08:00",
+      "signal": "tonnage_peak",
+      "value": 179
+    },
+    {
+      "t": "2026-02-09T16:20:43+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.09,
+      "machine_id": "STP-L1-FD02"
+    },
+    {
+      "t": "2026-02-09T16:30:52+08:00",
+      "signal": "tonnage_peak",
+      "value": 179
+    },
+    {
+      "t": "2026-02-09T16:32:03+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    }
+  ],
+  "technician": {
+    "id": "TECH-11",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 misfeed停機 先查FD02滾輪無亮帶 清潔調壓仍跳 查換料紀錄 16:18換捲後噸位168→179 料厚1.07超標 換回前捲ok",
+  "technician_report_normalized": "PR01 於 16:32 發生 MISFEED 停機。因 16:18 剛換料捲，先懷疑 FD02 送料滾輪磨損打滑，但滾輪表面無亮帶與油污，送料長度誤差僅 0.05～0.09 mm 且未逐步累積，清潔並調整壓下量後仍再度跳脫，排除滾輪因素。改調閱換料紀錄與噸位趨勢，發現換捲後噸位峰值由 168 噸一次階躍至 179 噸。停機上鎖後於料捲前、中、後段各取 3 點量測，料厚 1.06～1.08 mm 超出 1.0 mm 進料公差，硬度亦偏高。將 C-2602-221 標示隔離退料，換回前一捲合格料帶試沖，噸位回復 168 噸、送料誤差 0.03 mm，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "feed_roller_wear",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "material_thickness_dev",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "MES 只拋出 misfeed，加上換料後送料誤差由 0.05 變 0.09 mm，第一時間很自然把它當成滾輪磨損打滑；但誤差沒有隨時間斜坡累積，滾輪也沒亮帶油污，真正線索是噸位在換捲後一次階躍 168→179 噸。",
+  "discriminating_evidence": [
+    "噸位峰值在換料捲後由 168 噸一次跳到 179 噸（約 +6.5%），之後一直維持在 179 噸，不是慢慢爬升",
+    "送料長度誤差只有 0.05→0.09 mm 且停在固定水準，沒有滾輪磨損該有的逐步累積",
+    "滾輪表面無亮帶、無油污，清潔並調整壓下量後仍發生 misfeed",
+    "問題料捲前中後段量測料厚 1.06～1.08 mm 超出 1.0 mm 進料公差，換回前一捲即恢復"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌（送料機 FD02 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "查 FD02 送料滾輪表面與送料長度誤差趨勢",
+      "result": "滾輪無亮帶無油污，誤差 0.09 mm 未持續累積"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "清潔滾輪並調整壓下量後試沖",
+      "result": "未改善，misfeed 再現"
+    },
+    {
+      "step": "調閱換料紀錄並比對換料前後噸位峰值",
+      "result": "16:18 換捲後由 168 噸階躍至 179 噸並維持"
+    },
+    {
+      "step": "停機上鎖，於問題料捲前中後段各取 3 點量測料厚與硬度",
+      "result": "料厚 1.06～1.08 mm 超標、硬度偏高"
+    },
+    {
+      "step": "隔離退料 C-2602-221，換回前一捲合格料帶試沖",
+      "result": "噸位回 168 噸、送料誤差 0.03 mm，ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-012",
+    "SOP-STP-007"
+  ],
+  "downtime_min": 69,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換完料捲才開始異常的，先比換料前後的噸位峰值有沒有階躍，再決定要不要動送料機。",
+  "related_failure_mode_ids": [
+    "material_thickness_dev",
+    "feed_roller_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-012",
+    "SOP-STP-007"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

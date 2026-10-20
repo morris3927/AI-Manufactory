@@ -1,0 +1,129 @@
+{
+  "case_id": "CASE-WLD-0043",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3042,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "spot_welder",
+  "machine_id": "WLD-L1-SP01",
+  "opened_at": "2026-05-19T13:03:22+08:00",
+  "closed_at": "2026-05-19T13:26:23+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 5,
+    "recent_changes": [],
+    "part": "2U 機殼側框",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-119"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-19T12:53:39+08:00",
+      "signal": "weld_defect",
+      "value": "undersize_nugget×3"
+    },
+    {
+      "t": "2026-05-19T13:03:22+08:00",
+      "signal": "tip_dress_count",
+      "value": 28
+    },
+    {
+      "t": "2026-05-19T13:03:22+08:00",
+      "signal": "weld_count_since_dress",
+      "value": 177
+    },
+    {
+      "t": "2026-05-19T13:03:22+08:00",
+      "signal": "weld_current_ka",
+      "value": 9.9
+    }
+  ],
+  "technician": {
+    "id": "TECH-30",
+    "level": "L2"
+  },
+  "technician_report_raw": "SP01 熔核小 剝離NG×3 量cap端面過大 修磨次數28 電流9.9kA正常 換cap+修磨 試片ok",
+  "technician_report_normalized": "SP01 點銲 2U 機殼側框時連續出現 3 件熔核偏小、剝離試驗不合格。檢查電極帽端面已變大且修磨次數累計 28 次，點銲電流 9.9 kA 與加壓力均在設定範圍內，判定為電極帽磨耗。停電後更換電極帽並修磨端面，清除銅屑，試片剝離合格後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "spot_electrode_wear",
+    "by": "jev",
+    "p": 0.6
+  },
+  "final_root_cause": "spot_electrode_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-SPOT-WELD-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱點銲歷史並檢查剝離試片",
+      "result": "熔核偏小×3"
+    },
+    {
+      "step": "量測電極帽端面並讀取修磨次數",
+      "result": "端面過大/28次"
+    },
+    {
+      "step": "核對點銲電流與加壓力讀值",
+      "result": "設定範圍內"
+    },
+    {
+      "step": "更換電極帽並清潔電極座錐面",
+      "result": "更換完成"
+    },
+    {
+      "step": "修磨端面至5.0～5.5mm並清銅屑",
+      "result": "尺寸ok"
+    },
+    {
+      "step": "以報廢試片進行剝離試驗",
+      "result": "試片ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-041"
+  ],
+  "downtime_min": 19,
+  "parts_replaced": [
+    "electrode_cap"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "修磨次數到 28 次已超過門檻，別因為銲點數只有 177 點就延後換電極帽。",
+  "related_failure_mode_ids": [
+    "spot_electrode_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

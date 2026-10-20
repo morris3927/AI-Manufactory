@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1037
+ },
+ "output": {
+  "technician_report_raw": "PR03 提速40後 DIE_PROTECT 間歇跳 送料誤差0.01正常 模面撿到廢料2片 沖頭端面油黏 清模面+落料孔 換防跳屑銷 降35試沖ok",
+  "technician_report_normalized": "10:38 提速由 32 spm 提高至 40 spm 後，11:19 與 11:28 兩次 DIE_PROTECT 間歇停機；檢查送料長度誤差僅 0.01 mm，排除送料偏短。開模後在模面與沖頭端面發現附著廢料及油污，確認是跳屑造成模具保護誤觸。以銅棒清除模面、沖頭端面與下模落料孔廢料，清潔油污並更換防跳屑銷，檢查脫料板動作正常。降速至 35 spm 試沖，未再出現跳屑，恢復生產。",
+  "actions": [
+   {
+    "step": "檢查送料長度、導正銷與導正孔對位",
+    "result": "誤差 0.01 mm，送料正常"
+   },
+   {
+    "step": "開模目視模面、製品與沖頭端面",
+    "result": "確認廢料附著、跳屑"
+   },
+   {
+    "step": "以銅棒清除模面、沖頭端面與下模落料孔廢料並清潔油污",
+    "result": "廢料清除"
+   },
+   {
+    "step": "更換防跳屑銷並檢查脫料板動作與彈簧",
+    "result": "更換完成、動作正常"
+   },
+   {
+    "step": "降速至 35 spm 試沖並觀察料帶",
+    "result": "試沖 ok，恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "anti_slug_pin"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "提速後若 DIE_PROTECT 間歇跳、送料長度又正常，先開模看模面和沖頭端面有沒有帶屑，不要一直追送料。",
+  "escalation_note": null
+ }
+}

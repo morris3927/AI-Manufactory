@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1105
+ },
+ "output": {
+  "technician_report_raw": "PR03 光幕一直跳 復歸後又FAULT 無法起動 已停機通知課長 等合格電氣人員查 接收端異常 換新+遮斷測試ok 06:35復產",
+  "technician_report_normalized": "夜班約05:37，PR03 光幕重複出現異常，復歸後仍無法起動。現場先停機並確認人員離開危險區，通知主管並記錄光幕狀態。由合格電氣人員檢查後，發現光幕接收端間歇異常，更換接收端並完成遮斷測試。06:35 試運轉正常，恢復生產，停機約55分鐘。",
+  "actions": [
+   {
+    "step": "確認停機並清空危險區人員，回報主管光幕異常",
+    "result": "已停機隔離"
+   },
+   {
+    "step": "記錄光幕異常時間與自我診斷狀態，等待合格人員",
+    "result": "完成記錄"
+   },
+   {
+    "step": "由合格電氣人員檢查光幕迴路與接收端",
+    "result": "接收端間歇異常"
+   },
+   {
+    "step": "由合格電氣人員更換光幕接收端並復歸測試",
+    "result": "更換完成"
+   },
+   {
+    "step": "執行遮斷測試與試運轉",
+    "result": "ok 恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "light_curtain_receiver"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "光幕異常不要一直復歸硬開，先停機通知主管，等合格人員確認修好再做遮斷測試。",
+  "escalation_note": null
+ }
+}

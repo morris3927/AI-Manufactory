@@ -1,0 +1,133 @@
+{
+  "case_id": "CASE-ASM-0054",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4053,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "assembly",
+  "machine_type": "manual_assembly_station",
+  "machine_id": "ASM-L1-MA02",
+  "opened_at": "2026-02-19T18:01:17+08:00",
+  "closed_at": "2026-02-20T03:41:05+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "test_fail",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 69,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2602-47"
+  },
+  "log_signals": [
+    {
+      "t": "2026-02-19T17:57:43+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-02-19T18:01:17+08:00",
+      "signal": "test_result",
+      "value": "DEVICE_NOT_FOUND"
+    },
+    {
+      "t": "2026-02-19T18:01:17+08:00",
+      "signal": "insulation_mohm",
+      "value": 252
+    }
+  ],
+  "technician": {
+    "id": "TECH-49",
+    "level": "L3"
+  },
+  "technician_report_raw": "MA02 測DEVICE_NOT_FOUND連2次NG 先查connector卡扣有扣 重插後仍NG 絕緣252MΩ正常 放大鏡見端子退針 線束壓接不良 隔離可疑批 移交測試工程師",
+  "technician_report_normalized": "MA02 功能測試連續兩次出現 DEVICE_NOT_FOUND，絕緣測試 252 MΩ 正常。先依 SOP-ASM-042 檢查故障連接器，卡扣已扣、公母端無明顯間隙，重插後重測仍未改善。完成 LOTO 後以放大鏡檢查，發現端子在連接器內退針，線束端壓接不良。已隔離故障機殼與同批可疑線束並記錄序號、位置、批號及測試紀錄，因超出產線現場修復能力，移交測試工程師處理。",
+  "first_hypothesis": {
+    "failure_mode_id": "connector_not_seated",
+    "by": "jev",
+    "p": 0.35
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因功能測試連續出現 DEVICE_NOT_FOUND、症狀像連接器未插到位而懷疑 connector_not_seated，但依 SOP 檢查卡扣已扣、無可見間隙且重插無效，放大鏡下才確認為端子退針的線束壓接不良。",
+  "discriminating_evidence": [
+    "test_result 連續兩次為 DEVICE_NOT_FOUND，屬每次測試皆失敗而非時有時無。",
+    "insulation_mohm 為 252 MΩ，絕緣測試正常，線材外皮未見破損跡象。",
+    "依 SOP 檢查卡扣已扣、公母端無可見間隙且重插後仍失敗，放大鏡下見端子在連接器內退針、線束壓接不良。"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "harness_crimp_defect",
+    "description": "線束供應商壓接不良，端子在連接器內退針"
+  },
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP-ASM-042 檢查故障連接器卡扣、公母端與防呆鍵，卡扣已扣且無明顯間隙，重插後重測",
+      "result": "未改善"
+    },
+    {
+      "step": "調閱功能測試紀錄，確認連續兩次 DEVICE_NOT_FOUND、絕緣 252 MΩ 正常",
+      "result": "紀錄一致"
+    },
+    {
+      "step": "LOTO 完成後以放大鏡檢查端子與線束壓接，發現端子在連接器內退針、壓接不良",
+      "result": "發現退針"
+    },
+    {
+      "step": "隔離故障機殼與同批可疑線束，貼不良標示並記錄機殼序號、連接器位置、線束批號與測試紀錄",
+      "result": "完成隔離"
+    },
+    {
+      "step": "移交測試工程師判定線束壓接不良與同批追溯",
+      "result": "已移交"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-042"
+  ],
+  "downtime_min": 575,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "測試工程師",
+  "escalation_note": "線束壓接不良導致端子退針，已將故障機殼、同批線束與測試紀錄移交測試工程師判定與追溯。",
+  "lessons": "DEVICE_NOT_FOUND 連續發生時，重插前後都要看端子，卡扣有扣不代表端子沒退針。",
+  "related_failure_mode_ids": [
+    "connector_not_seated"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

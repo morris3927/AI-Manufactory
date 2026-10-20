@@ -1,0 +1,43 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4058
+ },
+ "output": {
+  "technician_report_raw": "ST02 MES跳PPE告警 護目鏡missing 到場看人剛到站還沒開工 影像角度誤判 庫存26副ok 提醒上線要戴 記錄 恢復生產",
+  "technician_report_normalized": "17:54接獲MES通報ST02有護目鏡未配戴的PPE告警，到場時作業員才剛到站、尚未開始作業，研判為影像角度造成的誤判。現場確認護目鏡庫存26副，數量與尺寸皆足夠，無防護具短缺或靜電防護異常。已提醒作業員上線前依規定配戴並記錄宣導，確認無設備故障後恢復生產。",
+  "actions": [
+   {
+    "step": "接獲MES護目鏡未配戴告警，至ST02確認現場狀況",
+    "result": "已到場"
+   },
+   {
+    "step": "查看作業員動態與影像拍攝角度",
+    "result": "剛到站未開工"
+   },
+   {
+    "step": "確認護目鏡庫存、尺寸與發放量",
+    "result": "26副足夠"
+   },
+   {
+    "step": "提醒作業員上線前配戴護目鏡並記錄宣導",
+    "result": "已提醒"
+   },
+   {
+    "step": "確認無設備或防護具異常，恢復生產",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因MES跳出ppe_missing safety_glasses告警，直覺懷疑PPE／靜電防護未落實；但到場確認作業員剛到站尚未開始作業，且護目鏡庫存26副充足，並無實際缺戴或ESD問題。",
+  "discriminating_evidence": [
+   "MES告警訊號為ppe_missing safety_glasses，時間17:54:33，屬影像觸發而非設備停機訊號",
+   "ppe_stock_count=26，護目鏡庫存與發放量足夠",
+   "false_alarm_story指出作業員剛到站還沒開始作業就被拍到，並非實際缺戴",
+   "final_root_cause=none，檢查後無故障"
+  ],
+  "lessons": "影像告警先確認人員是否已上線作業，再判定有無缺戴，才不會把剛到站的畫面誤當違規。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,140 @@
+{
+  "case_id": "CASE-WLD-0038",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3037,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC01",
+  "opened_at": "2026-09-10T21:13:10+08:00",
+  "closed_at": "2026-09-10T23:33:59+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 18,
+    "recent_changes": [
+      "換工件批 17:50（L-2609-27）"
+    ],
+    "part": "電源支架",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-115"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-10T17:50:59+08:00",
+      "signal": "part_lot_change",
+      "value": "L-2609-27"
+    },
+    {
+      "t": "2026-09-10T18:05:42+08:00",
+      "signal": "weld_defect",
+      "value": "burn_through×3 FX-D"
+    },
+    {
+      "t": "2026-09-10T21:13:10+08:00",
+      "signal": "weld_defect",
+      "value": "lack_of_fusion×2 FX-D"
+    },
+    {
+      "t": "2026-09-10T21:13:10+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 3.2
+    }
+  ],
+  "technician": {
+    "id": "TECH-25",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC01 FX-D 燒穿+未熔合 集中同一治具 量間隙超過0.5mm 定位銷磨耗 夾爪鬆 換銷+夾爪 扭力12Nm 試銲ok",
+  "technician_report_normalized": "RC01 機器人銲接工作站於 FX-D 治具生產電源支架時，接連出現燒穿與未熔合缺陷，且集中於同一治具。調閱紀錄後確認電弧電壓穩定，排除銲接參數問題。進入圍欄檢查發現定位銷磨耗、夾爪鬆動，以塞尺量測工件與基準面間隙超過 0.5 mm。清潔基準面與夾爪齒面後，更換定位銷與夾爪，依標示扭力鎖緊，無標示處以 12 N·m 鎖附。重新量測間隙合格，試銲首件檢查 ok，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "fixture_fitup_gap",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "fixture_fitup_gap",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱銲接缺陷紀錄與治具使用紀錄，比對缺陷位置。",
+      "result": "確認集中 FX-D"
+    },
+    {
+      "step": "進入圍欄目視檢查 FX-D 基準面、定位銷與夾爪。",
+      "result": "定位銷磨耗、夾爪鬆動"
+    },
+    {
+      "step": "以塞尺量測工件與治具基準面間隙，至少量 3 處。",
+      "result": "最大間隙超過 0.5 mm"
+    },
+    {
+      "step": "清潔基準面、定位銷孔與夾爪齒面，更換定位銷與夾爪，依標示扭力鎖緊。",
+      "result": "更換完成"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "重新量測間隙，並在局部排氣運轉下、人員於圍欄外試銲。",
+      "result": "間隙合格、試片 ok"
+    },
+    {
+      "step": "恢復生產前確認：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區，由原上鎖人取下自己的鎖後以正常模式復機",
+      "result": "ok"
+    },
+    {
+      "step": "恢復生產。",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-031"
+  ],
+  "downtime_min": 138,
+  "parts_replaced": [
+    "locating_pin",
+    "clamp_jaw"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換批後若燒穿與未熔合集中在同一治具，先量間隙、查定位銷與夾爪，比先調銲接參數更快找到問題。",
+  "related_failure_mode_ids": [
+    "fixture_fitup_gap"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-WLD-031"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

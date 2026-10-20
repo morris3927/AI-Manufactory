@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3042
+ },
+ "output": {
+  "technician_report_raw": "SP01 熔核小 剝離NG×3 量cap端面過大 修磨次數28 電流9.9kA正常 換cap+修磨 試片ok",
+  "technician_report_normalized": "SP01 點銲 2U 機殼側框時連續出現 3 件熔核偏小、剝離試驗不合格。檢查電極帽端面已變大且修磨次數累計 28 次，點銲電流 9.9 kA 與加壓力均在設定範圍內，判定為電極帽磨耗。停電後更換電極帽並修磨端面，清除銅屑，試片剝離合格後恢復生產。",
+  "actions": [
+   {
+    "step": "調閱點銲歷史並檢查剝離試片",
+    "result": "熔核偏小×3"
+   },
+   {
+    "step": "量測電極帽端面並讀取修磨次數",
+    "result": "端面過大/28次"
+   },
+   {
+    "step": "核對點銲電流與加壓力讀值",
+    "result": "設定範圍內"
+   },
+   {
+    "step": "更換電極帽並清潔電極座錐面",
+    "result": "更換完成"
+   },
+   {
+    "step": "修磨端面至5.0～5.5mm並清銅屑",
+    "result": "尺寸ok"
+   },
+   {
+    "step": "以報廢試片進行剝離試驗",
+    "result": "試片ok"
+   }
+  ],
+  "parts_replaced": [
+   "electrode_cap"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "修磨次數到 28 次已超過門檻，別因為銲點數只有 177 點就延後換電極帽。",
+  "escalation_note": null
+ }
+}

@@ -1,0 +1,137 @@
+{
+  "case_id": "CASE-WLD-0031",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3030,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-01-07T12:38:09+08:00",
+  "closed_at": "2026-01-07T13:30:14+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "arc_unstable",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 8,
+    "recent_changes": [],
+    "part": "1U 機殼後框支架",
+    "fixture_id": "FX-B",
+    "program_id": "PRG-101"
+  },
+  "log_signals": [
+    {
+      "t": "2026-01-07T11:58:09+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 2.8
+    },
+    {
+      "t": "2026-01-07T12:26:51+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 14.0
+    },
+    {
+      "t": "2026-01-07T12:33:37+08:00",
+      "signal": "weld_defect",
+      "value": "spatter×6 工位B 側"
+    },
+    {
+      "t": "2026-01-07T12:38:09+08:00",
+      "signal": "arc_voltage_cv_pct",
+      "value": 16.4
+    },
+    {
+      "t": "2026-01-07T12:38:09+08:00",
+      "signal": "arc_current_a",
+      "value": 139
+    },
+    {
+      "t": "2026-01-07T12:38:09+08:00",
+      "signal": "wire_feed_motor_current_a",
+      "value": 2.4
+    }
+  ],
+  "technician": {
+    "id": "TECH-21",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC02 電壓跳16.4% 電流139 送絲2.4正常 B側噴渣多 查接地夾齒面銲渣鬆 清潔重鎖 回路電阻比正常側高 處理後試銲ok",
+  "technician_report_normalized": "RC02 機器人銲接時電弧電壓變異達 16.4%，電流 139 A 與送絲馬達 2.4 A 正常；B 側工位出現 6 處飛濺，銲道寬窄不一。檢查發現該側治具接地夾齒面有銲渣且夾持鬆動，接地回路電阻高於正常側。清潔接地夾與回路電纜接頭、重新緊固後，量測電阻恢復正常，試銲電弧穩定，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "ground_poor",
+    "by": "jev",
+    "p": 0.83
+  },
+  "final_root_cause": "ground_poor",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查 B 側治具接地夾齒面、夾持面與回路電纜接頭，確認有銲渣與鬆動。",
+      "result": "發現銲渣與鬆動"
+    },
+    {
+      "step": "清潔接地夾齒面、夾持面及回路電纜接頭，去除銲渣與飛濺。",
+      "result": "清潔完成"
+    },
+    {
+      "step": "重新緊固接地夾固定螺栓與回路電纜接頭端子。",
+      "result": "已緊固"
+    },
+    {
+      "step": "以低電阻計量測 B 側接地回路電阻，並與正常側比較。",
+      "result": "恢復正常"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "在局部排氣運轉下、人員於圍欄外試銲，確認電弧與銲道成形。",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-015"
+  ],
+  "downtime_min": 49,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "接地夾齒面與回路接頭要列入每班清潔點檢，B 側電壓跳動時先比對兩側接地電阻。",
+  "related_failure_mode_ids": [
+    "ground_poor"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-015"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

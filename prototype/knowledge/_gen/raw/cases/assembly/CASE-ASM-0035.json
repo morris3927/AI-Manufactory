@@ -1,0 +1,43 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4034
+ },
+ "output": {
+  "technician_report_raw": "ST02 05:14 screw_missing警報 實際12/需求12 相符 查MES時間不同步 NOK對到別件 無漏鎖 復線ok",
+  "technician_report_normalized": "ST02 於 05:14 發生鎖附計數不符警報，系統顯示 screw_missing。現場核對控制器計數，實際 12 顆、需求 12 顆，數量相符；檢視已完成鎖附紀錄均為 OK，送釘機也無逾時或卡釘警報。進一步比對控制器與 MES 時間，發現兩者不同步，NOK 紀錄對應到其他工件。現場無漏鎖或設備故障，確認誤報後恢復生產。",
+  "actions": [
+   {
+    "step": "核對控制器鎖附計數與工單需求數量",
+    "result": "相符 12/12"
+   },
+   {
+    "step": "檢視已完成鎖附紀錄與送釘機警報",
+    "result": "均 OK 無逾時"
+   },
+   {
+    "step": "比對控制器與 MES 時間戳記",
+    "result": "發現時間不同步"
+   },
+   {
+    "step": "確認 NOK 紀錄對應工件與現場孔位",
+    "result": "無漏鎖 誤報"
+   },
+   {
+    "step": "恢復生產並回報班長",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始看到 screw_missing=true 且警報為鎖附計數不符，便懷疑漏鎖；但實際計數 12 與需求 12 相同，且完成紀錄皆 OK，後來比對時間戳記才確認是控制器與 MES 時間不同步造成紀錄對錯工件。",
+  "discriminating_evidence": [
+   "screw_count_actual=12 與 screw_count_required=12 相等",
+   "已完成鎖附紀錄均為 OK",
+   "送釘機無逾時警報",
+   "控制器與 MES 時間不同步，NOK 紀錄對到錯的工件"
+  ],
+  "lessons": "遇到數量警報先核對實際計數與需求數，再比對控制器和 MES 時間，可少繞一圈。",
+  "escalation_note": null
+ }
+}

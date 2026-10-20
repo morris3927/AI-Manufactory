@@ -1,0 +1,44 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1027
+ },
+ "output": {
+  "technician_report_raw": "FD02 提速40後導正孔單邊拉長 送料誤差0.01正常 導正銷磨亮 換新+釋放角度調回匹配40spm 試沖ok",
+  "technician_report_normalized": "FD02 送料機在沖速由 32 調到 40 spm 後，4U 側板料帶定位不穩，導正孔出現單向拉長，導正銷表面磨亮。無料空轉量測送料長度誤差約 0.01 mm，仍在 ±0.03 mm 內，排除送料長度異常。核對參數變更記錄後，發現導正釋放角度未隨 40 spm 同步調整；清潔導正孔與導正板，更換磨亮導正銷，並以 0.5° 為一階重新調整釋放角度。寸動確認導正銷進出時機後試沖，定位恢復正常，生產 ok。",
+  "actions": [
+   {
+    "step": "核對 13:42 沖速 32→40 spm 變更記錄與導正釋放角度參數",
+    "result": "角度未同步匹配"
+   },
+   {
+    "step": "無料空轉連續量測送料長度與導正釋放角度",
+    "result": "送料誤差 0.01 mm，長度正常"
+   },
+   {
+    "step": "拆導正板與脫料板，檢查導正銷及導正孔磨耗",
+    "result": "導正銷磨亮、孔口單向拉長"
+   },
+   {
+    "step": "清潔導正孔與導正板襯套，更換磨亮導正銷並依資料表扭力鎖回",
+    "result": "更換與清潔完成"
+   },
+   {
+    "step": "以 0.5° 為一階調整導正釋放角度，對照目前 40 spm 參數",
+    "result": "角度匹配 40 spm"
+   },
+   {
+    "step": "寸動觀察導正銷進入與退出時機，並試沖 4U 側板",
+    "result": "定位正常、試沖 ok"
+   }
+  ],
+  "parts_replaced": [
+   "pilot_pin"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "提速後要同步核對導正釋放角度，不要只看送料長度誤差。",
+  "escalation_note": null
+ }
+}

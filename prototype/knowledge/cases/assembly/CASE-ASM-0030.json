@@ -1,0 +1,170 @@
+{
+  "case_id": "CASE-ASM-0030",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4029,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "composite",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2025-12-09T13:15:19+08:00",
+  "closed_at": "2025-12-09T14:14:23+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 62,
+    "recent_changes": [
+      "換螺絲批 11:16（SL-2512-76）"
+    ],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2512-22"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-09T11:16:30+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2512-76"
+    },
+    {
+      "t": "2025-12-09T11:21:42+08:00",
+      "signal": "final_angle_deg",
+      "value": 2111
+    },
+    {
+      "t": "2025-12-09T12:35:19+08:00",
+      "signal": "nok_hole_id",
+      "value": "H10"
+    },
+    {
+      "t": "2025-12-09T12:36:00+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2025-12-09T12:53:20+08:00",
+      "signal": "nok_hole_id",
+      "value": "H10"
+    },
+    {
+      "t": "2025-12-09T12:53:21+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2025-12-09T13:11:48+08:00",
+      "signal": "nok_hole_id",
+      "value": "H10"
+    },
+    {
+      "t": "2025-12-09T13:11:56+08:00",
+      "signal": "screw_result",
+      "value": "NOK_HIGH_TORQUE_EARLY"
+    },
+    {
+      "t": "2025-12-09T13:15:19+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2025-12-09T13:15:19+08:00",
+      "signal": "rundown_torque_nm",
+      "value": 0.38
+    }
+  ],
+  "technician": {
+    "id": "TECH-44",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 H10一直NOK 初段扭力高 換批後開始 送釘盤混到不同長度螺絲 隔離 LOTO後清軌道 清孔牙鋅渣 換正確M3 試鎖ok",
+  "technician_report_normalized": "ST02 於 H10 連續 NOK，初段扭力偏高，最終角度 2111° 偏離正常範圍，且在 11:16 換螺絲批 SL-2512-76 後才開始。檢查送釘盤、補料盒與待鎖螺絲，發現混入長度不同的螺絲，量測與 BOM 不符；H10 孔牙另有鋅渣堵塞，為次要斜牙／滑牙問題。已依 LOTO-ASM-TOOL-01 斷電並關送釘機氣源，隔離混料與可疑工件，清空送釘盤、軌道與分離器，清潔 H10 孔牙並換正確 M3 螺絲，試鎖與首件確認 OK，恢復生產，停機 55 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "wrong_screw_type",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "wrong_screw_type",
+  "contributing_causes": [
+    "cross_thread_strip"
+  ],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "目視送釘盤、補料盒與待鎖螺絲，核對料盒標籤、頭型、長度與牙距",
+      "result": "發現混入異規螺絲"
+    },
+    {
+      "step": "讀取鎖附控制器換批紀錄與最終角度，比對最近 3 批補料標籤與 BOM",
+      "result": "確認換批後才 NOK"
+    },
+    {
+      "step": "量測送釘盤與補料盒螺絲長度、外徑、牙距，檢查起子頭與 H10 孔牙",
+      "result": "螺絲規格不符；起子頭正常，孔牙有鋅渣"
+    },
+    {
+      "step": "隔離送釘盤、補料盒、待鎖螺絲與已鎖可疑工件，拍照並依批號追溯",
+      "result": "完成隔離與追溯"
+    },
+    {
+      "step": "清空送釘盤、送釘軌道與分離器，清除混料，清潔 H10 孔牙鋅渣，更換正確 M3 螺絲",
+      "result": "混料與孔牙堵塞排除"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以試片與報廢件試鎖，再做首件確認",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-022",
+    "SOP-ASM-012"
+  ],
+  "downtime_min": 55,
+  "parts_replaced": [
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換批後先核對料盒標籤與螺絲長度，同一孔重複 NOK 也要回頭查混料，不要只清孔牙。",
+  "related_failure_mode_ids": [
+    "wrong_screw_type",
+    "cross_thread_strip"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-022",
+    "SOP-ASM-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

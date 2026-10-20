@@ -1,0 +1,156 @@
+{
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "sop-gen-wa-v1",
+    "seed": 223
+  },
+  "failure_mode_id": "missing_screw",
+  "output": {
+    "title": "漏鎖之檢查、補鎖與首件確認",
+    "symptoms": [
+      "少鎖一顆，工單要求數量對不上。",
+      "孔位沒有螺絲，目視或影像檢出缺孔。",
+      "鎖附數量不符，控制器計數少於工單要求。",
+      "重工後漏鎖，重工完直接流入下一站。",
+      "交接班後漏打，換班後才發現少鎖。"
+    ],
+    "prerequisites": {
+      "tools": [
+        "扭力分析儀（含轉接座）",
+        "十字起子頭（與 M3 螺絲頭型相符）",
+        "手電筒或內視鏡",
+        "試片或報廢件",
+        "工單、鎖附計數與影像紀錄檢視裝置",
+        "隔離標籤與記號筆"
+      ],
+      "parts": [
+        "M3 機殼螺絲（通用名稱）",
+        "壓鉚螺母（通用名稱）",
+        "十字起子頭（通用名稱）"
+      ],
+      "skill_level": "維修技術員 L2"
+    },
+    "ppe": [
+      "安全鞋（搬運機殼）"
+    ],
+    "inspect": [
+      {
+        "action": "核對工單要求數量、控制器鎖附計數、影像檢測結果與警報紀錄，確認是否為 screw_count_actual 小於 screw_count_required、screw_missing=true 或 COUNT_MISMATCH，並查看有無 FEEDER_TIMEOUT。",
+        "criteria": "若計數少於工單要求且影像檢出缺孔、已完成鎖附紀錄皆為 OK、無 FEEDER_TIMEOUT，則支持本模式；若出現 FEEDER_TIMEOUT 或吸附失敗，改懷疑 screw_feeder_jam。",
+        "caution": "不得關閉鎖附計數或防錯功能來比對；應保留原始紀錄。",
+        "requires_energized": false,
+        "ref": [
+          "A4"
+        ]
+      },
+      {
+        "action": "依工單孔位逐孔目視，必要時使用手電筒或內視鏡確認有無螺絲，並以記號筆標記缺孔位置。",
+        "criteria": "若找到 1 孔（模擬值）以上缺螺絲且孔內無斷頭或異物，判定為漏鎖可疑件；若孔內有歪斜螺絲、異物或送釘軌道卡料，改懷疑 screw_feeder_jam 或斜牙。",
+        "caution": "機殼鈑金銳邊可能割傷，應戴防割手套並避免手指深入孔位。",
+        "requires_energized": false,
+        "ref": [
+          "A1"
+        ]
+      },
+      {
+        "action": "專門區分送釘機卡釘：檢查送釘機軌道、分離器、吸嘴與起子端有無歪斜螺絲、異物或規格不同螺絲，並確認有無 FEEDER_TIMEOUT 或吸附失敗紀錄。",
+        "criteria": "若送釘機無逾時、軌道與分離器無卡料、起子端供釘正常且已鎖螺絲扭力與角度正常，判定本模式漏鎖；若軌道或分離器卡著歪斜螺絲、異物、規格不同螺絲，或出現 FEEDER_TIMEOUT、吸附失敗，改懷疑 screw_feeder_jam，走 SOP-ASM-021。",
+        "caution": "不可通氣轉動振動盤，也不可將手伸入送釘軌道或分離器。",
+        "requires_energized": false,
+        "ref": [
+          "none"
+        ]
+      },
+      {
+        "action": "查閱換線、補料、重工、交接班等作業中斷紀錄，並抽查同批前後件之鎖附計數與影像。",
+        "criteria": "若漏鎖集中在作業中斷後、已完成鎖附紀錄皆 OK、送釘機無逾時，支持本模式；若同批多件普遍計數不符，通知品保工程師擴大追溯。",
+        "caution": null,
+        "requires_energized": false,
+        "ref": [
+          "A4"
+        ]
+      },
+      {
+        "action": "檢查缺孔之孔牙與壓鉚螺母狀態，確認孔內無異物、壓鉚螺母無鬆動、孔牙完整。",
+        "criteria": "若孔牙完整且壓鉚螺母無鬆動，可進入補鎖；若孔牙損傷、斜牙、滑牙或壓鉚螺母鬆動，改走 SOP-ASM-012。",
+        "caution": "不可用電動起子對實際工件試鎖；試鎖只能使用試片或報廢件。",
+        "requires_energized": false,
+        "ref": [
+          "A1"
+        ]
+      }
+    ],
+    "repair": [
+      {
+        "action": "將可疑工件貼隔離標籤，記錄工單、序號、缺孔位置、班別、時間、操作員、鎖附計數與影像，並隔離同批前後件待確認。",
+        "caution": "未完成追溯前不得直接補鎖混入良品；不得關閉防錯或計數功能。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "A4"
+        ]
+      },
+      {
+        "action": "清除孔內異物並確認壓鉚螺母無鬆動、孔牙完整；若孔牙損傷改走 SOP-ASM-012，若起子頭磨耗打滑改走 SOP-ASM-013。",
+        "caution": "更換壓鉚螺母須依板金維修規範處理，不可硬鎖或強行攻牙。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "A1"
+        ]
+      },
+      {
+        "action": "使用試片或報廢件試鎖，確認起子頭與送釘機供釘正常，控制器目標扭力為 0.8 N·m（模擬值）且判定 OK。",
+        "caution": "試鎖時手不得置於起子頭下方；不得用實際工件試鎖。",
+        "requires_energized": true,
+        "requires_supervisor": true,
+        "ref": [
+          "A4"
+        ]
+      },
+      {
+        "action": "對實際工件缺孔補鎖工單指定之 M3 螺絲，補鎖後確認鎖附計數更新與影像檢出 OK，並依 verify 執行首件確認。",
+        "caution": "補鎖前再次確認孔位與螺絲規格；不得放寬扭力判定上下限或關閉鎖附計數。",
+        "requires_energized": true,
+        "requires_supervisor": true,
+        "ref": [
+          "A4"
+        ]
+      }
+    ],
+    "verify": [
+      {
+        "action": "執行首件確認：逐孔目視與影像確認數量等於工單要求，screw_count_actual 等於 screw_count_required，無 screw_missing 與 COUNT_MISMATCH。",
+        "criteria": "首件所有工單孔位均有螺絲，鎖附計數等於要求數量，影像無缺孔，且控制器紀錄無 COUNT_MISMATCH。",
+        "requires_energized": false,
+        "ref": [
+          "A4"
+        ]
+      },
+      {
+        "action": "使用扭力分析儀對首件或試片抽測 3 件（模擬值），確認目標扭力 0.8 N·m（模擬值）與角度曲線在原設定範圍內（模擬值）。",
+        "criteria": "抽測值落在控制器原設定判定範圍內（模擬值），角度曲線無異常；若浮鎖或扭力未達，改走 SOP-ASM-011；若斜牙或滑牙，改走 SOP-ASM-012。",
+        "requires_energized": true,
+        "ref": [
+          "A4",
+          "A1"
+        ]
+      },
+      {
+        "action": "確認同批前後件抽查與追溯紀錄完成，隔離品已標示，影像與計數紀錄已保存。",
+        "criteria": "同批抽查 5 件（模擬值）均無漏鎖且計數相符；若再有漏鎖，通知品保工程師並擴大追溯。",
+        "requires_energized": false,
+        "ref": [
+          "A4"
+        ]
+      }
+    ],
+    "isolate_caution": "本模式常發生在換線、補料、重工或交接班後，隔離前應先保留工單、鎖附計數與影像紀錄，並確認送釘機與起子控制器電源、氣源及扭力臂彈簧能量已隔離，避免補鎖後無法追溯。",
+    "escalate_if": [
+      "若送釘機出現 FEEDER_TIMEOUT、吸附失敗，或軌道／分離器卡著歪斜螺絲、異物、規格不同螺絲 → 改走 SOP-ASM-021（送釘機卡釘）。",
+      "若補鎖前發現孔牙損傷、斜牙、滑牙或壓鉚螺母鬆動 → 改走 SOP-ASM-012（斜牙／滑牙）。",
+      "若同批多件漏鎖、鎖附計數與影像紀錄持續不一致，或防錯功能異常 → 通知品保工程師並隔離追溯；必要時通知設備工程師。"
+    ],
+    "lessons": "作業中斷後不要只看已完成鎖附紀錄都是 OK，務必比對工單要求數量、鎖附計數與影像，並在補鎖後完成首件確認與追溯。"
+  }
+}

@@ -1,0 +1,167 @@
+{
+  "case_id": "CASE-STP-0006",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1005,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L2-FD04",
+  "opened_at": "2025-12-16T05:30:29+08:00",
+  "closed_at": "2025-12-16T06:46:19+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam_suspected",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 49,
+    "recent_changes": [
+      "導正釋放角度由 215° 改為 200° 04:02"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2512-351"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-16T04:03:04+08:00",
+      "signal": "param_change",
+      "value": "pilot_release_angle_deg 215→200"
+    },
+    {
+      "t": "2025-12-16T05:17:00+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.03
+    },
+    {
+      "t": "2025-12-16T05:21:58+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.1
+    },
+    {
+      "t": "2025-12-16T05:27:01+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.18
+    },
+    {
+      "t": "2025-12-16T05:30:29+08:00",
+      "signal": "feed_length_error_mm",
+      "value": 0.25
+    },
+    {
+      "t": "2025-12-16T05:30:29+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2025-12-16T05:30:29+08:00",
+      "signal": "feed_rate",
+      "value": 0
+    }
+  ],
+  "technician": {
+    "id": "TECH-12",
+    "level": "L2"
+  },
+  "technician_report_raw": "FD04 05:30 MISFEED 送料偏短 先查導正釋放角 04:02改200 空轉量測正常 導正銷沒拉長 下滾輪亮帶+油污 清潔後仍偏 換下滾輪 寸動ok",
+  "technician_report_normalized": "FD04 於 05:30 發生 MISFEED，送料長度誤差由 0.03 mm 逐步累積到 0.25 mm，料帶送不到位。因 04:02 曾把導正釋放角度由 215° 改為 200°，先檢查導正釋放時機；無料空轉量測誤差仍在 ±0.03 mm 內，導正銷與導正孔無單向拉長，排除釋放時機問題。續查送料滾輪，下滾輪表面有亮帶與油污，料帶表面有滑痕，清潔後送料仍偏短；更換下送料滾輪並低速寸動試送，誤差回到 0.02 mm，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "pilot_release_timing",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "feed_roller_wear",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "因為 04:02 才把導正釋放角度由 215° 改為 200°，且送料誤差在 13 分鐘內逐步變大，很自然先懷疑導正釋放時機；但無料空轉量測誤差仍在 ±0.03 mm 內，導正銷與導正孔也沒有單向拉長，才確認不是釋放時機而是下滾輪磨損打滑。",
+  "discriminating_evidence": [
+    "送料長度誤差從 05:17 的 0.03 mm 爬升到 05:30 的 0.25 mm，屬 5～15 分鐘內逐步累積，不是單一沖次跳變。",
+    "無料空轉量測送料長度誤差仍在 ±0.03 mm 內，導正銷無磨亮、導正孔無單向拉長。",
+    "下滾輪表面有亮帶與油污，料帶表面有滑痕，清潔後送料仍偏短。",
+    "距上次保養 49 天，且前 60 分鐘內沒有換料捲紀錄，料厚 0.80 mm 在公差內。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-FEED-01 停機、上鎖掛牌，下游沖床 PR03 依 LOTO-PRESS-MECH-01 連動上鎖，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 04:02 參數變更，檢查導正釋放角度與導正銷狀態",
+      "result": "角度已改為 200°，導正銷無磨亮、導正孔無單向拉長，排除"
+    },
+    {
+      "step": "通電測試前依 LOTO-FEED-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "無料空轉量測送料長度 10 次",
+      "result": "誤差 ±0.03 mm 內，排除導正時機"
+    },
+    {
+      "step": "檢查送料滾輪與料帶表面",
+      "result": "下滾輪亮帶、油污，料面滑痕"
+    },
+    {
+      "step": "清潔滾輪亮帶處並量測料厚",
+      "result": "料厚 0.80 mm 公差內，送料仍偏短"
+    },
+    {
+      "step": "更換下送料滾輪",
+      "result": "誤差恢復 0.02 mm"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "低速寸動送料 10 次並試沖",
+      "result": "ok，恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-014",
+    "SOP-STP-012"
+  ],
+  "downtime_min": 75,
+  "parts_replaced": [
+    "feed_roll_lower"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "送料誤差慢慢爬升時，先別被剛改的參數牽著走，滾輪亮帶與料面滑痕也要一起看。",
+  "related_failure_mode_ids": [
+    "feed_roller_wear",
+    "pilot_release_timing"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-014",
+    "SOP-STP-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

@@ -1,0 +1,154 @@
+{
+  "case_id": "CASE-STP-0023",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1022,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2025-11-29T22:25:41+08:00",
+  "closed_at": "2025-11-29T23:53:15+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 7,
+    "recent_changes": [
+      "換模 21:23（D-1U-BASE-01）"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2511-292"
+    },
+    "die_id": "D-1U-BASE-01",
+    "part": "1U 機殼底板"
+  },
+  "log_signals": [
+    {
+      "t": "2025-11-29T21:24:00+08:00",
+      "signal": "die_change",
+      "value": "D-1U-BASE-01"
+    },
+    {
+      "t": "2025-11-29T21:28:15+08:00",
+      "signal": "shut_height_mm",
+      "value": 412.5
+    },
+    {
+      "t": "2025-11-29T21:30:19+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 13
+    },
+    {
+      "t": "2025-11-29T22:24:49+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 15
+    },
+    {
+      "t": "2025-11-29T22:25:01+08:00",
+      "signal": "stroke_count_since_regrind",
+      "value": 70870
+    }
+  ],
+  "technician": {
+    "id": "TECH-06",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 換模後首批左側毛邊大+導正孔壓痕 以為沖頭磨耗 查沖次70870未達80000 噸位差15% 定位銷單邊磨亮 間隙0.15 換銷+襯套 試沖ok",
+  "technician_report_normalized": "換模後首批即出現左側毛邊變大、導正孔單側壓痕並伴隨異音。先依刃口磨耗方向檢查，量測毛邊高度並核對沖頭沖次 70,870 次，未達 80,000 次研磨基準，左右沖壓力平衡偏差 15%，與刃口磨耗特徵不符。改查模具定位，停機後以厚薄規量測定位銷與襯套單邊間隙約 0.15 mm，定位銷有單側偏磨。清潔定位面後更換定位銷與襯套，寸動空轉讀取左右噸位平衡恢復至 2%，試沖首批確認毛邊與壓痕消失，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "punch_edge_wear",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "die_misalignment",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "換模後首批就出現單側毛邊與異音，加上沖次已累積 70,870 次接近研磨基準，一開始才會懷疑刃口磨耗；但沖次未達 80,000，且毛邊是換模後立即出現、左右噸位差達 15%，與刃口磨耗「漸進惡化、左右平衡正常」的特徵不符。",
+  "discriminating_evidence": [
+    "沖次 70,870 未達 80,000 研磨基準，毛邊卻是換模後首批立即出現，並非隨沖次漸進",
+    "左右沖壓力平衡偏差 15%，超過 10% 門檻，刃口磨耗通常左右平衡正常",
+    "閉模高度 412.5 mm 與模具資料卡相符，排除模高設定偏差",
+    "定位銷與襯套單邊間隙量得 0.15 mm，銷面單側磨亮，製品缺陷集中同一側"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢視換模後首批料帶與製品，標記毛邊、導正孔壓痕與卡料位置",
+      "result": "缺陷集中在左側"
+    },
+    {
+      "step": "依第一判斷量測毛邊高度，核對沖頭沖次與沖壓力歷史值",
+      "result": "沖次 70,870 未達 80,000，排除刃口磨耗"
+    },
+    {
+      "step": "讀取左右沖壓力平衡值並比對模具資料卡閉模高度",
+      "result": "平衡差 15%，模高 412.5 mm 相符"
+    },
+    {
+      "step": "停機後以厚薄規量測定位銷與襯套單邊間隙，檢查定位面",
+      "result": "單邊間隙 0.15 mm，定位銷偏磨"
+    },
+    {
+      "step": "清潔定位面與襯套孔，更換定位銷與定位銷襯套",
+      "result": "更換完成"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動空轉讀取左右噸位平衡並試沖首批",
+      "result": "平衡恢復 2%，試沖 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-033",
+    "SOP-STP-021"
+  ],
+  "downtime_min": 85,
+  "parts_replaced": [
+    "die_locating_pin",
+    "locating_pin_bushing"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後首批不良先看左右噸位平衡與定位銷間隙，不要一看到毛邊就抓沖頭磨耗。",
+  "related_failure_mode_ids": [
+    "die_misalignment",
+    "punch_edge_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-033",
+    "SOP-STP-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

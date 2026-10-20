@@ -1,0 +1,153 @@
+{
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "sop-gen-v1",
+    "seed": 57
+  },
+  "failure_mode_id": "central_lube_fault",
+  "output": {
+    "failure_mode_id": "central_lube_fault",
+    "title": "機台集中潤滑異常（壓力低／油位低）之檢查與修復",
+    "symptoms": [
+      "集中潤滑警報燈亮，HMI 出現 CENTRAL_LUBE_LOW。",
+      "潤滑油位低於油位計下限，或補油後很快又下降。",
+      "滑塊或導軌有異音，聽起來像乾摩擦。",
+      "曲軸軸承溫度在數小時內慢慢升高。",
+      "模具與製品表面看起來沒有拉痕或黏模。"
+    ],
+    "prerequisites": {
+      "tools": [
+        "扳手組",
+        "油壺或加油槍",
+        "點溫計",
+        "擦拭布",
+        "三用電表",
+        "手動泵浦"
+      ],
+      "parts": [
+        "集中潤滑油",
+        "吸入濾網",
+        "油管與接頭",
+        "壓力開關"
+      ],
+      "skill_level": "維修技術員 L2"
+    },
+    "ppe": [
+      "安全鞋",
+      "防割手套",
+      "護目鏡",
+      "耳塞",
+      "耐油手套"
+    ],
+    "inspect": [
+      {
+        "action": "查看集中潤滑油箱油位計、泵浦附近壓力表與油管接頭；比對現場點檢表及警報紀錄中之 CENTRAL_LUBE_LOW 與 lube_pressure_bar 趨勢。",
+        "criteria": "油位低於油位計下限，或現場壓力表曾低於 1.0 bar（模擬值），且警報紀錄有 CENTRAL_LUBE_LOW → 支持本模式；若油位正常、壓力維持在 1.0 bar（模擬值）以上，且只有模具表面拉痕 → 改懷疑 die_lubrication_insufficient。",
+        "caution": "油品可能造成滑倒，地面油污先以吸油布處理。",
+        "requires_energized": false,
+        "ref": [
+          "L3"
+        ]
+      },
+      {
+        "action": "沿潤滑泵至分配閥、導軌與曲軸軸承之油路，檢查油管有無壓扁、硬化、滲漏、接頭鬆脫；拆開分配閥出口接頭查看出油。",
+        "criteria": "油管滲漏、壓扁、接頭鬆脫，或分配閥出口無油流出 → 支持本模式；若油路外觀正常且各潤滑點有油，但模具噴油器油箱低液位或噴油次數下降 → 改懷疑 die_lubrication_insufficient。",
+        "caution": "拆接頭前以擦拭布承接殘油；不得用壓縮空氣對油管吹氣，以免油霧噴濺。",
+        "requires_energized": false,
+        "ref": [
+          "L13"
+        ]
+      },
+      {
+        "action": "以點溫計量測導軌、曲軸軸承座與相鄰軸承溫度，並查看溫度趨勢；同時聽診滑塊異音。",
+        "criteria": "軸承座或導軌溫度超過 60 °C（模擬值），或同一軸承在數小時內由約 40 °C（模擬值）緩升至 60 °C（模擬值）以上，且與相鄰點差超過 10 °C（模擬值）→ 支持本模式；若溫度正常、換模後才發生，且平衡缸壓力與模具資料差超過 0.3 bar（模擬值）→ 改懷疑 counterbalance_misset。",
+        "caution": "點溫計應對準軸承座金屬面，勿量旋轉中飛輪或皮帶。",
+        "requires_energized": false,
+        "ref": [
+          "L2",
+          "L13"
+        ]
+      },
+      {
+        "action": "檢查成形件表面、模仁、脫料板有無拉痕、黏模或料屑附著；查看模具噴油器噴油次數與模具潤滑油箱液位。",
+        "criteria": "成形件表面有拉痕、黏模或料屑附著，且模具潤滑油箱低液位或噴油次數下降 → 改懷疑 die_lubrication_insufficient（SOP-STP-035）；若製品與模具表面正常，只有集中潤滑警報、油位低或軸承溫升 → 判定為本模式。",
+        "caution": "檢查模仁時使用護目鏡與防割手套，勿將手伸入閉模區。",
+        "requires_energized": false,
+        "ref": [
+          "none"
+        ]
+      }
+    ],
+    "repair": [
+      {
+        "action": "補充集中潤滑油至油位計標示範圍內，清潔加油口與油位計；確認使用現場指定之潤滑油。",
+        "caution": "不同黏度或不同種類油品不得混用；油品接觸皮膚應立即擦拭。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "L3"
+        ]
+      },
+      {
+        "action": "拆洗或更換吸入濾網、分配閥濾網，以及壓扁、硬化或滲漏之油管與接頭。",
+        "caution": "拆油管前確認泵浦停止且無殘壓；使用不易掉棉絮之擦拭布。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "L13"
+        ]
+      },
+      {
+        "action": "由電氣合格人員檢查低油位開關與壓力開關接點動作，量測斷開與閉合狀態；異常時更換同規格通用件。",
+        "caution": "不得以任何方式使開關失去動作；電氣檢查須由電氣合格人員執行。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "L2"
+        ]
+      },
+      {
+        "action": "以手動泵浦對各潤滑點加壓，確認導軌與曲軸軸承油孔出油順暢，油路無氣阻。",
+        "caution": "加壓時人員避開油管接頭方向，避免殘油噴濺。",
+        "requires_energized": false,
+        "requires_supervisor": false,
+        "ref": [
+          "L13"
+        ]
+      }
+    ],
+    "verify": [
+      {
+        "action": "以寸動起動集中潤滑泵，觀察壓力表在 5 分鐘內（模擬值）建立至 1.0 bar（模擬值）以上，並檢查各接頭無滲漏。",
+        "criteria": "壓力達 1.0 bar（模擬值）以上且無滲漏 → 通過；若壓力無法建立或 CENTRAL_LUBE_LOW 再出現 → 通知設備工程師／原廠技師。",
+        "requires_energized": true,
+        "ref": [
+          "L3"
+        ]
+      },
+      {
+        "action": "以寸動運轉數個行程，量測導軌與曲軸軸承溫度，並以聽診棒確認滑塊異音。",
+        "criteria": "溫度低於 60 °C（模擬值），與室溫差小於 15 °C（模擬值），且無異常異音 → 通過；若溫度仍上升或異音加劇 → 通知設備工程師／原廠技師。",
+        "requires_energized": true,
+        "ref": [
+          "L13"
+        ]
+      },
+      {
+        "action": "以寸動試沖 3 次（模擬值）後停機，檢查製品與模具表面有無拉痕、黏模、料屑；確認模具潤滑噴油次數正常。",
+        "criteria": "製品表面無拉痕、黏模、料屑，且集中潤滑壓力維持 1.0 bar（模擬值）以上 → 完成；若出現拉痕、黏模或料屑 → 改懷疑 die_lubrication_insufficient，改走 SOP-STP-035。",
+        "requires_energized": true,
+        "ref": [
+          "L3"
+        ]
+      }
+    ],
+    "isolate_caution": "集中潤滑泵可能由獨立迴路供電，上鎖時須確認泵浦電源與主電源一併隔離並掛牌，避免他人誤起動。",
+    "escalate_if": [
+      "補油、清洗濾網與更換油管後，集中潤滑壓力仍低於 1.0 bar（模擬值）或 CENTRAL_LUBE_LOW 重複出現 → 通知設備工程師／原廠技師。",
+      "軸承溫度超過 60 °C（模擬值）且持續上升，或滑塊異音加劇 → 通知設備工程師／原廠技師。",
+      "製品表面出現拉痕、黏模或料屑，且模具潤滑油箱低液位或噴油次數下降 → 改走 SOP-STP-035。"
+    ],
+    "lessons": "集中潤滑警報不要只按復歸；先看油位與壓力，再摸軸承溫度，才不會把機台潤滑問題誤判成模具拉傷。"
+  }
+}

@@ -1,0 +1,149 @@
+{
+  "case_id": "CASE-ASM-0013",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4012,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2025-12-06T18:29:10+08:00",
+  "closed_at": "2025-12-06T18:46:52+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "rule",
+    "event_type": "nok_rate_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 59,
+    "recent_changes": [],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2512-24"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-05T12:29:10+08:00",
+      "signal": "nok_rate_pct",
+      "value": 0.8
+    },
+    {
+      "t": "2025-12-06T08:29:10+08:00",
+      "signal": "nok_rate_pct",
+      "value": 2.2
+    },
+    {
+      "t": "2025-12-06T18:21:48+08:00",
+      "signal": "nok_hole_id",
+      "value": "H09"
+    },
+    {
+      "t": "2025-12-06T18:21:51+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2025-12-06T18:26:15+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2025-12-06T18:26:38+08:00",
+      "signal": "nok_hole_id",
+      "value": "H12"
+    },
+    {
+      "t": "2025-12-06T18:29:10+08:00",
+      "signal": "nok_rate_pct",
+      "value": 3.8
+    },
+    {
+      "t": "2025-12-06T18:29:10+08:00",
+      "signal": "bit_cycle_count",
+      "value": 41597
+    }
+  ],
+  "technician": {
+    "id": "TECH-50",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 H09/H12 NOK_LOW_TORQUE 打滑 bit 41597次 起子投磨圓 LOTO拔插頭關氣源 換bit 試片5顆ok",
+  "technician_report_normalized": "ST02本班NOK率升至3.8%，H09、H12連續出現NOK_LOW_TORQUE。試鎖有起子頭打滑聲，螺絲十字槽磨花、起子頭刃口圓化；控制器顯示累計使用41597次，已超過40000次。依LOTO-ASM-TOOL-01拔插頭並關送釘機氣源，拆下磨耗起子頭，清潔固定座、夾頭、吸嘴與送釘軌道，裝新起子頭並確認定位無偏擺。隔離H09、H12可疑工件並追溯，以報廢件試鎖5顆正常，首件確認後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "bit_wear_camout",
+    "by": "jev",
+    "p": 0.81
+  },
+  "final_root_cause": "bit_wear_camout",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依LOTO-ASM-TOOL-01拔除電源插頭並關閉送釘機氣源，確認設備停止。",
+      "result": "完成"
+    },
+    {
+      "step": "調閱NOK紀錄並以報廢件試鎖，H09／H12出現cam-out打滑聲，十字槽磨花、起子頭刃口圓化，bit_cycle_count為41597次。",
+      "result": "確認起子頭磨耗"
+    },
+    {
+      "step": "拆下舊起子頭，清潔起子頭固定座、夾頭、吸嘴及送釘軌道。",
+      "result": "完成"
+    },
+    {
+      "step": "裝上新起子頭，確認完全卡入定位、無偏擺與鬆動。",
+      "result": "ok"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "隔離H09／H12可疑工件並追溯，以報廢件試鎖5顆並做首件確認。",
+      "result": "5/5 ok 恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-013"
+  ],
+  "downtime_min": 17,
+  "parts_replaced": [
+    "driver_bit"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "起子頭累計次數快到四萬次就先檢查刃口，不要等NOK率爬上來才換。",
+  "related_failure_mode_ids": [
+    "bit_wear_camout"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-013"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

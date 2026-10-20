@@ -1,0 +1,225 @@
+# 組裝線故障模式目錄（J3 根因選擇、J5 結案回寫共用）
+# data_label: 模擬資料 —— 本檔所有故障模式、門檻與 SOP 編號皆為團隊依公開資料自行撰寫之模擬資料，
+# 與任何企業實際製程無關。數值門檻一律為模擬值，未經現場驗證。
+# 規格：02_規格定義/07_RAG知識庫資料.md §4.3、§5.3；01_初選問題處理.md C3（PPE 類事件不啟動 LLM 診斷，只派工＋SOP 查表）
+# 假設：M3 機殼螺絲鎖入壓鉚螺母，目標扭力 0.8 N·m（模擬值）；線材彎曲半徑門檻引用 NASA-STD-8739.4A 表 7-1（公有領域）。
+# 共 10 個模式。review_status: approved（AI 角色扮演審核，非真人專家審核；見 reviews/2026-10-21_weld_asm.md）
+assembly:
+  torque_not_reached:
+    label: 扭力未達／浮鎖
+    criteria: 鎖附結果判低扭力 NOK，最終扭力低於 0.72 N·m（模擬值），且最終角度也低於正常下限（沒有轉完應有的圈數）；螺絲頭與工件之間可見間隙、沒有貼平；NOK 分散在不同孔位，常集中在同一位作業員或同一班；旋入初段扭力正常、起子頭與十字槽完好；以正確下壓力重新補鎖即可達標
+    symptoms: [浮鎖, 螺絲沒鎖平, 扭力不夠, 起子提早停, 補鎖就好了]
+    log_signals:
+      - {signal: screw_result, value: NOK_LOW_TORQUE}
+      - {signal: final_angle_deg, op: "<", value: 1080, note: 角度也偏低（模擬值）}
+      - {signal: rundown_torque_nm, pattern: normal, note: "< 0.15 N·m（模擬值），與斜牙區分"}
+      - {signal: nok_hole_id, pattern: scattered}
+    distinguish_from: [bit_wear_camout, tool_calibration_due, cross_thread_strip]
+    machine_types: [screwdriving_station]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-011
+    sources: [A4, A1, A5]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  cross_thread_strip:
+    label: 斜牙／滑牙
+    criteria: 旋入初段扭力就異常升高（超過 0.30 N·m，模擬值）後判 NOK，或角度已超過上限仍到不了目標扭力（孔牙崩掉）；NOK 固定發生在同一個孔位（hole_id），換新螺絲在同一孔仍重複；壓鉚螺母或攻牙孔可見損傷、毛邊，或被鋅渣、塗料堵住
+    symptoms: [斜牙, 滑牙, 同一孔一直鎖不上, 螺絲歪著進去, 孔牙壞掉]
+    log_signals:
+      - {signal: rundown_torque_nm, op: ">", value: 0.30}
+      - {signal: screw_result, value: NOK_HIGH_TORQUE_EARLY}
+      - {signal: screw_result, value: NOK_ANGLE_HIGH}
+      - {signal: nok_hole_id, pattern: same_hole}
+    distinguish_from: [torque_not_reached, wrong_screw_type, bit_wear_camout]
+    machine_types: [screwdriving_station]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-012
+    sources: [A1, A4]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  bit_wear_camout:
+    label: 起子頭磨耗（打滑）
+    criteria: 鎖附時有起子頭跳出十字槽的打滑聲（cam-out），螺絲頭十字槽被磨花；起子頭刃口圓化或缺角；起子頭使用次數超過 40,000 次（模擬值）；NOK 率隨使用次數逐步上升，分散在各孔位；換新起子頭後立即改善
+    symptoms: [起子頭打滑, 螺絲頭十字槽磨花, 起子頭磨圓, 吱吱聲, NOK 越來越多]
+    log_signals:
+      - {signal: bit_cycle_count, op: ">", value: 40000}
+      - {signal: nok_rate_pct, pattern: ramp_up, note: 由 < 1% 逐步升到 3% 以上（模擬值）}
+      - {signal: screw_result, value: NOK_LOW_TORQUE}
+      - {signal: nok_hole_id, pattern: scattered}
+    distinguish_from: [torque_not_reached, cross_thread_strip]
+    machine_types: [screwdriving_station]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-013
+    sources: [A5, A4]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  screw_feeder_jam:
+    label: 送釘機卡釘
+    criteria: 送釘逾時或吸附失敗警報，起子端沒有螺絲可鎖；送釘軌道或分離器卡著歪斜的螺絲、異物或規格不同的螺絲；常在補充新批螺絲後發生；已鎖上的螺絲扭力與角度都正常
+    symptoms: [送釘機卡住, 吸不到螺絲, 送釘逾時, 軌道卡釘, 補料後一直卡]
+    log_signals:
+      - {signal: alarm_code, value: FEEDER_TIMEOUT}
+      - {signal: feeder_pick_fail_count, op: ">", value: 10}
+      - {signal: screw_lot_change, pattern: present, window_min: 120}
+      - {signal: screw_result, value: NOK_NO_SCREW}
+    distinguish_from: [missing_screw, wrong_screw_type]
+    machine_types: [screwdriving_station]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-021
+    sources: [A5]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  wrong_screw_type:
+    label: 錯料／混料
+    criteria: 換螺絲批或補料後才開始；最終角度明顯偏離正常範圍（螺絲太短：角度偏低、提早到達扭力；螺絲太長：角度偏高或頂到底板）；送料盤內可見長度或頭型不同的螺絲；量測螺絲長度、牙距與 BOM 規格不符；起子頭與孔牙都正常
+    symptoms: [螺絲長度不對, 混到別的螺絲, 角度怪怪的, 頂到底, 換批後才出問題]
+    log_signals:
+      - {signal: screw_lot_change, pattern: present, window_min: 180}
+      - {signal: final_angle_deg, pattern: shifted, note: 偏離 1,080～1,800°（模擬值）}
+      - {signal: screw_result, value: NOK_ANGLE_LOW}
+      - {signal: screw_result, value: NOK_ANGLE_HIGH}
+    distinguish_from: [cross_thread_strip, torque_not_reached, screw_feeder_jam]
+    machine_types: [screwdriving_station]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-022
+    sources: [A1, A4]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  missing_screw:
+    label: 漏鎖
+    criteria: 工件實際鎖附次數少於工單要求，或影像檢出孔位沒有螺絲；已完成的鎖附紀錄都是 OK；常見於作業中斷（換線、補料、重工、交接班）之後；送釘機沒有逾時警報
+    symptoms: [少鎖一顆, 孔位沒有螺絲, 鎖附數量不符, 重工後漏鎖, 交接班後漏打]
+    log_signals:
+      - {signal: screw_count_actual, pattern: below_required, note: 小於 screw_count_required}
+      - {signal: screw_missing, value: true}
+      - {signal: alarm_code, value: COUNT_MISMATCH}
+      - {signal: alarm_code, pattern: absent, value: FEEDER_TIMEOUT, note: 與送釘機卡釘區分}
+    distinguish_from: [screw_feeder_jam]
+    machine_types: [screwdriving_station]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-023
+    sources: [A4]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  tool_calibration_due:
+    label: 扭力工具校正逾期／漂移
+    criteria: 工具校正到期日已過，或以扭力分析儀抽測時實測扭力與設定值偏差超過 ±10%（模擬值）；鎖附結果多半仍顯示 OK，但下游拆檢的鬆脫扭力偏低或偏高；離合器式起子的跳脫點漂移；換一支校正合格的工具後抽測正常
+    symptoms: [校正過期, 抽測扭力不準, 顯示 OK 但拆檢扭力不對, 離合器跳脫點跑掉, 換工具就正常]
+    log_signals:
+      - {signal: calib_due_days, op: "<", value: 0}
+      - {signal: torque_audit_dev_pct, op: ">", value: 10, note: 絕對值}
+      - {signal: alarm_code, value: CALIB_OVERDUE}
+      - {signal: screw_result, value: OK, note: 結果多半 OK，與扭力未達區分}
+    distinguish_from: [torque_not_reached, bit_wear_camout]
+    machine_types: [screwdriving_station]
+    category: equipment
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-031
+    sources: [A4, A5, A1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  cable_pinch_misroute:
+    label: 線材夾線／走線錯誤
+    criteria: 機殼上蓋或支架蓋合處有線材被夾、有壓痕或絕緣破皮；線材彎曲半徑小於線束外徑 3 倍，或貼著鈑金銳邊沒有護線（門檻引用 NASA-STD-8739.4A 表 7-1 一般線束最小值，此處作為模擬值）；走線路徑與作業指導書不符；測試站絕緣測試不通過或訊號時有時無；連接器本身已扣到位
+    symptoms: [夾線, 線被上蓋壓到, 走線不對, 線材破皮, 測試時好時壞]
+    log_signals:
+      - {signal: cable_out_of_path, value: true}
+      - {signal: test_result, value: HIPOT_FAIL}
+      - {signal: test_result, value: LINK_INTERMITTENT}
+      - {signal: insulation_mohm, op: "<", value: 10}
+    distinguish_from: [connector_not_seated]
+    machine_types: [manual_assembly_station]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-041
+    sources: [A2, A3]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  connector_not_seated:
+    label: 連接器未插到位
+    criteria: 功能測試站偵測不到裝置，而且每次測都失敗（不是時有時無）；目視連接器卡扣沒有扣上，公母端之間有可見間隙；重新插到卡扣扣上後即通過測試；線材外皮完好、絕緣測試正常
+    symptoms: [測不到裝置, 連接器沒插好, 卡扣沒扣, 重插就好, 開機抓不到硬碟]
+    log_signals:
+      - {signal: test_result, value: DEVICE_NOT_FOUND}
+      - {signal: connector_unlatched, value: true}
+      - {signal: insulation_mohm, pattern: normal, note: "> 100 MΩ（模擬值），與夾線區分"}
+    distinguish_from: [cable_pinch_misroute]
+    machine_types: [manual_assembly_station]
+    category: quality
+    severity_default: S2
+    loto_required: true
+    safety_only_sop: false
+    sop: SOP-ASM-042
+    sources: [A2, A3]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"
+
+  ppe_esd_missing:
+    label: PPE／靜電防護未落實
+    criteria: 影像偵測到作業員未戴規定的防護具（處理鈑金件的防割手套、護目鏡）或未配戴靜電手環；或靜電手環測試站測試未通過。處理前先確認該站防護具庫存、尺寸與發放是否足夠（設施規則第 277 條），不以個人懲處為目的
+    symptoms: [沒戴手套, 沒戴護目鏡, 沒戴靜電手環, 靜電測試沒過, 手套破了沒換]
+    log_signals:
+      - {signal: ppe_missing, pattern: present, note: cut_gloves／safety_glasses／esd_strap}
+      - {signal: esd_check, value: FAIL}
+      - {signal: alarm_code, value: ESD_CHECK_FAIL}
+      - {signal: ppe_stock_count, pattern: check, note: 先查庫存（第277條）}
+    distinguish_from: []
+    machine_types: [screwdriving_station, manual_assembly_station]
+    category: safety
+    severity_default: S2
+    loto_required: false
+    safety_only_sop: true
+    sop: SOP-ASM-051
+    sources: [L1]
+    data_label: 模擬資料
+    review_status: approved
+    reviewed_by: [ai_sim_reviewer_weld_asm]
+    review_note: "AI 角色扮演審核，非真人專家審核"

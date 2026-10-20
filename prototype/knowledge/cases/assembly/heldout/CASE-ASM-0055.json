@@ -1,0 +1,114 @@
+{
+  "case_id": "CASE-ASM-0055",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4054,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2025-10-06T01:15:41+08:00",
+  "closed_at": "2025-10-06T01:20:51+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "vision",
+    "event_type": "ppe_violation",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 21,
+    "recent_changes": [],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-01-2",
+    "screw_lot": "SL-2510-14"
+  },
+  "log_signals": [
+    {
+      "t": "2025-10-06T01:15:41+08:00",
+      "signal": "esd_check",
+      "value": "FAIL"
+    },
+    {
+      "t": "2025-10-06T01:15:41+08:00",
+      "signal": "alarm_code",
+      "value": "ESD_CHECK_FAIL"
+    },
+    {
+      "t": "2025-10-06T01:15:41+08:00",
+      "signal": "ppe_stock_count",
+      "value": 30
+    }
+  ],
+  "technician": {
+    "id": "TECH-47",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST01 ESD check FAIL 影像抓靜電手環沒戴 庫存30 班長確認補發 提醒 ok",
+  "technician_report_normalized": "ST01 於夜班發生 ESD 檢查失敗，影像同時判定防護具未落實。現場先停止該站作業並通知班長，確認是靜電手環未配戴，防護具庫存尚有 30 件且尺寸足夠。由班長補發並提醒正確配戴，將原因與處理記錄於 Kanban，確認防護具配戴後恢復生產，未更換零件。",
+  "first_hypothesis": {
+    "failure_mode_id": "ppe_esd_missing",
+    "by": "jev",
+    "p": 0.9
+  },
+  "final_root_cause": "ppe_esd_missing",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "停止該站作業並保留影像紀錄",
+      "result": "已停止"
+    },
+    {
+      "step": "通知班長確認未落實項目與原因",
+      "result": "班長確認"
+    },
+    {
+      "step": "核對防護具庫存與尺寸，庫存 30 件",
+      "result": "庫存足夠"
+    },
+    {
+      "step": "由班長補發靜電手環並提醒正確配戴",
+      "result": "已補發"
+    },
+    {
+      "step": "記錄於 Kanban，由班長確認配戴後恢復作業",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-051"
+  ],
+  "downtime_min": 5,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "ESD 檢查 FAIL 時先確認手環庫存與尺寸，補發後再開線。",
+  "related_failure_mode_ids": [
+    "ppe_esd_missing"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-ASM-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

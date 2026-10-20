@@ -1,0 +1,38 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3030
+ },
+ "output": {
+  "technician_report_raw": "RC02 電壓跳16.4% 電流139 送絲2.4正常 B側噴渣多 查接地夾齒面銲渣鬆 清潔重鎖 回路電阻比正常側高 處理後試銲ok",
+  "technician_report_normalized": "RC02 機器人銲接時電弧電壓變異達 16.4%，電流 139 A 與送絲馬達 2.4 A 正常；B 側工位出現 6 處飛濺，銲道寬窄不一。檢查發現該側治具接地夾齒面有銲渣且夾持鬆動，接地回路電阻高於正常側。清潔接地夾與回路電纜接頭、重新緊固後，量測電阻恢復正常，試銲電弧穩定，恢復生產。",
+  "actions": [
+   {
+    "step": "檢查 B 側治具接地夾齒面、夾持面與回路電纜接頭，確認有銲渣與鬆動。",
+    "result": "發現銲渣與鬆動"
+   },
+   {
+    "step": "清潔接地夾齒面、夾持面及回路電纜接頭，去除銲渣與飛濺。",
+    "result": "清潔完成"
+   },
+   {
+    "step": "重新緊固接地夾固定螺栓與回路電纜接頭端子。",
+    "result": "已緊固"
+   },
+   {
+    "step": "以低電阻計量測 B 側接地回路電阻，並與正常側比較。",
+    "result": "恢復正常"
+   },
+   {
+    "step": "在局部排氣運轉下、人員於圍欄外試銲，確認電弧與銲道成形。",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "接地夾齒面與回路接頭要列入每班清潔點檢，B 側電壓跳動時先比對兩側接地電阻。",
+  "escalation_note": null
+ }
+}

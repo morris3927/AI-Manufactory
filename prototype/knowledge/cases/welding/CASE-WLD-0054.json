@@ -1,0 +1,148 @@
+{
+  "case_id": "CASE-WLD-0054",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3053,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "new",
+  "line": "welding",
+  "machine_type": "spot_welder",
+  "machine_id": "WLD-L1-SP01",
+  "opened_at": "2026-06-26T02:03:05+08:00",
+  "closed_at": "2026-06-26T09:01:50+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "coolant_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 13,
+    "recent_changes": [],
+    "part": "硬碟籠框架",
+    "fixture_id": "FX-D",
+    "program_id": "PRG-105"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-26T00:33:11+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 5.1
+    },
+    {
+      "t": "2026-06-26T01:33:39+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 35
+    },
+    {
+      "t": "2026-06-26T01:33:40+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 3.2
+    },
+    {
+      "t": "2026-06-26T02:03:05+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 2.1
+    },
+    {
+      "t": "2026-06-26T02:03:05+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 54
+    },
+    {
+      "t": "2026-06-26T02:03:05+08:00",
+      "signal": "alarm_code",
+      "value": "WELD_OVERTEMP"
+    }
+  ],
+  "technician": {
+    "id": "TECH-25",
+    "level": "L2"
+  },
+  "technician_report_raw": "SP01 冷卻水流量低2.1 回水54 過熱警報 先清濾網查水管 流量回穩 但連續點銲又降載 查變壓器風扇不轉 移交設備工程師",
+  "technician_report_normalized": "夜班期間 SP01 發生冷卻水流量低警報，流量由 5.1 L/min 降至 2.1 L/min，回水溫度達 54 °C，並出現過熱警報。依 SOP-WLD-042 檢查冷卻水機液位、濾網與管路，清洗濾網後流量一度回穩，但連續點銲仍發生過熱降載。進一步檢查發現點銲變壓器冷卻風扇故障、風扇不運轉，造成變壓器連續生產時過熱降載。因風扇更換需設備工程師處理，已移交設備工程師，停機 416 分鐘。",
+  "first_hypothesis": {
+    "failure_mode_id": "cooling_water_low",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "new",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因冷卻水流量降至 2.1 L/min、回水溫度 54 °C 且出現過熱警報，符合冷卻水流量不足的典型線索，才先懷疑冷卻水低；但依 SOP 清理濾網與檢查管路後，連續點銲仍過熱降載，最後確認是點銲變壓器冷卻風扇故障。",
+  "discriminating_evidence": [
+    "冷卻水流量 2.1 L/min、回水溫度 54 °C 與過熱警報雖符合冷卻水低模式，但依 SOP-WLD-042 清理濾網、檢查管路後，連續點銲仍發生過熱降載。",
+    "過熱降載與連續生產負載相關，停止生產後未再持續，與單純冷卻水流量不足的表現不完全一致。",
+    "檢查點銲變壓器冷卻風扇，發現風扇不運轉，變壓器本體散熱不足。"
+  ],
+  "new_mode_proposal": {
+    "proposed_id": "transformer_overheat_derate",
+    "description": "點銲變壓器冷卻風扇故障，連續生產時過熱降載"
+  },
+  "actions": [
+    {
+      "step": "依 LOTO-SPOT-WELD-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依 SOP-WLD-042 檢查冷卻水機液位、濾網與水管，清洗濾網並確認管路無折彎。",
+      "result": "未改善"
+    },
+    {
+      "step": "量測 SP01 冷卻水流量與回水溫度，讀值一度為 2.1 L/min、54 °C。",
+      "result": "未改善"
+    },
+    {
+      "step": "恢復生產前確認：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區，由原上鎖人取下自己的鎖後以正常模式復機",
+      "result": "ok"
+    },
+    {
+      "step": "恢復連續生產觀察，過熱降載再次發生。",
+      "result": "未改善"
+    },
+    {
+      "step": "檢查點銲變壓器冷卻風扇，發現風扇不運轉、變壓器散熱不足。",
+      "result": "找到異常"
+    },
+    {
+      "step": "因變壓器冷卻風扇更換需設備工程師處理，移交設備工程師。",
+      "result": "移交"
+    },
+    {
+      "step": "設備維持上鎖掛牌與「禁止操作」標示待修；移交時由接手人員掛上自己的鎖後，原上鎖人才取下自己的鎖（OSHA 1910.147(f)(4) 換班移交，模擬作業規定）",
+      "result": "保持隔離"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-042"
+  ],
+  "downtime_min": 416,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "escalated",
+  "escalated_to": "設備工程師",
+  "escalation_note": "已移交設備工程師處理點銲變壓器冷卻風扇故障與連續過熱降載，待更換風扇並確認變壓器散熱。",
+  "lessons": "冷卻水低警報處理後若連續生產仍過熱，要往變壓器風扇與散熱路徑查，不要只停在冷卻水側。",
+  "related_failure_mode_ids": [
+    "cooling_water_low"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

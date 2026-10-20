@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1091
+ },
+ "output": {
+  "technician_report_raw": "FD02 送料機過電流 沖床連停 馬達82度 電流15.4A 風扇積塵卡轉 清潔+換散熱風扇 試送料ok",
+  "technician_report_normalized": "夜班FD02伺服送料機突然停止，沖床連動停機，驅動器出現過電流警報。檢查停機前送料長度誤差僅0.01 mm，無逐步累積；馬達外殼溫度約82°C，電流尖峰15.4 A。斷電後檢查驅動器散熱風扇與濾網，發現風扇積塵、轉動不順，清潔並更換散熱風扇，復電試送料及手動運轉正常，恢復生產。",
+  "actions": [
+   {
+    "step": "調閱驅動器警報歷史與停機前10分鐘電流、溫度趨勢",
+    "result": "過電流尖峰、馬達溫度偏高"
+   },
+   {
+    "step": "手動檢查送料滾輪、聯軸器、軸承與傳動鏈",
+    "result": "無卡死、異物或鬆動"
+   },
+   {
+    "step": "檢查驅動器散熱風扇與濾網",
+    "result": "風扇積塵、轉動不順"
+   },
+   {
+    "step": "清潔散熱片與濾網並更換散熱風扇",
+    "result": "風扇運轉正常"
+   },
+   {
+    "step": "復電試送料並量測三相電流與送料長度",
+    "result": "電流平衡、送料誤差0.01 mm、ok"
+   }
+  ],
+  "parts_replaced": [
+   "drive_cooling_fan"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "送料機過電流先看停機前送料長度有沒有累積，再看馬達溫度與驅動器風扇，散熱不良常偽裝成送料異常。",
+  "escalation_note": null
+ }
+}

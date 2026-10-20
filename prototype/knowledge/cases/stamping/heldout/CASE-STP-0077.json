@@ -1,0 +1,136 @@
+{
+  "case_id": "CASE-STP-0077",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1076,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "heldout",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "mechanical_power_press",
+  "machine_id": "STP-L2-PR03",
+  "opened_at": "2025-10-22T05:49:08+08:00",
+  "closed_at": "2025-10-22T07:03:49+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "overload_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 54,
+    "recent_changes": [],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.0,
+      "coil_id": "C-2510-111"
+    },
+    "die_id": "D-BRKT-HDD-07",
+    "part": "硬碟托架"
+  },
+  "log_signals": [
+    {
+      "t": "2025-10-22T05:48:11+08:00",
+      "signal": "tonnage_peak",
+      "value": 118
+    },
+    {
+      "t": "2025-10-22T05:49:08+08:00",
+      "signal": "tonnage_peak",
+      "value": 188
+    },
+    {
+      "t": "2025-10-22T05:49:08+08:00",
+      "signal": "alarm_code",
+      "value": "OVERLOAD"
+    },
+    {
+      "t": "2025-10-22T05:49:08+08:00",
+      "signal": "alarm_code",
+      "value": "DOUBLE_BLANK"
+    }
+  ],
+  "technician": {
+    "id": "TECH-10",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR03 05:49 過負荷停 噸位188 前次118 開模雙料重疊 清掉 沖子導正銷ok 落料孔清 試沖5次正常 復機",
+  "technician_report_normalized": "夜班 PR03 於 05:49 過負荷停機，警報 OVERLOAD 與 DOUBLE_BLANK。調閱噸位歷史，該沖次峰值 188 噸、前次 118 噸，為單一沖次尖峰。檢查滑塊未卡在下死點，可寸動退回；量測料帶厚度五點皆 1.0 mm，與料捲相符。開模發現雙料重疊，清除料片與異物，清潔下模落料孔及廢料滑道。檢查沖頭、導正銷、脫料板無損傷，清潔送料滾輪後試沖五次，噸位恢復正常，復機生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "overload_tonnage",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "overload_tonnage",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-MECH-01 停機、上鎖掛牌（送料機 FD04 依 LOTO-FEED-01 連動上鎖），驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "調閱噸位監控歷史與警報記錄，確認 05:49:08 峰值 188 t、前次 118 t，為單一沖次尖峰。",
+      "result": "確認為單次尖峰"
+    },
+    {
+      "step": "通電測試前依 LOTO-PRESS-MECH-01 測試／定位程序：清除危險區工具與人員，原上鎖人取下自己的鎖、主管在場，只用寸動；測試後若要再進入危險區須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "檢查滑塊位置，確認未卡於下死點，可以寸動退回；以分釐卡量測料帶厚度五點。",
+      "result": "滑塊可退回，料厚 1.0 mm 正常"
+    },
+    {
+      "step": "開模檢查模內，發現料頭重疊（雙料），清除重疊料片與模面異物。",
+      "result": "雙料排除"
+    },
+    {
+      "step": "檢查沖頭、導正銷、脫料板有無崩刃或壓傷，並清潔下模落料孔與廢料滑道。",
+      "result": "模具無損傷，落料孔暢通"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "清潔送料滾輪與料帶油污，試沖五次確認噸位峰值。",
+      "result": "噸位恢復正常，試沖 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-053"
+  ],
+  "downtime_min": 73,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "噸位異常先看歷史峰值是單次或整段，再開模找雙料，不要急著調模高。",
+  "related_failure_mode_ids": [
+    "overload_tonnage"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-053"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

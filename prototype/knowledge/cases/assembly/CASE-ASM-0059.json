@@ -1,0 +1,113 @@
+{
+  "case_id": "CASE-ASM-0059",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4058,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "false_alarm",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-05-20T17:54:33+08:00",
+  "closed_at": "2026-05-20T18:02:19+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "ppe_violation",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 44,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2605-75"
+  },
+  "log_signals": [
+    {
+      "t": "2026-05-20T17:54:33+08:00",
+      "signal": "ppe_missing",
+      "value": "safety_glasses"
+    },
+    {
+      "t": "2026-05-20T17:54:33+08:00",
+      "signal": "ppe_stock_count",
+      "value": 26
+    }
+  ],
+  "technician": {
+    "id": "TECH-43",
+    "level": "L3"
+  },
+  "technician_report_raw": "ST02 MES跳PPE告警 護目鏡missing 到場看人剛到站還沒開工 影像角度誤判 庫存26副ok 提醒上線要戴 記錄 恢復生產",
+  "technician_report_normalized": "17:54接獲MES通報ST02有護目鏡未配戴的PPE告警，到場時作業員才剛到站、尚未開始作業，研判為影像角度造成的誤判。現場確認護目鏡庫存26副，數量與尺寸皆足夠，無防護具短缺或靜電防護異常。已提醒作業員上線前依規定配戴並記錄宣導，確認無設備故障後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "ppe_esd_missing",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "none",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始因MES跳出ppe_missing safety_glasses告警，直覺懷疑PPE／靜電防護未落實；但到場確認作業員剛到站尚未開始作業，且護目鏡庫存26副充足，並無實際缺戴或ESD問題。",
+  "discriminating_evidence": [
+    "告警只有影像的 ppe_missing（safety_glasses）一筆，沒有設備停機或其他訊號",
+    "到場確認作業員剛到站、尚未開始作業，開工時已戴上護目鏡",
+    "該站護目鏡庫存 26 副，數量與尺寸足夠，不是沒有發放"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "接獲MES護目鏡未配戴告警，至ST02確認現場狀況",
+      "result": "已到場"
+    },
+    {
+      "step": "查看作業員動態與影像拍攝角度",
+      "result": "剛到站未開工"
+    },
+    {
+      "step": "確認護目鏡庫存、尺寸與發放量",
+      "result": "26副足夠"
+    },
+    {
+      "step": "提醒作業員上線前配戴護目鏡並記錄宣導",
+      "result": "已提醒"
+    },
+    {
+      "step": "確認無設備或防護具異常，恢復生產",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-051"
+  ],
+  "downtime_min": 7,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": false,
+    "danger_zone_entry": false,
+    "near_miss": false
+  },
+  "outcome": "false_alarm",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "影像告警先確認人員是否已上線作業，再判定有無缺戴，才不會把剛到站的畫面誤當違規。",
+  "related_failure_mode_ids": [
+    "ppe_esd_missing"
+  ],
+  "category": "safety",
+  "references": [
+    "SOP-ASM-051"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

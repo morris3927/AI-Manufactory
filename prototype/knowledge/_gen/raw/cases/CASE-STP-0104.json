@@ -1,0 +1,42 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-v1",
+  "seed": 1103
+ },
+ "output": {
+  "technician_report_raw": "PR01 DIE_PROTECT 跳停 查無廢料異物 輸送帶1.2A正常 重置連沖ok",
+  "technician_report_normalized": "PR01 於 14:14 發生 DIE_PROTECT 模具保護停機，現場先懷疑廢料滑道堵塞。檢查下模落料孔、廢料滑道、輸送帶及集料箱，均未發現廢料堆積、卡料或異物；量測輸送帶電流為 1.2 A，運轉正常且無異常音。查看沖壓力與模具保護紀錄，僅單次觸發，無連續尖峰。重置警報後試沖及連續生產正常，確認無故障。",
+  "actions": [
+   {
+    "step": "依第一判斷檢查廢料滑道、輸送帶與下模落料孔",
+    "result": "排除（無堵塞）"
+   },
+   {
+    "step": "量測廢料輸送帶電流並觀察運轉狀況",
+    "result": "1.2 A 正常"
+   },
+   {
+    "step": "調閱沖壓力峰值與模具保護紀錄",
+    "result": "僅單次觸發"
+   },
+   {
+    "step": "重置 DIE_PROTECT 警報並試沖",
+    "result": "恢復正常"
+   },
+   {
+    "step": "連續生產觀察",
+    "result": "無再發 ok"
+   }
+  ],
+  "parts_replaced": [],
+  "why_first_guess_wrong": "一開始因 DIE_PROTECT 停機與廢料輸送帶電流訊號，懷疑廢料滑道堵塞；但現場滑道、落料孔與輸送帶均無堆料，電流 1.2 A 正常，且模具保護僅單次觸發，因此確認不是堵塞。",
+  "discriminating_evidence": [
+   "廢料滑道、下模落料孔與集料箱均無廢料堆積或卡料",
+   "廢料輸送帶電流為 1.2 A，無異常升高，運轉正常",
+   "模具保護僅單次觸發，無連續沖壓力尖峰或廢料回堆現象"
+  ],
+  "lessons": "DIE_PROTECT 單次跳停先看廢料滑道與輸送帶電流，無堆料就直接重置試沖，不要先拆模。",
+  "escalation_note": null
+ }
+}

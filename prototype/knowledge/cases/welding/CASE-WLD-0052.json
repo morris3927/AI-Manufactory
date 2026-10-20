@@ -1,0 +1,151 @@
+{
+  "case_id": "CASE-WLD-0052",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 3051,
+    "skeleton": "case_skeleton_wa.Planner('welding', seed=2027)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "welding",
+  "machine_type": "robot_mig_cell",
+  "machine_id": "WLD-L1-RC02",
+  "opened_at": "2026-06-03T14:34:17+08:00",
+  "closed_at": "2026-06-03T16:00:04+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "coolant_alarm",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 5,
+    "recent_changes": [],
+    "part": "電源支架",
+    "fixture_id": "FX-C",
+    "program_id": "PRG-104"
+  },
+  "log_signals": [
+    {
+      "t": "2026-06-03T13:04:21+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 2.1
+    },
+    {
+      "t": "2026-06-03T14:04:24+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 1.3
+    },
+    {
+      "t": "2026-06-03T14:05:02+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 38
+    },
+    {
+      "t": "2026-06-03T14:32:42+08:00",
+      "signal": "tip_arc_on_min",
+      "value": 273
+    },
+    {
+      "t": "2026-06-03T14:32:56+08:00",
+      "signal": "arc_start_retry_per_100",
+      "value": 5.4
+    },
+    {
+      "t": "2026-06-03T14:34:17+08:00",
+      "signal": "coolant_flow_lpm",
+      "value": 0.7
+    },
+    {
+      "t": "2026-06-03T14:34:17+08:00",
+      "signal": "coolant_return_temp_c",
+      "value": 49
+    },
+    {
+      "t": "2026-06-03T14:34:17+08:00",
+      "signal": "alarm_code",
+      "value": "COOLANT_LOW"
+    }
+  ],
+  "technician": {
+    "id": "TECH-24",
+    "level": "L2"
+  },
+  "technician_report_raw": "RC02 冷卻水低警報 流量0.7 回水49 先查導電嘴 重試5.4/273min未超 查冷卻水 濾網塞 清洗補水 流量回ok",
+  "technician_report_normalized": "RC02 於 14:34 發出冷卻水低警報，冷卻水流量降至 0.7 L/min、回水溫度 49°C。因起弧重試為每百次 5.4 次，先檢查銲槍導電嘴，累積起弧 273 分鐘未超過 300 分鐘，孔口無明顯橢圓磨耗或回燒，排除導電嘴磨耗。續查冷卻水機，發現液位偏低且濾網堵塞，清洗濾網並補充冷卻液，確認水管無折彎滲漏，流量恢復後試銲正常。",
+  "first_hypothesis": {
+    "failure_mode_id": "contact_tip_wear",
+    "by": "jev",
+    "p": 0.5
+  },
+  "final_root_cause": "cooling_water_low",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到起弧重試每百次 5.4 次、累積起弧 273 分鐘，先懷疑導電嘴磨耗；但孔口無橢圓磨耗或回燒，且冷卻水流量降到 0.7 L/min、回水 49°C 並出現冷卻水低警報，才確認為冷卻水不足。",
+  "discriminating_evidence": [
+    "冷卻水流量降至 0.7 L/min，低於水冷銲槍 1.0 L/min 下限。",
+    "回水溫度達 49°C，超過 45°C 門檻。",
+    "起弧重試 5.4 次/百次未超過 8 次，累積起弧 273 分鐘也未超過 300 分鐘，與導電嘴磨耗不符。",
+    "警報來源為冷卻水低，並非起弧異常或導電嘴回燒。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-WELD-ROBOT-01 停機、上鎖掛牌、啟動開關掛「禁止觸動」，驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "檢查銲槍導電嘴孔口、累積起弧時間與每百次起弧重試次數。",
+      "result": "排除導電嘴磨耗"
+    },
+    {
+      "step": "檢查冷卻水機液位、濾網、水管與流量計，並量測回水溫度。",
+      "result": "液位低、濾網堵塞"
+    },
+    {
+      "step": "清洗冷卻水機濾網與水盤，補充冷卻液，確認水管無折彎滲漏。",
+      "result": "流量恢復"
+    },
+    {
+      "step": "通電測試前依 LOTO-WELD-ROBOT-01 測試／定位程序：人員退到圍欄外或手離開電極區，原上鎖人取下自己的鎖、主管在場，機器人只用教導模式降速；試銲前確認局部排氣運轉；測試後若要再進入須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "在局部排氣運轉下、人員於圍欄外進行試銲。",
+      "result": "試銲 ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-WLD-012",
+    "SOP-WLD-042"
+  ],
+  "downtime_min": 81,
+  "parts_replaced": [],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "冷卻水流量與回水溫度要一起看，才不會被起弧重試的數字帶偏。",
+  "related_failure_mode_ids": [
+    "cooling_water_low",
+    "contact_tip_wear"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-WLD-012",
+    "SOP-WLD-042"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

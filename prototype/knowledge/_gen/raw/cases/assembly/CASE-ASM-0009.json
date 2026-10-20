@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4008
+ },
+ "output": {
+  "technician_report_raw": "ST02 H05一直NOK_ANGLE_HIGH 角度2106 孔口斜牙毛邊 bit正常 換pem nut+新M3螺絲 試片OK 首件OK",
+  "technician_report_normalized": "夜班ASM-L1-ST02於05:05至05:42連續出現H05孔位NOK_ANGLE_HIGH，最終角度2106度，固定同一孔。讀取鎖附紀錄並以放大鏡檢查，H05壓鉚螺母孔口有斜牙與毛邊，螺絲批號及起子頭磨耗正常。已隔離NOK工件與同批可疑螺絲、壓鉚螺母並追溯首件，清除孔口毛邊碎屑後以手動壓鉚工具更換同規格壓鉚螺母及M3螺絲，確認端面齊平。以報廢件試鎖正常，首件確認OK後恢復生產。",
+  "actions": [
+   {
+    "step": "讀取鎖附控制器紀錄與NOK清單，核對H05、NOK_ANGLE_HIGH與最終角度2106度",
+    "result": "確認同一孔重複"
+   },
+   {
+    "step": "以放大鏡目視H05壓鉚螺母孔口，發現斜牙與毛邊",
+    "result": "確認斜牙"
+   },
+   {
+    "step": "檢查NOK螺絲與送料盤螺絲長度、牙距、頭型，並檢查起子頭刃口與磨耗",
+    "result": "規格與刃口正常"
+   },
+   {
+    "step": "隔離NOK工件與同批可疑螺絲、壓鉚螺母，記錄hole_id、批號、時間並追溯首件",
+    "result": "已隔離追溯"
+   },
+   {
+    "step": "以軟毛刷、無絨布與手動吸球清除孔口毛邊碎屑，再以螺紋通規與止規檢查孔牙",
+    "result": "孔牙崩壞"
+   },
+   {
+    "step": "以手動壓鉚工具更換同規格壓鉚螺母與M3螺絲，確認端面齊平，並用報廢件試鎖及首件確認",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "pem_nut",
+   "screw_m3"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "同一孔位連續NOK_ANGLE_HIGH先查孔牙與壓鉚螺母，不要只換螺絲或調扭力。",
+  "escalation_note": null
+ }
+}

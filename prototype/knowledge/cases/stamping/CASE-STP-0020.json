@@ -1,0 +1,141 @@
+{
+  "case_id": "CASE-STP-0020",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1019,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2025-12-18T16:27:22+08:00",
+  "closed_at": "2025-12-18T17:29:31+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "mes",
+    "event_type": "quality_defect",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 26,
+    "recent_changes": [
+      "換模 16:08（D-4U-SIDE-02）"
+    ],
+    "material": {
+      "grade": "SGCC",
+      "thickness_mm": 1.2,
+      "coil_id": "C-2512-310"
+    },
+    "die_id": "D-4U-SIDE-02",
+    "part": "4U 側板"
+  },
+  "log_signals": [
+    {
+      "t": "2025-12-18T16:09:02+08:00",
+      "signal": "die_change",
+      "value": "D-4U-SIDE-02"
+    },
+    {
+      "t": "2025-12-18T16:12:27+08:00",
+      "signal": "shut_height_mm",
+      "value": 425.2
+    },
+    {
+      "t": "2025-12-18T16:14:45+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 15
+    },
+    {
+      "t": "2025-12-18T16:26:30+08:00",
+      "signal": "tonnage_balance_pct",
+      "value": 16
+    }
+  ],
+  "technician": {
+    "id": "TECH-14",
+    "level": "L2"
+  },
+  "technician_report_raw": "PR01 換模後首批左側毛邊大 噸位左右差15% 定位銷偏磨 襯套單邊亮 換定位銷+襯套 重鎖模 寸動試沖ok",
+  "technician_report_normalized": "換模後首批生產即發現 4U 側板左側毛邊偏大，導正孔有單側壓痕並伴隨異音。檢查左右沖壓力平衡值為 15～16%，超過 10% 門檻；核對模具資料卡與滑塊閉模高度 425.2 mm 相符，排除模高設定問題。清潔定位面後以厚薄規量測，發現模具定位銷偏磨、定位銷襯套單邊亮帶且間隙過大。更換定位銷與襯套並重新鎖緊模具，寸動空轉確認導正銷無單側干涉，試沖首批恢復正常，左右噸位平衡回到容許範圍。",
+  "first_hypothesis": {
+    "failure_mode_id": "die_misalignment",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "die_misalignment",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "停機後檢視換模後首批料帶與製品，標記毛邊、導正孔壓痕與卡料位置",
+      "result": "缺陷集中在同一側（左側）"
+    },
+    {
+      "step": "核對模具資料卡閉模高度與滑塊讀值 425.2 mm",
+      "result": "相符，排除模高設定"
+    },
+    {
+      "step": "讀取左右沖壓力平衡值",
+      "result": "15～16%，超出 10% 門檻"
+    },
+    {
+      "step": "清潔定位面，目視並以厚薄規量測定位銷與襯套間隙",
+      "result": "定位銷偏磨、襯套單邊亮帶，間隙過大"
+    },
+    {
+      "step": "更換模具定位銷與定位銷襯套，重新鎖緊模具",
+      "result": "噸位平衡恢復，異音消失"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "寸動空轉確認導正銷無單側干涉，試沖首批",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-021"
+  ],
+  "downtime_min": 62,
+  "parts_replaced": [
+    "die_locating_pin",
+    "locating_pin_bushing"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "換模後首批一定要看左右噸位平衡值，差超過一成先查定位銷與襯套間隙，不要先動模高。",
+  "related_failure_mode_ids": [
+    "die_misalignment"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-021"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

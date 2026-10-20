@@ -1,0 +1,157 @@
+{
+  "case_id": "CASE-ASM-0016",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4015,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-04-07T08:25:01+08:00",
+  "closed_at": "2026-04-07T08:46:47+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "rule",
+    "event_type": "nok_rate_trend",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 24,
+    "recent_changes": [],
+    "part": "1U 機殼組立",
+    "tool_id": "SD-01-3",
+    "screw_lot": "SL-2604-31"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-06T02:25:48+08:00",
+      "signal": "nok_rate_pct",
+      "value": 0.5
+    },
+    {
+      "t": "2026-04-06T22:25:25+08:00",
+      "signal": "nok_rate_pct",
+      "value": 1.7
+    },
+    {
+      "t": "2026-04-07T08:17:19+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-04-07T08:17:35+08:00",
+      "signal": "nok_hole_id",
+      "value": "H11"
+    },
+    {
+      "t": "2026-04-07T08:22:14+08:00",
+      "signal": "nok_hole_id",
+      "value": "H08"
+    },
+    {
+      "t": "2026-04-07T08:22:27+08:00",
+      "signal": "screw_result",
+      "value": "NOK_LOW_TORQUE"
+    },
+    {
+      "t": "2026-04-07T08:25:01+08:00",
+      "signal": "nok_rate_pct",
+      "value": 3.3
+    },
+    {
+      "t": "2026-04-07T08:25:01+08:00",
+      "signal": "bit_cycle_count",
+      "value": 43741
+    }
+  ],
+  "technician": {
+    "id": "TECH-43",
+    "level": "L1"
+  },
+  "technician_report_raw": "ST01 H11/H08低扭NOK 查浮鎖 補鎖無效 bit43741 打滑 換bit ok",
+  "technician_report_normalized": "ST01 早班出現低扭力 NOK，NOK 率升至 3.3%，孔位分散在 H11、H08。初期先依浮鎖方向檢查鎖附間隙並補鎖，仍未改善。調閱紀錄發現起子頭累計使用 43,741 次，鎖附時有 cam-out 打滑聲，十字槽刃口圓化且螺絲頭磨花。已依 LOTO-ASM-TOOL-01 取下電池並關閉送釘機氣源，清潔夾頭與吸嘴後更換起子頭，試鎖 5 顆均 OK；可疑工件已隔離並完成首件確認，恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "torque_not_reached",
+    "by": "jev",
+    "p": 0.4
+  },
+  "final_root_cause": "bit_wear_camout",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "一開始看到 NOK_LOW_TORQUE 且 H11、H08 分散，直覺以為是浮鎖／扭力未達；但補鎖無效，且起子頭累計 43,741 次、十字槽磨花並有 cam-out 打滑聲，換新起子頭後立即改善，才確認不是單純扭力未達。",
+  "discriminating_evidence": [
+    "NOK 分散在 H11、H08 等不同孔位，非集中在單一作業員或單一孔位。",
+    "bit_cycle_count 為 43,741 次，已超過 40,000 次模擬門檻。",
+    "鎖附時出現起子頭跳出十字槽的 cam-out 打滑聲，螺絲頭十字槽磨花、起子頭刃口圓化。",
+    "更換起子頭後試鎖 5 顆立即改善。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "檢查 H11、H08 鎖附間隙與高度，確認無浮鎖，並以試片補鎖",
+      "result": "未改善"
+    },
+    {
+      "step": "調閱 NOK 紀錄與孔位分佈，檢視螺絲頭十字槽",
+      "result": "槽磨花"
+    },
+    {
+      "step": "檢視起子頭刃口並讀取使用次數",
+      "result": "確認磨耗"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "更換起子頭，清潔夾頭與吸嘴，試鎖 5 顆",
+      "result": "ok"
+    },
+    {
+      "step": "隔離可疑工件，追溯批號並完成首件確認",
+      "result": "完成"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-011",
+    "SOP-ASM-013"
+  ],
+  "downtime_min": 17,
+  "parts_replaced": [
+    "driver_bit"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "低扭力 NOK 別急著只補鎖；孔位分散又 bit 計數破 4 萬時，先聽打滑聲、看十字槽，換 bit 再試鎖。",
+  "related_failure_mode_ids": [
+    "bit_wear_camout",
+    "torque_not_reached"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-ASM-011",
+    "SOP-ASM-013"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

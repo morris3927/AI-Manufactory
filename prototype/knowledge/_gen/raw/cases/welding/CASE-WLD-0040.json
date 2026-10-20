@@ -1,0 +1,46 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3039
+ },
+ "output": {
+  "technician_report_raw": "RC01 側框 燒穿+未熔合 查TCP偏差小 間隙0.8 銷磨耗 換銷+墊片 試銲ok",
+  "technician_report_normalized": "RC01 在 FX-B 治具銲接 2U 機殼側框時，09:15 出現燒穿兩點，10:22 又出現未熔合兩點，電弧電壓變異僅 3.4%。先依前一晚輕微撞槍懷疑 TCP 偏移，查校驗偏差小、接地正常，排除。量測工件與治具基準面間隙三處，最大約 0.8 mm，定位銷有磨耗；清潔基準面與夾爪後更換定位銷並加墊片，試銲熔深正常，恢復生產。",
+  "actions": [
+   {
+    "step": "依撞槍紀錄與 TCP 校驗紀錄檢查銲槍偏移",
+    "result": "偏差小 排除"
+   },
+   {
+    "step": "量測 FX-B 工件與治具基準面間隙三處",
+    "result": "最大0.8mm 超標"
+   },
+   {
+    "step": "清潔治具基準面、定位銷孔與夾爪齒面",
+    "result": "銲渣油污清除"
+   },
+   {
+    "step": "更換磨耗定位銷並加墊片，依標示扭力鎖附",
+    "result": "定位改善"
+   },
+   {
+    "step": "局部排氣運轉下於圍欄外試銲",
+    "result": "熔深正常 ok"
+   }
+  ],
+  "parts_replaced": [
+   "locating_pin",
+   "fixture_shim"
+  ],
+  "why_first_guess_wrong": "前一晚有輕微撞槍，且缺陷先以燒穿出現，因此先懷疑 TCP 偏移；但 TCP 校驗偏差未超過 1.0 mm、電弧電壓穩定，且缺陷只集中在 FX-B，才確認不是 TCP 而是治具間隙。",
+  "discriminating_evidence": [
+   "缺陷紀錄為 burn_through×2 與 lack_of_fusion×2，全部集中在 FX-B。",
+   "arc_voltage_cv_pct 為 3.4%，電弧電壓穩定，不符合 TCP 偏移常見的整批同向偏移。",
+   "實測工件與治具基準面間隙最大 0.8 mm，超過 0.5 mm。",
+   "定位銷有磨耗，且 09:00 換批 L-2601-13 後開始出現缺陷。"
+  ],
+  "lessons": "同一治具連續出現燒穿或未熔合時，先量間隙與看定位銷，不要只被前一晚的輕微撞槍帶走。",
+  "escalation_note": null
+ }
+}

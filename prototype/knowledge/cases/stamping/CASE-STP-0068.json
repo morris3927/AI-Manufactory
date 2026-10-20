@@ -1,0 +1,159 @@
+{
+  "case_id": "CASE-STP-0068",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-v1",
+    "seed": 1067,
+    "skeleton": "case_skeleton.Planner(seed=2026)"
+  },
+  "split": "train",
+  "case_type": "wrong_first",
+  "line": "stamping",
+  "machine_type": "servo_press",
+  "machine_id": "STP-L1-PR01",
+  "opened_at": "2026-09-13T11:06:18+08:00",
+  "closed_at": "2026-09-13T14:22:59+08:00",
+  "shift": "day",
+  "trigger": {
+    "source": "mes",
+    "event_type": "strip_lift_stop",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 55,
+    "recent_changes": [
+      "降速 → 30 spm 10:36（10:32 料帶上浮後）",
+      "提速 30→40 spm 10:39"
+    ],
+    "material": {
+      "grade": "SECC",
+      "thickness_mm": 0.8,
+      "coil_id": "C-2609-168"
+    },
+    "die_id": "D-2U-TOP-03",
+    "part": "2U 上蓋"
+  },
+  "log_signals": [
+    {
+      "t": "2026-09-13T09:56:36+08:00",
+      "signal": "die_stroke_total",
+      "value": 555620
+    },
+    {
+      "t": "2026-09-13T10:32:06+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2026-09-13T10:36:45+08:00",
+      "signal": "spm",
+      "value": 30
+    },
+    {
+      "t": "2026-09-13T10:39:59+08:00",
+      "signal": "spm",
+      "value": 40
+    },
+    {
+      "t": "2026-09-13T10:58:23+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    },
+    {
+      "t": "2026-09-13T11:06:18+08:00",
+      "signal": "alarm_code",
+      "value": "STRIP_LIFT"
+    }
+  ],
+  "technician": {
+    "id": "TECH-11",
+    "level": "L1"
+  },
+  "technician_report_raw": "PR01 料帶上浮 先查跳屑 模面無廢料 降30沒用→拆上模看脫料彈簧軟 換整組 ok",
+  "technician_report_normalized": "PR01 生產 2U 上蓋時多次出現料帶上浮停機。起初依跳屑方向檢查模面、沖頭端面與製品，未發現黏附廢料；調閱紀錄，10:32 提速前就已上浮一次，10:36 降至 30 spm 也未改善。拆開上模護蓋後，發現脫料板動作不順、彈簧有縮短變形；查履歷累積沖次 555620，已超過彈簧更換週期。更換脫料板彈簧組並清潔彈簧座後試沖正常，後續生產未再出現料帶上浮。",
+  "first_hypothesis": {
+    "failure_mode_id": "slug_pulling",
+    "by": "technician",
+    "p": null
+  },
+  "final_root_cause": "stripper_spring_fatigue",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "10:39 提速到 40 spm 後又連續出現料帶上浮，很像跳屑常在提速後出現的模式；但 10:32 提速前就已上浮一次，10:36 降到 30 spm 也沒改善，模面與製品都撿不到廢料，脫料板彈簧又已縮短變形，才確認不是跳屑。",
+  "discriminating_evidence": [
+    "模面、沖頭端面與製品都未撿到黏附廢料，沒有跳屑壓出凹痕的特徵。",
+    "10:32 提速前已出現 STRIP_LIFT，10:36 降至 30 spm 也未改善。",
+    "拆上模護蓋可見脫料板脫料不平均、彈簧縮短變形，料帶回程被帶起。",
+    "模具累積沖次 555620，脫料板彈簧已超過更換週期。"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-PRESS-SERVO-01 停機、上鎖掛牌、驗證零能量",
+      "result": "ok"
+    },
+    {
+      "step": "依跳屑方向檢查模面、沖頭端面與製品有無黏附廢料",
+      "result": "未發現廢料，排除"
+    },
+    {
+      "step": "調閱 STRIP_LIFT 與沖速紀錄",
+      "result": "未改善"
+    },
+    {
+      "step": "拆上模護蓋檢查脫料板動作與彈簧狀態",
+      "result": "脫料板不順、彈簧縮短變形"
+    },
+    {
+      "step": "查模具履歷比對累積沖次與彈簧更換週期",
+      "result": "555620 沖次，逾更換週期"
+    },
+    {
+      "step": "試沖前恢復確認：清點工具、撤出安全塊、恢復護圍與光幕等安全裝置、確認人員離開危險區與滾輪夾捲點，由原上鎖人取下自己的鎖（含連動上鎖機台）後以正常操作模式試沖；試沖中異常須重新上鎖才能再進入",
+      "result": "ok"
+    },
+    {
+      "step": "更換脫料板彈簧組，清潔彈簧座與導柱後復歸",
+      "result": "試沖 ok"
+    },
+    {
+      "step": "連續生產觀察料帶上浮訊號",
+      "result": "未再觸發"
+    }
+  ],
+  "sop_used": [
+    "SOP-STP-031",
+    "SOP-STP-036"
+  ],
+  "downtime_min": 194,
+  "parts_replaced": [
+    "stripper_spring_set"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "料帶反覆上浮又撿不到廢料時，先量脫料板突出量與彈簧壓縮量，比只追跳屑更快。",
+  "related_failure_mode_ids": [
+    "stripper_spring_fatigue",
+    "slug_pulling"
+  ],
+  "category": "equipment",
+  "references": [
+    "SOP-STP-031",
+    "SOP-STP-036"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_reliability_eng"
+  ],
+  "review_note": "AI 角色扮演審核（模擬設備保全工程師），非真人專家審核",
+  "review_date": "2026-10-21",
+  "review_doc": "reviews/2026-10-21_reliability_eng.md"
+}

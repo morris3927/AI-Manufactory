@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4015
+ },
+ "output": {
+  "technician_report_raw": "ST01 H11/H08低扭NOK 查浮鎖 補鎖無效 bit43741 打滑 換bit ok",
+  "technician_report_normalized": "ST01 早班出現低扭力 NOK，NOK 率升至 3.3%，孔位分散在 H11、H08。初期先依浮鎖方向檢查鎖附間隙並補鎖，仍未改善。調閱紀錄發現起子頭累計使用 43,741 次，鎖附時有 cam-out 打滑聲，十字槽刃口圓化且螺絲頭磨花。已依 LOTO-ASM-TOOL-01 取下電池並關閉送釘機氣源，清潔夾頭與吸嘴後更換起子頭，試鎖 5 顆均 OK；可疑工件已隔離並完成首件確認，恢復生產。",
+  "actions": [
+   {
+    "step": "檢查 H11、H08 鎖附間隙與高度，確認無浮鎖，並以試片補鎖",
+    "result": "未改善"
+   },
+   {
+    "step": "調閱 NOK 紀錄與孔位分佈，檢視螺絲頭十字槽",
+    "result": "槽磨花"
+   },
+   {
+    "step": "檢視起子頭刃口並讀取使用次數",
+    "result": "確認磨耗"
+   },
+   {
+    "step": "更換起子頭，清潔夾頭與吸嘴，試鎖 5 顆",
+    "result": "ok"
+   },
+   {
+    "step": "隔離可疑工件，追溯批號並完成首件確認",
+    "result": "完成"
+   }
+  ],
+  "parts_replaced": [
+   "driver_bit"
+  ],
+  "why_first_guess_wrong": "一開始看到 NOK_LOW_TORQUE 且 H11、H08 分散，直覺以為是浮鎖／扭力未達；但補鎖無效，且起子頭累計 43,741 次、十字槽磨花並有 cam-out 打滑聲，換新起子頭後立即改善，才確認不是單純扭力未達。",
+  "discriminating_evidence": [
+   "NOK 分散在 H11、H08 等不同孔位，非集中在單一作業員或單一孔位。",
+   "bit_cycle_count 為 43,741 次，已超過 40,000 次模擬門檻。",
+   "鎖附時出現起子頭跳出十字槽的 cam-out 打滑聲，螺絲頭十字槽磨花、起子頭刃口圓化。",
+   "更換起子頭後試鎖 5 顆立即改善。"
+  ],
+  "lessons": "低扭力 NOK 別急著只補鎖；孔位分散又 bit 計數破 4 萬時，先聽打滑聲、看十字槽，換 bit 再試鎖。",
+  "escalation_note": null
+ }
+}

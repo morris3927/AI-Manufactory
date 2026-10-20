@@ -1,0 +1,40 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 4013
+ },
+ "output": {
+  "technician_report_raw": "ST02 H07/H12 LOW_TORQUE跳 打滑聲 bit 42702次 十字槽花 起子投刃口圓 LOTO後拆bit清夾頭換新 舊bit試5打滑2 新bit試5 ok 孔牙鋅渣清 首件ok",
+  "technician_report_normalized": "ST02 鎖附站自 3 月 12 日晚間起 NOK 率由 0.8% 升至 4.6%，H07、H12 出現 NOK_LOW_TORQUE，鎖附時有起子頭打滑聲，螺絲十字槽磨花。依 SOP-ASM-013 於 LOTO 後拆下起子頭檢查，刃口已圓化，控制器累計 42,702 次；舊起子頭試鎖 5 顆有 2 顆打滑，換新起子頭並清潔夾頭、吸嘴與送釘軌道後，試鎖 5 顆皆正常。孔牙鋅渣已清除，可疑螺絲與批號 SL-2603-25 已隔離追溯，並完成首件確認，恢復生產。",
+  "actions": [
+   {
+    "step": "檢查起子頭刃口與螺絲十字槽磨花狀況",
+    "result": "刃口圓化、槽磨花"
+   },
+   {
+    "step": "讀取控制器累計次數與 NOK 孔位分佈",
+    "result": "42,702 次、H07/H12"
+   },
+   {
+    "step": "以舊起子頭在報廢件試鎖 5 顆",
+    "result": "2 顆打滑"
+   },
+   {
+    "step": "更換起子頭並清潔夾頭、吸嘴後試鎖 5 顆",
+    "result": "5 顆 ok"
+   },
+   {
+    "step": "清潔送釘軌道與孔牙鋅渣，隔離可疑螺絲、追溯批號並首件確認",
+    "result": "恢復生產"
+   }
+  ],
+  "parts_replaced": [
+   "driver_bit"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "看到 NOK 分散在各孔又有打滑聲，先查起子頭累計次數與刃口，比只清孔牙更快抓到。",
+  "escalation_note": null
+ }
+}

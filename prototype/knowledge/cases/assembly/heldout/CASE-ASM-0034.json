@@ -1,0 +1,145 @@
+{
+  "case_id": "CASE-ASM-0034",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4033,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "heldout",
+  "case_type": "wrong_first",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST01",
+  "opened_at": "2026-04-02T22:16:52+08:00",
+  "closed_at": "2026-04-02T23:30:33+08:00",
+  "shift": "swing",
+  "trigger": {
+    "source": "fused",
+    "event_type": "screw_count_mismatch",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 19,
+    "recent_changes": [
+      "交接班 22:02",
+      "補充螺絲 20:50（SL-2604-23）"
+    ],
+    "part": "2U 機殼組立",
+    "tool_id": "SD-01-2",
+    "screw_lot": "SL-2604-23"
+  },
+  "log_signals": [
+    {
+      "t": "2026-04-02T20:51:00+08:00",
+      "signal": "screw_lot_change",
+      "value": "SL-2604-23"
+    },
+    {
+      "t": "2026-04-02T22:16:52+08:00",
+      "signal": "screw_count_actual",
+      "value": 11
+    },
+    {
+      "t": "2026-04-02T22:16:52+08:00",
+      "signal": "screw_count_required",
+      "value": 12
+    },
+    {
+      "t": "2026-04-02T22:16:52+08:00",
+      "signal": "alarm_code",
+      "value": "COUNT_MISMATCH"
+    },
+    {
+      "t": "2026-04-02T22:16:52+08:00",
+      "signal": "screw_missing",
+      "value": true
+    }
+  ],
+  "technician": {
+    "id": "TECH-42",
+    "level": "L1"
+  },
+  "technician_report_raw": "ST01 COUNT_MISMATCH 11/12 先查送釘機 軌道吸嘴ok沒卡釘 逐孔看第7孔空 補鎖+隔離 回報 ok",
+  "technician_report_normalized": "ST01 於 22:16 出現鎖附計數不符警報，實際 11 顆、工單要求 12 顆。因 20:50 曾補充新批螺絲（SL-2604-23），先依第一判斷拆查送釘機，軌道、分離器與吸嘴均無卡釘、歪斜螺絲或異物，也無送釘逾時警報，已鎖的 11 顆扭力與角度紀錄皆正常。改以工單孔位逐孔目視，發現第 7 孔確實沒有螺絲，孔牙與壓鉚螺母完整、孔內無異物。已將可疑工件貼標隔離，並回溯同批前後件之計數與影像，補鎖一顆 M3 螺絲後完成首件確認，復歸生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "screw_feeder_jam",
+    "by": "jev",
+    "p": 0.4
+  },
+  "final_root_cause": "missing_screw",
+  "contributing_causes": [],
+  "hypothesis_correct": false,
+  "why_first_guess_wrong": "警報發生在 20:50 補充新批螺絲（SL-2604-23）之後，送釘機卡釘確實是數量短少的常見原因，但送釘機沒有逾時或吸附失敗警報，軌道與吸嘴也無歪斜螺絲或異物，且已鎖的 11 顆扭力與角度紀錄都正常，真正原因是 22:02 交接班作業中斷後漏打一顆。",
+  "discriminating_evidence": [
+    "送釘機無逾時或吸附失敗警報，軌道、分離器、吸嘴均無卡釘、歪斜螺絲或異物",
+    "控制器顯示 screw_count_actual=11、required=12，已完成鎖附的 11 顆紀錄皆為 OK",
+    "逐孔目視發現第 7 孔沒有螺絲，孔牙與壓鉚螺母完整、孔內無異物",
+    "時序上警報出現在 22:02 交接班之後，屬作業中斷後漏鎖，非送釘異常"
+  ],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "依第一判斷拆查送釘機軌道、分離器與吸嘴，確認有無卡釘、歪斜螺絲或規格不符螺絲",
+      "result": "無異常"
+    },
+    {
+      "step": "核對控制器鎖附計數與工單需求數量並調閱警報紀錄",
+      "result": "確認少一顆"
+    },
+    {
+      "step": "依工單孔位逐孔目視，以手電筒確認孔內有無螺絲",
+      "result": "第7孔無螺絲"
+    },
+    {
+      "step": "檢查缺孔孔牙與壓鉚螺母狀態，並隔離可疑工件、回溯同批前後件計數與影像",
+      "result": "完成隔離"
+    },
+    {
+      "step": "清除孔內異物後補鎖 M3 螺絲，執行首件確認",
+      "result": "ok"
+    },
+    {
+      "step": "復歸生產並回報班長補料與交接班時段之計數抽查",
+      "result": "恢復生產"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-021",
+    "SOP-ASM-023"
+  ],
+  "downtime_min": 72,
+  "parts_replaced": [
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "補料與交接班後先對一次計數與孔位再繼續打，比事後追卡釘快得多。",
+  "related_failure_mode_ids": [
+    "missing_screw",
+    "screw_feeder_jam"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-021",
+    "SOP-ASM-023"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

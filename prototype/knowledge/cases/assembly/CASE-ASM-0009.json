@@ -1,0 +1,149 @@
+{
+  "case_id": "CASE-ASM-0009",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "model": "deepseek-v4.1-flash",
+    "prompt_ver": "case-gen-wa-v1",
+    "seed": 4008,
+    "skeleton": "case_skeleton_wa.Planner('assembly', seed=2028)"
+  },
+  "split": "train",
+  "case_type": "typical",
+  "line": "assembly",
+  "machine_type": "screwdriving_station",
+  "machine_id": "ASM-L1-ST02",
+  "opened_at": "2026-08-26T05:45:10+08:00",
+  "closed_at": "2026-08-26T06:17:29+08:00",
+  "shift": "night",
+  "trigger": {
+    "source": "mes",
+    "event_type": "screw_nok",
+    "rule_severity": "S2"
+  },
+  "context": {
+    "days_since_pm": 52,
+    "recent_changes": [],
+    "part": "4U 機殼組立",
+    "tool_id": "SD-02-3",
+    "screw_lot": "SL-2608-27"
+  },
+  "log_signals": [
+    {
+      "t": "2026-08-26T05:05:35+08:00",
+      "signal": "nok_hole_id",
+      "value": "H05"
+    },
+    {
+      "t": "2026-08-26T05:05:54+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-08-26T05:23:14+08:00",
+      "signal": "nok_hole_id",
+      "value": "H05"
+    },
+    {
+      "t": "2026-08-26T05:23:52+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-08-26T05:41:52+08:00",
+      "signal": "screw_result",
+      "value": "NOK_ANGLE_HIGH"
+    },
+    {
+      "t": "2026-08-26T05:42:00+08:00",
+      "signal": "nok_hole_id",
+      "value": "H05"
+    },
+    {
+      "t": "2026-08-26T05:45:10+08:00",
+      "signal": "final_angle_deg",
+      "value": 2106
+    }
+  ],
+  "technician": {
+    "id": "TECH-48",
+    "level": "L2"
+  },
+  "technician_report_raw": "ST02 H05一直NOK_ANGLE_HIGH 角度2106 孔口斜牙毛邊 bit正常 換pem nut+新M3螺絲 試片OK 首件OK",
+  "technician_report_normalized": "夜班ASM-L1-ST02於05:05至05:42連續出現H05孔位NOK_ANGLE_HIGH，最終角度2106度，固定同一孔。讀取鎖附紀錄並以放大鏡檢查，H05壓鉚螺母孔口有斜牙與毛邊，螺絲批號及起子頭磨耗正常。已隔離NOK工件與同批可疑螺絲、壓鉚螺母並追溯首件，清除孔口毛邊碎屑後以手動壓鉚工具更換同規格壓鉚螺母及M3螺絲，確認端面齊平。以報廢件試鎖正常，首件確認OK後恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "cross_thread_strip",
+    "by": "rule",
+    "p": null
+  },
+  "final_root_cause": "cross_thread_strip",
+  "contributing_causes": [],
+  "hypothesis_correct": true,
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "new_mode_proposal": null,
+  "actions": [
+    {
+      "step": "依 LOTO-ASM-TOOL-01 拔插頭／取下電池、關送釘機氣源並洩壓、掛個人標籤，驗證不動作",
+      "result": "ok"
+    },
+    {
+      "step": "讀取鎖附控制器紀錄與NOK清單，核對H05、NOK_ANGLE_HIGH與最終角度2106度",
+      "result": "確認同一孔重複"
+    },
+    {
+      "step": "以放大鏡目視H05壓鉚螺母孔口，發現斜牙與毛邊",
+      "result": "確認斜牙"
+    },
+    {
+      "step": "檢查NOK螺絲與送料盤螺絲長度、牙距、頭型，並檢查起子頭刃口與磨耗",
+      "result": "規格與刃口正常"
+    },
+    {
+      "step": "隔離NOK工件與同批可疑螺絲、壓鉚螺母，記錄hole_id、批號、時間並追溯首件",
+      "result": "已隔離追溯"
+    },
+    {
+      "step": "以軟毛刷、無絨布與手動吸球清除孔口毛邊碎屑，再以螺紋通規與止規檢查孔牙",
+      "result": "孔牙崩壞"
+    },
+    {
+      "step": "試鎖／測試前依 LOTO-ASM-TOOL-01 測試／定位程序：原上鎖人取下自己的插頭鎖蓋插回電源，只用試片或報廢件，手指不放在起子頭下方；測試後若要再拆修須重新上鎖",
+      "result": "ok"
+    },
+    {
+      "step": "以手動壓鉚工具更換同規格壓鉚螺母與M3螺絲，確認端面齊平，並用報廢件試鎖及首件確認",
+      "result": "ok"
+    }
+  ],
+  "sop_used": [
+    "SOP-ASM-012"
+  ],
+  "downtime_min": 30,
+  "parts_replaced": [
+    "pem_nut",
+    "screw_m3"
+  ],
+  "safety_flags": {
+    "loto_done": true,
+    "danger_zone_entry": true,
+    "near_miss": false
+  },
+  "outcome": "resolved",
+  "escalated_to": null,
+  "escalation_note": null,
+  "lessons": "同一孔位連續NOK_ANGLE_HIGH先查孔牙與壓鉚螺母，不要只換螺絲或調扭力。",
+  "related_failure_mode_ids": [
+    "cross_thread_strip"
+  ],
+  "category": "quality",
+  "references": [
+    "SOP-ASM-012"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "ai_sim_reviewer_weld_asm"
+  ],
+  "review_note": "AI 角色扮演審核，非真人專家審核",
+  "review_doc": "reviews/2026-10-21_weld_asm.md"
+}

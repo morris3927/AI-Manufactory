@@ -1,0 +1,45 @@
+{
+ "generator": {
+  "model": "deepseek-v4.1-flash",
+  "prompt_ver": "case-gen-wa-v1",
+  "seed": 3036
+ },
+ "output": {
+  "technician_report_raw": "SP02 未熔合×4 都在FX-B同點 換批L-2607-99後開始 電流10.3kA穩 間隙0.9mm 定位銷磨耗+夾爪鬆 換銷/彈簧 清基準面 試銲ok",
+  "technician_report_normalized": "SP02 點銲機於夜班反映 2U 機殼側框在 FX-B 治具出現 4 處未熔合，銲接電流 10.3 kA 穩定，缺陷集中在同一銲點位置，其他治具正常。查閱紀錄發現 02:07 更換工件批 L-2607-99 後開始出現飛濺與未熔合。於上鎖掛牌狀態下檢查治具，定位銷有磨耗鬆動、夾爪夾持力不足；以塞尺量測工件與基準面間隙，最大達 0.9 mm，超過 0.5 mm。清潔基準面與銷孔銲渣後，更換定位銷與夾爪彈簧並依標示扭力鎖緊，試銲確認熔核正常，恢復生產。",
+  "actions": [
+   {
+    "step": "調閱銲接缺陷紀錄與治具使用紀錄，比對 fixture_id 與銲點位置",
+    "result": "缺陷集中 FX-B 同一點"
+   },
+   {
+    "step": "比對銲槍 TCP 校驗紀錄與兩工位接地夾、回路電纜接頭狀態",
+    "result": "正常"
+   },
+   {
+    "step": "目視並手動檢查 FX-B 基準面、定位銷與夾爪齒面",
+    "result": "定位銷磨耗、夾爪鬆"
+   },
+   {
+    "step": "以塞尺量測工件與治具基準面間隙至少 3 處",
+    "result": "最大 0.9 mm 超標"
+   },
+   {
+    "step": "清潔基準面、定位銷孔與夾爪齒面，更換定位銷與夾爪彈簧後鎖緊",
+    "result": "更換完成"
+   },
+   {
+    "step": "試銲 2U 機殼側框並檢查熔核",
+    "result": "ok"
+   }
+  ],
+  "parts_replaced": [
+   "locating_pin",
+   "clamp_spring"
+  ],
+  "why_first_guess_wrong": null,
+  "discriminating_evidence": [],
+  "lessons": "換批後才出現的未熔合，先比對缺陷是否集中在同一治具與同一銲點，再用塞尺量間隙，比追電流參數快。",
+  "escalation_note": null
+ }
+}
