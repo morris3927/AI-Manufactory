@@ -5,7 +5,7 @@ Pipeline (07_RAG知識庫資料.md §7.1 step 2–3):
                 inspect / repair / verify content (+ title, symptoms, prerequisites, escalate_if)
                 → raw JSON saved under _gen/raw/sop/ (reproducible input to step 2)
   2. assemble — program wraps the LLM content with fixed prepare / isolate / restore steps
-                (LOTO reference, 第57/69/70/254條), adds testing-positioning pre-steps before
+                (LOTO reference, 第57/69/70條、第254條 for electrical re-energizing, OSHA 1910.147(e)(3) for lock removal), adds testing-positioning pre-steps before
                 any energized step, and writes YAML. Safety-category modes (safety_only_sop)
                 never go to the LLM: their SOP is a fixed stop / notify / wait-for-supervisor text.
 
@@ -187,8 +187,8 @@ def safety_only(fm_id: str, fm: dict) -> dict:
              None, True, ["REG-N0060027-26", "REG-N0060034-35", "REG-N0060034-38"]),
             ("verify", "合格人員完成檢查並留下紀錄（管理辦法第80條，保存三年）；現場主管確認停止角度與停止時間量測回到設定範圍內後，才在 Kanban 簽核",
              None, True, ["REG-N0060027-80"]),
-            ("restore", f"依 {lid} 解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電", None, True,
-             ["REG-N0060009-254-p2", "REG-OSHA-1910.147-e-3"]),
+            ("restore", f"依 {lid} 解除程序，由原上鎖人親自取下自己的鎖具與標籤（參考 OSHA 1910.147(e)(3)）；送電前確認作業人員無感電之虞（設施規則第254條第2項）；AI 不得宣告可以復電", None, True,
+             ["REG-OSHA-1910.147-e-3", "REG-N0060009-254-p2"]),
         ]
         escalate = ["停止角度超限時有人員在危險區或已有人受傷 → 依 S3 處理：急救優先、保全現場，協助主管於 8 小時內通報（職安法第37條）",
                     "氣源壓力同時低於下限 → 由主管確認後另開 SOP-STP-055 工單（氣源壓力不足），但離合器／制動器檢查仍須由合格人員完成",
@@ -207,8 +207,8 @@ def safety_only(fm_id: str, fm: dict) -> dict:
              None, True, ["REG-N0060034-4", "REG-N0060034-6"]),
             ("verify", "合格人員完成檢修後，以測試棒遮光確認滑塊會停止，並留下紀錄；若屬人為停用，由主管了解原因並記錄（究責不究罰），確認後在 Kanban 簽核",
              None, True, ["REG-N0060034-12-p1", "REG-N0060027-59"]),
-            ("restore", f"依 {lid} 解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電", None, True,
-             ["REG-N0060009-254-p2", "REG-OSHA-1910.147-e-3"]),
+            ("restore", f"依 {lid} 解除程序，由原上鎖人親自取下自己的鎖具與標籤（參考 OSHA 1910.147(e)(3)）；送電前確認作業人員無感電之虞（設施規則第254條第2項）；AI 不得宣告可以復電", None, True,
+             ["REG-OSHA-1910.147-e-3", "REG-N0060009-254-p2"]),
         ]
         escalate = ["光幕停用狀態下偵測到人員在危險區 → 依 S3 處理，主管到場並保全影像紀錄",
                     "有人員受傷 → 急救優先、保全現場，協助主管於 8 小時內通報（職安法第37條）",
@@ -281,7 +281,8 @@ def assemble_mode(fm_id: str, fm: dict, cat: dict, src: dict) -> dict:
         add("prepare", "通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼與近 15 分鐘訊號趨勢"
             "（之後判讀趨勢用 MES／Sentinel 已記錄的資料，不需要為了看紀錄對機台送電）",
             ref=["REG-OSHA-1910.147-d-1"])
-        add("prepare", "確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）", sup=True,
+        add("prepare", "確認作業許可已由現場主管核准（許可單號；許可單列出本次隔離點），核准後技術員才依 LOTO 檢查表隔離"
+            "（廠內程序；危害防止計畫須含作業許可程序係第57條修正條文，116年1月1日施行）", sup=True,
             ref=["REG-N0060009-57-p1"])
         add("isolate", loto_phrase(fm), caution=body["isolate_caution"], sup=True,
             ref=["REG-N0060009-57-p1", "REG-N0060009-57-v20240801", "REG-OSHA-1910.147-d-6"])
@@ -298,7 +299,7 @@ def assemble_mode(fm_id: str, fm: dict, cat: dict, src: dict) -> dict:
                 if (phase == "verify" and not trial_announced and s.get("requires_energized")
                         and any(k in s["action"] for k in TRIAL_KEYWORDS)):
                     add("verify", PRE_TRIAL, caution="AI 不得宣告可以復電或可以生產；是否恢復試沖由現場主管決定", sup=True,
-                        ref=["REG-OSHA-1910.147-e-1", "REG-OSHA-1910.147-e-2", "REG-N0060009-254-p2"])
+                        ref=["REG-OSHA-1910.147-e-1", "REG-OSHA-1910.147-e-2", "REG-OSHA-1910.147-e-3", "REG-N0060009-254-p2"])
                     trial_announced = True
                 if s.get("requires_energized") and not energized_announced:
                     tp = "；".join(lotos[lid]["testing_positioning"])
@@ -315,8 +316,9 @@ def assemble_mode(fm_id: str, fm: dict, cat: dict, src: dict) -> dict:
                 if s.get("requires_energized") and phase != "verify":
                     pass
         add("restore", f"依 {lid} 解除程序（連動上鎖的送料機／沖床依各自檢查表一併解除）：清點工具、恢復護圍與光幕、取出安全塊、確認人員離開後，"
-            "由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內異常解鎖程序由主管處理；AI 不得宣告可以復電",
-            sup=True, ref=["REG-N0060009-254-p2", "REG-OSHA-1910.147-e-3"])
+            "由原上鎖人親自取下自己的鎖具與標籤（參考 OSHA 1910.147(e)(3)）；原上鎖人不在場時不得由他人剪鎖或代取，依廠內書面異常解鎖程序由主管處理（同條 (e)(3) 例外規定）；"
+            "送電前確認作業人員無感電之虞，並拆除短路接地器具（如有使用）與標示（設施規則第254條第2項）；AI 不得宣告可以復電",
+            sup=True, ref=["REG-OSHA-1910.147-e-3", "REG-N0060009-254-p2"])
         add("restore", "在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）", ref=["none"])
     verify = [s["action"].rstrip("。") + (f"；判定：{s['criteria']}" if s.get("criteria") else "") for s in steps if s["phase"] == "verify"]
     restore = [s["action"] for s in steps if s["phase"] == "restore"]
@@ -324,7 +326,7 @@ def assemble_mode(fm_id: str, fm: dict, cat: dict, src: dict) -> dict:
     for p in body.get("ppe", []):
         if p and not any(p in x or x in p for x in ppe):
             ppe.append(p)
-    legal = ["設施規則第57條", "設施規則第254條", "OSHA 1910.147(d)"]
+    legal = ["設施規則第57條", "設施規則第254條（電氣送電前確認）", "OSHA 1910.147(d)", "OSHA 1910.147(e)(3)（原上鎖人取下鎖具）"]
     if fm_id in DIE_SPACE or fm["safety_only_sop"]:
         legal.insert(1, "設施規則第69條")
     if fm_id in DIE_ADJUST:

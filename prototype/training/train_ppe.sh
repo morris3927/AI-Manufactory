@@ -7,5 +7,5 @@ CUDA_VISIBLE_DEVICES=1 yolo train \
   model=models/yolo8s.pt data=data/ppe2/ppe2.yaml \
   epochs=60 imgsz=640 batch=32 device=0 workers=8 \
   patience=15 cos_lr=True seed=0 \
-  project=runs/ppe2 name=yolo8s exist_ok=True
-echo DONE > runs/ppe2/yolo8s.done
+  project=$HOME/sentinel-train/runs/ppe2 name=yolo8s exist_ok=True   # 絕對路徑：相對路徑會被放到 runs/detect/ 底下
+echo DONE > $HOME/sentinel-train/runs/ppe2/yolo8s.done

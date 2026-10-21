@@ -326,10 +326,18 @@ def check_loto(lotos, regs):
         if len(ids) != len(set(ids)):
             err(w, "duplicate energy source ids")
         rel = "".join(l.release)
-        if "第254條" not in rel or "不得代取" not in rel:
-            err(w, "release must state original lock owner removes own lock (第254條, 不得代取)")
+        if "1910.147(e)(3)" not in rel or "不得代取" not in rel:
+            err(w, "release must state original lock owner removes own lock (OSHA 1910.147(e)(3), 不得代取)")
         if not raw.get("permit", {}).get("required"):
-            err(w, "permit.required must be true (第57條 作業許可程序)")
+            err(w, "permit.required must be true (廠內作業許可；第57條修正條文 116-01-01 施行)")
+        # workflow: permit requested → leader approves (listing isolation points) → technician performs LOTO
+        if not l.steps or "作業許可" not in l.steps[0].action:
+            err(w, "step 1 must be the permit-approved precondition (permit before isolation)")
+        if any("作業許可" in x.action for x in l.steps[1:]):
+            err(w, "作業許可 may only appear as step 1 (precondition), not as a later LOTO step")
+        bad_cite = json.dumps(raw, ensure_ascii=False)
+        if "原掛簽人" in bad_cite or re.search(r"原上鎖人[^；。]*（設施規則第254條）", bad_cite):
+            err(w, "設施規則第254條 does not say 原掛簽人/原上鎖人 removes the lock; cite OSHA 1910.147(e)(3)")
         if not any("復電" in c for c in l.ai_constraints):
             err(w, "ai_constraints must forbid AI declaring re-energize")
         check_review(w, raw)
@@ -379,8 +387,10 @@ def check_sops(cat, lotos, src, regs):
             err(w, "isolate step does not reference the LOTO checklist")
         last = s.steps[-1] if s.steps[-1].phase == "restore" else None
         restore_txt = " ".join(x.action for x in s.steps if x.phase == "restore")
-        if not last or "原上鎖人" not in restore_txt or "第254條" not in restore_txt:
-            err(w, "restore must have original lock owner remove lock (第254條)")
+        if not last or "原上鎖人" not in restore_txt or "1910.147(e)(3)" not in restore_txt:
+            err(w, "restore must have original lock owner remove lock (OSHA 1910.147(e)(3))")
+        if re.search(r"原上鎖人[^；。]*（設施規則第254條）", restore_txt):
+            err(w, "設施規則第254條 is electrical re-energizing confirmation, not lock removal by original locker")
         if "AI 不得宣告可以復電" not in restore_txt:
             err(w, "restore must state AI cannot declare re-energize")
         # energized steps must be preceded by testing/positioning procedure

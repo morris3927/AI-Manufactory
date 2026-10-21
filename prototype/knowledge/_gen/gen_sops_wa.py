@@ -4,7 +4,7 @@ Same pipeline as gen_sops.py (stamping, untouched):
   1. draft    — DeepSeek V4.1 Flash writes ONLY inspect / repair / verify (+ title, symptoms,
                 prerequisites, escalate_if) for non-safety modes → _gen/raw/sop/{line}/
   2. assemble — program adds the fixed prepare / isolate / restore scaffolding (LOTO reference,
-                設施規則第57/254條、工業用機器人危害預防標準、動火許可 where relevant), inserts the
+                設施規則第57條、第254條（電氣送電前確認）、OSHA 1910.147(e)(3)、工業用機器人危害預防標準、動火許可 where relevant), inserts the
                 testing/positioning pre-step before any energized step, applies the reviewed fixes in
                 sop_patches_weld_asm.yaml and writes YAML. Safety-category modes never go to the LLM.
 
@@ -184,8 +184,8 @@ def safety_only(line, fm_id, fm):
              "更換或清理濾筒時，濾筒內的粉塵可能含銲接燻煙金屬成分，依廠務規定處理", True, ["REG-N0060027-40", "REG-N0060027-47"]),
             ("verify", "合格人員修復後實施重點檢查（吸氣及排氣能力）並留下紀錄；現場主管確認風量回到設定範圍、煙霧不再擴散後，才在 Kanban 簽核",
              None, True, ["REG-N0060027-47", "REG-OSHA-1910.252-c-3"]),
-            ("restore", f"依 {lid}（或 LOTO-SPOT-WELD-01）解除程序，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電", None, True,
-             ["REG-N0060009-254-p2", "REG-OSHA-1910.147-e-3"]),
+            ("restore", f"依 {lid}（或 LOTO-SPOT-WELD-01）解除程序，由原上鎖人親自取下自己的鎖具與標籤（參考 OSHA 1910.147(e)(3)）；送電前確認作業人員無感電之虞（設施規則第254條第2項）；AI 不得宣告可以復電", None, True,
+             ["REG-OSHA-1910.147-e-3", "REG-N0060009-254-p2"]),
         ]
         escalate = [
             "銲接機器人或點銲機已停止，煙霧仍持續產生、或工位外出現火光 → 疑似火災，依廠內緊急應變程序立即通報主管與廠務；火警自動警報設備為法定設備，AI 不得使其靜音，也不得把本事件當成一般維修",
@@ -194,7 +194,7 @@ def safety_only(line, fm_id, fm):
         ]
         symptoms = ["排煙機停了", "煙散不掉", "煙霧飄出工位", "濾筒壓差警報", "排氣風量低"]
         prereq = {"tools": ["Kanban 工單", "「排氣異常・禁止銲接」標籤", "個人鎖與標籤"], "parts": [], "skill_level": "現場主管／廠務合格人員"}
-        legal = ["設施規則第292條", "職業安全衛生管理辦法第40、47條", "設施規則第57條", "設施規則第254條", "職業安全衛生法第18條"]
+        legal = ["設施規則第292條", "職業安全衛生管理辦法第40、47條", "設施規則第57條", "設施規則第254條（電氣送電前確認）", "OSHA 1910.147(e)(3)（原上鎖人取下鎖具）", "職業安全衛生法第18條"]
         ids = ["LOTO-WELD-ROBOT-01", "LOTO-SPOT-WELD-01"]
         lessons = "排氣異常只做停止銲接、人員退避、通知與上鎖，修復交給廠務；機器人停了還在冒煙就當火警處理。"
     else:  # ppe_esd_missing
@@ -243,12 +243,13 @@ def assemble_mode(line, fm_id, fm, cat, src, lotos):
         def add(phase, action, **kw):
             steps.append(step(len(steps) + 1, phase, action, **kw))
 
-        legal = ["設施規則第57條", "設施規則第254條", "OSHA 1910.147(d)"]
+        legal = (["設施規則第57條", "設施規則第254條（電氣送電前確認）", "OSHA 1910.147(d)", "OSHA 1910.147(e)(3)（原上鎖人取下鎖具）"] if line == "welding"
+                 else ["設施規則第57條", "OSHA 1910.147(d)", "OSHA 1910.147(e)(3)（原上鎖人取下鎖具）"])
         if line == "welding":
             add("prepare", "通知操作員與班長停線，於 Kanban 開立維修單；記錄停機當下的警報碼、近 15 分鐘訊號趨勢與不良銲道位置（治具、工位）",
                 ref=["REG-OSHA-1910.147-d-1"])
             hot = fm_id in HOT_WORK
-            add("prepare", "確認危害防止計畫與作業許可單已由現場主管核准（設施規則第57條）" +
+            add("prepare", "確認作業許可已由現場主管核准（許可單號；許可單列出本次隔離點），核准後技術員才依 LOTO 檢查表隔離（廠內程序；危害防止計畫須含作業許可程序係第57條修正條文，116年1月1日施行）" +
                 ("；若修復需要在銲接工作站以外研磨、補銲或切割，另依廠內規定申請動火許可，作業前清除周圍可燃物並備妥滅火器（設施規則第173條）" if hot else ""),
                 sup=True, ref=["REG-N0060009-57-p1"] + (["REG-N0060009-173", "REG-OSHA-1910.252-a-2-iv"] if hot else []))
             add("isolate", loto_phrase(line, fm), caution=body["isolate_caution"], sup=True,
@@ -273,7 +274,7 @@ def assemble_mode(line, fm_id, fm, cat, src, lotos):
                 ref=["REG-OSHA-1910.147-d-1"])
             add("prepare", "可疑工件先隔離：本站與下游已完成、可能受影響的機殼貼「待確認」標籤並移到隔離區，依序號追溯，判定前不得出貨",
                 ref=["none"])
-            add("prepare", "確認班長已核准簡化作業許可（設施規則第57條）", sup=True, ref=["REG-N0060009-57-p1"])
+            add("prepare", "確認班長已核准簡化作業許可（許可單號），核准後才依 LOTO 檢查表隔離（廠內程序；危害防止計畫須含作業許可程序係第57條修正條文，116年1月1日施行）", sup=True, ref=["REG-N0060009-57-p1"])
             add("isolate", loto_phrase(line, fm), caution=body["isolate_caution"], sup=False,
                 ref=["REG-N0060009-57-p1", "REG-OSHA-1910.147-a-2-iii-A"])
             legal.insert(2, "OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）")
@@ -307,11 +308,11 @@ def assemble_mode(line, fm_id, fm, cat, src, lotos):
         if teach_added:
             legal.insert(3, "工業用機器人危害預防標準第27條（教導作業）")
         if line == "welding":
-            add("restore", f"依 {lid} 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（設施規則第254條）；AI 不得宣告可以復電",
-                sup=True, ref=["REG-N0060009-254-p2", "REG-OSHA-1910.147-e-3", "REG-N0060025-32"])
+            add("restore", f"依 {lid} 解除程序：清點工具、恢復安全門連鎖與護罩、確認人員離開機器人可動範圍與電極區後，由原上鎖人親自取下自己的鎖具與標籤（參考 OSHA 1910.147(e)(3)）；送電前確認作業人員無感電之虞，並拆除短路接地器具（如有使用）與標示（設施規則第254條第2項）；AI 不得宣告可以復電",
+                sup=True, ref=["REG-OSHA-1910.147-e-3", "REG-N0060009-254-p2", "REG-N0060025-32"])
         else:
-            add("restore", f"依 {lid} 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電",
-                sup=False, ref=["REG-N0060009-254-p2", "REG-OSHA-1910.147-e-3"])
+            add("restore", f"依 {lid} 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（參考 OSHA 1910.147(e)(3)）；AI 不得宣告可以復電",
+                sup=False, ref=["REG-OSHA-1910.147-e-3"])
             add("restore", "隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產", sup=True, ref=["none"])
         add("restore", "在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）", ref=["none"])
     verify = [s["action"].rstrip("。") + (f"；判定：{s['criteria']}" if s.get("criteria") else "") for s in steps if s["phase"] == "verify"]

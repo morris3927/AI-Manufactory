@@ -38,9 +38,9 @@ safety:
   danger_zone_entry: true
   legal_basis:
   - 設施規則第57條
-  - 設施規則第254條
-  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
   - OSHA 1910.147(d)
+  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
+  - OSHA 1910.147(e)(3)（原上鎖人取下鎖具）
 symptoms:
 - 斜牙
 - 滑牙
@@ -85,7 +85,7 @@ steps:
   - none
 - 'no': 3
   phase: prepare
-  action: 確認班長已核准簡化作業許可（設施規則第57條）
+  action: 確認班長已核准簡化作業許可（許可單號），核准後才依 LOTO 檢查表隔離（廠內程序；危害防止計畫須含作業許可程序係第57條修正條文，116年1月1日施行）
   caution: null
   requires_supervisor: true
   requires_energized: false
@@ -199,12 +199,11 @@ steps:
   - A4
 - 'no': 16
   phase: restore
-  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（參考 OSHA 1910.147(e)(3)）；AI 不得宣告可以復電
   caution: null
   requires_supervisor: false
   requires_energized: false
   ref:
-  - REG-N0060009-254-p2
   - REG-OSHA-1910.147-e-3
 - 'no': 17
   phase: restore
@@ -228,7 +227,7 @@ verify:
 - 先以試片或報廢件試鎖確認參數，再對修復後首件依首件程序鎖附並記錄初段扭力、最終扭力與角度；判定：試片或報廢件試鎖初段扭力不得大於 0.30 N·m（模擬值），最終扭力達 0.8 N·m（模擬值）且判定 OK；修復後首件同一 hole_id 不得再出現 NOK_HIGH_TORQUE_EARLY 或 NOK_ANGLE_HIGH，最終角度落在作業標準範圍（模擬值），依現行扭力判定上下限判定，不得放寬。
 - 連續鎖附同一孔位 5 件（模擬值）進行首件追蹤與扭力抽測，確認 NOK 未重現；將更換件、螺絲批、起子頭與維修紀錄建檔後才放行；判定：連續 5 件（模擬值）同一 hole_id 皆判定 OK，初段扭力均不大於 0.30 N·m（模擬值），最終扭力達 0.8 N·m（模擬值）且角度在標準範圍（模擬值）；若任一 NOK 重現，停止放行並通知品保工程師／設備工程師。
 restore:
-- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（參考 OSHA 1910.147(e)(3)）；AI 不得宣告可以復電
 - 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
 - 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
 escalate_if:
@@ -253,7 +252,7 @@ references:
   license: ©
   use: paraphrase
 - id: public/regulations*.jsonl
-  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  title: 法規條文 chunk：REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
   url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
   license: TW-law / PD
   use: quote

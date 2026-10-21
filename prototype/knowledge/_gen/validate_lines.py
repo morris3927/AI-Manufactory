@@ -174,8 +174,10 @@ def check_line(v, line, src, sigs, alarms, lotos, regs):
         if s.steps[-1].phase != "restore":
             v.err(w, "last step must be restore")
         if s.safety.loto_required:
-            if "原上鎖人" not in restore_txt or "第254條" not in restore_txt:
-                v.err(w, "restore must have original lock owner remove lock (第254條)")
+            if "原上鎖人" not in restore_txt or "1910.147(e)(3)" not in restore_txt:
+                v.err(w, "restore must have original lock owner remove lock (OSHA 1910.147(e)(3))")
+            if re.search(r"原上鎖人[^；。]*（設施規則第254條）", restore_txt):
+                v.err(w, "設施規則第254條 is electrical re-energizing confirmation, not lock removal by original locker")
             if "AI 不得宣告可以復電" not in restore_txt:
                 v.err(w, "restore must state AI cannot declare re-energize")
         elif "AI 不得宣告可以恢復作業" not in restore_txt:

@@ -105,7 +105,7 @@ python3.13 validate.py                                   # 沖壓＋validate_lin
 | criteria 和 SOP inspect 一致，照著做能證實或排除 | ⚠️ LLM 依 criteria 撰寫，validate 檢查格式；內容待組員逐份確認 |
 | 涉及能源的步驟前面有 LOTO | ✅ 由程式保證（validate：isolate 在 inspect／repair 之前、通電步驟前有測試／定位程序） |
 | 換模或調模步驟有安全塊（第 69 條）和寸動（第 70 條） | ✅ validate 檢查 |
-| 由原上鎖人復電（第 254 條），AI 不能復電 | ✅ 固定模板＋validate |
+| 由原上鎖人取下自己的鎖具（參考 OSHA 1910.147(e)(3)）；電氣送電前確認無感電之虞（設施規則第 254 條第 2 項），AI 不能復電 | ✅ 固定模板＋validate |
 | 安全類模式只寫停機、通知、交給合格人員 | ✅ 固定模板，validate 禁止 repair phase 和 LLM 產生 |
 | 數值門檻都標了「模擬值」 | ✅ validate 用正則檢查 inspect／repair／verify 與 criteria；2026-10-21 AI 角色扮演審核已調整不合理的門檻（見 reviews/）；⚠️ 仍請業師看一次 |
 | 沒有真實廠商的警報碼、零件號、型號 | ✅ prompt 禁止，警報碼用自訂類別；⚠️ 仍需人工抽查 |

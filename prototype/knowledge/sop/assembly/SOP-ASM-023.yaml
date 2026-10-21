@@ -38,9 +38,9 @@ safety:
   danger_zone_entry: true
   legal_basis:
   - 設施規則第57條
-  - 設施規則第254條
-  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
   - OSHA 1910.147(d)
+  - OSHA 1910.147(a)(2)(iii)(A)（插頭式設備）
+  - OSHA 1910.147(e)(3)（原上鎖人取下鎖具）
 symptoms:
 - 少鎖一顆
 - 孔位沒有螺絲
@@ -84,7 +84,7 @@ steps:
   - none
 - 'no': 3
   phase: prepare
-  action: 確認班長已核准簡化作業許可（設施規則第57條）
+  action: 確認班長已核准簡化作業許可（許可單號），核准後才依 LOTO 檢查表隔離（廠內程序；危害防止計畫須含作業許可程序係第57條修正條文，116年1月1日施行）
   caution: null
   requires_supervisor: true
   requires_energized: false
@@ -215,12 +215,11 @@ steps:
   - A4
 - 'no': 18
   phase: restore
-  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+  action: 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（參考 OSHA 1910.147(e)(3)）；AI 不得宣告可以復電
   caution: null
   requires_supervisor: false
   requires_energized: false
   ref:
-  - REG-N0060009-254-p2
   - REG-OSHA-1910.147-e-3
 - 'no': 19
   phase: restore
@@ -243,7 +242,7 @@ verify:
 - 使用扭力分析儀對首件或試片抽測 3 件（模擬值），確認目標扭力 0.8 N·m（模擬值）與角度曲線在原設定範圍內（模擬值）；判定：抽測值落在控制器原設定判定範圍內（模擬值），角度曲線無異常；若浮鎖或扭力未達，改走 SOP-ASM-011；若斜牙或滑牙，改走 SOP-ASM-012。
 - 確認同批前後件抽查與追溯紀錄完成，隔離品已標示，影像與計數紀錄已保存；判定：同批抽查 5 件（模擬值）均無漏鎖且計數相符；若再有漏鎖，通知品保工程師並擴大追溯。
 restore:
-- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（設施規則第254條）；AI 不得宣告可以復電
+- 依 LOTO-ASM-TOOL-01 解除程序：清點工具與螺絲、恢復護蓋後，由原上鎖人親自取下自己的插頭鎖蓋與標籤再插回電源（參考 OSHA 1910.147(e)(3)）；AI 不得宣告可以復電
 - 隔離中的可疑工件由品保判定重工或放行，首件由班長確認後才恢復量產
 - 在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常（J5 結案回寫）
 escalate_if:
@@ -263,7 +262,7 @@ references:
   license: PD
   use: reference
 - id: public/regulations*.jsonl
-  title: 法規條文 chunk：REG-N0060009-254-p2、REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
+  title: 法規條文 chunk：REG-N0060009-57-p1、REG-OSHA-1910.147-a-2-iii-A、REG-OSHA-1910.147-d-1、REG-OSHA-1910.147-e-3、REG-OSHA-1910.147-f-1
   url: https://law.moj.gov.tw/ ; https://www.ecfr.gov/
   license: TW-law / PD
   use: quote
