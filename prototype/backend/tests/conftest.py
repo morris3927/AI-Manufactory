@@ -87,8 +87,10 @@ def knowledge(tmp_path: Path) -> Path:
 def settings(tmp_path: Path, knowledge: Path):
     return load_settings(BACKEND_DIR / "config.yaml",
                          paths={"db": str(tmp_path / "sentinel.db"), "chroma": str(tmp_path / "chroma"),
-                                "knowledge": str(knowledge), "drafts": str(tmp_path / "drafts")},
-                         kb={"embedding": "hash"}, jev={"warmup": False}, app={"ambient": False})
+                                "knowledge": str(knowledge), "drafts": str(tmp_path / "drafts"),
+                                "keyframes": str(tmp_path / "keyframes")},
+                         kb={"embedding": "hash"}, jev={"warmup": False}, app={"ambient": False},
+                         vision={"yolo_weights": "models/_none_for_tests.pt"})   # 測試一律用劇本重播的偵測結果
 
 
 @pytest.fixture

@@ -36,3 +36,22 @@ def feed_jam(w: Windows, m: str) -> Finding | None:
             return Finding(type="feed_jam", facts={**base, "source": "mes+motion", "jev_available": False,
                                                    "motion_state": "idle"})
     return None
+
+
+@rule(id="R-STP-PERSON-ZONE", line="stamping", category="safety", default_severity="S3")
+def person_in_zone(w: Windows, m: str) -> Finding | None:
+    """影像偵測人員在危險區，而且機台運轉中，或同線沖床光幕停用／異常 → S3（AI 不提供任何排除方法）。"""
+    th = w.th
+    ev = w.vision(m, "person_in_zone").latest(last_s=th.person_zone_window_s)
+    if not ev or not ev.get("value", True):
+        return None
+    peers = [x.id for x in w.plant.lines_machines(w.plant.line_of(m))] if w.plant else [m]
+    curtains = {p: w.mes(p, "light_curtain_status").latest() for p in peers}
+    curtain_bad = {p: v for p, v in curtains.items() if v in ("MUTED", "FAULT")}
+    running = w.mes(m, "state").latest() == "running"
+    if not (running or curtain_bad):
+        return None
+    return Finding(type="person_in_zone", facts={
+        "source": "fused", "involves_person": True, "machine_state": w.mes(m, "state").latest(),
+        "light_curtain": curtain_bad or "OK", "zone": ev.get("zone", "danger_zone"), "camera_id": ev.get("camera_id"),
+    })

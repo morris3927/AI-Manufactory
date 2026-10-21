@@ -35,6 +35,7 @@ class Camera(BaseModel):
 class Line(BaseModel):
     id: str
     name: str
+    interlock_groups: list[list[str]] = Field(default_factory=list)
     machines: list[Machine] = Field(default_factory=list)
     cameras: list[Camera] = Field(default_factory=list)
 
@@ -66,6 +67,18 @@ class Plant(BaseModel):
 
     def cameras_for_machine(self, machine_id: str) -> list[Camera]:
         return [c for c in self.cameras.values() if c.machine_id == machine_id]
+
+    def lines_machines(self, line_id: str | None) -> list[Machine]:
+        ln = self.line(line_id or "")
+        return list(ln.machines) if ln else []
+
+    def interlock_group(self, machine_id: str) -> str:
+        """連動群組代號；沒有列在任何群組的機台自成一組。"""
+        for line in self.lines:
+            for i, g in enumerate(line.interlock_groups):
+                if machine_id in g:
+                    return f"{line.id}#{i}"
+        return machine_id
 
     def line_of(self, entity: str | None) -> str | None:
         if not entity:

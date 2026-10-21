@@ -4,11 +4,11 @@ BACKEND := backend
 PY      := $(BACKEND)/.venv/bin/python
 PORT    ?= 8000
 
-.PHONY: setup dev dev-demo backend frontend test test-live kb kb-demo reset
+.PHONY: setup dev dev-demo backend frontend test test-live kb kb-demo reset eval eval-report
 
 setup:                      ## 建立 Python 3.13 venv 並安裝後端（含測試套件）
 	test -d $(BACKEND)/.venv || python3.13 -m venv $(BACKEND)/.venv
-	$(PY) -m pip install -q -e "$(BACKEND)[test]"
+	$(PY) -m pip install -q -e "$(BACKEND)[test,yolo,embed]"   # YOLO（PPE）與多語 embedding
 	cd frontend && npm install
 
 dev:                        ## 前後端一起啟動（Ctrl-C 一起結束）
@@ -38,3 +38,16 @@ kb-demo:                    ## 重建知識庫並放行 draft（只限 Demo）
 reset:                      ## 重置 Demo 資料（刪除 SQLite 與關鍵幀；服務啟動中請改用 POST /api/demo/reset）
 	rm -f $(BACKEND)/sentinel.db $(BACKEND)/sentinel.db-wal $(BACKEND)/sentinel.db-shm
 	rm -rf $(BACKEND)/keyframes
+
+eval:                       ## 評估實驗 E1–E7（真實 API；已有的 raw 結果會沿用、不重打）→ eval/results/
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.judge_eval run
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.ppe_eval run
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.feed_eval run
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.e2e_eval --runs 5 --port 8010
+	$(MAKE) eval-report
+
+eval-report:                ## 只用 eval/results/raw 重算指標與圖表（不打 API）
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.judge_eval analyze
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.ppe_eval analyze
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.feed_eval analyze
+	cd $(BACKEND) && .venv/bin/python -m sentinel.eval.figures

@@ -12,7 +12,9 @@ from ..db.session import Database
 log = logging.getLogger(__name__)
 
 ROLE_RANK = {"operator": 0, "technician": 1, "leader": 2, "supervisor": 3, "manager": 4}
-ROLE_LABEL = {"operator": "作業員", "technician": "技術員", "leader": "班長", "supervisor": "組長",
+PLANT_LINE = "plant"         # 全廠共用的職位（職安人員、急救人員）在 roster.csv 用 line=plant
+ROLE_LABEL = {"safety_officer": "職安人員", "first_aider": "急救人員",
+              "operator": "作業員", "technician": "技術員", "leader": "班長", "supervisor": "組長",
               "manager": "課長"}
 
 
@@ -40,6 +42,10 @@ class Roster:
             return []
         people = self.db.all(select(Person).where(col(Person.id).in_(ids)))
         return sorted(people, key=lambda p: (ROLE_RANK.get(p.role, 0), p.id))
+
+    def plant_role(self, role: str, at: datetime) -> list[Person]:
+        """全廠職位（safety_officer／first_aider）的當班人員。"""
+        return [p for p in self.on_shift(PLANT_LINE, at) if p.role == role]
 
     def _assignments(self, line: str, day: date, shift: str | None) -> list[ShiftAssignment]:
         stmt = select(ShiftAssignment).where(ShiftAssignment.line == line, ShiftAssignment.date == day)

@@ -1,0 +1,5212 @@
+{
+  "description": "Jev 1.14 J1–J3（正式題目 event-2026-10-20.3）於保留測試集；每筆 3 次",
+  "kb": {
+    "accepted": {
+      "failure_mode": 40,
+      "sop": 40,
+      "case": 200,
+      "public": 148
+    },
+    "rejected": 0,
+    "embedder": "hash-512"
+  },
+  "n_items": 40,
+  "items_by_line": {
+    "assembly": 10,
+    "stamping": 20,
+    "welding": 10
+  },
+  "root_cause_scored_items": 37,
+  "all_runs": {
+    "n_calls": 120,
+    "n_errors": 0,
+    "root_cause_top1": {
+      "k": 96,
+      "n": 111,
+      "rate": 0.865,
+      "ci95": [
+        0.789,
+        0.916
+      ]
+    },
+    "root_cause_top3": {
+      "k": 111,
+      "n": 111,
+      "rate": 1.0,
+      "ci95": [
+        0.967,
+        1
+      ]
+    },
+    "root_cause_by_line": {
+      "assembly": {
+        "n": 27,
+        "top1": 0.889,
+        "top3": 1.0
+      },
+      "stamping": {
+        "n": 57,
+        "top1": 0.789,
+        "top3": 1.0
+      },
+      "welding": {
+        "n": 27,
+        "top1": 1.0,
+        "top3": 1.0
+      }
+    },
+    "root_cause_top1_by_case_type": {
+      "escalated": {
+        "n": 6,
+        "top1": 1.0
+      },
+      "typical": {
+        "n": 81,
+        "top1": 0.889
+      },
+      "wrong_first": {
+        "n": 24,
+        "top1": 0.75
+      }
+    },
+    "category": {
+      "k": 81,
+      "n": 120,
+      "rate": 0.675,
+      "ci95": [
+        0.587,
+        0.752
+      ]
+    },
+    "category_lenient": {
+      "k": 87,
+      "n": 120,
+      "rate": 0.725,
+      "ci95": [
+        0.639,
+        0.797
+      ]
+    },
+    "severity_raw": {
+      "k": 108,
+      "n": 120,
+      "rate": 0.9,
+      "ci95": [
+        0.833,
+        0.942
+      ]
+    },
+    "severity_gated": {
+      "k": 111,
+      "n": 120,
+      "rate": 0.925,
+      "ci95": [
+        0.864,
+        0.96
+      ]
+    },
+    "severity_confusion": {
+      "S1->S2": 6,
+      "S2->S1": 3,
+      "S2->S2": 108,
+      "S3->S2": 3
+    },
+    "s3_recall_gated": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "ci95": [
+        0.438,
+        1
+      ]
+    },
+    "false_alarm": {
+      "threshold": 0.5,
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 114,
+      "n_false_alarm_cases": 6,
+      "precision": null,
+      "recall": 0.0
+    },
+    "false_alarm_gate": {
+      "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+      "suppressed_true_fa": 0,
+      "suppressed_real_events": 0
+    },
+    "latency_ms": {
+      "n": 120,
+      "mean": 490.5,
+      "p50": 458.18,
+      "p95": 631.02,
+      "max": 1426.9
+    },
+    "cost_usd": {
+      "total": 0.016626,
+      "per_call": 0.00013855
+    }
+  },
+  "first_run_only": {
+    "n_calls": 40,
+    "n_errors": 0,
+    "root_cause_top1": {
+      "k": 32,
+      "n": 37,
+      "rate": 0.865,
+      "ci95": [
+        0.72,
+        0.941
+      ]
+    },
+    "root_cause_top3": {
+      "k": 37,
+      "n": 37,
+      "rate": 1.0,
+      "ci95": [
+        0.906,
+        1
+      ]
+    },
+    "root_cause_by_line": {
+      "assembly": {
+        "n": 9,
+        "top1": 0.889,
+        "top3": 1.0
+      },
+      "stamping": {
+        "n": 19,
+        "top1": 0.789,
+        "top3": 1.0
+      },
+      "welding": {
+        "n": 9,
+        "top1": 1.0,
+        "top3": 1.0
+      }
+    },
+    "root_cause_top1_by_case_type": {
+      "escalated": {
+        "n": 2,
+        "top1": 1.0
+      },
+      "typical": {
+        "n": 27,
+        "top1": 0.889
+      },
+      "wrong_first": {
+        "n": 8,
+        "top1": 0.75
+      }
+    },
+    "category": {
+      "k": 27,
+      "n": 40,
+      "rate": 0.675,
+      "ci95": [
+        0.52,
+        0.799
+      ]
+    },
+    "category_lenient": {
+      "k": 29,
+      "n": 40,
+      "rate": 0.725,
+      "ci95": [
+        0.572,
+        0.839
+      ]
+    },
+    "severity_raw": {
+      "k": 36,
+      "n": 40,
+      "rate": 0.9,
+      "ci95": [
+        0.769,
+        0.96
+      ]
+    },
+    "severity_gated": {
+      "k": 37,
+      "n": 40,
+      "rate": 0.925,
+      "ci95": [
+        0.801,
+        0.974
+      ]
+    },
+    "severity_confusion": {
+      "S1->S2": 2,
+      "S2->S1": 1,
+      "S2->S2": 36,
+      "S3->S2": 1
+    },
+    "s3_recall_gated": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "ci95": [
+        0.207,
+        1
+      ]
+    },
+    "false_alarm": {
+      "threshold": 0.5,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 38,
+      "n_false_alarm_cases": 2,
+      "precision": null,
+      "recall": 0.0
+    },
+    "false_alarm_gate": {
+      "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+      "suppressed_true_fa": 0,
+      "suppressed_real_events": 0
+    },
+    "latency_ms": {
+      "n": 40,
+      "mean": 517.4,
+      "p50": 462.92,
+      "p95": 659.38,
+      "max": 1426.9
+    },
+    "cost_usd": {
+      "total": 0.005542,
+      "per_call": 0.00013855
+    }
+  },
+  "gate_threshold_fa": {
+    "threshold": 0.9,
+    "tp": 0,
+    "fp": 0,
+    "fn": 6,
+    "tn": 114,
+    "n_false_alarm_cases": 6,
+    "precision": null,
+    "recall": 0.0
+  },
+  "stability": {
+    "n_items": 40,
+    "top1_identical_all_runs": {
+      "k": 40,
+      "n": 40,
+      "rate": 1.0,
+      "ci95": [
+        0.912,
+        1
+      ]
+    },
+    "category_identical_all_runs": {
+      "k": 40,
+      "n": 40,
+      "rate": 1.0,
+      "ci95": [
+        0.912,
+        1
+      ]
+    },
+    "top1_prob_sd_mean": 0.0055,
+    "top1_prob_sd_max": 0.0368
+  },
+  "position_bias_default_order": {
+    "n": 120,
+    "top1_in_first_option": {
+      "k": 15,
+      "n": 120,
+      "rate": 0.125,
+      "ci95": [
+        0.077,
+        0.196
+      ]
+    },
+    "top1_in_first_3_options": {
+      "k": 42,
+      "n": 120,
+      "rate": 0.35,
+      "ci95": [
+        0.271,
+        0.439
+      ]
+    },
+    "histogram": {
+      "0": 15,
+      "1": 15,
+      "2": 12,
+      "3": 9,
+      "4": 12,
+      "5": 6,
+      "6": 9,
+      "7": 12,
+      "8": 6,
+      "9": 3,
+      "10": 3,
+      "11": 3,
+      "12": 3,
+      "13": 3,
+      "14": 3,
+      "15": 6
+    }
+  },
+  "permutation": {
+    "seed": 20261021,
+    "runs": 1,
+    "scores": {
+      "n_calls": 40,
+      "n_errors": 0,
+      "root_cause_top1": {
+        "k": 32,
+        "n": 37,
+        "rate": 0.865,
+        "ci95": [
+          0.72,
+          0.941
+        ]
+      },
+      "root_cause_top3": {
+        "k": 37,
+        "n": 37,
+        "rate": 1.0,
+        "ci95": [
+          0.906,
+          1
+        ]
+      },
+      "root_cause_by_line": {
+        "assembly": {
+          "n": 9,
+          "top1": 0.889,
+          "top3": 1.0
+        },
+        "stamping": {
+          "n": 19,
+          "top1": 0.789,
+          "top3": 1.0
+        },
+        "welding": {
+          "n": 9,
+          "top1": 1.0,
+          "top3": 1.0
+        }
+      },
+      "root_cause_top1_by_case_type": {
+        "escalated": {
+          "n": 2,
+          "top1": 1.0
+        },
+        "typical": {
+          "n": 27,
+          "top1": 0.889
+        },
+        "wrong_first": {
+          "n": 8,
+          "top1": 0.75
+        }
+      },
+      "category": {
+        "k": 27,
+        "n": 40,
+        "rate": 0.675,
+        "ci95": [
+          0.52,
+          0.799
+        ]
+      },
+      "category_lenient": {
+        "k": 29,
+        "n": 40,
+        "rate": 0.725,
+        "ci95": [
+          0.572,
+          0.839
+        ]
+      },
+      "severity_raw": {
+        "k": 36,
+        "n": 40,
+        "rate": 0.9,
+        "ci95": [
+          0.769,
+          0.96
+        ]
+      },
+      "severity_gated": {
+        "k": 37,
+        "n": 40,
+        "rate": 0.925,
+        "ci95": [
+          0.801,
+          0.974
+        ]
+      },
+      "severity_confusion": {
+        "S1->S2": 2,
+        "S2->S1": 1,
+        "S2->S2": 36,
+        "S3->S2": 1
+      },
+      "s3_recall_gated": {
+        "k": 1,
+        "n": 1,
+        "rate": 1.0,
+        "ci95": [
+          0.207,
+          1
+        ]
+      },
+      "false_alarm": {
+        "threshold": 0.5,
+        "tp": 0,
+        "fp": 0,
+        "fn": 2,
+        "tn": 38,
+        "n_false_alarm_cases": 2,
+        "precision": null,
+        "recall": 0.0
+      },
+      "false_alarm_gate": {
+        "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+        "suppressed_true_fa": 0,
+        "suppressed_real_events": 0
+      },
+      "latency_ms": {
+        "n": 40,
+        "mean": 498.0,
+        "p50": 466.86,
+        "p95": 598.54,
+        "max": 1220.2
+      },
+      "cost_usd": {
+        "total": 0.005542,
+        "per_call": 0.00013855
+      }
+    },
+    "position_bias": {
+      "n": 40,
+      "top1_in_first_option": {
+        "k": 4,
+        "n": 40,
+        "rate": 0.1,
+        "ci95": [
+          0.04,
+          0.231
+        ]
+      },
+      "top1_in_first_3_options": {
+        "k": 11,
+        "n": 40,
+        "rate": 0.275,
+        "ci95": [
+          0.161,
+          0.428
+        ]
+      },
+      "histogram": {
+        "0": 4,
+        "1": 1,
+        "2": 6,
+        "3": 3,
+        "4": 5,
+        "5": 4,
+        "6": 4,
+        "7": 5,
+        "9": 4,
+        "10": 1,
+        "12": 1,
+        "13": 1,
+        "14": 1
+      }
+    },
+    "top1_same_as_default_order": {
+      "k": 40,
+      "n": 40,
+      "rate": 1.0,
+      "ci95": [
+        0.912,
+        1
+      ]
+    },
+    "top1_acc_change_pp": 0.0
+  },
+  "diagnosis_mode": {
+    "jev_top3": 115,
+    "llm_deep": 5
+  },
+  "excluded_from_root_cause": [
+    {
+      "item": "CASE-ASM-0029",
+      "gt": "new",
+      "reason": "目錄外新模式（new；正式題目沒有 new 選項）"
+    },
+    {
+      "item": "CASE-STP-0064",
+      "gt": "none",
+      "reason": "誤報（none）"
+    },
+    {
+      "item": "CASE-WLD-0053",
+      "gt": "none",
+      "reason": "誤報（none）"
+    }
+  ],
+  "per_item": [
+    {
+      "item": "CASE-ASM-0004",
+      "line": "assembly",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "torque_not_reached",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 0.77
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.17
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.03
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 655.9419590048492,
+          "similar_fm": [
+            "tool_calibration_due",
+            "missing_screw",
+            "screw_feeder_jam",
+            "cross_thread_strip",
+            "tool_calibration_due"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 0.78
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.17
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.02
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 744.571957970038,
+          "similar_fm": [
+            "tool_calibration_due",
+            "missing_screw",
+            "screw_feeder_jam",
+            "cross_thread_strip",
+            "tool_calibration_due"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 0.75
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.17
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.04
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 733.2189579028636,
+          "similar_fm": [
+            "tool_calibration_due",
+            "missing_screw",
+            "screw_feeder_jam",
+            "cross_thread_strip",
+            "tool_calibration_due"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0008",
+      "line": "assembly",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "cross_thread_strip",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.96
+            },
+            {
+              "id": "wrong_screw_type",
+              "label": "錯料／混料",
+              "p": 0.02
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.19,
+          "severity": "S2",
+          "latency_ms": 724.7884159442037,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "none",
+            "none",
+            "missing_screw",
+            "new"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.96
+            },
+            {
+              "id": "wrong_screw_type",
+              "label": "錯料／混料",
+              "p": 0.02
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.18,
+          "severity": "S2",
+          "latency_ms": 437.8088340163231,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "none",
+            "none",
+            "missing_screw",
+            "new"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.95
+            },
+            {
+              "id": "wrong_screw_type",
+              "label": "錯料／混料",
+              "p": 0.02
+            },
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 0.02
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.17,
+          "severity": "S2",
+          "latency_ms": 511.18958403822035,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "none",
+            "none",
+            "missing_screw",
+            "new"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0018",
+      "line": "assembly",
+      "case_type": "escalated",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "bit_wear_camout",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "bit_wear_camout",
+              "label": "起子頭磨耗（打滑）",
+              "p": 0.98
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.01
+            },
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.18,
+          "severity": "S2",
+          "latency_ms": 460.1777499774471,
+          "similar_fm": [
+            "none",
+            "screw_feeder_jam",
+            "tool_calibration_due",
+            "missing_screw",
+            "tool_calibration_due"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "bit_wear_camout",
+              "label": "起子頭磨耗（打滑）",
+              "p": 0.97
+            },
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 0.02
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.17,
+          "severity": "S2",
+          "latency_ms": 428.40391607023776,
+          "similar_fm": [
+            "none",
+            "screw_feeder_jam",
+            "tool_calibration_due",
+            "missing_screw",
+            "tool_calibration_due"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "bit_wear_camout",
+              "label": "起子頭磨耗（打滑）",
+              "p": 0.97
+            },
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 0.02
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.17,
+          "severity": "S2",
+          "latency_ms": 511.65779202710837,
+          "similar_fm": [
+            "none",
+            "screw_feeder_jam",
+            "tool_calibration_due",
+            "missing_screw",
+            "tool_calibration_due"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0020",
+      "line": "assembly",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "screw_feeder_jam",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "screw_feeder_jam",
+              "label": "送釘機卡釘",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 418.8970000250265,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "missing_screw",
+            "screw_feeder_jam",
+            "screw_feeder_jam",
+            "screw_feeder_jam"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "screw_feeder_jam",
+              "label": "送釘機卡釘",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 450.8790000109002,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "missing_screw",
+            "screw_feeder_jam",
+            "screw_feeder_jam",
+            "screw_feeder_jam"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "screw_feeder_jam",
+              "label": "送釘機卡釘",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 463.3589999284595,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "missing_screw",
+            "screw_feeder_jam",
+            "screw_feeder_jam",
+            "screw_feeder_jam"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0029",
+      "line": "assembly",
+      "case_type": "new",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "new",
+        "rc_in_catalog": false
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "wrong_screw_type",
+              "label": "錯料／混料",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 426.8117919564247,
+          "similar_fm": [
+            "missing_screw",
+            "wrong_screw_type",
+            "screw_feeder_jam",
+            "screw_feeder_jam",
+            "wrong_screw_type"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "wrong_screw_type",
+              "label": "錯料／混料",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 480.491750058718,
+          "similar_fm": [
+            "missing_screw",
+            "wrong_screw_type",
+            "screw_feeder_jam",
+            "screw_feeder_jam",
+            "wrong_screw_type"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "wrong_screw_type",
+              "label": "錯料／混料",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 439.86929196398705,
+          "similar_fm": [
+            "missing_screw",
+            "wrong_screw_type",
+            "screw_feeder_jam",
+            "screw_feeder_jam",
+            "wrong_screw_type"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0034",
+      "line": "assembly",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "missing_screw",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "missing_screw",
+              "label": "漏鎖",
+              "p": 0.99
+            },
+            {
+              "id": "screw_feeder_jam",
+              "label": "送釘機卡釘",
+              "p": 0.01
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 438.06912493892014,
+          "similar_fm": [
+            "missing_screw",
+            "screw_feeder_jam",
+            "missing_screw",
+            "none",
+            "missing_screw"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "missing_screw",
+              "label": "漏鎖",
+              "p": 0.99
+            },
+            {
+              "id": "screw_feeder_jam",
+              "label": "送釘機卡釘",
+              "p": 0.01
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 477.4243750143796,
+          "similar_fm": [
+            "missing_screw",
+            "screw_feeder_jam",
+            "missing_screw",
+            "none",
+            "missing_screw"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "missing_screw",
+              "label": "漏鎖",
+              "p": 0.99
+            },
+            {
+              "id": "screw_feeder_jam",
+              "label": "送釘機卡釘",
+              "p": 0.01
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 485.768917016685,
+          "similar_fm": [
+            "missing_screw",
+            "screw_feeder_jam",
+            "missing_screw",
+            "none",
+            "missing_screw"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0039",
+      "line": "assembly",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "tool_calibration_due",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 434.63212496135384,
+          "similar_fm": [
+            "tool_calibration_due",
+            "tool_calibration_due",
+            "screw_feeder_jam",
+            "missing_screw",
+            "screw_feeder_jam"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 652.9008329380304,
+          "similar_fm": [
+            "tool_calibration_due",
+            "tool_calibration_due",
+            "screw_feeder_jam",
+            "missing_screw",
+            "screw_feeder_jam"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "tool_calibration_due",
+              "label": "扭力工具校正逾期／漂移",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 475.60283401980996,
+          "similar_fm": [
+            "tool_calibration_due",
+            "tool_calibration_due",
+            "screw_feeder_jam",
+            "missing_screw",
+            "screw_feeder_jam"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0043",
+      "line": "assembly",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "cable_pinch_misroute",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "cable_pinch_misroute",
+              "label": "線材夾線／走線錯誤",
+              "p": 1.0
+            },
+            {
+              "id": "connector_not_seated",
+              "label": "連接器未插到位",
+              "p": 0.0
+            },
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.06,
+          "severity": "S2",
+          "latency_ms": 457.84879196435213,
+          "similar_fm": [
+            "cable_pinch_misroute",
+            "cable_pinch_misroute",
+            "new",
+            "cable_pinch_misroute",
+            "connector_not_seated"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "cable_pinch_misroute",
+              "label": "線材夾線／走線錯誤",
+              "p": 1.0
+            },
+            {
+              "id": "connector_not_seated",
+              "label": "連接器未插到位",
+              "p": 0.0
+            },
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.06,
+          "severity": "S2",
+          "latency_ms": 470.7033330341801,
+          "similar_fm": [
+            "cable_pinch_misroute",
+            "cable_pinch_misroute",
+            "new",
+            "cable_pinch_misroute",
+            "connector_not_seated"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "cable_pinch_misroute",
+              "label": "線材夾線／走線錯誤",
+              "p": 1.0
+            },
+            {
+              "id": "connector_not_seated",
+              "label": "連接器未插到位",
+              "p": 0.0
+            },
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.06,
+          "severity": "S2",
+          "latency_ms": 467.3767079366371,
+          "similar_fm": [
+            "cable_pinch_misroute",
+            "cable_pinch_misroute",
+            "new",
+            "cable_pinch_misroute",
+            "connector_not_seated"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0051",
+      "line": "assembly",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "connector_not_seated",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "connector_not_seated",
+              "label": "連接器未插到位",
+              "p": 0.98
+            },
+            {
+              "id": "cable_pinch_misroute",
+              "label": "線材夾線／走線錯誤",
+              "p": 0.02
+            },
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 531.9264170248061,
+          "similar_fm": [
+            "new",
+            "connector_not_seated",
+            "none",
+            "connector_not_seated",
+            "cable_pinch_misroute"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "connector_not_seated",
+              "label": "連接器未插到位",
+              "p": 0.98
+            },
+            {
+              "id": "cable_pinch_misroute",
+              "label": "線材夾線／走線錯誤",
+              "p": 0.02
+            },
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 429.42874995060265,
+          "similar_fm": [
+            "new",
+            "connector_not_seated",
+            "none",
+            "connector_not_seated",
+            "cable_pinch_misroute"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "connector_not_seated",
+              "label": "連接器未插到位",
+              "p": 0.98
+            },
+            {
+              "id": "cable_pinch_misroute",
+              "label": "線材夾線／走線錯誤",
+              "p": 0.02
+            },
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 433.1600000150502,
+          "similar_fm": [
+            "new",
+            "connector_not_seated",
+            "none",
+            "connector_not_seated",
+            "cable_pinch_misroute"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-ASM-0055",
+      "line": "assembly",
+      "case_type": "typical",
+      "gt": {
+        "category": "safety",
+        "case_category": "safety",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "ppe_esd_missing",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "safety",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 1426.8781250575557,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "missing_screw",
+            "ppe_esd_missing",
+            "ppe_esd_missing",
+            "tool_calibration_due"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "safety",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 450.1537079922855,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "missing_screw",
+            "ppe_esd_missing",
+            "ppe_esd_missing",
+            "tool_calibration_due"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "ppe_esd_missing",
+              "label": "PPE／靜電防護未落實",
+              "p": 1.0
+            },
+            {
+              "id": "torque_not_reached",
+              "label": "扭力未達／浮鎖",
+              "p": 0.0
+            },
+            {
+              "id": "cross_thread_strip",
+              "label": "斜牙／滑牙",
+              "p": 0.0
+            }
+          ],
+          "category": "safety",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 436.40695908106863,
+          "similar_fm": [
+            "screw_feeder_jam",
+            "missing_screw",
+            "ppe_esd_missing",
+            "ppe_esd_missing",
+            "tool_calibration_due"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0003",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "feed_roller_wear",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.82
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.18
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 493.8992919633165,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm",
+            "misfeed_sensor_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.85
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.15
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 446.1944999638945,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm",
+            "misfeed_sensor_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.82
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.17
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 560.8451659791172,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm",
+            "misfeed_sensor_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0014",
+      "line": "stamping",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "material_thickness_dev",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.49
+            },
+            {
+              "id": "misfeed_sensor_fault",
+              "label": "誤送料偵測器誤報",
+              "p": 0.2
+            },
+            {
+              "id": "punch_edge_wear",
+              "label": "刃口／沖頭磨耗",
+              "p": 0.16
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.19,
+          "severity": "S2",
+          "latency_ms": 424.26462506409734,
+          "similar_fm": [
+            "die_misalignment",
+            "coil_camber",
+            "shut_height_misset",
+            "slug_pulling",
+            "misfeed_sensor_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.52
+            },
+            {
+              "id": "misfeed_sensor_fault",
+              "label": "誤送料偵測器誤報",
+              "p": 0.19
+            },
+            {
+              "id": "punch_edge_wear",
+              "label": "刃口／沖頭磨耗",
+              "p": 0.15
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.2,
+          "severity": "S2",
+          "latency_ms": 418.4336670441553,
+          "similar_fm": [
+            "die_misalignment",
+            "coil_camber",
+            "shut_height_misset",
+            "slug_pulling",
+            "misfeed_sensor_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.52
+            },
+            {
+              "id": "misfeed_sensor_fault",
+              "label": "誤送料偵測器誤報",
+              "p": 0.18
+            },
+            {
+              "id": "punch_edge_wear",
+              "label": "刃口／沖頭磨耗",
+              "p": 0.15
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.19,
+          "severity": "S2",
+          "latency_ms": 418.21470798458904,
+          "similar_fm": [
+            "die_misalignment",
+            "coil_camber",
+            "shut_height_misset",
+            "slug_pulling",
+            "misfeed_sensor_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0021",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "die_misalignment",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.76
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.21
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.03
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 464.00987496599555,
+          "similar_fm": [
+            "shut_height_misset",
+            "die_misalignment",
+            "light_curtain_fault",
+            "slug_pulling",
+            "coil_camber"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.78
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.18
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.04
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 436.2572500249371,
+          "similar_fm": [
+            "shut_height_misset",
+            "die_misalignment",
+            "light_curtain_fault",
+            "slug_pulling",
+            "coil_camber"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.74
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.23
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.03
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 465.4149579582736,
+          "similar_fm": [
+            "shut_height_misset",
+            "die_misalignment",
+            "light_curtain_fault",
+            "slug_pulling",
+            "coil_camber"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0031",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "pilot_release_timing",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "pilot_release_timing",
+              "label": "導正銷釋放時機錯誤",
+              "p": 0.89
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.06
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.05
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.25,
+          "severity": "S2",
+          "latency_ms": 428.27333393506706,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "misfeed_sensor_fault",
+            "pilot_release_timing",
+            "straightener_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "pilot_release_timing",
+              "label": "導正銷釋放時機錯誤",
+              "p": 0.91
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.05
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.04
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.23,
+          "severity": "S2",
+          "latency_ms": 464.4945419859141,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "misfeed_sensor_fault",
+            "pilot_release_timing",
+            "straightener_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "pilot_release_timing",
+              "label": "導正銷釋放時機錯誤",
+              "p": 0.88
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.06
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.06
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.24,
+          "severity": "S2",
+          "latency_ms": 427.1486250218004,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "misfeed_sensor_fault",
+            "pilot_release_timing",
+            "straightener_misset"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0035",
+      "line": "stamping",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "coil_camber",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.98
+            },
+            {
+              "id": "coil_camber",
+              "label": "料捲側彎／料帶偏移",
+              "p": 0.02
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 424.0399580448866,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.99
+            },
+            {
+              "id": "coil_camber",
+              "label": "料捲側彎／料帶偏移",
+              "p": 0.01
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 442.00329191517085,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.99
+            },
+            {
+              "id": "coil_camber",
+              "label": "料捲側彎／料帶偏移",
+              "p": 0.01
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.17,
+          "severity": "S2",
+          "latency_ms": 431.76370905712247,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0041",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "slug_pulling",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "slug_pulling",
+              "label": "廢料上跳（跳屑）",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 451.56108296941966,
+          "similar_fm": [
+            "slug_pulling",
+            "slug_pulling",
+            "stripper_spring_fatigue",
+            "slug_pulling",
+            "coil_camber"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "slug_pulling",
+              "label": "廢料上跳（跳屑）",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 419.7712909663096,
+          "similar_fm": [
+            "slug_pulling",
+            "slug_pulling",
+            "stripper_spring_fatigue",
+            "slug_pulling",
+            "coil_camber"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "slug_pulling",
+              "label": "廢料上跳（跳屑）",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 475.8797499816865,
+          "similar_fm": [
+            "slug_pulling",
+            "slug_pulling",
+            "stripper_spring_fatigue",
+            "slug_pulling",
+            "coil_camber"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0050",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "punch_edge_wear",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "punch_edge_wear",
+              "label": "刃口／沖頭磨耗",
+              "p": 0.98
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.01
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.22,
+          "severity": "S1",
+          "latency_ms": 461.82820794638246,
+          "similar_fm": [
+            "die_lubrication_insufficient",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "die_misalignment",
+            "die_lubrication_insufficient"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "punch_edge_wear",
+              "label": "刃口／沖頭磨耗",
+              "p": 0.98
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.01
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.22,
+          "severity": "S1",
+          "latency_ms": 464.7841249825433,
+          "similar_fm": [
+            "die_lubrication_insufficient",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "die_misalignment",
+            "die_lubrication_insufficient"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "punch_edge_wear",
+              "label": "刃口／沖頭磨耗",
+              "p": 0.98
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.01
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.01
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.22,
+          "severity": "S1",
+          "latency_ms": 453.3090830082074,
+          "similar_fm": [
+            "die_lubrication_insufficient",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "die_misalignment",
+            "die_lubrication_insufficient"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0052",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "die_lubrication_insufficient",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.66
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.34
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 566.5071669500321,
+          "similar_fm": [
+            "central_lube_fault",
+            "central_lube_fault",
+            "slug_pulling",
+            "light_curtain_fault",
+            "slug_pulling"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.72
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.28
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 591.7068750131875,
+          "similar_fm": [
+            "central_lube_fault",
+            "central_lube_fault",
+            "slug_pulling",
+            "light_curtain_fault",
+            "slug_pulling"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.69
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.31
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 456.1784160323441,
+          "similar_fm": [
+            "central_lube_fault",
+            "central_lube_fault",
+            "slug_pulling",
+            "light_curtain_fault",
+            "slug_pulling"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0064",
+      "line": "stamping",
+      "case_type": "false_alarm",
+      "gt": {
+        "category": "false_alarm",
+        "case_category": "equipment",
+        "is_false_alarm": true,
+        "severity": "S1",
+        "root_cause": "none",
+        "rc_in_catalog": false
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "misfeed_sensor_fault",
+              "label": "誤送料偵測器誤報",
+              "p": 0.74
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.19
+            },
+            {
+              "id": "servo_feeder_drive_alarm",
+              "label": "伺服送料機驅動器警報",
+              "p": 0.05
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.38,
+          "severity": "S2",
+          "latency_ms": 471.6351249953732,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "misfeed_sensor_fault",
+            "servo_feeder_drive_alarm"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "misfeed_sensor_fault",
+              "label": "誤送料偵測器誤報",
+              "p": 0.76
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.16
+            },
+            {
+              "id": "servo_feeder_drive_alarm",
+              "label": "伺服送料機驅動器警報",
+              "p": 0.06
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.39,
+          "severity": "S2",
+          "latency_ms": 514.5110420417041,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "misfeed_sensor_fault",
+            "servo_feeder_drive_alarm"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "misfeed_sensor_fault",
+              "label": "誤送料偵測器誤報",
+              "p": 0.73
+            },
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 0.18
+            },
+            {
+              "id": "servo_feeder_drive_alarm",
+              "label": "伺服送料機驅動器警報",
+              "p": 0.07
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.4,
+          "severity": "S2",
+          "latency_ms": 465.57270805351436,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "misfeed_sensor_fault",
+            "servo_feeder_drive_alarm"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0069",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "stripper_spring_fatigue",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "stripper_spring_fatigue",
+              "label": "脫料板彈簧疲勞",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.14,
+          "severity": "S2",
+          "latency_ms": 457.21166708972305,
+          "similar_fm": [
+            "stripper_spring_fatigue",
+            "coil_camber",
+            "slug_pulling",
+            "light_curtain_fault",
+            "coil_camber"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "stripper_spring_fatigue",
+              "label": "脫料板彈簧疲勞",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 434.02524990960956,
+          "similar_fm": [
+            "stripper_spring_fatigue",
+            "coil_camber",
+            "slug_pulling",
+            "light_curtain_fault",
+            "coil_camber"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "stripper_spring_fatigue",
+              "label": "脫料板彈簧疲勞",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.14,
+          "severity": "S2",
+          "latency_ms": 455.0076669547707,
+          "similar_fm": [
+            "stripper_spring_fatigue",
+            "coil_camber",
+            "slug_pulling",
+            "light_curtain_fault",
+            "coil_camber"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0072",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "safety",
+        "case_category": "safety",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "clutch_brake_wear",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "clutch_brake_wear",
+              "label": "離合器／制動器磨耗（停止角度超限）",
+              "p": 0.99
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.01
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 457.85779203288257,
+          "similar_fm": [
+            "light_curtain_fault",
+            "scrap_chute_jam",
+            "die_lubrication_insufficient",
+            "counterbalance_misset",
+            "light_curtain_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "clutch_brake_wear",
+              "label": "離合器／制動器磨耗（停止角度超限）",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 448.8221659557894,
+          "similar_fm": [
+            "light_curtain_fault",
+            "scrap_chute_jam",
+            "die_lubrication_insufficient",
+            "counterbalance_misset",
+            "light_curtain_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "clutch_brake_wear",
+              "label": "離合器／制動器磨耗（停止角度超限）",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 450.11579105630517,
+          "similar_fm": [
+            "light_curtain_fault",
+            "scrap_chute_jam",
+            "die_lubrication_insufficient",
+            "counterbalance_misset",
+            "light_curtain_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0077",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "overload_tonnage",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "overload_tonnage",
+              "label": "過負荷（噸位超限）",
+              "p": 0.94
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.03
+            },
+            {
+              "id": "coil_camber",
+              "label": "料捲側彎／料帶偏移",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 629.8635840648785,
+          "similar_fm": [
+            "slug_pulling",
+            "coil_camber",
+            "stripper_spring_fatigue",
+            "die_misalignment",
+            "shut_height_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "overload_tonnage",
+              "label": "過負荷（噸位超限）",
+              "p": 0.95
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.03
+            },
+            {
+              "id": "coil_camber",
+              "label": "料捲側彎／料帶偏移",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 448.05320899467915,
+          "similar_fm": [
+            "slug_pulling",
+            "coil_camber",
+            "stripper_spring_fatigue",
+            "die_misalignment",
+            "shut_height_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "overload_tonnage",
+              "label": "過負荷（噸位超限）",
+              "p": 0.93
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.04
+            },
+            {
+              "id": "coil_camber",
+              "label": "料捲側彎／料帶偏移",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 452.9702919535339,
+          "similar_fm": [
+            "slug_pulling",
+            "coil_camber",
+            "stripper_spring_fatigue",
+            "die_misalignment",
+            "shut_height_misset"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0081",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "air_pressure_low",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "air_pressure_low",
+              "label": "氣源壓力不足",
+              "p": 0.98
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.01
+            },
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.14,
+          "severity": "S2",
+          "latency_ms": 590.2946250280365,
+          "similar_fm": [
+            "light_curtain_fault",
+            "light_curtain_fault",
+            "central_lube_fault",
+            "stripper_spring_fatigue",
+            "central_lube_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "air_pressure_low",
+              "label": "氣源壓力不足",
+              "p": 0.98
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.01
+            },
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 469.94683297816664,
+          "similar_fm": [
+            "light_curtain_fault",
+            "light_curtain_fault",
+            "central_lube_fault",
+            "stripper_spring_fatigue",
+            "central_lube_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "air_pressure_low",
+              "label": "氣源壓力不足",
+              "p": 0.98
+            },
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 0.01
+            },
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 438.10887495055795,
+          "similar_fm": [
+            "light_curtain_fault",
+            "light_curtain_fault",
+            "central_lube_fault",
+            "stripper_spring_fatigue",
+            "central_lube_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0087",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "counterbalance_misset",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 567.426250083372,
+          "similar_fm": [
+            "counterbalance_misset",
+            "scrap_chute_jam",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "central_lube_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.14,
+          "severity": "S2",
+          "latency_ms": 492.2393331071362,
+          "similar_fm": [
+            "counterbalance_misset",
+            "scrap_chute_jam",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "central_lube_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "counterbalance_misset",
+              "label": "平衡缸壓力設定不當",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.14,
+          "severity": "S2",
+          "latency_ms": 441.07408402487636,
+          "similar_fm": [
+            "counterbalance_misset",
+            "scrap_chute_jam",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "central_lube_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0092",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "servo_feeder_drive_alarm",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "servo_feeder_drive_alarm",
+              "label": "伺服送料機驅動器警報",
+              "p": 1.0
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.17,
+          "severity": "S2",
+          "latency_ms": 426.33266700431705,
+          "similar_fm": [
+            "servo_feeder_drive_alarm",
+            "servo_feeder_drive_alarm",
+            "straightener_misset",
+            "servo_feeder_drive_alarm",
+            "straightener_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "servo_feeder_drive_alarm",
+              "label": "伺服送料機驅動器警報",
+              "p": 1.0
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 429.01545797940344,
+          "similar_fm": [
+            "servo_feeder_drive_alarm",
+            "servo_feeder_drive_alarm",
+            "straightener_misset",
+            "servo_feeder_drive_alarm",
+            "straightener_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "servo_feeder_drive_alarm",
+              "label": "伺服送料機驅動器警報",
+              "p": 1.0
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.16,
+          "severity": "S2",
+          "latency_ms": 423.6596670234576,
+          "similar_fm": [
+            "servo_feeder_drive_alarm",
+            "servo_feeder_drive_alarm",
+            "straightener_misset",
+            "servo_feeder_drive_alarm",
+            "straightener_misset"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0097",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "straightener_misset",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 1.0
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 468.39087491389364,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 1.0
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 524.273999966681,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "straightener_misset",
+              "label": "整平機設定不當",
+              "p": 1.0
+            },
+            {
+              "id": "feed_roller_wear",
+              "label": "送料滾輪磨損／打滑",
+              "p": 0.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 443.0652919691056,
+          "similar_fm": [
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "straightener_misset",
+            "servo_feeder_drive_alarm"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0103",
+      "line": "stamping",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "scrap_chute_jam",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "scrap_chute_jam",
+              "label": "廢料排出堵塞",
+              "p": 0.92
+            },
+            {
+              "id": "slug_pulling",
+              "label": "廢料上跳（跳屑）",
+              "p": 0.08
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.18,
+          "severity": "S2",
+          "latency_ms": 458.38420803193003,
+          "similar_fm": [
+            "scrap_chute_jam",
+            "scrap_chute_jam",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "counterbalance_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "scrap_chute_jam",
+              "label": "廢料排出堵塞",
+              "p": 0.88
+            },
+            {
+              "id": "slug_pulling",
+              "label": "廢料上跳（跳屑）",
+              "p": 0.12
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.2,
+          "severity": "S2",
+          "latency_ms": 431.79820803925395,
+          "similar_fm": [
+            "scrap_chute_jam",
+            "scrap_chute_jam",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "counterbalance_misset"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "scrap_chute_jam",
+              "label": "廢料排出堵塞",
+              "p": 0.9
+            },
+            {
+              "id": "slug_pulling",
+              "label": "廢料上跳（跳屑）",
+              "p": 0.1
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.19,
+          "severity": "S2",
+          "latency_ms": 447.9454170214012,
+          "similar_fm": [
+            "scrap_chute_jam",
+            "scrap_chute_jam",
+            "light_curtain_fault",
+            "counterbalance_misset",
+            "counterbalance_misset"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0109",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "safety",
+        "case_category": "safety",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "light_curtain_fault",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "light_curtain_fault",
+              "label": "光幕異常或被旁路",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "safety",
+          "p_false_alarm": 0.12,
+          "severity": "S2",
+          "latency_ms": 424.95349992532283,
+          "similar_fm": [
+            "light_curtain_fault",
+            "light_curtain_fault",
+            "shut_height_misset",
+            "stripper_spring_fatigue",
+            "die_misalignment"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "light_curtain_fault",
+              "label": "光幕異常或被旁路",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "safety",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 409.51687505003065,
+          "similar_fm": [
+            "light_curtain_fault",
+            "light_curtain_fault",
+            "shut_height_misset",
+            "stripper_spring_fatigue",
+            "die_misalignment"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "light_curtain_fault",
+              "label": "光幕異常或被旁路",
+              "p": 1.0
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            },
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.0
+            }
+          ],
+          "category": "safety",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 488.2305000210181,
+          "similar_fm": [
+            "light_curtain_fault",
+            "light_curtain_fault",
+            "shut_height_misset",
+            "stripper_spring_fatigue",
+            "die_misalignment"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0112",
+      "line": "stamping",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "shut_height_misset",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.66
+            },
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.34
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.24,
+          "severity": "S2",
+          "latency_ms": 457.9492090269923,
+          "similar_fm": [
+            "die_misalignment",
+            "die_misalignment",
+            "die_lubrication_insufficient",
+            "light_curtain_fault",
+            "die_lubrication_insufficient"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.57
+            },
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.43
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.24,
+          "severity": "S2",
+          "latency_ms": 442.4585000379011,
+          "similar_fm": [
+            "die_misalignment",
+            "die_misalignment",
+            "die_lubrication_insufficient",
+            "light_curtain_fault",
+            "die_lubrication_insufficient"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "die_misalignment",
+              "label": "模具定位偏移",
+              "p": 0.61
+            },
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.39
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.25,
+          "severity": "S2",
+          "latency_ms": 437.9473750013858,
+          "similar_fm": [
+            "die_misalignment",
+            "die_misalignment",
+            "die_lubrication_insufficient",
+            "light_curtain_fault",
+            "die_lubrication_insufficient"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-STP-0118",
+      "line": "stamping",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "central_lube_fault",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.89
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.1
+            },
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 453.8652090122923,
+          "similar_fm": [
+            "die_lubrication_insufficient",
+            "central_lube_fault",
+            "die_lubrication_insufficient",
+            "die_lubrication_insufficient",
+            "light_curtain_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.9
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.09
+            },
+            {
+              "id": "shut_height_misset",
+              "label": "閉模高度設定錯誤",
+              "p": 0.01
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 453.10574991162866,
+          "similar_fm": [
+            "die_lubrication_insufficient",
+            "central_lube_fault",
+            "die_lubrication_insufficient",
+            "die_lubrication_insufficient",
+            "light_curtain_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "central_lube_fault",
+              "label": "機台集中潤滑異常",
+              "p": 0.91
+            },
+            {
+              "id": "die_lubrication_insufficient",
+              "label": "模具潤滑不足（拉傷）",
+              "p": 0.09
+            },
+            {
+              "id": "material_thickness_dev",
+              "label": "材料厚度／硬度偏差",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 491.4757499936968,
+          "similar_fm": [
+            "die_lubrication_insufficient",
+            "central_lube_fault",
+            "die_lubrication_insufficient",
+            "die_lubrication_insufficient",
+            "light_curtain_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0001",
+      "line": "welding",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "wire_feed_birdnest",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 1.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            },
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 474.036458064802,
+          "similar_fm": [
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "none"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 1.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            },
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 506.4720419468358,
+          "similar_fm": [
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "none"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 1.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            },
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 484.14299997966737,
+          "similar_fm": [
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "wire_feed_birdnest",
+            "none"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0008",
+      "line": "welding",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "contact_tip_wear",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 492.20074992626905,
+          "similar_fm": [
+            "contact_tip_wear",
+            "none",
+            "new",
+            "wire_feed_birdnest",
+            "contact_tip_wear"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.12,
+          "severity": "S2",
+          "latency_ms": 509.54608304891735,
+          "similar_fm": [
+            "contact_tip_wear",
+            "none",
+            "new",
+            "wire_feed_birdnest",
+            "contact_tip_wear"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.13,
+          "severity": "S2",
+          "latency_ms": 548.3784999232739,
+          "similar_fm": [
+            "contact_tip_wear",
+            "none",
+            "new",
+            "wire_feed_birdnest",
+            "contact_tip_wear"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0018",
+      "line": "welding",
+      "case_type": "escalated",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "shielding_gas_low",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 586.3008330343291,
+          "similar_fm": [
+            "none",
+            "shielding_gas_low",
+            "wire_feed_birdnest",
+            "shielding_gas_low",
+            "fume_extraction_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.07,
+          "severity": "S2",
+          "latency_ms": 578.1940839951858,
+          "similar_fm": [
+            "none",
+            "shielding_gas_low",
+            "wire_feed_birdnest",
+            "shielding_gas_low",
+            "fume_extraction_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "shielding_gas_low",
+              "label": "保護氣體不足",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 555.0605830503628,
+          "similar_fm": [
+            "none",
+            "shielding_gas_low",
+            "wire_feed_birdnest",
+            "shielding_gas_low",
+            "fume_extraction_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0022",
+      "line": "welding",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "nozzle_spatter_buildup",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "nozzle_spatter_buildup",
+              "label": "噴嘴積渣",
+              "p": 0.99
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.01
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 573.7154589733109,
+          "similar_fm": [
+            "contact_tip_wear",
+            "nozzle_spatter_buildup",
+            "none",
+            "wire_feed_birdnest",
+            "nozzle_spatter_buildup"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "nozzle_spatter_buildup",
+              "label": "噴嘴積渣",
+              "p": 0.99
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.01
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 611.6847500670701,
+          "similar_fm": [
+            "contact_tip_wear",
+            "nozzle_spatter_buildup",
+            "none",
+            "wire_feed_birdnest",
+            "nozzle_spatter_buildup"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "nozzle_spatter_buildup",
+              "label": "噴嘴積渣",
+              "p": 0.99
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.01
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 585.1079169660807,
+          "similar_fm": [
+            "contact_tip_wear",
+            "nozzle_spatter_buildup",
+            "none",
+            "wire_feed_birdnest",
+            "nozzle_spatter_buildup"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0027",
+      "line": "welding",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "tcp_drift",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "tcp_drift",
+              "label": "銲槍 TCP 偏移",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 619.3854589946568,
+          "similar_fm": [
+            "tcp_drift",
+            "tcp_drift",
+            "tcp_drift",
+            "tcp_drift",
+            "wire_feed_birdnest"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "tcp_drift",
+              "label": "銲槍 TCP 偏移",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 546.5602080803365,
+          "similar_fm": [
+            "tcp_drift",
+            "tcp_drift",
+            "tcp_drift",
+            "tcp_drift",
+            "wire_feed_birdnest"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "tcp_drift",
+              "label": "銲槍 TCP 偏移",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.08,
+          "severity": "S2",
+          "latency_ms": 472.3122500581667,
+          "similar_fm": [
+            "tcp_drift",
+            "tcp_drift",
+            "tcp_drift",
+            "tcp_drift",
+            "wire_feed_birdnest"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0033",
+      "line": "welding",
+      "case_type": "typical",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "ground_poor",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "ground_poor",
+              "label": "接地不良",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.09,
+          "severity": "S2",
+          "latency_ms": 446.6362079838291,
+          "similar_fm": [
+            "wire_feed_birdnest",
+            "ground_poor",
+            "wire_feed_birdnest",
+            "ground_poor",
+            "ground_poor"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "ground_poor",
+              "label": "接地不良",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 457.9832499148324,
+          "similar_fm": [
+            "wire_feed_birdnest",
+            "ground_poor",
+            "wire_feed_birdnest",
+            "ground_poor",
+            "ground_poor"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "ground_poor",
+              "label": "接地不良",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 441.1597920116037,
+          "similar_fm": [
+            "wire_feed_birdnest",
+            "ground_poor",
+            "wire_feed_birdnest",
+            "ground_poor",
+            "ground_poor"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0039",
+      "line": "welding",
+      "case_type": "typical",
+      "gt": {
+        "category": "quality",
+        "case_category": "quality",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "fixture_fitup_gap",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.81
+            },
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.19
+            },
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 476.6158340498805,
+          "similar_fm": [
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "fixture_fitup_gap",
+            "spot_electrode_wear",
+            "spot_electrode_wear"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.75
+            },
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.25
+            },
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.14,
+          "severity": "S2",
+          "latency_ms": 445.3529170714319,
+          "similar_fm": [
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "fixture_fitup_gap",
+            "spot_electrode_wear",
+            "spot_electrode_wear"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.8
+            },
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.2
+            },
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.15,
+          "severity": "S2",
+          "latency_ms": 420.23691604845226,
+          "similar_fm": [
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "fixture_fitup_gap",
+            "spot_electrode_wear",
+            "spot_electrode_wear"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0046",
+      "line": "welding",
+      "case_type": "wrong_first",
+      "gt": {
+        "category": "equipment",
+        "case_category": "equipment",
+        "is_false_alarm": false,
+        "severity": "S2",
+        "root_cause": "spot_electrode_wear",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.99
+            },
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 0.01
+            },
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 485.00670900102705,
+          "similar_fm": [
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.99
+            },
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 0.01
+            },
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 457.3340000351891,
+          "similar_fm": [
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.99
+            },
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 0.01
+            },
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.0
+            }
+          ],
+          "category": "quality",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 477.3962079780176,
+          "similar_fm": [
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear",
+            "spot_electrode_wear"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0053",
+      "line": "welding",
+      "case_type": "false_alarm",
+      "gt": {
+        "category": "false_alarm",
+        "case_category": "equipment",
+        "is_false_alarm": true,
+        "severity": "S1",
+        "root_cause": "none",
+        "rc_in_catalog": false
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 1.0
+            },
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.0
+            },
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.31,
+          "severity": "S2",
+          "latency_ms": 430.8066249359399,
+          "similar_fm": [
+            "cooling_water_low",
+            "fume_extraction_fault",
+            "new",
+            "spot_electrode_wear",
+            "fume_extraction_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 1.0
+            },
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.0
+            },
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.35,
+          "severity": "S2",
+          "latency_ms": 463.5711250593886,
+          "similar_fm": [
+            "cooling_water_low",
+            "fume_extraction_fault",
+            "new",
+            "spot_electrode_wear",
+            "fume_extraction_fault"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "cooling_water_low",
+              "label": "冷卻水流量不足",
+              "p": 1.0
+            },
+            {
+              "id": "fixture_fitup_gap",
+              "label": "治具定位不良／間隙過大",
+              "p": 0.0
+            },
+            {
+              "id": "spot_electrode_wear",
+              "label": "點銲電極頭磨耗",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.33,
+          "severity": "S2",
+          "latency_ms": 452.0313749089837,
+          "similar_fm": [
+            "cooling_water_low",
+            "fume_extraction_fault",
+            "new",
+            "spot_electrode_wear",
+            "fume_extraction_fault"
+          ]
+        }
+      ]
+    },
+    {
+      "item": "CASE-WLD-0055",
+      "line": "welding",
+      "case_type": "typical",
+      "gt": {
+        "category": "safety",
+        "case_category": "safety",
+        "is_false_alarm": false,
+        "severity": "S3",
+        "root_cause": "fume_extraction_fault",
+        "rc_in_catalog": true
+      },
+      "runs": [
+        {
+          "top3": [
+            {
+              "id": "fume_extraction_fault",
+              "label": "排煙設備異常",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.11,
+          "severity": "S2",
+          "latency_ms": 556.6685419762507,
+          "similar_fm": [
+            "fume_extraction_fault",
+            "fume_extraction_fault",
+            "nozzle_spatter_buildup",
+            "none",
+            "wire_feed_birdnest"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "fume_extraction_fault",
+              "label": "排煙設備異常",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 417.2507500043139,
+          "similar_fm": [
+            "fume_extraction_fault",
+            "fume_extraction_fault",
+            "nozzle_spatter_buildup",
+            "none",
+            "wire_feed_birdnest"
+          ]
+        },
+        {
+          "top3": [
+            {
+              "id": "fume_extraction_fault",
+              "label": "排煙設備異常",
+              "p": 1.0
+            },
+            {
+              "id": "wire_feed_birdnest",
+              "label": "送絲不順／鳥巢",
+              "p": 0.0
+            },
+            {
+              "id": "contact_tip_wear",
+              "label": "導電嘴磨耗／回燒",
+              "p": 0.0
+            }
+          ],
+          "category": "equipment",
+          "p_false_alarm": 0.1,
+          "severity": "S2",
+          "latency_ms": 444.5818749954924,
+          "similar_fm": [
+            "fume_extraction_fault",
+            "fume_extraction_fault",
+            "nozzle_spatter_buildup",
+            "none",
+            "wire_feed_birdnest"
+          ]
+        }
+      ]
+    }
+  ],
+  "retrieval_gt_in_top5_cases": {
+    "k": 25,
+    "n": 37,
+    "rate": 0.676,
+    "ci95": [
+      0.515,
+      0.804
+    ]
+  },
+  "retrieval_majority_top1": {
+    "k": 20,
+    "n": 37,
+    "rate": 0.541,
+    "ci95": [
+      0.384,
+      0.69
+    ]
+  },
+  "options_per_item": {
+    "min": 3,
+    "max": 16,
+    "mean": 10.73,
+    "hist": {
+      "3": 2,
+      "4": 2,
+      "8": 12,
+      "9": 7,
+      "16": 14
+    }
+  },
+  "chance_baseline": {
+    "top1": 0.117,
+    "top3": 0.35
+  },
+  "false_alarm_auroc": {
+    "heldout_first_run": {
+      "n_pos": 2,
+      "n_neg": 38,
+      "auroc": 1.0
+    },
+    "heldout_plus_synthetic": {
+      "n_pos": 12,
+      "n_neg": 108,
+      "auroc": 0.946
+    },
+    "p_false_alarm_on_true_fa": [
+      0.18,
+      0.18,
+      0.25,
+      0.25,
+      0.25,
+      0.27,
+      0.27,
+      0.31,
+      0.31,
+      0.38,
+      0.38,
+      0.43
+    ],
+    "p_false_alarm_max_on_real_events": 0.44
+  },
+  "category_confusion": {
+    "equipment->equipment": 17,
+    "equipment->quality": 6,
+    "false_alarm->equipment": 2,
+    "quality->equipment": 3,
+    "quality->quality": 8,
+    "safety->equipment": 2,
+    "safety->safety": 2
+  },
+  "new_mode_case": [
+    {
+      "item": "CASE-ASM-0029",
+      "jev_top1": {
+        "id": "wrong_screw_type",
+        "label": "錯料／混料",
+        "p": 1.0
+      }
+    }
+  ],
+  "synthetic_by_case_type": {
+    "composite": {
+      "n": 9,
+      "top1": 0.444
+    },
+    "escalated": {
+      "n": 5,
+      "top1": 0.4
+    },
+    "typical": {
+      "n": 41,
+      "top1": 0.902
+    },
+    "wrong_first": {
+      "n": 15,
+      "top1": 0.867
+    }
+  },
+  "stress": {
+    "noise": {
+      "description": "保留集每筆塞入 6 筆鄰近機台正常訊號＋2 筆無關文字（facts 與時間線）；1 次",
+      "scores": {
+        "n_calls": 40,
+        "n_errors": 0,
+        "root_cause_top1": {
+          "k": 35,
+          "n": 37,
+          "rate": 0.946,
+          "ci95": [
+            0.823,
+            0.985
+          ]
+        },
+        "root_cause_top3": {
+          "k": 37,
+          "n": 37,
+          "rate": 1.0,
+          "ci95": [
+            0.906,
+            1
+          ]
+        },
+        "root_cause_by_line": {
+          "assembly": {
+            "n": 9,
+            "top1": 1.0,
+            "top3": 1.0
+          },
+          "stamping": {
+            "n": 19,
+            "top1": 0.895,
+            "top3": 1.0
+          },
+          "welding": {
+            "n": 9,
+            "top1": 1.0,
+            "top3": 1.0
+          }
+        },
+        "root_cause_top1_by_case_type": {
+          "escalated": {
+            "n": 2,
+            "top1": 1.0
+          },
+          "typical": {
+            "n": 27,
+            "top1": 0.963
+          },
+          "wrong_first": {
+            "n": 8,
+            "top1": 0.875
+          }
+        },
+        "category": {
+          "k": 26,
+          "n": 40,
+          "rate": 0.65,
+          "ci95": [
+            0.495,
+            0.779
+          ]
+        },
+        "category_lenient": {
+          "k": 28,
+          "n": 40,
+          "rate": 0.7,
+          "ci95": [
+            0.546,
+            0.819
+          ]
+        },
+        "severity_raw": {
+          "k": 36,
+          "n": 40,
+          "rate": 0.9,
+          "ci95": [
+            0.769,
+            0.96
+          ]
+        },
+        "severity_gated": {
+          "k": 37,
+          "n": 40,
+          "rate": 0.925,
+          "ci95": [
+            0.801,
+            0.974
+          ]
+        },
+        "severity_confusion": {
+          "S1->S2": 2,
+          "S2->S1": 1,
+          "S2->S2": 36,
+          "S3->S2": 1
+        },
+        "s3_recall_gated": {
+          "k": 1,
+          "n": 1,
+          "rate": 1.0,
+          "ci95": [
+            0.207,
+            1
+          ]
+        },
+        "false_alarm": {
+          "threshold": 0.5,
+          "tp": 0,
+          "fp": 0,
+          "fn": 2,
+          "tn": 38,
+          "n_false_alarm_cases": 2,
+          "precision": null,
+          "recall": 0.0
+        },
+        "false_alarm_gate": {
+          "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+          "suppressed_true_fa": 0,
+          "suppressed_real_events": 0
+        },
+        "latency_ms": {
+          "n": 40,
+          "mean": 556.8,
+          "p50": 459.81,
+          "p95": 826.28,
+          "max": 2074.6
+        },
+        "cost_usd": {
+          "total": 0.006276,
+          "per_call": 0.00015689
+        }
+      },
+      "top1_same_as_clean": {
+        "k": 36,
+        "n": 40,
+        "rate": 0.9,
+        "ci95": [
+          0.769,
+          0.96
+        ]
+      }
+    },
+    "composite": {
+      "description": "合成複合原因 20 筆（case_skeleton composite：主因＋次因訊號同時出現）；正確答案＝主因",
+      "scores": {
+        "n_calls": 20,
+        "n_errors": 0,
+        "root_cause_top1": {
+          "k": 16,
+          "n": 20,
+          "rate": 0.8,
+          "ci95": [
+            0.584,
+            0.919
+          ]
+        },
+        "root_cause_top3": {
+          "k": 20,
+          "n": 20,
+          "rate": 1.0,
+          "ci95": [
+            0.839,
+            1
+          ]
+        },
+        "root_cause_by_line": {
+          "stamping": {
+            "n": 20,
+            "top1": 0.8,
+            "top3": 1.0
+          }
+        },
+        "root_cause_top1_by_case_type": {
+          "composite": {
+            "n": 20,
+            "top1": 0.8
+          }
+        },
+        "category": {
+          "k": 16,
+          "n": 20,
+          "rate": 0.8,
+          "ci95": [
+            0.584,
+            0.919
+          ]
+        },
+        "category_lenient": {
+          "k": 16,
+          "n": 20,
+          "rate": 0.8,
+          "ci95": [
+            0.584,
+            0.919
+          ]
+        },
+        "severity_raw": {
+          "k": 19,
+          "n": 20,
+          "rate": 0.95,
+          "ci95": [
+            0.764,
+            0.991
+          ]
+        },
+        "severity_gated": {
+          "k": 19,
+          "n": 20,
+          "rate": 0.95,
+          "ci95": [
+            0.764,
+            0.991
+          ]
+        },
+        "severity_confusion": {
+          "S2->S1": 1,
+          "S2->S2": 19
+        },
+        "s3_recall_gated": {
+          "k": 0,
+          "n": 0,
+          "rate": null,
+          "ci95": null
+        },
+        "false_alarm": {
+          "threshold": 0.5,
+          "tp": 0,
+          "fp": 0,
+          "fn": 0,
+          "tn": 20,
+          "n_false_alarm_cases": 0,
+          "precision": null,
+          "recall": null
+        },
+        "false_alarm_gate": {
+          "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+          "suppressed_true_fa": 0,
+          "suppressed_real_events": 0
+        },
+        "latency_ms": {
+          "n": 20,
+          "mean": 554.2,
+          "p50": 496.17,
+          "p95": 793.29,
+          "max": 1128.6
+        },
+        "cost_usd": {
+          "total": 0.003204,
+          "per_call": 0.00016021
+        }
+      },
+      "lenient": {
+        "top1_is_primary_or_secondary": {
+          "k": 19,
+          "n": 20,
+          "rate": 0.95,
+          "ci95": [
+            0.764,
+            0.991
+          ]
+        },
+        "both_causes_in_top3": {
+          "k": 15,
+          "n": 20,
+          "rate": 0.75,
+          "ci95": [
+            0.531,
+            0.888
+          ]
+        }
+      }
+    },
+    "synthetic_by_case_type": {
+      "composite": {
+        "n": 9,
+        "top1": 0.444
+      },
+      "escalated": {
+        "n": 5,
+        "top1": 0.4
+      },
+      "typical": {
+        "n": 41,
+        "top1": 0.902
+      },
+      "wrong_first": {
+        "n": 15,
+        "top1": 0.867
+      }
+    }
+  },
+  "cost_breakdown": {
+    "full4": {
+      "n": 10,
+      "cost_per_call": 0.00013824,
+      "input_tokens_mean": 3292,
+      "latency_ms": {
+        "n": 10,
+        "mean": 502.3,
+        "p50": 471.06,
+        "p95": 668.79,
+        "max": 749.0
+      }
+    },
+    "root_cause_only": {
+      "n": 10,
+      "cost_per_call": 0.0001202,
+      "input_tokens_mean": 2862,
+      "latency_ms": {
+        "n": 10,
+        "mean": 547.9,
+        "p50": 481.2,
+        "p95": 864.84,
+        "max": 910.9
+      }
+    },
+    "category_only": {
+      "n": 10,
+      "cost_per_call": 7.675e-05,
+      "input_tokens_mean": 1828,
+      "latency_ms": {
+        "n": 10,
+        "mean": 673.8,
+        "p50": 473.32,
+        "p95": 1544.72,
+        "max": 1775.8
+      }
+    },
+    "full4_no_cases": {
+      "n": 10,
+      "cost_per_call": 9.519e-05,
+      "input_tokens_mean": 2266,
+      "latency_ms": {
+        "n": 10,
+        "mean": 456.9,
+        "p50": 445.81,
+        "p95": 519.64,
+        "max": 544.5
+      }
+    },
+    "note": "同一批 10 筆保留案例；full4_no_cases＝4 題但 state 不帶相似案例"
+  },
+  "diagnosis_mode_first_run": {
+    "counts": {
+      "jev_top3": 39,
+      "llm_deep": 1
+    },
+    "threshold_root_cause_conf": 0.6,
+    "jev_top3_share": {
+      "k": 39,
+      "n": 40,
+      "rate": 0.975,
+      "ci95": [
+        0.871,
+        0.996
+      ]
+    }
+  }
+}

@@ -131,6 +131,7 @@ class JevClient:
         self.db, self.clock = db, clock or Clock()
         self.enabled = enabled and bool(api_key)
         self.has_key = bool(api_key)
+        self.retries = 0
         headers = {"Content-Type": "application/json"}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
@@ -153,8 +154,13 @@ class JevClient:
         t0 = time.perf_counter()
         err: str | None = None
         result: JevResult | None = None
+        body = {"model": self.model, "state": state, "questions": questions}
         try:
-            r = await self.http.post(self.url, json={"model": self.model, "state": state, "questions": questions})
+            r = await self.http.post(self.url, json=body)
+            if r.status_code == 400:                       # 偶發的 400（圖片邊界、格式）重試一次
+                log.warning("Jev 回 400（%s），重試一次", purpose)
+                self.retries += 1
+                r = await self.http.post(self.url, json=body)
             r.raise_for_status()
             result = parse_response(r.json())
             missing = set(questions) - set(result.answers)

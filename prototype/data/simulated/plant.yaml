@@ -4,6 +4,10 @@
 lines:
   - id: stamping
     name: 沖壓線
+    # 連動停機群組：送料機與下游沖床會一起停（卡料時屬 S2）；「多台同時停止」S3 只計不同群組
+    interlock_groups:
+      - [STP-L1-PR01, STP-L1-FD02]
+      - [STP-L2-PR03, STP-L2-FD04]
     machines:
       - {id: STP-L1-PR01, type: servo_press, name: 250t 伺服沖床, days_since_pm: 18}
       - {id: STP-L1-FD02, type: servo_roll_feeder, name: 伺服送料機, days_since_pm: 41}
@@ -20,13 +24,37 @@ lines:
         default_video: assets/videos/stamping/normal_01.mp4
   - id: assembly
     name: 組裝線
-    machines: []
+    machines:
+      - {id: ASM-L1-ST01, type: screwdriving_station, name: 電動起子鎖附站 1, days_since_pm: 35}
+      - {id: ASM-L1-ST02, type: screwdriving_station, name: 電動起子鎖附站 2, days_since_pm: 62}
+      - {id: ASM-L1-MA01, type: manual_assembly_station, name: 人工組裝／功能測試站 1, days_since_pm: 20}
+      - {id: ASM-L1-MA02, type: manual_assembly_station, name: 人工組裝／功能測試站 2, days_since_pm: 48}
     cameras:
-      - id: CAM-ASM-01
+      - id: CAM-ASM-01                         # 作業區 PPE（不綁機台：規則主體是攝影機）
         rois: {workstation: [0, 0, 1280, 720]}
         detectors: [ppe]
         default_video: assets/videos/assembly/normal_01.mp4
+      - id: CAM-ASM-02
+        machine_id: ASM-L1-ST01
+        rois: {station: [300, 160, 980, 640]}
+        detectors: []                          # M1 只看畫面；鎖附異常由 Log 判定
+        default_video: assets/videos/assembly/station_01.mp4
   - id: welding
     name: 銲接線
-    machines: []          # M2：機器人 MIG、點銲（預留）
-    cameras: []
+    machines:
+      - {id: WLD-L1-RC01, type: robot_mig_cell, name: 機器人 MIG 銲接工作站 1, days_since_pm: 22}
+      - {id: WLD-L1-RC02, type: robot_mig_cell, name: 機器人 MIG 銲接工作站 2, days_since_pm: 9}
+      - {id: WLD-L1-SP01, type: spot_welder, name: 座式點銲機 1, days_since_pm: 27}
+      - {id: WLD-L2-SP02, type: spot_welder, name: 座式點銲機 2, days_since_pm: 14}
+    cameras:
+      - id: CAM-WLD-01
+        machine_id: WLD-L1-RC01
+        rois:
+          weld_cell: [380, 160, 900, 600]      # 工位內的火花與銲煙屬正常（01_初選問題處理.md C1）
+        detectors: [jev_smoke]                 # Jev 看圖：工位外煙霧／火光
+        default_video: assets/videos/welding/normal_01.mp4
+      - id: CAM-WLD-02
+        machine_id: WLD-L1-SP01
+        rois: {station: [300, 160, 980, 640]}
+        detectors: []
+        default_video: assets/videos/welding/spot_01.mp4

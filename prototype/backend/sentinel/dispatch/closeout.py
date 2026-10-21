@@ -1,7 +1,6 @@
 """結案（CL-1、CL-3；J5）：回報品質檢查 → 寫回知識庫草稿（review_status=draft）→ CLOSED。"""
 from __future__ import annotations
 
-import json
 import logging
 from typing import TYPE_CHECKING, Any
 
@@ -56,7 +55,7 @@ async def submit_report(rt: "Runtime", wo_id: str, person_id: str, text: str,
                 row.final_root_cause = final_rc
                 s.add(row)
                 s.commit()
-    draft_path = write_case_draft(rt, wo_id, text, final_rc, diag)
+    case_id, draft_path = write_case_draft(rt, wo_id, text, final_rc, diag, person_id)
     wo = await rt.workorders.transition(wo_id, WoStatus.CLOSED, actor=person_id, reason="回報通過")
     if check and check.new_failure_mode:
         rt.audit.record("new_failure_mode_suspected", actor="jev", trace_id=inc.trace_id, workorder_id=wo_id)
@@ -64,10 +63,10 @@ async def submit_report(rt: "Runtime", wo_id: str, person_id: str, text: str,
                                    machine_id=inc.machine_id, type="new_failure_mode", trace_id=inc.trace_id,
                                    payload={"workorder_id": wo_id, "report": text[:200]}))
     check_out = {"complete": True, "missing": [], "score": check.complete if check else None,
-                 "kb_status": "draft" if draft_path else None, "jev_checked": check is not None}
+                 "kb_status": "draft" if draft_path else None, "jev_checked": check is not None, "case_id": case_id}
     _store_report(rt, wo_id, text, final_rc, person_id, check_out)
     return {"ok": True, "status": wo.status, "final_root_cause": final_rc, "check": check_out,
-            "case_draft": str(draft_path.name) if draft_path else None}
+            "case_draft": case_id}
 
 
 def _store_report(rt: "Runtime", wo_id: str, text: str, root_cause: str | None, person_id: str, check: dict) -> None:
@@ -82,34 +81,22 @@ def _store_report(rt: "Runtime", wo_id: str, text: str, root_cause: str | None, 
             s.commit()
 
 
-def write_case_draft(rt: "Runtime", wo_id: str, report: str, final_rc: str | None, diag: Diagnosis | None):
-    """CL-3（簡易版）：結案回報 → 案例草稿 JSON；人工審核改成 approved 後 make kb 才會入庫。"""
+def write_case_draft(rt: "Runtime", wo_id: str, report: str, final_rc: str | None, diag: Diagnosis | None,
+                     reported_by: str = "") -> tuple[str, object] | tuple[None, None]:
+    """CL-3：結案回報 → 案例草稿（review_status=draft）；主管在 /api/kb/cases/{id}/approve 核准後立即入庫。"""
+    from ..kb.writeback import build_case, case_id_for
+
     wo = rt.workorders.get(wo_id)
     inc = rt.workorders.incident(wo)
-    m = rt.plant.machines.get(inc.machine_id or "")
-    top1 = (diag.root_cause_top3 or [None])[0] if diag else None
-    case_id = f"CASE-DRAFT-{wo_id}"
-    doc = {
-        "case_id": case_id, "data_label": "模擬資料", "synthetic": True,
-        "generator": {"source": "writeback", "workorder_id": wo_id},
-        "line": inc.line, "machine_type": m.type if m else None, "machine_id": inc.machine_id,
-        "opened_at": inc.opened_at.isoformat(), "closed_at": rt.clock.now().isoformat(),
-        "trigger": {"source": inc.facts.get("source", "fused"), "event_type": inc.type,
-                    "rule_severity": inc.rule_severity},
-        "technician_report_raw": report,
-        "first_hypothesis": {"failure_mode_id": top1.get("id"), "by": "jev", "p": top1.get("p")} if top1 else None,
-        "final_root_cause": final_rc,
-        "hypothesis_correct": (top1.get("id") == final_rc) if top1 and final_rc else None,
-        "sop_used": diag.sop_ids if diag else [],
-        "review_status": "draft",
-    }
+    now = rt.clock.now()
+    case_id = case_id_for(inc.line, wo_id, now)
+    doc = build_case(case_id=case_id, inc=inc, machine=rt.plant.machines.get(inc.machine_id or ""), wo_id=wo_id,
+                     report=report, final_rc=final_rc, diag=diag, closed_at=now, reported_by=reported_by,
+                     timeline=list(rt.windows.timeline.get(inc.machine_id or inc.camera_id or "", [])))
     try:
-        d = rt.settings.path("drafts") / inc.line
-        d.mkdir(parents=True, exist_ok=True)
-        path = d / f"{case_id}.json"
-        path.write_text(json.dumps(doc, ensure_ascii=False, indent=2), encoding="utf-8")
-        rt.audit.record("case_draft_written", trace_id=inc.trace_id, workorder_id=wo_id, case_id=case_id)
-        return path
+        path = rt.writeback.write(doc)
     except OSError:
         log.exception("案例草稿寫入失敗")
-        return None
+        return None, None
+    rt.audit.record("case_draft_written", trace_id=inc.trace_id, workorder_id=wo_id, case_id=case_id)
+    return case_id, path

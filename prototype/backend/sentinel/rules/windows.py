@@ -128,7 +128,9 @@ class EventWindow(_Window):
         return self.items[-1][0] if self.items else None
 
 
-EVENT_LABEL = {"coil_change": "換料捲", "die_change": "換模", "param_change": "參數變更"}
+EVENT_LABEL = {"coil_change": "換料捲", "die_change": "換模", "param_change": "參數變更", "weld_defect": "銲道缺陷",
+               "collision_event": "撞槍", "consumable_change": "更換耗材", "part_lot_change": "換工件批號",
+               "screw_lot_change": "換螺絲批號", "calib_due_days": "工具校正到期", "ppe_stock_count": "防護具庫存"}
 
 
 def _brief(payload: dict) -> str:
@@ -136,13 +138,17 @@ def _brief(payload: dict) -> str:
 
 
 class Windows:
-    def __init__(self, clock: Clock, thresholds: Thresholds | None = None, retention_s: float = 600):
+    def __init__(self, clock: Clock, thresholds: Thresholds | None = None, retention_s: float = 600, plant=None):
         self.clock = clock
+        self.plant = plant              # 跨機台規則（多台同時停止、同線光幕）需要
         self.th = thresholds or Thresholds()
         self.retention_s = retention_s
         self._mes: dict[tuple[str, str], SignalWindow] = defaultdict(lambda: SignalWindow(clock, retention_s))
         self._vis: dict[tuple[str, str], EventWindow] = defaultdict(lambda: EventWindow(clock, retention_s))
         self.timeline: dict[str, deque[str]] = defaultdict(lambda: deque(maxlen=50))
+
+    def entities(self) -> set[str]:
+        return {e for e, _ in self._mes}
 
     def mes(self, entity: str, signal: str) -> SignalWindow:
         return self._mes[(entity, signal)]
@@ -162,8 +168,11 @@ class Windows:
         hhmmss = evt.ts.strftime("%H:%M:%S")
         if evt.topic == Topic.MES and evt.type == "mes_log":
             prev_state = self.mes(entity, "state").latest()
+            prev_robot = self.mes(entity, "robot_state").latest()
             for k, v in evt.payload.items():
                 self.mes(entity, k).add(evt.ts, v)
+            if "robot_state" in evt.payload and evt.payload["robot_state"] != prev_robot:
+                self.timeline[entity].append(f"{hhmmss} 機器人 {evt.payload['robot_state']}")
             if evt.payload.get("state") != prev_state:
                 self.timeline[entity].append(f"{hhmmss} 狀態 {evt.payload.get('state')}")
         elif evt.topic == Topic.MES and evt.type == "machine_alarm":
@@ -179,6 +188,10 @@ class Windows:
                 self.timeline[entity].append(f"{hhmmss} 影像動態 {evt.payload.get('state')}")
             elif evt.type == "ppe_violation":
                 self.timeline[entity].append(f"{hhmmss} 偵測未戴安全帽")
+            elif evt.type == "smoke" and evt.payload.get("value") != "none":
+                self.timeline[entity].append(f"{hhmmss} 影像判定工位外煙霧 {evt.payload.get('p_smoke_outside')}")
+            elif evt.type == "flame":
+                self.timeline[entity].append(f"{hhmmss} 影像判定工位外火光")
             elif evt.type == "person_in_zone":
                 self.timeline[entity].append(f"{hhmmss} 人員進入危險區 {evt.payload.get('value', True)}")
         return entity

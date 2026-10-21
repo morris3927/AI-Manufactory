@@ -1,6 +1,7 @@
 """V1／V2：關鍵幀視覺判斷。
 
 圖片規格（Jev整合規劃.md 3.1）：PNG／JPEG；每邊 256–1,568 像素；總像素 78,400–2,458,624。
+程式用 288 當下限（留餘裕）；Jev 回 400 時 client 會重試一次。
 """
 from __future__ import annotations
 
@@ -14,7 +15,7 @@ from pydantic import BaseModel
 from . import questions as Q
 from .client import JevClient
 
-MIN_SIDE, MAX_SIDE = 256, 1568
+MIN_SIDE, MAX_SIDE = 288, 1568          # 規格下限 256；實測貼近下限偶爾回 400，留 32 px 餘裕
 MIN_PIXELS, MAX_PIXELS = 78_400, 2_458_624
 
 
@@ -104,3 +105,33 @@ async def ppe(jev: JevClient, person_crop_blurred: np.ndarray, *, trace_id: str 
     res = await jev.ask(state, Q.PPE_QUESTIONS, purpose="vision.ppe", trace_id=trace_id, questions_ver=Q.PPE_VER)
     return PpeJudgement(p_no_helmet=res.noul("no_helmet"), p_in_zone=res.noul("in_work_zone"),
                         model=res.model, cost=res.cost)
+
+
+class SmokeJudgement(BaseModel):
+    p_smoke_outside: float
+    p_flame: float
+    value: str                            # none／outside_cell（signals.yaml vision.smoke）
+    box: list[int] | None = None
+    model: str | None = None
+    cost: float | None = None
+    latency_ms: float | None = None
+
+
+async def smoke(jev: JevClient, frame: np.ndarray, cell_roi: list[int] | None, machine: str, *, p_thr: float = 0.7,
+                trace_id: str | None = None, max_side: int = 768, quality: int = 85) -> SmokeJudgement:
+    """銲接工作站：工位 ROI 內的火花與銲煙是正常的，只判斷 ROI 以外。送整幀並畫出黃色工位框。"""
+    img = frame.copy()
+    if cell_roi:
+        x1, y1, x2, y2 = cell_roi
+        cv2.rectangle(img, (x1, y1), (x2, y2), (0, 220, 255), 4)
+    state = {"machine": machine, "camera": "銲接工作站", "cell_image": to_part(img, None, max_side, quality)}
+    res = await jev.ask(state, Q.SMOKE_QUESTIONS, purpose="vision.smoke", trace_id=trace_id,
+                        questions_ver=Q.SMOKE_VER)
+    p_s, p_f = res.noul("smoke_outside_cell"), res.noul("flame_outside_cell")
+    b = res.box("smoke_box")
+    box = None
+    if b is not None and p_s > p_thr:
+        h, w = frame.shape[:2]
+        box = [round(b.box.left * w), round(b.box.top * h), round(b.box.right * w), round(b.box.bottom * h)]
+    return SmokeJudgement(p_smoke_outside=p_s, p_flame=p_f, value="outside_cell" if p_s > p_thr else "none", box=box,
+                          model=res.model, cost=res.cost, latency_ms=res.latency_ms)

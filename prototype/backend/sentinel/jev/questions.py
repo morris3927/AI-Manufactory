@@ -4,11 +4,15 @@
 """
 from __future__ import annotations
 
-EVENT_VER = "event-2026-10-20.3"       # J1–J3（.2：單機停機屬於 S2；.3：加入故障模式 severity_note）
+EVENT_VER = "event-2026-10-21.4"       # J1–J3（.2：單機停機屬於 S2；.3：severity_note；.4：根因加「以上皆非」）
 FEED_VER = "feed-2026-10-20.1"         # V2
 PPE_VER = "ppe-2026-10-20.1"           # V1
-GATE_VER = "gate-2026-10-20.1"         # J4
+SMOKE_VER = "smoke-2026-10-21.1"       # V2（銲接：工位外煙霧／火光）
+GATE_VER = "gate-2026-10-21.2"         # J4（.2：每題加 true/false 標準，新增 energized）
 WRITEBACK_VER = "writeback-2026-10-20.2"  # J5（.2：拆成三個子題，回傳缺哪一項）
+
+NEW_MODE = "new"   # 以上皆非：目錄外的新故障模式（eval E1：沒有這個選項時會被硬塞進既有模式）
+NEW_MODE_CRITERIA = "以上皆非：事實與時間線不符合上列任何一個故障模式的判斷依據"
 
 CATEGORY_CRITERIA = {
     "safety": "與人員安全有關：PPE、闖入危險區、人員倒地",
@@ -46,7 +50,7 @@ def event_questions(failure_modes: dict[str, str] | None, severity_notes: list[s
         q["root_cause"] = {
             "type": "choice",
             "instructions": "最可能的根因是哪一個？只依據 event、timeline 與 similar_cases 判斷。",
-            "criteria": dict(list(failure_modes.items())[:255]),
+            "criteria": dict(list(failure_modes.items())[:254]) | {NEW_MODE: NEW_MODE_CRITERIA},
         }
     return q
 
@@ -61,6 +65,20 @@ FEED_QUESTIONS = {
     "jam_box": {"type": "box", "instructions": "roi_image 中卡住或歪斜的板材"},
 }
 
+SMOKE_QUESTIONS = {
+    "smoke_outside_cell": {
+        "type": "noul",
+        "instructions": "cell_image 是銲接工作站，黃色框是銲接工位。黃色框以外的區域是否有煙霧？",
+        "criteria": {"true": "黃色框外有灰白色煙霧、煙團或霧狀擴散",
+                     "false": "黃色框外清楚沒有煙霧；只有框內的火花或少量銲煙（正常作業）"},
+    },
+    "flame_outside_cell": {
+        "type": "noul", "instructions": "黃色框以外的區域是否有火光或火焰？",
+        "criteria": {"true": "黃色框外有明火、火焰或持續的火光", "false": "沒有火光，或只有框內銲接電弧與火花"},
+    },
+    "smoke_box": {"type": "box", "instructions": "cell_image 中黃色框外的煙霧位置"},
+}
+
 PPE_QUESTIONS = {
     "no_helmet": {
         "type": "noul",
@@ -71,9 +89,26 @@ PPE_QUESTIONS = {
 }
 
 SAFETY_GATE = {
-    "needs_loto": {"type": "noul", "instructions": "這個操作步驟是否需要先停機並上鎖掛牌（LOTO）？"},
-    "enters_danger_zone": {"type": "noul", "instructions": "這個步驟是否需要人員把身體伸入機台運轉範圍？"},
-    "high_voltage": {"type": "noul", "instructions": "這個步驟是否涉及打開電控箱或接觸高壓電？"},
+    "needs_loto": {
+        "type": "noul", "instructions": "這個操作步驟是否需要先停機並上鎖掛牌（LOTO）才能做？",
+        "criteria": {"true": "要接觸機台可動部位、拆裝或調整機構、清潔滾輪或模具、更換零件",
+                     "false": "只看紀錄或螢幕、填寫表單、通知人員、在機台外量測已拆下的零件、遠距目視不接觸"},
+    },
+    "enters_danger_zone": {
+        "type": "noul", "instructions": "這個步驟是否需要人員把手、手臂、頭或身體伸入機台的危險區？",
+        "criteria": {"true": "身體任何部位要進入上下模之間、模具區、滾輪夾捲點、送料口、機器人動作範圍或其他會夾、壓、捲、切的位置",
+                     "false": "人員在護圍外或機台外作業：看紀錄、讀儀表、操作面板按鈕、在工作台上量測已拆下的零件、填表、通知人員"},
+    },
+    "high_voltage": {
+        "type": "noul", "instructions": "這個步驟是否要打開電控箱或接觸電氣部件？",
+        "criteria": {"true": "打開電控箱、配電盤、驅動器外殼，或接觸端子、接線、電源線、直流母線電容、感測器配線",
+                     "false": "不碰觸電氣設備內部；只操作面板、讀取螢幕，或在斷電上鎖後做純機械檢查"},
+    },
+    "energized": {
+        "type": "noul", "instructions": "這個步驟是否需要機台在通電、有氣壓或會動的狀態下進行？",
+        "criteria": {"true": "寸動、試送、通電量測、手動噴油測試、試沖、讓滑塊或滾輪移動",
+                     "false": "在斷電、上鎖、零能量狀態下進行，或根本不需要機台動作（例如看紀錄、量測拆下的零件）"},
+    },
 }
 
 
@@ -88,5 +123,5 @@ def writeback_questions(failure_modes: dict[str, str] | None) -> dict:
     }
     fm = dict(list((failure_modes or {}).items())[:254])
     q["root_cause"] = {"type": "choice", "instructions": "實際根因屬於哪一類？",
-                       "criteria": fm | {"new": "以上皆非，新的故障模式"}}
+                       "criteria": fm | {NEW_MODE: "以上皆非，新的故障模式"}}
     return q

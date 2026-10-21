@@ -1,0 +1,48 @@
+{
+  "description": "PPE 偵測器 prototype/models/ppe.pt（YOLOv8s，2 類 head／helmet，訓練資料 SH17＋HardHat）",
+  "source": "訓練伺服器 ~/sentinel-train 的驗證結果，由協調者轉述；本評估未重新計算",
+  "inference_ms_per_img": {
+    "value": 2.4,
+    "hardware": "RTX 2080 Ti"
+  },
+  "sh17_val": {
+    "ours": {
+      "head": {
+        "P": 0.955,
+        "R": 0.855,
+        "mAP50": 0.901
+      },
+      "helmet": {
+        "P": 0.757,
+        "R": 0.585,
+        "mAP50": 0.691
+      }
+    },
+    "baseline_sh17_yolov8s": {
+      "head": {
+        "mAP50": 0.878
+      },
+      "helmet": {
+        "P": 0.838,
+        "R": 0.532,
+        "mAP50": 0.666
+      }
+    }
+  },
+  "hardhat_val": {
+    "ours": {
+      "head": {
+        "mAP50": 0.924
+      },
+      "helmet": {
+        "P": 0.95,
+        "R": 0.922,
+        "mAP50": 0.965
+      }
+    }
+  },
+  "caveats": [
+    "SH17 helmet 召回 0.585：約四成安全帽漏檢 → 頭部被判成「沒戴」，這正是 V1（Jev 看圖確認）要過濾的誤報來源",
+    "E6 執行時（2026-10-21 00:20–00:30）ppe.pt 尚未放入（檔案時間 09:12），PPE 劇本用的是劇本重播偵測（scripted）"
+  ]
+}

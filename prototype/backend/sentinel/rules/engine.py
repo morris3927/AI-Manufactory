@@ -25,7 +25,9 @@ from .windows import Windows
 
 log = logging.getLogger(__name__)
 
-TYPE_LABEL = {"feed_jam": "送料卡料", "ppe_violation": "未戴安全帽", "log_mismatch": "影像與 Log 狀態不一致"}
+TYPE_LABEL = {"feed_jam": "送料卡料", "ppe_violation": "未戴安全帽", "log_mismatch": "影像與 Log 狀態不一致",
+              "fire_suspected": "工位外冒煙（疑似火災）", "screw_nok": "鎖附扭力異常（NOK）",
+              "multi_stop": "多台機台同時停止（氣源壓力低）", "person_in_zone": "人員進入危險區"}
 
 
 @dataclass
@@ -73,7 +75,7 @@ def rule(*, id: str, line: str, category: str, default_severity: str,
 
 
 def load_rules() -> dict[str, RuleSpec]:
-    from . import rules_assembly, rules_cross, rules_stamping  # noqa: F401  匯入即註冊
+    from . import rules_assembly, rules_cross, rules_stamping, rules_welding  # noqa: F401  匯入即註冊
 
     return REGISTRY
 

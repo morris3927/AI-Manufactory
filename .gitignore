@@ -26,3 +26,4 @@ prototype/models/*.onnx
 # local-only
 LOCAL.md
 00_比賽資訊/timeline.md
+prototype/eval/.cache/

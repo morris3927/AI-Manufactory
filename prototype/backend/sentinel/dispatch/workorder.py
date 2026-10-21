@@ -1,13 +1,21 @@
-"""工單狀態機（WO-1；08_系統設計.md §5.8）。
+"""工單狀態機（WO-1；08_系統設計.md §5.8，2026-10-21 依作業許可（permit-to-work）順序修訂）。
 
-OPEN ──指派──► ASSIGNED ──接單──► ACKED ──LOTO 勾完──► LOTO_DONE ──許可核准──► IN_REPAIR
-  │               │ 逾時未接                                                    │
-  │               └──► ESCALATED（重新指派上一級，回到 ASSIGNED）                ▼
-  │                                                              PENDING_VERIFY（Checklist 勾完）
-  └──主管標記誤報──► CANCELLED                                                   │ 回報通過 J5
-                                                                                 ▼
-                                                                               CLOSED
-安全類工單（PPE）：OPEN → ASSIGNED → ACKED → CLOSED，不需要 LOTO。
+設備類：
+OPEN ─指派─► ASSIGNED ─接單─► ACKED ─申請許可─► PERMIT_REQUESTED ─班長核准─► PERMIT_APPROVED
+  │             │ 逾時未接                          │ 班長退回 → ACKED
+  │             └► ESCALATED（重新指派上一級，回到 ASSIGNED）
+  │                                                                            ▼ 技術員勾完 LOTO 檢查表
+  └─主管標記誤報─► CANCELLED                                                LOTO_DONE ─► IN_REPAIR
+                                                                 PENDING_VERIFY（Checklist 勾完）◄┘
+                                                                     │ 回報通過 J5
+                                                                     ▼
+                                                                   CLOSED
+為什麼許可在上鎖之前：設施規則第57條（116-01-01 施行版）要求作業前訂定危害防止計畫並落實作業許可程序；
+一般 permit-to-work 先核發許可（列出隔離點），再依許可執行隔離與上鎖。
+LOTO 最後一步由技術員勾選後，同一個人的操作連續記錄 LOTO_DONE → IN_REPAIR 兩筆轉換。
+config.yaml workflow.require_permit=false 時退回舊流程（ACKED 直接勾 LOTO）。
+
+安全類工單（PPE、疑似火災）：OPEN → ASSIGNED → ACKED → CLOSED，不需要 LOTO 與許可。
 
 - 每次轉換寫入 workorder_transition（誰、何時、從哪到哪、原因）＋ 稽核紀錄，並發布 tasks。
 - 維修 Agent（actor 以 agent 開頭）與 AI（jev／llm）一律不能改變工單狀態。
@@ -34,6 +42,8 @@ class WoStatus(StrEnum):
     OPEN = "OPEN"
     ASSIGNED = "ASSIGNED"
     ACKED = "ACKED"
+    PERMIT_REQUESTED = "PERMIT_REQUESTED"
+    PERMIT_APPROVED = "PERMIT_APPROVED"
     LOTO_DONE = "LOTO_DONE"
     IN_REPAIR = "IN_REPAIR"
     PENDING_VERIFY = "PENDING_VERIFY"
@@ -44,7 +54,9 @@ class WoStatus(StrEnum):
 
 S = WoStatus
 TERMINAL = {S.CLOSED, S.CANCELLED}
-PRE_LOTO = {S.OPEN, S.ASSIGNED, S.ESCALATED, S.ACKED}
+PRE_PERMIT = {S.OPEN, S.ASSIGNED, S.ESCALATED, S.ACKED, S.PERMIT_REQUESTED}
+PRE_LOTO = PRE_PERMIT | {S.PERMIT_APPROVED}
+PRE_REPAIR = PRE_LOTO | {S.LOTO_DONE}          # 維修 Agent 只有在 IN_REPAIR 之後才給檢查／維修步驟
 
 
 @dataclass(frozen=True)
@@ -66,8 +78,12 @@ TRANSITIONS: dict[tuple[WoStatus, WoStatus], Rule] = {
     (S.ASSIGNED, S.ESCALATED): Rule("system", label="逾時升級"),
     (S.ASSIGNED, S.CANCELLED): Rule("human", min_role="leader", label="標記誤報"),
     (S.ESCALATED, S.ASSIGNED): Rule("system", label="重新指派上一級"),
-    (S.ACKED, S.LOTO_DONE): Rule("human", EQUIP, label="LOTO 勾完"),
-    (S.LOTO_DONE, S.IN_REPAIR): Rule("human", EQUIP, min_role="leader", label="許可核准"),
+    (S.ACKED, S.PERMIT_REQUESTED): Rule("human", EQUIP, label="申請作業許可"),
+    (S.PERMIT_REQUESTED, S.PERMIT_APPROVED): Rule("human", EQUIP, min_role="leader", label="作業許可核准"),
+    (S.PERMIT_REQUESTED, S.ACKED): Rule("human", EQUIP, min_role="leader", label="作業許可退回"),
+    (S.PERMIT_APPROVED, S.LOTO_DONE): Rule("human", EQUIP, label="LOTO 勾完"),
+    (S.ACKED, S.LOTO_DONE): Rule("human", EQUIP, label="LOTO 勾完（不需許可的舊流程）"),
+    (S.LOTO_DONE, S.IN_REPAIR): Rule("human", EQUIP, label="LOTO 完成，開始維修"),
     (S.IN_REPAIR, S.PENDING_VERIFY): Rule("human", EQUIP, label="Checklist 勾完"),
     (S.PENDING_VERIFY, S.CLOSED): Rule("human", EQUIP, label="回報通過"),
     (S.ACKED, S.CLOSED): Rule("human", SAFETY, label="安全類結案"),
@@ -102,9 +118,25 @@ def can_transition(frm: str, to: str, category: str, actor: str = "system") -> b
     return rule.categories is None or category in rule.categories
 
 
+NEXT_ACTION = {S.OPEN: "assign", S.ASSIGNED: "ack", S.ESCALATED: "ack", S.ACKED: "permit_request",
+               S.PERMIT_REQUESTED: "permit_approve", S.PERMIT_APPROVED: "loto", S.LOTO_DONE: "loto",
+               S.IN_REPAIR: "checklist", S.PENDING_VERIFY: "report", S.CLOSED: None, S.CANCELLED: None}
+
+
+def next_action(status: str, category: str, require_permit: bool = True) -> str | None:
+    """前端用：目前該做的下一個人工操作。"""
+    st = WoStatus(status)
+    if category == "safety":
+        return {S.ASSIGNED: "ack", S.ESCALATED: "ack", S.ACKED: "report"}.get(st)
+    if st == S.ACKED and not require_permit:
+        return "loto"
+    return NEXT_ACTION.get(st)
+
+
 class WorkorderService:
-    def __init__(self, *, db: Database, bus: EventBus, clock: Clock, audit: AuditLogger):
+    def __init__(self, *, db: Database, bus: EventBus, clock: Clock, audit: AuditLogger, require_permit: bool = True):
         self.db, self.bus, self.clock, self.audit = db, bus, clock, audit
+        self.require_permit = require_permit
 
     # ── 查詢 ───────────────────────────────────────────────────
     def get(self, wo_id: str) -> Workorder:
@@ -169,6 +201,8 @@ class WorkorderService:
                 raise TransitionError(f"{wo_id}：不允許 {frm} → {to}")
             if rule.categories is not None and wo.category not in rule.categories:
                 raise TransitionError(f"{wo_id}：{wo.category} 類工單不允許 {frm} → {to}")
+            if (frm, to) == (S.ACKED, S.LOTO_DONE) and self.require_permit:
+                raise TransitionError("必須先申請並由班長核准作業許可，才能開始上鎖（設施規則第57條作業許可程序）")
             if rule.actor != "any" and rule.actor != kind:
                 raise PermissionDenied(f"{frm} → {to} 只能由 {'人員' if rule.actor == 'human' else '系統'} 執行")
             if kind == "human" and rule.min_role:
@@ -220,8 +254,11 @@ class WorkorderService:
         self._require_person(person_id)
         if wo.category not in EQUIP:
             raise TransitionError("安全類工單不需要 LOTO")
-        if wo.status != S.ACKED:
-            raise TransitionError(f"LOTO 只能在接單後勾選（目前 {wo.status}）")
+        allowed = {S.PERMIT_APPROVED} if self.require_permit else {S.ACKED, S.PERMIT_APPROVED}
+        if wo.status not in allowed:
+            if wo.status in (S.ACKED, S.PERMIT_REQUESTED) and self.require_permit:
+                raise TransitionError("作業許可尚未核准：請先申請作業許可，由班長核准後才能開始上鎖（設施規則第57條）")
+            raise TransitionError(f"目前狀態（{wo.status}）不能勾選 LOTO")
         if step_no not in steps:
             raise TransitionError(f"LOTO {loto_id} 沒有第 {step_no} 步")
         if step_no not in self.loto_checked(wo_id):
@@ -231,33 +268,47 @@ class WorkorderService:
                               workorder_id=wo_id, loto_id=loto_id, step_no=step_no)
         done = set(steps) <= self.loto_checked(wo_id)
         if done:
-            wo = await self.transition(wo_id, S.LOTO_DONE, actor=person_id, reason=f"{loto_id} 全部勾選完成")
+            await self.transition(wo_id, S.LOTO_DONE, actor=person_id, reason=f"{loto_id} 全部勾選完成")
+            wo = await self.transition(wo_id, S.IN_REPAIR, actor=person_id, reason="LOTO 完成並驗證零能量，開始維修")
         else:
             await self.publish(wo, self.incident(wo), "loto_progress",
-                                {"checked": sorted(self.loto_checked(wo_id)), "total": len(steps)})
+                               {"checked": sorted(self.loto_checked(wo_id)), "total": len(steps)})
         return wo, done
 
-    async def permit(self, wo_id: str, person_id: str, action: str) -> Workorder:
+    async def permit(self, wo_id: str, person_id: str, action: str, *, loto_id: str | None = None,
+                     isolation_points: list[str] | None = None) -> Workorder:
+        """作業許可（permit-to-work）：request（技術員，ACKED → PERMIT_REQUESTED）、
+        approve（班長以上，→ PERMIT_APPROVED）、reject（班長以上，退回 ACKED）。"""
         wo = self.get(wo_id)
-        if wo.status != S.LOTO_DONE:
-            raise TransitionError(f"作業許可只能在 LOTO 完成後申請／核准（目前 {wo.status}）")
+        if wo.category not in EQUIP:
+            raise TransitionError("安全類工單不需要作業許可")
         now = self.clock.now()
+        trace = self.incident(wo).trace_id
         if action == "request":
+            if wo.status != S.ACKED:
+                raise TransitionError(f"作業許可要在接單後、上鎖前申請（目前 {wo.status}）")
             self._require_person(person_id)
             self.db.add(Permit(workorder_id=wo_id, requested_by=person_id, ts=now))
-            self.audit.record("permit_requested", actor=person_id, trace_id=self.incident(wo).trace_id,
-                              workorder_id=wo_id)
-            await self.publish(wo, self.incident(wo), "permit_requested", {"by": person_id})
-            return wo
+            self.audit.record("permit_requested", actor=person_id, trace_id=trace, workorder_id=wo_id,
+                              loto_id=loto_id, isolation_points=isolation_points or [])
+            return await self.transition(wo_id, S.PERMIT_REQUESTED, actor=person_id,
+                                         reason=f"申請作業許可（隔離點依 {loto_id or 'LOTO 檢查表'}）")
+        if wo.status != S.PERMIT_REQUESTED:
+            raise TransitionError(f"沒有待核准的作業許可（目前 {wo.status}）")
         self._require_person(person_id, "leader")
+        if action == "reject":
+            self.audit.record("permit_rejected", actor=person_id, trace_id=trace, workorder_id=wo_id)
+            return await self.transition(wo_id, S.ACKED, actor=person_id, reason="作業許可退回，請補充後重新申請")
         with self.db.session() as s:
-            p = s.exec(select(Permit).where(Permit.workorder_id == wo_id, col(Permit.approved_by).is_(None))).first()
+            p = s.exec(select(Permit).where(Permit.workorder_id == wo_id, col(Permit.approved_by).is_(None))
+                       .order_by(col(Permit.id).desc())).first()
             if p is None:
                 p = Permit(workorder_id=wo_id, requested_by=wo.assignee_id or person_id, ts=now)
             p.approved_by = person_id
             s.add(p)
             s.commit()
-        return await self.transition(wo_id, S.IN_REPAIR, actor=person_id, reason="作業許可核准")
+        self.audit.record("permit_approved", actor=person_id, trace_id=trace, workorder_id=wo_id)
+        return await self.transition(wo_id, S.PERMIT_APPROVED, actor=person_id, reason="作業許可核准，可以開始上鎖")
 
     async def check_item(self, wo_id: str, item: str, person_id: str, items: list[str]) -> tuple[Workorder, bool]:
         wo = self.get(wo_id)

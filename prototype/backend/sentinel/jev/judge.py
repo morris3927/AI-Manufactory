@@ -64,7 +64,8 @@ async def event(jev: JevClient, incident: Any, *, machine: Any, timeline: list[s
     if "root_cause" in res.answers:
         rc = res.choice("root_cause")
         rc_conf = rc.confidence
-        top3 = [RootCause(id=k, label=(failure_modes.get(k) or {}).get("label", k), p=round(p, 4))
+        top3 = [RootCause(id=k, label="以上皆非（新的故障模式）" if k == Q.NEW_MODE else
+                          (failure_modes.get(k) or {}).get("label", k), p=round(p, 4))
                 for k, p in rc.top(3)]
     return EventJudgement(
         category=cat.choice, category_conf=cat.confidence, p_false_alarm=res.noul("is_false_alarm"),

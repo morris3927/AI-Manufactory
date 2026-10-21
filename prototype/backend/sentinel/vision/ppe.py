@@ -78,13 +78,40 @@ class PpeDetector(Protocol):
     def detect(self, frame: np.ndarray, t: float) -> list[Detection]: ...
 
 
+# 模型類別名稱 → 正規化類別。2 類自訓模型 {0: head, 1: helmet}、SH17（17 類，含 head／helmet／person）、
+# 常見 PPE 資料集（Hardhat／NO-Hardhat）都對得到；其他類別（vest、gloves…）忽略。
+DEFAULT_CLASS_ALIASES = {
+    "head": "head", "no_helmet": "head", "no-hardhat": "head", "no-helmet": "head", "without_helmet": "head",
+    "helmet": "helmet", "hardhat": "helmet", "hard-hat": "helmet", "with_helmet": "helmet",
+    "person": "person",
+}
+
+
 class YoloPpeDetector:
     name = "yolo"
 
-    def __init__(self, weights: Path, device: str = "mps", class_map: dict[str, list[str]] | None = None):
-        self.weights, self.device = weights, device
-        self.class_map = {alias: norm for norm, aliases in (class_map or {}).items() for alias in aliases}
+    def __init__(self, weights: Path, device: str = "mps", class_map: dict[str, list[str]] | None = None,
+                 conf: float = 0.25):
+        self.weights, self.conf = weights, conf
+        self.device = self._pick_device(device)
+        self.aliases = dict(DEFAULT_CLASS_ALIASES)
+        for norm, names in (class_map or {}).items():
+            for n in names:
+                self.aliases[n.lower()] = norm
         self._model = None
+        self.class_names: dict[int, str] = {}
+
+    @staticmethod
+    def _pick_device(device: str) -> str:
+        if device == "mps":
+            try:
+                import torch
+
+                if not torch.backends.mps.is_available():
+                    return "cpu"
+            except ImportError:
+                return "cpu"
+        return device
 
     @staticmethod
     def available(weights: Path) -> bool:
@@ -101,16 +128,20 @@ class YoloPpeDetector:
             from ultralytics import YOLO  # 延遲載入
 
             self._model = YOLO(str(self.weights))
+            self.class_names = dict(self._model.names)
+            log.info("YOLO PPE 模型載入：%s（%s）類別=%s", self.weights.name, self.device, self.class_names)
         return self._model
+
+    def normalize(self, raw: str) -> str | None:
+        return self.aliases.get(raw.lower())
 
     def detect(self, frame: np.ndarray, t: float) -> list[Detection]:
         model = self._load()
-        res = model.predict(frame, device=self.device, verbose=False)[0]
+        res = model.predict(frame, device=self.device, conf=self.conf, verbose=False)[0]
         out: list[Detection] = []
         for b in res.boxes:
-            raw = res.names[int(b.cls)]
-            cls = self.class_map.get(raw, raw.lower())
-            if cls in {"head", "helmet", "person"}:
+            cls = self.normalize(res.names[int(b.cls)])
+            if cls:
                 out.append(Detection(cls, tuple(float(v) for v in b.xyxy[0].tolist()), float(b.conf)))
         return out
 

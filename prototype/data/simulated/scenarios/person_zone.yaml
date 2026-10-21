@@ -1,0 +1,28 @@
+id: person_zone
+title: 場景 6：光幕停用時人員進入沖床危險區（S3＋職災通報）
+duration_s: 12
+cameras:
+  CAM-STP-01:
+    video: assets/videos/stamping/person_zone_01.mp4
+    synthetic: normal
+mes_script:
+  STP-L1-PR01:
+    - {t: 0, set: {state: running, light_curtain_status: OK}}
+    - {t: 2, set: {light_curtain_status: MUTED}}
+  STP-L1-FD02:
+    - {t: 0, set: {state: running}}
+events:                              # 影像事件（沒有影片時由劇本注入；人員偵測模型為 M2）
+  - {t: 3, topic: vision.events, type: person_in_zone, camera_id: CAM-STP-01, payload: {value: true, zone: danger_zone}}
+casualty:                            # 模擬「主管在介面標記傷亡」；系統不會從影像推論傷亡
+  t: 6
+  machine_id: STP-L1-FD02
+  injured: 1
+  hospitalized: 1
+  set_by: P-STP-SV1
+expect:
+  t0: 3
+  incident: {type: person_in_zone, severity: S3, category: safety, within_s: 2}
+  notify_within_s: 3
+  assignee_role: manager
+  llm_called: false
+  incident_report: true

@@ -174,8 +174,14 @@ class DispatchService:
         machine = self.plant.machines.get(inc.machine_id or "")
         sops = self.kb.plan_sops(diag.root_cause_top3, top1_thr=self.th.sop_top1, low_thr=self.th.sop_low)["chunks"]
         try:
-            text = await explain.diagnosis(self.llm, inc, diag.root_cause_top3, sops,
-                                           machine.name if machine else None)
+            if diag.mode == "llm_deep":       # Jev 根因信心不足：LLM 讀時間線與相似案例深入診斷
+                cases = self.kb.similar_cases(inc, k=5, machine_type=machine.type if machine else None)
+                text = await explain.deep(self.llm, inc, diag.root_cause_top3, sops, machine.name if machine else None,
+                                          timeline=list(self.windows.timeline.get(inc.machine_id or inc.camera_id or "", [])),
+                                          cases=[c.short for c in cases])
+            else:
+                text = await explain.diagnosis(self.llm, inc, diag.root_cause_top3, sops,
+                                               machine.name if machine else None)
             ok = True
         except LlmUnavailable as e:
             text, ok = explain.FALLBACK, False

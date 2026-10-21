@@ -252,7 +252,7 @@ def chunk_case(doc: dict) -> list[dict]:
         "case_id": cid, "failure_mode_id": doc.get("final_root_cause"),
         "failure_mode_ids": _as_list(doc.get("related_failure_mode_ids"))
         or ([doc.get("final_root_cause")] if doc.get("final_root_cause") else []),
-        "case_type": doc.get("case_type"),
+        "case_type": doc.get("case_type"), "trigger_type": (doc.get("trigger") or {}).get("event_type"),
         "hypothesis_correct": doc.get("hypothesis_correct"), "machine_id": doc.get("machine_id"),
     }
     meta["machine_type"] = doc.get("machine_type") if isinstance(doc.get("machine_type"), str) else \

@@ -1,0 +1,19 @@
+id: weld_smoke
+title: 場景 4：銲接機器人停止後工位外冒煙（疑似火災）
+duration_s: 16
+cameras:
+  CAM-WLD-01:
+    video: assets/videos/welding/weld_smoke_01.mp4
+    synthetic: weld_smoke          # 合成畫面：5 秒機器人停止，8 秒起黃框（工位）外冒煙
+    event_at_s: 8
+mes_script:
+  WLD-L1-RC01:
+    - {t: 0, set: {robot_state: running, state: running}}
+    - {t: 5, set: {robot_state: stopped, state: idle, arc_current_a: 0, wire_feed_speed_mpm: 0}}
+    - {t: 9, set: {exhaust_flow_m3h: 1250, alarm_code: FUME_EXH_LOW}}
+expect:
+  t0: 8                            # 工位外開始冒煙
+  incident: {type: fire_suspected, severity: S3, category: safety, within_s: 3}
+  notify_within_s: 5
+  assignee_role: manager           # S3：當班職位最高者＋技術員＋主管群組（#緊急）
+  llm_called: false

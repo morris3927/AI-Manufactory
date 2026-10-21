@@ -23,19 +23,21 @@ JEV_SAMPLE = {   # Jev整合規劃.md 3.1 的實際回應
     "usage": {"input_tokens": 476, "output_tokens": 70, "cost": 0.000019992},
 }
 
-RC_PROBS = [0.62, 0.21, 0.09, 0.05, 0.03]
+RC_PROBS = [0.82, 0.09, 0.05, 0.03, 0.01]
 
 
 class FakeJev:
     """依題目 key 回答；看圖題依模擬時間決定（t ≥ jam_from_s 才判定卡料）。"""
 
     def __init__(self, t_fn: Callable[[], float] = lambda: 0.0, *, jam_from_s: float = 10.0,
-                 p_false_alarm: float = 0.04, severity_score: float = 1.0, fail: bool = False):
+                 p_false_alarm: float = 0.04, severity_score: float = 1.0, fail: bool = False,
+                 smoke_from_s: float = 8.0):
         self.t_fn = t_fn
         self.jam_from_s = jam_from_s
         self.p_false_alarm = p_false_alarm
         self.severity_score = severity_score
         self.fail = fail
+        self.smoke_from_s = smoke_from_s
         self.calls: list[dict] = []
 
     def purposes(self) -> list[str]:
@@ -55,6 +57,12 @@ class FakeJev:
         t = self.t_fn()
         if key == "jammed":
             return {"type": "noul", "noul": 0.85 if t >= self.jam_from_s else 0.08}
+        if key == "smoke_outside_cell":
+            return {"type": "noul", "noul": 0.9 if t >= self.smoke_from_s else 0.05}
+        if key == "flame_outside_cell":
+            return {"type": "noul", "noul": 0.04}
+        if key == "smoke_box":
+            return {"type": "box", "box": {"top": 0.05, "bottom": 0.45, "left": 0.7, "right": 0.95}, "confidence": 0.7}
         if key == "jam_box":
             return {"type": "box", "box": {"top": 0.3, "bottom": 0.7, "left": 0.2, "right": 0.8}, "confidence": 0.8}
         if key == "is_false_alarm":
@@ -72,7 +80,9 @@ class FakeJev:
             return {"type": "choice", "choice": top, "confidence": 0.7, "probabilities": probs}
         if key == "enters_danger_zone":
             return {"type": "noul", "noul": 0.9 if "伸手" in str(state.get("step")) else 0.05}
-        if key in ("needs_loto", "high_voltage"):
+        if key == "needs_loto":
+            return {"type": "noul", "noul": 0.8}          # live 觀察：LOTO 後 needs_loto 仍常 0.4–0.86
+        if key == "high_voltage":
             return {"type": "noul", "noul": 0.1}
         if key in ("has_cause", "has_action", "has_result"):
             return {"type": "noul", "noul": 0.9 if len(str(state.get("report", ""))) >= 20 else 0.1}
@@ -83,10 +93,11 @@ class FakeJev:
         return {"type": "noul", "noul": 0.02}
 
 
-AGENT_TEXT = ("目前先驗證送料滾輪磨損（機率 62%）。\n"
+AGENT_TEXT = ("目前先驗證送料滾輪磨損（機率 82%）。\n"
               "1. 目視上下滾輪表面是否有亮帶或油污\n"
               "2. 伸手取出卡在送料口的板材\n"
-              "3. 處理完成後即可復電試運轉。")
+              "3. 需要通電量測送料長度時，依測試／定位程序由原上鎖人取下自己的鎖、現場主管在場\n"
+              "4. 處理完成後即可復電試運轉。")
 
 
 class FakeLlm:
@@ -100,6 +111,6 @@ class FakeLlm:
         body = json.loads(request.content)
         self.calls.append(body)
         is_agent = body["messages"][0]["content"].startswith("你是 Sentinel AI 的維修助理")
-        content = AGENT_TEXT if is_agent else "送料機 FD02 卡料，最可能是送料滾輪磨損（62%）。請先依 LOTO 上鎖後檢查滾輪。"
+        content = AGENT_TEXT if is_agent else "送料機 FD02 卡料，最可能是送料滾輪磨損（82%）。請先依 LOTO 上鎖後檢查滾輪。"
         return httpx.Response(200, json={"model": "deepseek-v4.1-flash", "message": {"role": "assistant", "content": content},
                                          "prompt_eval_count": 50, "eval_count": 40, "done": True})

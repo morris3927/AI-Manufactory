@@ -8,6 +8,7 @@ from sqlmodel import col, select
 from ..agent.repair_agent import message_dict
 from ..db.models import AgentMessage, ChecklistItem, Diagnosis, Incident, LotoRecord, Permit, Workorder
 from ..rules.engine import TYPE_LABEL
+from ..dispatch.workorder import next_action
 from ..jev.questions import EVENT_VER
 from ..llm.explain import FALLBACK
 
@@ -48,6 +49,10 @@ def incident_out(rt: "Runtime", inc: Incident, base_url: str = "", with_diag: bo
     }
     if with_diag:
         out["diagnosis"] = diagnosis_out(rt.dispatch.diagnosis_for(inc.id), inc)
+    rep = rt.reports.get(inc.id)
+    out["incident_report"] = None if rep is None and not inc.casualty else {
+        k: v for k, v in rt.reports.status(inc, rep).items() if k in ("status", "deadline", "remaining_s",
+                                                                       "criteria_met", "instructions")}
     return out
 
 
@@ -94,7 +99,9 @@ def workorder_detail(rt: "Runtime", wo_id: str, base_url: str = "") -> dict:
     permit = None
     if permits:
         last = permits[-1]
-        permit = {"requested_by": last.requested_by, "requested_at": iso(last.ts), "approved_by": last.approved_by,
+        st = "approved" if last.approved_by else ("requested" if wo.status == "PERMIT_REQUESTED" else "rejected")
+        permit = {"status": st, "requested_by": last.requested_by, "requested_at": iso(last.ts),
+                  "approved_by": last.approved_by,
                   "ts": iso(last.ts)}
 
     top1 = (diag.root_cause_top3 or [{}])[0].get("id") if diag else None
@@ -113,4 +120,18 @@ def workorder_detail(rt: "Runtime", wo_id: str, base_url: str = "") -> dict:
         "sops": sops, "sop_mode": sop_plan["mode"], "sop_note": sop_plan.get("note"),
         "loto": loto_out, "permit": permit, "checklist": checklist,
         "agent_messages": [message_dict(m) for m in msgs], "transitions": transitions, "report": wo.report,
+        "writeback": _writeback(rt, wo),
+        "workflow": {"require_permit": rt.workorders.require_permit,
+                     "next_action": next_action(wo.status, wo.category, rt.workorders.require_permit)},
     }
+
+
+def _writeback(rt: "Runtime", wo: Workorder) -> dict | None:
+    """知識回寫：結案時產生的案例草稿 ID 與審核狀態（draft → 主管按「核准入庫」→ approved）。"""
+    case_id = ((wo.report or {}).get("check") or {}).get("case_id")
+    if not case_id:
+        return None
+    doc = rt.writeback.get(case_id)
+    return {"case_id": case_id, "status": doc.get("review_status") if doc else "missing",
+            "reviewed_by": doc.get("reviewed_by") if doc else None,
+            "approve_url": f"/api/kb/cases/{case_id}/approve"}

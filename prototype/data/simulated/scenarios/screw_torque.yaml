@@ -1,0 +1,20 @@
+id: screw_torque
+title: 場景 5：電動起子扭力未達（鎖附 NOK 連續發生）
+duration_s: 14
+cameras:
+  CAM-ASM-02:
+    video: assets/videos/assembly/screw_nok_01.mp4
+    synthetic: station
+mes_script:
+  ASM-L1-ST01:
+    - {t: 0, set: {screw_result: OK, state: running}}
+    - {t: 1, event: {type: calib_due_days, payload: {value: -12, tool_id: SD-ST01}}}   # 扭力工具校正已逾期 12 天
+    - {t: 4, set: {screw_result: NOK_LOW_TORQUE, final_torque_nm: 0.62, final_angle_deg: 2150, nok_hole_id: H07}}
+    - {t: 4, ramp: {nok_rate_pct: [0.4, 6.0], over_s: 5}}
+    - {t: 6, set: {alarm_code: SCREW_NOK}}
+expect:
+  t0: 4                            # 開始 NOK
+  incident: {type: screw_nok, severity: S2, category: equipment, within_s: 5}
+  notify_within_s: 6
+  assignee_role: technician
+  llm_called: true

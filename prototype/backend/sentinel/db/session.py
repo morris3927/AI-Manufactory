@@ -42,9 +42,25 @@ class Database:
 
     def create_all(self) -> None:
         SQLModel.metadata.create_all(self.engine)
+        self._add_missing_columns()
         with self.engine.begin() as conn:
             for stmt in _AUDIT_TRIGGERS:
                 conn.execute(text(stmt))
+
+    def _add_missing_columns(self) -> None:
+        """舊的 sentinel.db 缺新欄位時補上（只加可為空的欄位，不改既有資料）；改型別請 make reset。"""
+        from sqlalchemy import inspect
+
+        insp = inspect(self.engine)
+        with self.engine.begin() as conn:
+            for table in SQLModel.metadata.sorted_tables:
+                if not insp.has_table(table.name):
+                    continue
+                have = {c["name"] for c in insp.get_columns(table.name)}
+                for col_ in table.columns:
+                    if col_.name not in have and col_.nullable:
+                        conn.execute(text(f'ALTER TABLE "{table.name}" ADD COLUMN "{col_.name}" '
+                                          f'{col_.type.compile(dialect=self.engine.dialect)}'))
 
     def reset(self) -> None:
         """重置 Demo：整個重建（DROP TABLE 不受 audit trigger 限制）。"""

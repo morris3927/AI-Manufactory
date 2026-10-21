@@ -60,7 +60,7 @@ class KbCfg(BaseModel):
 class VisionCfg(BaseModel):
     fps: float = 15
     ppe_fps: float = 5
-    keyframe_interval_s: float = 5
+    keyframe_interval_s: float = 2
     jpeg_quality: int = 85
     jev_max_side: int = 768
     yolo_weights: str = "models/ppe.pt"
@@ -80,9 +80,19 @@ class Thresholds(BaseModel):
     ppe_dedupe_s: float = 3
     ppe_window_s: float = 5
     log_mismatch_s: float = 20
+    p_smoke_outside: float = 0.7
+    p_flame: float = 0.7
+    smoke_window_s: float = 10
+    screw_nok_rate_pct: float = 3.0
+    screw_nok_s: float = 3
+    multi_stop_window_s: float = 15
+    air_pressure_low_bar: float = 4.8
+    person_zone_window_s: float = 5
     p_false_alarm: float = 0.9
-    root_cause_conf: float = 0.6
+    root_cause_conf: float = 0.8
     safety_gate_p: float = 0.3
+    gate: dict[str, float] = Field(default_factory=lambda: {"needs_loto": 0.3, "enters_danger_zone": 0.3,
+                                                            "high_voltage": 0.3, "energized": 0.3})
     writeback_complete: float = 0.7
     sop_top1: float = 0.6
     sop_low: float = 0.3
@@ -97,6 +107,10 @@ class EscalationCfg(BaseModel):
         if self.demo_ack_timeout_s:
             return float(self.demo_ack_timeout_s)
         return float(self.ack_timeout_s.get(severity, 300))
+
+
+class WorkflowCfg(BaseModel):
+    require_permit: bool = True     # 設備類工單：作業許可核准後才能上鎖（設施規則第57條）
 
 
 class MesCfg(BaseModel):
@@ -128,6 +142,7 @@ class Settings(BaseModel):
     thresholds: Thresholds = Field(default_factory=Thresholds)
     escalation: EscalationCfg = Field(default_factory=EscalationCfg)
     mes: MesCfg = Field(default_factory=MesCfg)
+    workflow: WorkflowCfg = Field(default_factory=WorkflowCfg)
     discord: DiscordCfg = Field(default_factory=DiscordCfg)
     secrets: Secrets = Field(default_factory=Secrets, exclude=True)
     base_dir: Path = PROTOTYPE_DIR

@@ -28,6 +28,7 @@ class SimEngine:
         self._task: asyncio.Task | None = None
         self._frame_acc: dict[str, float] = {}
         self._events_done = 0
+        self._casualty_done = False
 
     # ── 劇本 ───────────────────────────────────────────────────
     def load(self, sc: Scenario | None) -> None:
@@ -36,13 +37,15 @@ class SimEngine:
         self.t = 0.0
         self._frame_acc.clear()
         self._events_done = 0
+        self._casualty_done = False
         rt.windows.clear()
         rt.vision.reset()
         rt.mes.load_script(sc.mes_script if sc else {})
         for cam_id, cam in rt.cameras.items():
             cue = sc.cameras.get(cam_id) if sc else None
             if cue:
-                cam.set_source(cue.video, then=cue.then, synthetic=cue.synthetic, loop=cue.loop, jam_at_s=cue.jam_at_s)
+                cam.set_source(cue.video, then=cue.then, synthetic=cue.synthetic, loop=cue.loop,
+                               jam_at_s=cue.event_at_s if cue.event_at_s is not None else cue.jam_at_s)
             else:
                 cam.set_source(cam.cam.default_video, loop=True)
             rt.bus.track(rt.bus.publish(Event(
@@ -56,6 +59,25 @@ class SimEngine:
             log.info("劇本開始：%s", sc.title)
             rt.bus.track(rt.bus.publish(Event(ts=rt.clock.now(), topic=Topic.MES, source="sim.scenario",
                                               type="scenario_started", payload={"scenario_id": sc.id, "title": sc.title})))
+
+    async def _scripted_casualty(self) -> None:
+        """劇本設定的傷亡（模擬「主管在介面標記」；系統不從影像推論傷亡）。"""
+        sc = self.scenario
+        c = sc.casualty if sc else None
+        if not c or self._casualty_done or self.t < c.t:
+            return
+        from sqlmodel import select
+
+        from ..db.models import Incident
+
+        ent = c.machine_id or c.camera_id
+        inc = self.rt.db.first(select(Incident).where(
+            (Incident.machine_id == ent) | (Incident.camera_id == ent), Incident.status == "open"))
+        if inc is None:
+            return
+        self._casualty_done = True
+        await self.rt.reports.set_casualty(inc.id, deaths=c.deaths, injured=c.injured, hospitalized=c.hospitalized,
+                                           actor=c.set_by, note="劇本腳本（模擬主管標記）")
 
     async def _scripted_events(self) -> None:
         sc = self.scenario
@@ -94,6 +116,8 @@ class SimEngine:
                     await rt.bus.drain()
                 await cam.emit()
         await rt.escalation.check()
+        await rt.reports.tick()
+        await self._scripted_casualty()
 
     async def run_stepped(self, sc: Scenario | None, duration_s: float | None = None, *, dt: float = 1.0,
                           fps: float = 2.0) -> dict[str, Any]:
@@ -130,6 +154,8 @@ class SimEngine:
                     await self.rt.mes.tick(self.t)
                     await self._scripted_events()
                     await self.rt.escalation.check()
+                    await self.rt.reports.tick()
+                    await self._scripted_casualty()
                 for cam in self.rt.cameras.values():
                     await cam.emit()
                 nxt += tick_s / sub

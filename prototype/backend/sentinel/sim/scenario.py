@@ -13,7 +13,8 @@ class CameraCue(BaseModel):
     then: str | None = None
     synthetic: str | None = None      # 影片不存在時的合成畫面樣式；未填則依檔名推測
     loop: bool = False
-    jam_at_s: float | None = None     # 合成卡料畫面：幾秒後板材卡住
+    jam_at_s: float | None = None     # 合成畫面：幾秒後板材卡住
+    event_at_s: float | None = None   # 合成畫面：異常開始秒數（冒煙等；與 jam_at_s 同義）
 
 
 class SimDetection(BaseModel):
@@ -36,6 +37,18 @@ class ScriptedEvent(BaseModel):
     payload: dict[str, Any] = Field(default_factory=dict)
 
 
+class ScriptedCasualty(BaseModel):
+    """劇本中由「主管」標記的傷亡（系統不會從影像推論傷亡）。"""
+
+    t: float
+    machine_id: str | None = None
+    camera_id: str | None = None
+    deaths: int = 0
+    injured: int = 0
+    hospitalized: int = 0
+    set_by: str = "P-STP-SV1"
+
+
 class ExpectIncident(BaseModel):
     type: str
     severity: str
@@ -49,6 +62,7 @@ class Expect(BaseModel):
     notify_within_s: float | None = None
     assignee_role: str | None = None
     llm_called: bool | None = None
+    incident_report: bool | None = None   # 是否應建立職災通報草稿（8 小時倒數）
 
 
 class Scenario(BaseModel):
@@ -59,6 +73,7 @@ class Scenario(BaseModel):
     mes_script: dict[str, list[dict[str, Any]]] = Field(default_factory=dict)
     sim_detections: list[SimDetection] = Field(default_factory=list)
     events: list[ScriptedEvent] = Field(default_factory=list)
+    casualty: ScriptedCasualty | None = None
     expect: Expect = Field(default_factory=Expect)
 
 

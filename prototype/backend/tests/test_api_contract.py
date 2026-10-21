@@ -68,16 +68,24 @@ def test_contract_feed_jam_flow(client: TestClient):
     assert client.post(f"/api/workorders/{wid}/ack", json={}, headers=JUDGE).status_code == 403
     r = client.post(f"/api/workorders/{wid}/ack", json={}, headers=TECH).json()
     assert r["status"] == "ACKED" and r["assignee_id"] == "P-STP-TC1"           # POST 回更新後的工單
+    assert r["workflow"]["next_action"] == "permit_request"
+    lo = client.post(f"/api/workorders/{wid}/loto/1", json={"checked": True}, headers=TECH)
+    assert lo.status_code == 409 and "作業許可" in lo.json()["detail"]                # 許可前不能上鎖
+    assert client.post(f"/api/workorders/{wid}/permit", json={"action": "approve"}, headers=LEADER).status_code == 409
+    r = client.post(f"/api/workorders/{wid}/permit", json={"action": "request"}, headers=TECH).json()
+    assert r["status"] == "PERMIT_REQUESTED" and r["permit"]["status"] == "requested"
+    assert client.post(f"/api/workorders/{wid}/permit", json={"action": "approve"}, headers=TECH).status_code == 403
+    r = client.post(f"/api/workorders/{wid}/permit", json={"action": "approve"}, headers=LEADER).json()
+    assert r["status"] == "PERMIT_APPROVED" and r["permit"]["approved_by"] == "P-STP-LD1"
+    assert r["workflow"]["next_action"] == "loto"
     for s in d["loto"]["steps"]:
         r = client.post(f"/api/workorders/{wid}/loto/{s['step_no']}", json={"checked": True}, headers=TECH).json()
-    assert r["status"] == "LOTO_DONE"
-    assert client.post(f"/api/workorders/{wid}/permit", json={"action": "approve"}, headers=TECH).status_code == 403
-    assert client.post(f"/api/workorders/{wid}/permit", json={"action": "request"}, headers=TECH).json()["permit"]
-    r = client.post(f"/api/workorders/{wid}/permit", json={"action": "approve"}, headers=LEADER).json()
-    assert r["status"] == "IN_REPAIR" and r["permit"]["approved_by"] == "P-STP-LD1"
+    assert r["status"] == "IN_REPAIR"
+    assert [t["to"] for t in r["transitions"]][-2:] == ["LOTO_DONE", "IN_REPAIR"]
 
-    a = client.post(f"/api/workorders/{wid}/agent", json={"message": "下一步？", "wait": True}, headers=TECH).json()
-    assert a["accepted"] and a["message_id"]
+    a = client.post(f"/api/workorders/{wid}/agent?wait=true", json={"message": "下一步？"}, headers=TECH).json()
+    assert a["accepted"] and a["message_id"] and a["message"]["id"] == a["message_id"]
+    assert a["message"]["role"] == "assistant" and a["message"]["content"] and a["message"]["safety_flags"]
     d = client.get(f"/api/workorders/{wid}").json()
     flagged = [m for m in d["agent_messages"] if m["safety_flags"]]
     assert flagged and keys(flagged[0]["safety_flags"][0], "step_index", "step_text", "probs", "max_p") is None
@@ -101,6 +109,15 @@ def test_contract_feed_jam_flow(client: TestClient):
         "text": "下滾輪亮帶油污，更換上下滾輪後送料誤差恢復 0.02 mm", "root_cause_confirmed": "feed_roller_wear"}).json()
     assert good["check"]["complete"] is True and good["check"]["kb_status"] == "draft"
     assert good["workorder"]["status"] == "CLOSED" and good["workorder"]["report"]["text"]
+    wb = good["workorder"]["writeback"]
+    assert wb["status"] == "draft" and wb["approve_url"] == f"/api/kb/cases/{wb['case_id']}/approve"
+    assert [c["case_id"] for c in client.get("/api/kb/cases?status=draft").json()] == [wb["case_id"]]
+    assert client.post(wb["approve_url"], json={}, headers=LEADER).status_code == 403     # 需要組長以上
+    ap = client.post(wb["approve_url"], json={}, headers=SUP).json()
+    assert ap["ok"] and ap["case"]["status"] == "approved" and ap["case"]["reviewed_by"] == ["P-STP-SV1"]
+    assert ap["ingested_chunks"] == 2
+    assert client.get(f"/api/workorders/{wid}").json()["writeback"]["status"] == "approved"
+    assert client.post(wb["approve_url"], json={}, headers=SUP).status_code == 409
 
     audit = client.get(f"/api/audit?workorder_id={wid}").json()
     assert {"rule_hit", "workorder_created", "notified"} <= {a["action"] for a in audit}
@@ -130,6 +147,27 @@ def test_contract_settings_and_overrides(client: TestClient):
     assert r.json()["ok"] and client.get(f"/api/workorders/{wid}").json()["status"] == "CANCELLED"
     assert client.post("/api/demo/reset", json={}).json()["ok"]
     assert client.get("/api/workorders").json() == []
+
+
+def test_contract_incident_report(client: TestClient):
+    client.post("/api/scenarios/person_zone/run", json={})
+    inc = next(i for i in client.get("/api/incidents").json() if i["type"] == "person_in_zone")
+    r = client.get(f"/api/incidents/{inc['id']}/report").json()
+    keys(r, "incident_id", "required", "criteria_met", "casualty", "status", "deadline", "remaining_s", "draft",
+         "instructions", "submitted_by", "submitted_at")
+    assert r["status"] == "draft" and r["instructions"][0].startswith("非經司法機關")
+    assert inc["incident_report"]["status"] == "draft"
+    url = f"/api/incidents/{inc['id']}/report/submit"
+    assert client.post(url, json={}, headers=TECH).status_code == 403
+    done = client.post(url, json={"draft": {"傷亡概況": "1 人手部挫傷住院觀察（模擬）"}}, headers=SUP).json()
+    assert done["status"] == "submitted" and done["draft"]["傷亡概況"].startswith("1 人")
+    assert client.post(url, json={}, headers=SUP).status_code == 409
+    # 沒有傷亡的 S3：主管標記 1 人輕傷 → 不需通報
+    client.post("/api/scenarios/weld_smoke/run", json={})
+    fire = next(i for i in client.get("/api/incidents").json() if i["type"] == "fire_suspected")
+    c = client.post(f"/api/incidents/{fire['id']}/casualty", json={"injured": 1}, headers=SUP).json()
+    assert c["required"] is False and c["status"] == "none"
+    assert client.post(f"/api/incidents/{fire['id']}/casualty", json={"injured": 1}, headers=LEADER).status_code == 403
 
 
 def test_contract_websocket(client: TestClient):

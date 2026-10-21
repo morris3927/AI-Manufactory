@@ -31,3 +31,22 @@ async def diagnosis(llm: LlmClient, incident: Any, top3: list[dict], sops: list[
     res = await llm.chat(build_messages(incident, top3, sops, machine_name), purpose="explain.diagnosis",
                          trace_id=incident.trace_id)
     return res.content.strip() or FALLBACK
+
+
+DEEP_SYSTEM = (
+    "你是工廠維修工程師，用繁體中文（台灣用語）做深入診斷。Jev 的根因機率信心不足（top-1 < 0.8），"
+    "請根據時間線、事實與相似案例（含第一判斷錯誤的案例）重新評估：1) 逐一說明前三名根因的支持與反對證據；"
+    "2) 指出最能區分它們的一項檢查（先做這一項）；3) 若都不符合，明說「可能是目錄外的新故障模式」。"
+    "一定提醒先依作業許可與 LOTO 上鎖；不可以說「可以復電」。250 字以內，不用 Markdown 標題。"
+)
+
+
+async def deep(llm: LlmClient, incident: Any, top3: list[dict], sops: list[Any], machine_name: str | None = None, *,
+               timeline: list[str], cases: list[str]) -> str:
+    """LM-2：Jev 信心不足時的深入診斷（派工已先送出，這段非同步補上）。"""
+    msgs = build_messages(incident, top3, sops, machine_name)
+    msgs[0] = {"role": "system", "content": DEEP_SYSTEM}
+    msgs[1]["content"] += ("\n時間線（近 10 分鐘）：\n" + "\n".join(timeline[-15:]) +
+                           "\n相似案例：\n" + "\n".join(f"- {c}" for c in cases[:5]))
+    res = await llm.chat(msgs, purpose="explain.deep", trace_id=incident.trace_id)
+    return res.content.strip() or FALLBACK

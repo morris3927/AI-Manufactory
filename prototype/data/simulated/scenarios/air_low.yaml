@@ -1,0 +1,18 @@
+id: air_low
+title: 場景 7：廠務空壓不足，兩條沖壓線同時停機（S3）
+duration_s: 12
+mes_script:
+  STP-L1-PR01:
+    - {t: 2, ramp: {air_pressure_bar: [5.8, 4.3], over_s: 3}}
+    - {t: 5, set: {state: alarm, alarm_code: AIR_LOW, spm: 0}}
+  STP-L1-FD02:
+    - {t: 5, set: {state: idle, feed_rate: 0}}            # 與 PR01 同一連動群組：一起停不會重複計算
+  STP-L2-PR03:
+    - {t: 2, ramp: {air_pressure_bar: [5.8, 4.4], over_s: 3}}
+    - {t: 6, set: {state: alarm, alarm_code: AIR_LOW, spm: 0}}
+expect:
+  t0: 6                                                    # 第二個連動群組停止
+  incident: {type: multi_stop, severity: S3, category: equipment, within_s: 2}
+  notify_within_s: 3
+  assignee_role: manager
+  llm_called: true

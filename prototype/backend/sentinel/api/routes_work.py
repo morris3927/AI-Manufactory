@@ -5,12 +5,15 @@ import functools
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import FileResponse
+from pydantic import BaseModel, Field
 from sqlmodel import col, select
 
-from ..db.models import Incident, Workorder
+from ..agent.repair_agent import message_dict
+from ..db.models import AgentMessage, Incident, Workorder
 from ..dispatch.closeout import submit_report
 from ..dispatch.workorder import PermissionDenied, TransitionError
 from ..schemas.api import ActorReq, AgentReq, CheckReq, PermitReq, ReassignReq, ReportReq
+from ..sim.roster import ROLE_RANK
 from .deps import base_url, get_rt, resolve_actor
 from .serialize import incident_out, workorder_detail, workorder_out
 
@@ -79,6 +82,69 @@ def keyframe(incident_id: str, request: Request) -> FileResponse:
     return FileResponse(path, media_type="image/jpeg")
 
 
+# ── S3 傷亡標記與職災通報（職安法第37條第2項）──────────────────
+class CasualtyReq(BaseModel):
+    person_id: str | None = None
+    deaths: int = Field(0, ge=0)
+    injured: int = Field(0, ge=0)
+    hospitalized: int = Field(0, ge=0)
+    designated: bool = False                 # 其他經中央主管機關指定公告之災害（由主管判斷）
+    note: str = ""
+
+
+class ReportSubmitReq(BaseModel):
+    person_id: str | None = None
+    draft: dict | None = None                # 主管修改後的欄位
+
+
+def _supervisor(request: Request, person_id: str | None, line: str | None) -> str:
+    rt = get_rt(request)
+    actor = resolve_actor(request, person_id, line)
+    p = rt.roster.person(actor)
+    if p is None or ROLE_RANK.get(p.role, 0) < ROLE_RANK["supervisor"]:
+        raise HTTPException(403, "需要組長（supervisor）以上身分")
+    return actor
+
+
+@router.post("/incidents/{incident_id}/casualty")
+async def mark_casualty(incident_id: str, body: CasualtyReq, request: Request) -> dict:
+    """主管標記傷亡；符合第37條第2項（死亡、罹災 3 人以上、需住院）才建立通報草稿與 8 小時倒數。"""
+    rt = get_rt(request)
+    inc = rt.db.get(Incident, incident_id)
+    if inc is None:
+        raise HTTPException(404, f"找不到 {incident_id}")
+    actor = _supervisor(request, body.person_id, inc.line)
+    inc, rep = await rt.reports.set_casualty(incident_id, deaths=body.deaths, injured=body.injured,
+                                             hospitalized=body.hospitalized, designated=body.designated,
+                                             actor=actor, note=body.note)
+    return rt.reports.status(inc, rep)
+
+
+@router.get("/incidents/{incident_id}/report")
+def get_report(incident_id: str, request: Request) -> dict:
+    rt = get_rt(request)
+    inc = rt.db.get(Incident, incident_id)
+    if inc is None:
+        raise HTTPException(404, f"找不到 {incident_id}")
+    return rt.reports.status(inc, rt.reports.get(incident_id))
+
+
+@router.post("/incidents/{incident_id}/report/submit")
+async def submit_incident_report(incident_id: str, request: Request, body: ReportSubmitReq | None = None) -> dict:
+    """由組長以上人員確認後送出（系統不會自動送出）。"""
+    rt = get_rt(request)
+    inc = rt.db.get(Incident, incident_id)
+    if inc is None:
+        raise HTTPException(404, f"找不到 {incident_id}")
+    actor = _supervisor(request, body.person_id if body else None, inc.line)
+    if rt.reports.get(incident_id) is None:
+        raise HTTPException(409, "此事件不符合職災通報條件，沒有通報草稿")
+    try:
+        return await rt.reports.submit(incident_id, actor, body.draft if body else None)
+    except ValueError as e:
+        raise HTTPException(409, str(e)) from e
+
+
 # ── Workorder ───────────────────────────────────────────────────
 @router.get("/workorders")
 def workorders(request: Request, status: str | None = None, line: str | None = None) -> list[dict]:
@@ -143,7 +209,10 @@ async def loto(wo_id: str, step: int, request: Request, body: CheckReq | None = 
 @_guard
 async def permit(wo_id: str, body: PermitReq, request: Request) -> dict:
     actor = resolve_actor(request, body.person_id, _line(request, wo_id))
-    await get_rt(request).workorders.permit(wo_id, actor, body.action)
+    rt = get_rt(request)
+    loto = rt.agent.ctx.loto_for(wo_id)
+    await rt.workorders.permit(wo_id, actor, body.action, loto_id=loto.loto_id,
+                               isolation_points=[str(e.get("id")) for e in loto.energy_sources])
     return _detail(request, wo_id)
 
 
@@ -173,13 +242,17 @@ async def report(wo_id: str, body: ReportReq, request: Request) -> dict:
 
 @router.post("/workorders/{wo_id}/agent")
 @_guard
-async def agent(wo_id: str, body: AgentReq, request: Request) -> dict:
-    """背景處理；使用者訊息與回覆都推送到 WebSocket 頻道 agent:{workorder_id}（message／delta／safety_gate）。"""
+async def agent(wo_id: str, body: AgentReq, request: Request, wait: bool = False) -> dict:
+    """預設背景處理，回覆推送到 WebSocket 頻道 agent:{workorder_id}（message／delta／safety_gate）。
+    wait=true（query 或 body）：同步等回覆，直接回傳 assistant 訊息（id、content、safety_flags…）。"""
     rt = get_rt(request)
     actor = resolve_actor(request, body.person_id, _line(request, wo_id))
     rt.workorders.get(wo_id)
-    if body.wait:
+    if wait or body.wait:
         reply = await rt.agent.handle(wo_id, body.message, actor)
-        return {"accepted": True, "message_id": reply.message_id, "reply": reply.model_dump()}
+        row = rt.db.get(AgentMessage, int(reply.message_id)) if reply.message_id else None
+        return {"accepted": True, "message_id": reply.message_id, "user_message_id": reply.user_message_id,
+                "message": message_dict(row) if row else None, "phase": reply.phase,
+                "supervisor_requested": reply.supervisor_requested, "safety_flags": row.safety_flags if row else []}
     rt.bus.track(rt.agent.handle(wo_id, body.message, actor), name=f"agent:{wo_id}")
     return {"accepted": True}

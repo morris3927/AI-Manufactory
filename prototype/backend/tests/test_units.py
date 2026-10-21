@@ -57,7 +57,7 @@ def test_summarize_state_redacts_images():
 
 def _j(**kw) -> EventJudgement:
     base = dict(category="equipment", category_conf=0.9, p_false_alarm=0.05, severity_score=1.0, jev_severity="S2",
-                root_cause_top3=[RootCause(id="a", label="a", p=0.7)], root_cause_conf=0.7)
+                root_cause_top3=[RootCause(id="a", label="a", p=0.85)], root_cause_conf=0.7)
     return EventJudgement(**(base | kw))
 
 
@@ -68,7 +68,8 @@ def test_gate_decide():
     assert decide("S2", _j(jev_severity="S3")).severity == "S3"          # 可以升級
     assert decide("S2", _j(p_false_alarm=0.95)).action == "log_only"
     assert decide("S3", _j(p_false_alarm=0.99)).action == "dispatch"      # S3 不能壓掉
-    assert decide("S2", _j(root_cause_conf=0.4)).diagnosis_mode == "llm_deep"
+    assert decide("S2", _j(root_cause_top3=[RootCause(id="a", label="a", p=0.7)])).diagnosis_mode == "llm_deep"
+    assert decide("S2", _j(root_cause_top3=[RootCause(id="a", label="a", p=0.8)])).diagnosis_mode == "jev_top3"
 
 
 # ── 影像 ────────────────────────────────────────────────────────
@@ -234,12 +235,15 @@ def test_next_role():
 # ── 狀態機 ──────────────────────────────────────────────────────
 def test_state_machine_table():
     S = WoStatus
-    eq = [S.OPEN, S.ASSIGNED, S.ACKED, S.LOTO_DONE, S.IN_REPAIR, S.PENDING_VERIFY, S.CLOSED]
+    eq = [S.OPEN, S.ASSIGNED, S.ACKED, S.PERMIT_REQUESTED, S.PERMIT_APPROVED, S.LOTO_DONE, S.IN_REPAIR,
+          S.PENDING_VERIFY, S.CLOSED]
     for a, b in zip(eq, eq[1:]):
         assert can_transition(a, b, "equipment", "P1" if b != S.ASSIGNED else "system"), (a, b)
     assert not can_transition(S.ACKED, S.CLOSED, "equipment", "P1")     # 設備類不能跳過 LOTO
     assert can_transition(S.ACKED, S.CLOSED, "safety", "P1")            # 安全類短流程
     assert not can_transition(S.ACKED, S.LOTO_DONE, "safety", "P1")
+    assert not can_transition(S.ACKED, S.PERMIT_REQUESTED, "safety", "P1")
+    assert not can_transition(S.PERMIT_APPROVED, S.IN_REPAIR, "equipment", "P1")   # 一定要經過 LOTO_DONE
     assert can_transition(S.ASSIGNED, S.ESCALATED, "equipment", "system")
     assert not can_transition(S.ASSIGNED, S.ESCALATED, "equipment", "P1")  # 只有系統會升級
     assert not can_transition(S.ASSIGNED, S.ACKED, "equipment", "system")  # 接單只能由人
@@ -260,18 +264,22 @@ async def test_workorder_flow_and_permissions(rt):
     with pytest.raises(TransitionError):
         await rt.workorders.transition(wo.id, "CLOSED", actor="P-STP-TC1")
     await rt.workorders.ack(wo.id, "P-STP-TC1")
+    with pytest.raises(TransitionError):                                  # 許可核准前不能直接跳 LOTO_DONE
+        await rt.workorders.transition(wo.id, "LOTO_DONE", actor="P-STP-TC1")
+    with pytest.raises(PermissionDenied):
+        await rt.workorders.transition(wo.id, "PERMIT_REQUESTED", actor="system")
+    await rt.workorders.permit(wo.id, "P-STP-TC1", "request")
+    with pytest.raises(PermissionDenied):
+        await rt.workorders.permit(wo.id, "P-STP-TC1", "approve")        # 技術員不能核准
+    await rt.workorders.permit(wo.id, "P-STP-LD1", "approve")
     loto = rt.agent.ctx.loto_for(wo.id)
     assert loto.loto_id == "LOTO-FEED-01"
     for s in loto.steps:
         wo, done = await rt.workorders.check_loto(wo.id, s.no, "P-STP-TC1", loto_id=loto.loto_id,
                                                   steps=[x.no for x in loto.steps])
-    assert done and wo.status == "LOTO_DONE"
-    with pytest.raises(PermissionDenied):
-        await rt.workorders.permit(wo.id, "P-STP-TC1", "approve")        # 技術員不能核准
-    wo = await rt.workorders.permit(wo.id, "P-STP-LD1", "approve")
-    assert wo.status == "IN_REPAIR"
+    assert done and wo.status == "IN_REPAIR"
     trs = [t.to_status for t in rt.workorders.transitions(wo.id)]
-    assert trs == ["OPEN", "ASSIGNED", "ACKED", "LOTO_DONE", "IN_REPAIR"]
+    assert trs == ["OPEN", "ASSIGNED", "ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED", "LOTO_DONE", "IN_REPAIR"]
 
 
 # ── 知識庫 ──────────────────────────────────────────────────────
@@ -378,3 +386,83 @@ def test_mes_signals_and_events(settings):
     assert {"stop_angle_deg", "air_pressure_bar", "light_curtain_status", "stroke_count_since_regrind"} <= set(press[0].payload)
     assert press[-1].payload["stroke_count_since_regrind"] > press[0].payload["stroke_count_since_regrind"]
     assert [e.payload for e in evts if e.type == "coil_change"] == [{"coil_id": "C-1"}]
+
+
+def test_multi_stop_excludes_interlocked_pair(settings):
+    from sentinel.config import Thresholds
+
+    plant = Plant.load(settings.path("plant"))
+    fn = load_rules()["R-PLANT-MULTI-STOP"].fn
+
+    def run(stop: list[str]):
+        clock = ManualClock(START)
+        w = Windows(clock, Thresholds(), plant=plant)
+        for t in range(0, 8):
+            clock.set(t)
+            for mid in ("STP-L1-PR01", "STP-L1-FD02", "STP-L2-PR03"):
+                down = mid in stop and t >= 5
+                w.ingest(Event(ts=clock.now(), topic=Topic.MES, source="t", machine_id=mid, type="mes_log",
+                               payload={"state": "alarm" if down else "running", "air_pressure_bar": 4.2 if down else 5.8}))
+        return {m: fn(w, m) for m in ("STP-L1-PR01", "STP-L1-FD02", "STP-L2-PR03")}
+
+    assert not any(run(["STP-L1-PR01", "STP-L1-FD02"]).values())          # 同一連動群組 → 不是 S3
+    hits = {m: f for m, f in run(["STP-L1-PR01", "STP-L2-PR03"]).items() if f}
+    assert list(hits) == ["STP-L1-PR01"] and hits["STP-L1-PR01"].facts["groups_stopped"] == 2   # 只開一張
+
+
+def test_casualty_criteria():
+    from sentinel.dispatch.reports import criteria_met
+
+    assert criteria_met({"deaths": 1}) == ["死亡"]
+    assert criteria_met({"injured": 2}) == []
+    assert criteria_met({"injured": 3}) == ["罹災 3 人以上"]
+    assert criteria_met({"injured": 1, "hospitalized": 1}) == ["罹災需住院"]
+    assert criteria_met(None) == []
+
+
+def test_gate_reasons_and_calibration():
+    import json
+
+    from sentinel.eval.calibrate_gate import HERE, choose, evaluate, load_set
+    from sentinel.jev.gate import gate_reasons
+
+    th = {"needs_loto": 0.3, "enters_danger_zone": 0.55, "high_voltage": 0.45, "energized": 0.55}
+    assert gate_reasons({"needs_loto": 0.86, "enters_danger_zone": 0.2}, th, loto_done=True) == []
+    assert gate_reasons({"needs_loto": 0.86, "enters_danger_zone": 0.2}, th, loto_done=False) == ["needs_loto"]
+    assert gate_reasons({"needs_loto": 0.1, "enters_danger_zone": 0.9}, th, loto_done=True) == ["enters_danger_zone"]
+    assert len(load_set()) >= 30
+    cache = HERE / "gate_calibration.json"
+    if cache.exists():                                   # 用上次真實 Jev 的機率重算：召回率必須 1.0
+        rows = json.loads(cache.read_text())["rows"]
+        chosen, m = choose(rows)
+        assert m["recall"] == 1.0
+        assert evaluate(rows, {k: th[k] for k in chosen})["recall"] == 1.0   # config.yaml 的門檻也要 1.0
+
+
+def test_yolo_class_names_2class_and_sh17(tmp_path):
+    from sentinel.vision.ppe import YoloPpeDetector
+
+    d = YoloPpeDetector(tmp_path / "none.pt", device="cpu")
+    assert [d.normalize(n) for n in ("head", "helmet")] == ["head", "helmet"]            # 自訓 2 類
+    sh17 = ["person", "ear", "ear-mufs", "face", "face-guard", "face-mask", "foot", "tool", "glasses", "gloves",
+            "helmet", "hands", "head", "medical-suit", "shoes", "safety-suit", "safety-vest"]
+    assert {n: d.normalize(n) for n in sh17 if d.normalize(n)} == {"person": "person", "helmet": "helmet", "head": "head"}
+    assert d.normalize("NO-Hardhat") == "head" and d.normalize("Hardhat") == "helmet"
+    assert not YoloPpeDetector.available(tmp_path / "none.pt")
+
+
+async def test_jev_retries_once_on_400():
+    import httpx
+
+    from sentinel.jev.client import JevClient
+
+    calls = []
+
+    def handler(req):
+        calls.append(1)
+        return httpx.Response(400, json={"error": "bad image"}) if len(calls) == 1 else httpx.Response(200, json=JEV_SAMPLE)
+
+    c = JevClient(api_key="k", url="https://x/decisions", model="m", transport=httpx.MockTransport(handler))
+    r = await c.ask({}, {"is_bug": {"type": "noul"}}, purpose="t")
+    assert r.noul("is_bug") == 0.96 and len(calls) == 2 and c.retries == 1
+    await c.aclose()

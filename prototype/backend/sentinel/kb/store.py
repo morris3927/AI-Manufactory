@@ -43,21 +43,34 @@ class HashEmbedder:
 
 
 class SentenceTransformerEmbedder:
+    """多語 embedding（預設 BAAI/bge-m3；備選 intfloat/multilingual-e5-small，e5 系列會自動加 query:／passage: 前綴）。"""
+
     def __init__(self, model: str = "BAAI/bge-m3"):
         self.model_name = model
         self.name = model.split("/")[-1]
         self._model = None
+        self._e5 = "e5" in model.lower()
 
-    def embed(self, texts: list[str]) -> list[list[float]]:
+    def _load(self):
         if self._model is None:
             from sentence_transformers import SentenceTransformer  # 延遲載入
 
             self._model = SentenceTransformer(self.model_name, device="cpu")
-        return self._model.encode(texts, normalize_embeddings=True).tolist()
+        return self._model
+
+    def embed(self, texts: list[str]) -> list[list[float]]:
+        if self._e5:
+            texts = [f"passage: {t}" for t in texts]
+        return self._load().encode(texts, normalize_embeddings=True, batch_size=16, show_progress_bar=False).tolist()
+
+    def embed_query(self, texts: list[str]) -> list[list[float]]:
+        if self._e5:
+            return self._load().encode([f"query: {t}" for t in texts], normalize_embeddings=True).tolist()
+        return self.embed(texts)
 
 
 def get_embedder(kind: str = "auto", model: str = "BAAI/bge-m3") -> Embedder:
-    if kind in ("auto", "bge-m3", "sentence-transformers"):
+    if kind in ("auto", "bge-m3", "e5", "sentence-transformers"):
         try:
             import sentence_transformers  # noqa: F401
 
@@ -107,7 +120,8 @@ class VectorStore:
         col = self.collection(name)
         if col.count() == 0:
             return []
-        res = col.query(query_embeddings=self.embedder.embed([text]), n_results=min(k, col.count()),
+        embed_q = getattr(self.embedder, "embed_query", self.embedder.embed)
+        res = col.query(query_embeddings=embed_q([text]), n_results=min(k, col.count()),
                         where=where or None)
         out = []
         for i, cid in enumerate(res["ids"][0]):

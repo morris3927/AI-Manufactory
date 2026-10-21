@@ -62,10 +62,11 @@ class Chunk(BaseModel):
     distance: float | None = None
 
 
-# knowledge/loto 還沒有對應機型時的通用檢查表（依設施規則第 57 條的五個要素；模擬資料）
+# knowledge/loto 還沒有對應機型時的通用檢查表（依設施規則第 57 條；模擬資料）
 DEFAULT_LOTO = LotoChecklist(
     loto_id="LOTO-GENERIC-00", machine_type="*", is_default=True, permit_required=False,
-    legal_basis=["設施規則第57條", "設施規則第254條"],
+    legal_basis=["設施規則第57條（停機、上鎖掛牌、作業許可、殘壓處理）",
+                 "由原上鎖人親自取下自己的鎖（參考 OSHA 29 CFR 1910.147(e)(3)；電路作業依設施規則第254條確認無感電之虞後才送電）"],
     steps=[
         LotoStep(no=1, action="通知操作員與受影響人員，說明將停機維修", check="簽名"),
         LotoStep(no=2, action="以正常程序停機，停止送料", check="目視"),
@@ -126,14 +127,18 @@ class KnowledgeBase:
         if machine_type:
             where["$and"].append({"machine_type": machine_type})
         try:
-            hits = self.store.query("cases", q, k=k, where=where)
+            hits = self.store.query("cases", q, k=k * 4, where=where)
             if not hits and machine_type:
-                hits = self.store.query("cases", q, k=k, where={"$and": where["$and"][:2]})
+                hits = self.store.query("cases", q, k=k * 4, where={"$and": where["$and"][:2]})
         except Exception:
             log.exception("案例檢索失敗")
             return []
+        # 語意相似之外，同一台機台、同一種事件的案例排前面（結案回寫的真實紀錄因此會排第一）
+        mid = getattr(incident, "machine_id", None)
+        hits.sort(key=lambda h: (h["metadata"].get("machine_id") != mid,
+                                 h["metadata"].get("trigger_type") != incident.type, h.get("distance") or 0))
         out = []
-        for h in hits:
+        for h in hits[:k]:
             m = h["metadata"]
             out.append(CaseSummary(case_id=m.get("case_id", h["chunk_id"]), failure_mode_id=m.get("failure_mode_id"),
                                    hypothesis_correct=m.get("hypothesis_correct"), short=h["text"][:300],

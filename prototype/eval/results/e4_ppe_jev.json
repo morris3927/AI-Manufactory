@@ -1,0 +1,570 @@
+{
+  "description": "Jev 1.14 V1 安全帽確認（SH17 val 頭部裁切）與 Box 定位（整張圖）",
+  "dataset": {
+    "name": "SH17 (Safe Human dataset, 17 classes)",
+    "split": "val",
+    "license": "CC BY-NC-SA 4.0（影像來自 Pexels）",
+    "seed": 20261021,
+    "n_crops": 120,
+    "n_helmet": 60,
+    "n_no_helmet": 60,
+    "n_full": 20,
+    "labeling": "head(12) 與 helmet(10) 框重疊／頭框面積 ≥ 0.3 → 有戴；< 0.05 → 沒戴；中間值不取",
+    "crop": "頭框外擴（左右 0.8w、上 0.6h、下 1.5h），經正式 vision.to_part 縮放（長邊 ≤ 768、每邊 ≥ 256）",
+    "face_blur": "未做（公開 Pexels 照片）；正式流程會先模糊臉部，可能影響結果"
+  },
+  "errors": [
+    "prod:helmet_01.jpg:http 400",
+    "wears:helmet_01.jpg:http 400",
+    "prod:helmet_16.jpg:http 400",
+    "wears:helmet_16.jpg:http 400",
+    "prod:helmet_35.jpg:http 400",
+    "wears:helmet_35.jpg:http 400",
+    "prod:helmet_39.jpg:http 400",
+    "wears:helmet_39.jpg:http 400",
+    "prod:helmet_40.jpg:http 400",
+    "wears:helmet_40.jpg:http 400",
+    "prod:helmet_45.jpg:http 400",
+    "wears:helmet_45.jpg:http 400",
+    "prod:helmet_47.jpg:http 400",
+    "wears:helmet_47.jpg:http 400",
+    "prod:no_helmet_50.jpg:http 400",
+    "wears:no_helmet_50.jpg:http 400",
+    "prod:helmet_01.jpg:http 400",
+    "wears:helmet_01.jpg:http 400",
+    "prod:helmet_16.jpg:http 400",
+    "wears:helmet_16.jpg:http 400",
+    "prod:helmet_35.jpg:http 400",
+    "wears:helmet_35.jpg:http 400",
+    "prod:helmet_39.jpg:http 400",
+    "wears:helmet_39.jpg:http 400",
+    "prod:helmet_40.jpg:http 400",
+    "wears:helmet_40.jpg:http 400",
+    "prod:helmet_45.jpg:http 400",
+    "wears:helmet_45.jpg:http 400",
+    "prod:helmet_47.jpg:http 400",
+    "wears:helmet_47.jpg:http 400",
+    "prod:no_helmet_50.jpg:http 400",
+    "wears:no_helmet_50.jpg:http 400",
+    "prodfix:no_helmet_50.jpg:http 400",
+    "wearsfix:no_helmet_50.jpg:http 400",
+    "prod:helmet_01.jpg:http 400",
+    "wears:helmet_01.jpg:http 400",
+    "prod:helmet_16.jpg:http 400",
+    "wears:helmet_16.jpg:http 400",
+    "prod:helmet_35.jpg:http 400",
+    "wears:helmet_35.jpg:http 400",
+    "prod:helmet_39.jpg:http 400",
+    "wears:helmet_39.jpg:http 400",
+    "prod:helmet_40.jpg:http 400",
+    "wears:helmet_40.jpg:http 400",
+    "prod:helmet_45.jpg:http 400",
+    "wears:helmet_45.jpg:http 400",
+    "prod:helmet_47.jpg:http 400",
+    "wears:helmet_47.jpg:http 400",
+    "prod:no_helmet_50.jpg:http 400",
+    "wears:no_helmet_50.jpg:http 400"
+  ],
+  "jev_real_min_side_px": {
+    "documented": 256,
+    "measured": 280,
+    "probe": "隨機雜訊 JPEG：280×419、280×600、288×288 → 200；279×600、271×419、256×256、256×1000 → 400"
+  },
+  "prod": {
+    "n": 120,
+    "threshold": 0.5,
+    "tp": 59,
+    "fp": 0,
+    "fn": 1,
+    "tn": 60,
+    "accuracy": {
+      "k": 119,
+      "n": 120,
+      "rate": 0.992,
+      "ci95": [
+        0.954,
+        0.999
+      ]
+    },
+    "precision_no_helmet": 1.0,
+    "recall_no_helmet": 0.983,
+    "specificity": 1.0,
+    "auroc": 1.0,
+    "http_400_as_production": {
+      "failed": 8,
+      "sent": 120,
+      "rate": 0.067,
+      "note": "正式 to_part（MIN_SIDE=256）送出時被拒；重送時放大到短邊 288（variant=*fix）後全部成功"
+    },
+    "n_upscaled_retry": 8,
+    "latency_ms": {
+      "n": 120,
+      "mean": 493.3,
+      "p50": 481.88,
+      "p95": 587.04,
+      "max": 726.3
+    },
+    "cost_usd": {
+      "total": 0.007035,
+      "per_call": 5.86e-05
+    },
+    "input_tokens_mean": 1396.0,
+    "question": "person_image 是作業人員裁切圖（臉部已模糊）。圖中人員頭部是否沒有配戴安全帽？",
+    "p_in_work_zone_mean": 0.661,
+    "errors_list": [
+      {
+        "file": "no_helmet_50.jpg",
+        "label": "no_helmet",
+        "p_no_helmet": 0.49
+      }
+    ]
+  },
+  "wears": {
+    "n": 120,
+    "threshold": 0.5,
+    "tp": 60,
+    "fp": 0,
+    "fn": 0,
+    "tn": 60,
+    "accuracy": {
+      "k": 120,
+      "n": 120,
+      "rate": 1.0,
+      "ci95": [
+        0.969,
+        1
+      ]
+    },
+    "precision_no_helmet": 1.0,
+    "recall_no_helmet": 1.0,
+    "specificity": 1.0,
+    "auroc": 1.0,
+    "http_400_as_production": {
+      "failed": 8,
+      "sent": 120,
+      "rate": 0.067,
+      "note": "正式 to_part（MIN_SIDE=256）送出時被拒；重送時放大到短邊 288（variant=*fix）後全部成功"
+    },
+    "n_upscaled_retry": 8,
+    "latency_ms": {
+      "n": 120,
+      "mean": 489.0,
+      "p50": 474.22,
+      "p95": 586.63,
+      "max": 704.0
+    },
+    "cost_usd": {
+      "total": 0.006729,
+      "per_call": 5.61e-05
+    },
+    "input_tokens_mean": 1335.0,
+    "question": "圖中人員頭部是否戴有安全帽",
+    "errors_list": []
+  },
+  "box": {
+    "question": "未戴安全帽的人員頭部",
+    "n": 20,
+    "iou_mean": 0.593,
+    "iou_median": 0.616,
+    "iou_ge_0_5": {
+      "k": 14,
+      "n": 20,
+      "rate": 0.7,
+      "ci95": [
+        0.481,
+        0.855
+      ]
+    },
+    "iou_ge_0_3": {
+      "k": 18,
+      "n": 20,
+      "rate": 0.9,
+      "ci95": [
+        0.699,
+        0.972
+      ]
+    },
+    "center_in_gt": {
+      "k": 16,
+      "n": 20,
+      "rate": 0.8,
+      "ci95": [
+        0.584,
+        0.919
+      ]
+    },
+    "latency_ms": {
+      "n": 20,
+      "mean": 536.8,
+      "p50": 494.09,
+      "p95": 674.66,
+      "max": 1167.9
+    },
+    "cost_usd": {
+      "total": 0.001819,
+      "per_call": 9.1e-05
+    },
+    "per_image": [
+      {
+        "file": "full_01.jpg",
+        "iou": 0.659,
+        "pred": [
+          0.54,
+          0.18,
+          0.66,
+          0.35
+        ],
+        "gt": [
+          0.536,
+          0.19,
+          0.635,
+          0.371
+        ],
+        "center_in_gt": true,
+        "conf": 0.7
+      },
+      {
+        "file": "full_00.jpg",
+        "iou": 0.545,
+        "pred": [
+          0.42,
+          0.24,
+          0.66,
+          0.42
+        ],
+        "gt": [
+          0.415,
+          0.259,
+          0.674,
+          0.515
+        ],
+        "center_in_gt": true,
+        "conf": 0.52
+      },
+      {
+        "file": "full_02.jpg",
+        "iou": 0.194,
+        "pred": [
+          0.23,
+          0.01,
+          0.36,
+          0.98
+        ],
+        "gt": [
+          0.236,
+          0.009,
+          0.352,
+          0.222
+        ],
+        "center_in_gt": false,
+        "conf": 0.37
+      },
+      {
+        "file": "full_03.jpg",
+        "iou": 0.675,
+        "pred": [
+          0.02,
+          0.05,
+          0.68,
+          0.44
+        ],
+        "gt": [
+          0.026,
+          0.083,
+          0.678,
+          0.573
+        ],
+        "center_in_gt": true,
+        "conf": 0.43
+      },
+      {
+        "file": "full_04.jpg",
+        "iou": 0.816,
+        "pred": [
+          0.62,
+          0.02,
+          0.99,
+          0.4
+        ],
+        "gt": [
+          0.636,
+          0.0,
+          1.0,
+          0.437
+        ],
+        "center_in_gt": true,
+        "conf": 0.6
+      },
+      {
+        "file": "full_05.jpg",
+        "iou": 0.795,
+        "pred": [
+          0.01,
+          0.0,
+          0.24,
+          0.26
+        ],
+        "gt": [
+          0.0,
+          0.0,
+          0.201,
+          0.26
+        ],
+        "center_in_gt": true,
+        "conf": 0.7
+      },
+      {
+        "file": "full_06.jpg",
+        "iou": 0.795,
+        "pred": [
+          0.29,
+          0.25,
+          0.65,
+          0.58
+        ],
+        "gt": [
+          0.315,
+          0.232,
+          0.686,
+          0.585
+        ],
+        "center_in_gt": true,
+        "conf": 0.4
+      },
+      {
+        "file": "full_07.jpg",
+        "iou": 0.501,
+        "pred": [
+          0.34,
+          0.11,
+          0.59,
+          0.25
+        ],
+        "gt": [
+          0.364,
+          0.111,
+          0.53,
+          0.316
+        ],
+        "center_in_gt": true,
+        "conf": 0.56
+      },
+      {
+        "file": "full_08.jpg",
+        "iou": 0.605,
+        "pred": [
+          0.44,
+          0.13,
+          0.65,
+          0.29
+        ],
+        "gt": [
+          0.444,
+          0.162,
+          0.631,
+          0.322
+        ],
+        "center_in_gt": true,
+        "conf": 0.25
+      },
+      {
+        "file": "full_09.jpg",
+        "iou": 0.25,
+        "pred": [
+          0.3,
+          0.23,
+          0.42,
+          0.91
+        ],
+        "gt": [
+          0.306,
+          0.232,
+          0.407,
+          0.433
+        ],
+        "center_in_gt": false,
+        "conf": 0.46
+      },
+      {
+        "file": "full_10.jpg",
+        "iou": 0.484,
+        "pred": [
+          0.26,
+          0.01,
+          0.76,
+          0.14
+        ],
+        "gt": [
+          0.353,
+          0.0,
+          0.706,
+          0.214
+        ],
+        "center_in_gt": true,
+        "conf": 0.33
+      },
+      {
+        "file": "full_11.jpg",
+        "iou": 0.83,
+        "pred": [
+          0.42,
+          0.04,
+          0.63,
+          0.42
+        ],
+        "gt": [
+          0.421,
+          0.041,
+          0.603,
+          0.44
+        ],
+        "center_in_gt": true,
+        "conf": 0.68
+      },
+      {
+        "file": "full_12.jpg",
+        "iou": 0.457,
+        "pred": [
+          0.25,
+          0.04,
+          0.39,
+          0.3
+        ],
+        "gt": [
+          0.247,
+          0.137,
+          0.371,
+          0.351
+        ],
+        "center_in_gt": true,
+        "conf": 0.7
+      },
+      {
+        "file": "full_13.jpg",
+        "iou": 0.627,
+        "pred": [
+          0.73,
+          0.49,
+          0.82,
+          0.66
+        ],
+        "gt": [
+          0.743,
+          0.493,
+          0.837,
+          0.685
+        ],
+        "center_in_gt": true,
+        "conf": 0.52
+      },
+      {
+        "file": "full_15.jpg",
+        "iou": 0.523,
+        "pred": [
+          0.7,
+          0.02,
+          0.99,
+          0.99
+        ],
+        "gt": [
+          0.703,
+          0.0,
+          1.0,
+          0.552
+        ],
+        "center_in_gt": true,
+        "conf": 0.27
+      },
+      {
+        "file": "full_16.jpg",
+        "iou": 0.785,
+        "pred": [
+          0.58,
+          0.03,
+          0.81,
+          0.34
+        ],
+        "gt": [
+          0.588,
+          0.041,
+          0.785,
+          0.36
+        ],
+        "center_in_gt": true,
+        "conf": 0.71
+      },
+      {
+        "file": "full_17.jpg",
+        "iou": 0.738,
+        "pred": [
+          0.36,
+          0.29,
+          0.65,
+          0.53
+        ],
+        "gt": [
+          0.374,
+          0.301,
+          0.667,
+          0.572
+        ],
+        "center_in_gt": true,
+        "conf": 0.56
+      },
+      {
+        "file": "full_14.jpg",
+        "iou": 0.345,
+        "pred": [
+          0.53,
+          0.19,
+          0.73,
+          0.78
+        ],
+        "gt": [
+          0.531,
+          0.189,
+          0.695,
+          0.439
+        ],
+        "center_in_gt": false,
+        "conf": 0.41
+      },
+      {
+        "file": "full_18.jpg",
+        "iou": 0.864,
+        "pred": [
+          0.35,
+          0.2,
+          0.62,
+          0.44
+        ],
+        "gt": [
+          0.354,
+          0.204,
+          0.635,
+          0.426
+        ],
+        "center_in_gt": true,
+        "conf": 0.37
+      },
+      {
+        "file": "full_19.jpg",
+        "iou": 0.377,
+        "pred": [
+          0.25,
+          0.03,
+          0.45,
+          0.98
+        ],
+        "gt": [
+          0.256,
+          0.028,
+          0.469,
+          0.413
+        ],
+        "center_in_gt": false,
+        "conf": 0.57
+      }
+    ]
+  }
+}

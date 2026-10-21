@@ -15,11 +15,13 @@ from .config import Settings, load_settings
 from .db.seed import seed_all
 from .db.session import Database
 from .dispatch.notifier import Notifier, make_notifier
+from .dispatch.reports import ReportService
 from .dispatch.service import DispatchService
 from .dispatch.workorder import WorkorderService
 from .jev.client import JevClient
 from .kb.retrieve import KnowledgeBase
 from .kb.store import VectorStore, get_embedder
+from .kb.writeback import CaseWriteback
 from .llm.client import LlmClient
 from .rules.engine import IncidentManager, RuleEngine, load_rules
 from .rules.escalation import EscalationService
@@ -67,13 +69,15 @@ class Runtime:
             except Exception:
                 log.exception("Chroma 無法啟動，案例檢索停用")
         self.kb = KnowledgeBase(s.path("knowledge"), store, allow_draft=s.kb.allow_draft)
+        self.writeback = CaseWriteback(self.kb, s.path("drafts"))
 
-        self.windows = Windows(self.clock, s.thresholds)
+        self.windows = Windows(self.clock, s.thresholds, plant=self.plant)
         self.rules = RuleEngine(self.plant, self.windows, load_rules())
         self.incidents = IncidentManager(db=self.db, bus=self.bus, clock=self.clock, audit=self.audit,
                                          plant=self.plant, thresholds=s.thresholds)
         self.notifier = notifier or make_notifier(s.secret(s.secrets.discord_bot_token), s.discord.channels)
-        self.workorders = WorkorderService(db=self.db, bus=self.bus, clock=self.clock, audit=self.audit)
+        self.workorders = WorkorderService(db=self.db, bus=self.bus, clock=self.clock, audit=self.audit,
+                                           require_permit=s.workflow.require_permit)
         self.dispatch = DispatchService(db=self.db, bus=self.bus, clock=self.clock, audit=self.audit, settings=s,
                                         plant=self.plant, roster=self.roster, kb=self.kb, jev=self.jev, llm=self.llm,
                                         notifier=self.notifier, workorders=self.workorders, windows=self.windows)
@@ -82,7 +86,7 @@ class Runtime:
         self.agent = RepairAgent(AgentContext(db=self.db, bus=self.bus, clock=self.clock, audit=self.audit, kb=self.kb,
                                               llm=self.llm, jev=self.jev, windows=self.windows, plant=self.plant,
                                               workorders=self.workorders, dispatch=self.dispatch,
-                                              thresholds=s.thresholds))
+                                              thresholds=s.thresholds, require_permit=s.workflow.require_permit))
 
         videos_root = s.path("videos_root")
         self.cameras = {c.id: VirtualCamera(c, self.bus, self.clock, videos_root, fps=s.vision.fps)
@@ -90,6 +94,7 @@ class Runtime:
         self.mes = MesSimulator(self.plant, self.bus, self.clock, seed=s.mes.seed)
         self.vision = VisionService(bus=self.bus, clock=self.clock, plant=self.plant, settings=s, jev=self.jev,
                                     cameras=self.cameras, ppe_detector=None)
+        self.reports = ReportService(self)
         self.engine = SimEngine(self)
         self.incidents.on_opened = self.save_keyframe
         self._bg: list[asyncio.Task] = []
@@ -101,8 +106,11 @@ class Runtime:
 
     # ── 偵測器 ─────────────────────────────────────────────────
     def make_ppe_detector(self, sc: Scenario | None) -> PpeDetector | None:
+        """有 models/ppe.pt 且 PPE 攝影機播的是真實影片 → YOLO；合成畫面（影片還沒備齊）→ 劇本重播的偵測結果。"""
         weights = self.settings.base_dir / self.settings.vision.yolo_weights
-        if YoloPpeDetector.available(weights):
+        ppe_cams = [c for c in self.cameras.values() if "ppe" in c.cam.detectors]
+        real_video = any(c.synthetic is None and c.online for c in ppe_cams)
+        if YoloPpeDetector.available(weights) and (real_video or not (sc and sc.sim_detections)):
             if not isinstance(self.vision.ppe_detector, YoloPpeDetector):
                 return YoloPpeDetector(weights, self.settings.vision.yolo_device, self.settings.vision.yolo_classes)
             return self.vision.ppe_detector

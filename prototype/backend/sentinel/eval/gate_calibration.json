@@ -1,0 +1,396 @@
+{
+ "questions_ver": "gate-2026-10-21.2",
+ "thresholds": {
+  "enters_danger_zone": 0.55,
+  "high_voltage": 0.45,
+  "energized": 0.55
+ },
+ "metrics": {
+  "tp": 18,
+  "fp": 0,
+  "fn": 0,
+  "tn": 14,
+  "recall": 1.0,
+  "precision": 1.0
+ },
+ "baseline_0.3": {
+  "tp": 18,
+  "fp": 2,
+  "fn": 0,
+  "tn": 12,
+  "recall": 1.0,
+  "precision": 0.9
+ },
+ "rows": [
+  {
+   "id": "G01",
+   "machine_type": "servo_press",
+   "danger_zone": true,
+   "text": "手要進入上下模之間前，滑塊停在上死點並放入安全塊，再清除模內雙料與異物",
+   "p": {
+    "enters_danger_zone": 0.86,
+    "high_voltage": 0.04,
+    "energized": 0.48,
+    "needs_loto": 0.77
+   }
+  },
+  {
+   "id": "G02",
+   "machine_type": "servo_roll_feeder",
+   "danger_zone": true,
+   "text": "伸手取出卡在送料口的板材",
+   "p": {
+    "enters_danger_zone": 0.96,
+    "high_voltage": 0.05,
+    "energized": 0.07,
+    "needs_loto": 0.93
+   }
+  },
+  {
+   "id": "G03",
+   "machine_type": "servo_press",
+   "danger_zone": true,
+   "text": "清除模內雙料、料頭重疊與異物；檢查沖頭、模仁、脫料板、導正銷有無崩刃、壓傷或變形",
+   "p": {
+    "enters_danger_zone": 0.78,
+    "high_voltage": 0.06,
+    "energized": 0.23,
+    "needs_loto": 0.9
+   }
+  },
+  {
+   "id": "G04",
+   "machine_type": "servo_roll_feeder",
+   "danger_zone": true,
+   "text": "清潔送料滾輪與料帶，去除滾輪表面的油污與鐵屑",
+   "p": {
+    "enters_danger_zone": 0.74,
+    "high_voltage": 0.07,
+    "energized": 0.17,
+    "needs_loto": 0.9
+   }
+  },
+  {
+   "id": "G05",
+   "machine_type": "servo_roll_feeder",
+   "danger_zone": true,
+   "text": "更換磨損的上下送料滾輪與滾輪軸承，依對稱順序拆卸",
+   "p": {
+    "enters_danger_zone": 0.85,
+    "high_voltage": 0.09,
+    "energized": 0.07,
+    "needs_loto": 0.96
+   }
+  },
+  {
+   "id": "G06",
+   "machine_type": "servo_press",
+   "danger_zone": true,
+   "text": "清除廢料滑道與模具內堆積的廢料",
+   "p": {
+    "enters_danger_zone": 0.75,
+    "high_voltage": 0.06,
+    "energized": 0.15,
+    "needs_loto": 0.91
+   }
+  },
+  {
+   "id": "G07",
+   "machine_type": "servo_press",
+   "danger_zone": true,
+   "text": "在模具上檢查沖頭端面粗糙度、刃口磨耗與沖孔間隙",
+   "p": {
+    "enters_danger_zone": 0.73,
+    "high_voltage": 0.05,
+    "energized": 0.25,
+    "needs_loto": 0.83
+   }
+  },
+  {
+   "id": "G08",
+   "machine_type": "servo_roll_feeder",
+   "danger_zone": true,
+   "text": "把手伸進整平輥之間，摸摸看有沒有殘留的鐵屑",
+   "p": {
+    "enters_danger_zone": 0.97,
+    "high_voltage": 0.04,
+    "energized": 0.16,
+    "needs_loto": 0.95
+   }
+  },
+  {
+   "id": "G09",
+   "machine_type": "servo_roll_feeder",
+   "high_voltage": true,
+   "text": "由電氣合格人員打開電控箱，量測伺服驅動器直流母線電壓確認低於 50 V",
+   "p": {
+    "enters_danger_zone": 0.25,
+    "high_voltage": 0.99,
+    "energized": 0.56,
+    "needs_loto": 0.77
+   }
+  },
+  {
+   "id": "G10",
+   "machine_type": "servo_press",
+   "high_voltage": true,
+   "text": "更換閉模高度感測器並重新接線、校正零點",
+   "p": {
+    "enters_danger_zone": 0.64,
+    "high_voltage": 0.96,
+    "energized": 0.6,
+    "needs_loto": 0.94
+   }
+  },
+  {
+   "id": "G11",
+   "machine_type": "servo_roll_feeder",
+   "high_voltage": true,
+   "text": "檢查送料機驅動器端子台螺絲是否鬆動並重新鎖緊",
+   "p": {
+    "enters_danger_zone": 0.53,
+    "high_voltage": 0.95,
+    "energized": 0.09,
+    "needs_loto": 0.84
+   }
+  },
+  {
+   "id": "G12",
+   "machine_type": "servo_roll_feeder",
+   "high_voltage": true,
+   "text": "打開驅動器外殼，檢查散熱風扇與濾網是否積塵",
+   "p": {
+    "enters_danger_zone": 0.47,
+    "high_voltage": 0.96,
+    "energized": 0.08,
+    "needs_loto": 0.89
+   }
+  },
+  {
+   "id": "G13",
+   "machine_type": "servo_roll_feeder",
+   "energized": true,
+   "text": "以寸動方式低速送料 20 次，量測實際送料長度並記錄誤差趨勢",
+   "p": {
+    "enters_danger_zone": 0.39,
+    "high_voltage": 0.07,
+    "energized": 0.96,
+    "needs_loto": 0.35
+   }
+  },
+  {
+   "id": "G14",
+   "machine_type": "servo_press",
+   "energized": true,
+   "text": "以寸動確認離合器結合、滑塊動作正常，並聽有無漏氣聲",
+   "p": {
+    "enters_danger_zone": 0.34,
+    "high_voltage": 0.08,
+    "energized": 0.96,
+    "needs_loto": 0.44
+   }
+  },
+  {
+   "id": "G15",
+   "machine_type": "servo_press",
+   "energized": true,
+   "text": "由原上鎖人只暫時解除模具噴油器的電源與氣源，以手動噴油測試觀察噴嘴霧化",
+   "p": {
+    "enters_danger_zone": 0.7,
+    "high_voltage": 0.41,
+    "energized": 0.76,
+    "needs_loto": 0.67
+   }
+  },
+  {
+   "id": "G16",
+   "machine_type": "servo_press",
+   "energized": true,
+   "text": "以單動試沖 5 次，量測噸位峰值與送料長度",
+   "p": {
+    "enters_danger_zone": 0.47,
+    "high_voltage": 0.09,
+    "energized": 0.97,
+    "needs_loto": 0.39
+   }
+  },
+  {
+   "id": "G17",
+   "machine_type": "servo_roll_feeder",
+   "energized": true,
+   "text": "需要通電量測送料長度時，依測試／定位程序由原上鎖人取下自己的鎖、現場主管在場，只用寸動試送",
+   "p": {
+    "enters_danger_zone": 0.49,
+    "high_voltage": 0.14,
+    "energized": 0.97,
+    "needs_loto": 0.48
+   }
+  },
+  {
+   "id": "G18",
+   "machine_type": "servo_press",
+   "energized": true,
+   "text": "逐步提高至生產速度，每階提高 10 SPM 並試沖 50 模",
+   "p": {
+    "enters_danger_zone": 0.4,
+    "high_voltage": 0.09,
+    "energized": 0.97,
+    "needs_loto": 0.33
+   }
+  },
+  {
+   "id": "B01",
+   "machine_type": "servo_press",
+   "text": "調閱換料紀錄與噸位峰值趨勢，比較換料前後噸位峰值平均值",
+   "p": {
+    "enters_danger_zone": 0.06,
+    "high_voltage": 0.04,
+    "energized": 0.1,
+    "needs_loto": 0.07
+   }
+  },
+  {
+   "id": "B02",
+   "machine_type": "servo_roll_feeder",
+   "text": "查閱停機前的警報紀錄、送料長度誤差與狀態紀錄",
+   "p": {
+    "enters_danger_zone": 0.07,
+    "high_voltage": 0.08,
+    "energized": 0.16,
+    "needs_loto": 0.1
+   }
+  },
+  {
+   "id": "B03",
+   "machine_type": "servo_press",
+   "text": "在 Kanban 填寫實際原因、處置內容與處置後是否恢復正常",
+   "p": {
+    "enters_danger_zone": 0.09,
+    "high_voltage": 0.09,
+    "energized": 0.24,
+    "needs_loto": 0.17
+   }
+  },
+  {
+   "id": "B04",
+   "machine_type": "servo_press",
+   "text": "通知操作員與班長停線，於 Kanban 開立維修單",
+   "p": {
+    "enters_danger_zone": 0.07,
+    "high_voltage": 0.08,
+    "energized": 0.17,
+    "needs_loto": 0.21
+   }
+  },
+  {
+   "id": "B05",
+   "machine_type": "servo_press",
+   "text": "確認危害防止計畫與作業許可單已由現場主管核准",
+   "p": {
+    "enters_danger_zone": 0.09,
+    "high_voltage": 0.05,
+    "energized": 0.08,
+    "needs_loto": 0.15
+   }
+  },
+  {
+   "id": "B06",
+   "machine_type": "servo_roll_feeder",
+   "text": "以游標卡尺在工作台上量測拆下的舊滾輪直徑，與基準值比較",
+   "p": {
+    "enters_danger_zone": 0.08,
+    "high_voltage": 0.04,
+    "energized": 0.05,
+    "needs_loto": 0.5
+   }
+  },
+  {
+   "id": "B07",
+   "machine_type": "servo_press",
+   "text": "以分厘卡量測料捲取樣的板厚，記錄三點平均",
+   "p": {
+    "enters_danger_zone": 0.3,
+    "high_voltage": 0.03,
+    "energized": 0.12,
+    "needs_loto": 0.38
+   }
+  },
+  {
+   "id": "B08",
+   "machine_type": "servo_roll_feeder",
+   "text": "取 1 m 料帶放平於工作台，量測最大側彎量",
+   "p": {
+    "enters_danger_zone": 0.16,
+    "high_voltage": 0.04,
+    "energized": 0.09,
+    "needs_loto": 0.36
+   }
+  },
+  {
+   "id": "B09",
+   "machine_type": "servo_roll_feeder",
+   "text": "核對導正釋放角度參數與沖速 SPM 的變更記錄",
+   "p": {
+    "enters_danger_zone": 0.14,
+    "high_voltage": 0.2,
+    "energized": 0.25,
+    "needs_loto": 0.25
+   }
+  },
+  {
+   "id": "B10",
+   "machine_type": "servo_roll_feeder",
+   "text": "在工作台上目視檢查已拆下滾輪表面的亮帶與油污",
+   "p": {
+    "enters_danger_zone": 0.14,
+    "high_voltage": 0.05,
+    "energized": 0.05,
+    "needs_loto": 0.68
+   }
+  },
+  {
+   "id": "B11",
+   "machine_type": "servo_press",
+   "text": "比對模具資料表的閉模高度與 MES 讀值",
+   "p": {
+    "enters_danger_zone": 0.13,
+    "high_voltage": 0.08,
+    "energized": 0.46,
+    "needs_loto": 0.19
+   }
+  },
+  {
+   "id": "B12",
+   "machine_type": "servo_roll_feeder",
+   "text": "準備塞規、游標卡尺、扭力扳手與新滾輪零件",
+   "p": {
+    "enters_danger_zone": 0.28,
+    "high_voltage": 0.07,
+    "energized": 0.13,
+    "needs_loto": 0.82
+   }
+  },
+  {
+   "id": "B13",
+   "machine_type": "servo_press",
+   "text": "拍照記錄損壞的沖頭並傳給模具技師",
+   "p": {
+    "enters_danger_zone": 0.5,
+    "high_voltage": 0.07,
+    "energized": 0.13,
+    "needs_loto": 0.59
+   }
+  },
+  {
+   "id": "B14",
+   "machine_type": "servo_press",
+   "text": "在機台外的工作台上清潔拆下的導正銷並檢查磨耗",
+   "p": {
+    "enters_danger_zone": 0.05,
+    "high_voltage": 0.04,
+    "energized": 0.04,
+    "needs_loto": 0.53
+   }
+  }
+ ]
+}

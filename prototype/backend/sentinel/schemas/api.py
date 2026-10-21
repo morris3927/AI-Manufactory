@@ -20,7 +20,7 @@ class ReassignReq(ActorReq):
 
 
 class PermitReq(ActorReq):
-    action: Literal["request", "approve"] = "request"
+    action: Literal["request", "approve", "reject"] = "request"
 
 
 class ReportReq(ActorReq):

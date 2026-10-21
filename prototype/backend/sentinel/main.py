@@ -12,8 +12,9 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from .api import routes_admin, routes_plant, routes_work, ws
+from .api import routes_admin, routes_kb, routes_plant, routes_work, ws
 from .runtime import Runtime
+from .vision.ppe import YoloPpeDetector
 
 log = logging.getLogger("sentinel")
 
@@ -48,15 +49,35 @@ def create_app(runtime_factory=None, *, start_kwargs: dict | None = None) -> Fas
             return JSONResponse({"detail": "評審身分只能檢視，不能操作"}, status_code=403)
         return await call_next(request)
 
-    for r in (routes_plant.router, routes_work.router, routes_admin.router):
+    for r in (routes_plant.router, routes_work.router, routes_admin.router, routes_kb.router):
         app.include_router(r, prefix="/api")
     app.include_router(ws.router)
 
     @app.get("/healthz")
-    def healthz() -> dict:
+    @app.get("/health")
+    @app.get("/api/health")
+    def health() -> dict:
+        """系統狀態：偵測器實際模式（yolo／scripted）、embedding 模型、AI 開關，讓報告可以如實說明。"""
         rt: Runtime = app.state.rt
-        return {"ok": True, "jev": rt.jev.enabled, "llm": rt.llm.enabled, "notifier": rt.notifier.name,
-                "scenario": rt.engine.scenario.id if rt.engine.scenario else None}
+        s = rt.settings
+        weights = s.base_dir / s.vision.yolo_weights
+        det = rt.vision.ppe_detector
+        mode = det.name if det is not None else ("yolo" if YoloPpeDetector.available(weights) else "scripted")
+        store = rt.kb.store
+        return {
+            "ok": True,
+            "detector_mode": mode,
+            "yolo": {"weights": s.vision.yolo_weights, "weights_exist": weights.exists(),
+                     "classes": getattr(det, "class_names", None) or None},
+            "embedding_model": store.embedder.name if store else None,
+            "kb": {"docs": store.count("docs") if store else 0, "cases": store.count("cases") if store else 0,
+                   "allow_draft": s.kb.allow_draft},
+            "jev": {"enabled": rt.jev.enabled, "model": s.jev.model},
+            "llm": {"enabled": rt.llm.enabled, "model": s.llm.model},
+            "notifier": rt.notifier.name,
+            "workflow": {"require_permit": rt.workorders.require_permit},
+            "scenario": rt.engine.scenario.id if rt.engine.scenario else None,
+        }
 
     return app
 

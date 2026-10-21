@@ -1,0 +1,395 @@
+{
+  "description": "Jev V2（正式 FEED_QUESTIONS）零樣本：公開正常照片＋合成卡料（標示合成）；每張 3 次",
+  "threshold_p_jam": 0.7,
+  "rule": "正式規則：連續 2 張 p_jam > 0.7 才成立；這裡用「3 次都 > 0.7」近似",
+  "n_images": {
+    "press_feed_normal": 7,
+    "other_machine_normal": 3,
+    "synthetic_jam": 4,
+    "excluded": [
+      "File:Punch press room. (7f14e763-ee01-4676-b3af-4024f294fc12).jpg",
+      "File:Rejlek Metal & Stamping, 2017 Mór.jpg"
+    ]
+  },
+  "normal_false_jam": {
+    "k": 0,
+    "n": 10,
+    "rate": 0.0,
+    "ci95": [
+      0,
+      0.278
+    ]
+  },
+  "normal_false_jam_any_run": {
+    "k": 0,
+    "n": 10,
+    "rate": 0.0,
+    "ci95": [
+      0,
+      0.278
+    ]
+  },
+  "normal_false_smoke_any_run": {
+    "k": 0,
+    "n": 10,
+    "rate": 0.0,
+    "ci95": [
+      0,
+      0.278
+    ]
+  },
+  "synthetic_jam_detected": {
+    "k": 1,
+    "n": 4,
+    "rate": 0.25,
+    "ci95": [
+      0.046,
+      0.699
+    ]
+  },
+  "p_jam_mean": {
+    "normal": 0.212,
+    "synthetic_jam": 0.624
+  },
+  "latency_ms": {
+    "n": 42,
+    "mean": 697.0,
+    "p50": 665.32,
+    "p95": 960.5,
+    "max": 1676.2
+  },
+  "cost_usd": {
+    "total": 0.002778,
+    "per_call": 6.61e-05
+  },
+  "errors": [],
+  "images": [
+    {
+      "file": "synth_jam_stacked_offset.jpg",
+      "group": "synthetic_jam",
+      "synthetic": true,
+      "expect_jam": true,
+      "p_jam_runs": [
+        0.65,
+        0.65,
+        0.63
+      ],
+      "p_smoke_runs": [
+        0.01,
+        0.02,
+        0.02
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Air Feeder.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Air_Feeder.jpg",
+      "license": "CC BY-SA 3.0",
+      "author": "Jstokes452",
+      "derived_from": "wm_01.jpg"
+    },
+    {
+      "file": "synth_jam_tilt_down_12.jpg",
+      "group": "synthetic_jam",
+      "synthetic": true,
+      "expect_jam": true,
+      "p_jam_runs": [
+        0.49,
+        0.46,
+        0.46
+      ],
+      "p_smoke_runs": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Air Feeder.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Air_Feeder.jpg",
+      "license": "CC BY-SA 3.0",
+      "author": "Jstokes452",
+      "derived_from": "wm_01.jpg"
+    },
+    {
+      "file": "synth_jam_tilt_up_20.jpg",
+      "group": "synthetic_jam",
+      "synthetic": true,
+      "expect_jam": true,
+      "p_jam_runs": [
+        0.62,
+        0.61,
+        0.61
+      ],
+      "p_smoke_runs": [
+        0.03,
+        0.02,
+        0.03
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Air Feeder.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Air_Feeder.jpg",
+      "license": "CC BY-SA 3.0",
+      "author": "Jstokes452",
+      "derived_from": "wm_01.jpg"
+    },
+    {
+      "file": "synth_jam_tilt_up_32.jpg",
+      "group": "synthetic_jam",
+      "synthetic": true,
+      "expect_jam": true,
+      "p_jam_runs": [
+        0.78,
+        0.76,
+        0.77
+      ],
+      "p_smoke_runs": [
+        0.04,
+        0.04,
+        0.04
+      ],
+      "jam_pred_all_runs": true,
+      "jam_pred_any_run": true,
+      "title": "File:Air Feeder.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Air_Feeder.jpg",
+      "license": "CC BY-SA 3.0",
+      "author": "Jstokes452",
+      "derived_from": "wm_01.jpg"
+    },
+    {
+      "file": "wm_00.jpg",
+      "group": "press_feed",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.33,
+        0.33,
+        0.34
+      ],
+      "p_smoke_runs": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:176 TON SINGLE POINT STRAIGHT SIDE WITH SERVO COIL LINE.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:176_TON_SINGLE_POINT_STRAIGHT_SIDE_WITH_SERVO_COIL_LINE.jpg",
+      "license": "CC BY-SA 4.0",
+      "author": "Sam D. Wilbur",
+      "derived_from": null
+    },
+    {
+      "file": "wm_01.jpg",
+      "group": "press_feed",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.13,
+        0.12,
+        0.13
+      ],
+      "p_smoke_runs": [
+        0.01,
+        0.02,
+        0.02
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Air Feeder.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Air_Feeder.jpg",
+      "license": "CC BY-SA 3.0",
+      "author": "Jstokes452",
+      "derived_from": null
+    },
+    {
+      "file": "wm_02.jpg",
+      "group": "press_feed",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.33,
+        0.34,
+        0.34
+      ],
+      "p_smoke_runs": [
+        0.02,
+        0.02,
+        0.02
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:HDP-176-Sutherland Two Point Straight Side-Cropped.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:HDP-176-Sutherland_Two_Point_Straight_Side-Cropped.jpg",
+      "license": "CC BY-SA 4.0",
+      "author": "Sam D. Wilbur",
+      "derived_from": null
+    },
+    {
+      "file": "wm_03.jpg",
+      "group": "press_feed",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.08,
+        0.11,
+        0.1
+      ],
+      "p_smoke_runs": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:HDP-440-Servo Hydraulic Sutherland Straight Side.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:HDP-440-Servo_Hydraulic_Sutherland_Straight_Side.jpg",
+      "license": "CC BY-SA 4.0",
+      "author": "Sam D. Wilbur",
+      "derived_from": null
+    },
+    {
+      "file": "wm_05.jpg",
+      "group": "press_feed",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.25,
+        0.28,
+        0.31
+      ],
+      "p_smoke_runs": [
+        0.02,
+        0.02,
+        0.03
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:SP2-440-Progressive Die Press.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:SP2-440-Progressive_Die_Press.jpg",
+      "license": "CC BY-SA 4.0",
+      "author": "Sam D. Wilbur",
+      "derived_from": null
+    },
+    {
+      "file": "wm_06.jpg",
+      "group": "other_machine",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.18,
+        0.18,
+        0.18
+      ],
+      "p_smoke_runs": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:JMT JM-S Press Brake.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:JMT_JM-S_Press_Brake.jpg",
+      "license": "CC BY-SA 4.0",
+      "author": "JMTUSA",
+      "derived_from": null
+    },
+    {
+      "file": "wm_07.jpg",
+      "group": "press_feed",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.16,
+        0.16,
+        0.15
+      ],
+      "p_smoke_runs": [
+        0.02,
+        0.01,
+        0.02
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Metal Stamping Project (5974754513).jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Metal_Stamping_Project_(5974754513).jpg",
+      "license": "Public domain",
+      "author": "National Institute of Standards and Technology",
+      "derived_from": null
+    },
+    {
+      "file": "wm_08.jpg",
+      "group": "other_machine",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.13,
+        0.13,
+        0.14
+      ],
+      "p_smoke_runs": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Punch Press Holecut 40-6CNC.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Punch_Press_Holecut_40-6CNC.jpg",
+      "license": "CC BY-SA 3.0",
+      "author": "Macyber",
+      "derived_from": null
+    },
+    {
+      "file": "wm_10.jpg",
+      "group": "press_feed",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.38,
+        0.41,
+        0.4
+      ],
+      "p_smoke_runs": [
+        0.02,
+        0.03,
+        0.02
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Virginia Ludwig goes to work on a punch press 8b06152v.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Virginia_Ludwig_goes_to_work_on_a_punch_press_8b06152v.jpg",
+      "license": "Public domain",
+      "author": "Ann Rosener",
+      "derived_from": null
+    },
+    {
+      "file": "wm_11.jpg",
+      "group": "other_machine",
+      "synthetic": false,
+      "expect_jam": false,
+      "p_jam_runs": [
+        0.08,
+        0.08,
+        0.08
+      ],
+      "p_smoke_runs": [
+        0.01,
+        0.01,
+        0.01
+      ],
+      "jam_pred_all_runs": false,
+      "jam_pred_any_run": false,
+      "title": "File:Watch stamping press.jpg",
+      "page": "https://commons.wikimedia.org/wiki/File:Watch_stamping_press.jpg",
+      "license": "CC BY-SA 4.0",
+      "author": "Doug Coldwell",
+      "derived_from": null
+    }
+  ],
+  "cannot_validate": [
+    "真實卡料（板材堆疊、翹起、卡在送料口）的偵測率：沒有真實卡料照片，合成圖只是單一張照片的影像編輯",
+    "送料口 ROI 裁切：公開照片角度各異，這裡送整張圖（正式流程只送 feed_inlet ROI）",
+    "煙霧：沒有沖壓線煙霧照片，只測了正常畫面的誤報"
+  ]
+}

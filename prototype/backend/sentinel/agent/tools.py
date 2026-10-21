@@ -76,7 +76,7 @@ class ToolBox:
         loto = self.ctx.loto_for(self.wo_id)
         done = self.ctx.workorders.loto_checked(self.wo_id)
         return {"loto_id": loto.loto_id, "steps": [s.model_dump() | {"checked": s.no in done} for s in loto.steps],
-                "permit_required": loto.permit_required}
+                "permit_required": loto.permit_required, "energy_sources": loto.energy_sources}
 
     async def _t_get_machine_signals(self, signal: str, last_min: float = 10) -> dict:
         inc = self.ctx.workorders.incident(self.ctx.workorders.get(self.wo_id))

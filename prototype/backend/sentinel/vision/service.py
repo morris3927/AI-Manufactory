@@ -5,6 +5,7 @@
 | motion | 每幀 | machine_state（狀態改變時才發） |
 | ppe | ppe_fps | ppe_violation（同一人 3 秒內不重複） |
 | jev_feed | 每 N 秒＋Log 異常時 | jev_vision {p_jam, p_smoke, box} |
+| jev_smoke | 每 N 秒＋機器人停止時 | smoke {value: none／outside_cell, p_smoke_outside, box}；flame |
 """
 from __future__ import annotations
 
@@ -30,6 +31,8 @@ if TYPE_CHECKING:
 
 log = logging.getLogger(__name__)
 
+JEV_DETECTORS = {"jev_feed", "jev_smoke"}     # 一支攝影機最多一種 Jev 看圖偵測器
+
 
 class VisionService:
     def __init__(self, *, bus: EventBus, clock: Clock, plant: Plant, settings: Settings, jev: JevClient,
@@ -45,6 +48,7 @@ class VisionService:
         self._jev_busy: set[str] = set()
         self._feed_prev: dict[str, float] = {}
         self._last_demand: dict[str, float] = {}
+        self._robot_prev: dict[str, str] = {}
         self.overlays: dict[str, dict] = {}       # 給 MJPEG 畫框
         self.scenario_t0: float = 0.0             # 劇本開始時的 clock.monotonic()
         self.reset()
@@ -57,6 +61,7 @@ class VisionService:
         self._last_ppe_t.clear()
         self._feed_prev.clear()
         self._last_demand.clear()
+        self._robot_prev.clear()
         self.overlays.clear()
         self.scenario_t0 = self.clock.monotonic()
 
@@ -78,7 +83,7 @@ class VisionService:
             await self._motion(cam, frame)
         if "ppe" in cam.detectors and self.ppe_detector is not None:
             await self._ppe(cam, frame)
-        if "jev_feed" in cam.detectors:
+        if JEV_DETECTORS & set(cam.detectors):
             reason = self.keyframes.due(cam.id, self.t)
             if reason:
                 self._spawn_feed(cam, frame, reason)
@@ -132,7 +137,27 @@ class VisionService:
         if cam.id in self._jev_busy and not reason.startswith("on_demand"):
             return                                           # 上一張還沒回來，定時那張跳過
         self._jev_busy.add(cam.id)
-        self.bus.track(self._feed(cam, frame.copy(), reason), name=f"jev.feed:{cam.id}")
+        fn = self._smoke if "jev_smoke" in cam.detectors else self._feed
+        self.bus.track(fn(cam, frame.copy(), reason), name=f"jev.vision:{cam.id}")
+
+    async def _smoke(self, cam: Camera, frame: np.ndarray, reason: str) -> None:
+        machine = self.plant.machines.get(cam.machine_id or "")
+        try:
+            j = await jev_vision.smoke(self.jev, frame, cam.rois.get("weld_cell"),
+                                       machine.name if machine else (cam.machine_id or cam.id),
+                                       p_thr=self.th.p_smoke_outside, max_side=self.settings.vision.jev_max_side,
+                                       quality=self.settings.vision.jpeg_quality)
+        except JevUnavailable as e:
+            self.overlays.setdefault(cam.id, {})["jev"] = {"error": str(e)}
+            return
+        finally:
+            self._jev_busy.discard(cam.id)
+        payload = {"value": j.value, "p_smoke_outside": round(j.p_smoke_outside, 4), "p_flame": round(j.p_flame, 4),
+                   "box": j.box, "trigger": reason, "latency_ms": j.latency_ms, "cost": j.cost}
+        self.overlays.setdefault(cam.id, {})["jev"] = payload
+        await self._publish(cam, "vision.jev_smoke", "smoke", payload)
+        if j.p_flame > self.th.p_flame:
+            await self._publish(cam, "vision.jev_smoke", "flame", {"value": True, "p_flame": round(j.p_flame, 4)})
 
     async def _feed(self, cam: Camera, frame: np.ndarray, reason: str) -> None:
         roi = cam.rois.get("feed_inlet")
@@ -158,6 +183,11 @@ class VisionService:
         reason = None
         if evt.type == "machine_alarm":
             reason = f"alarm:{evt.payload.get('alarm_code')}"
+        elif evt.type == "mes_log" and "robot_state" in evt.payload:      # 機器人停止 → 看工位外有沒有冒煙
+            rs, prev_rs = evt.payload.get("robot_state"), self._robot_prev.get(mid)
+            self._robot_prev[mid] = rs
+            if prev_rs == "running" and rs != "running":
+                reason = f"robot_{rs}"
         elif evt.type == "mes_log":
             fr = evt.payload.get("feed_rate")
             prev = self._feed_prev.get(mid)
@@ -168,7 +198,7 @@ class VisionService:
         if not reason:
             return
         for cam in self.plant.cameras_for_machine(mid):
-            if "jev_feed" not in cam.detectors:
+            if not JEV_DETECTORS & set(cam.detectors):
                 continue
             if self.t - self._last_demand.get(cam.id, -1e9) < 1.0:   # 同一秒內多個觸發只送一張
                 continue

@@ -45,7 +45,8 @@ class CameraSource(ABC):
 
 # ── 合成畫面 ────────────────────────────────────────────────────
 def synthetic_frame(pattern: str, t: float, cam: Camera | None = None, jam_at_s: float = 10.0) -> np.ndarray:
-    """產生 1280×720 的合成畫面。pattern：normal／feed_jam／idle／workers／ppe／offline。"""
+    """產生 1280×720 的合成畫面。pattern：normal／feed_jam／idle／workers／ppe／weld_cell／weld_smoke／station／offline。
+    jam_at_s：卡料或冒煙開始的影片秒數。"""
     img = np.full((FRAME_H, FRAME_W, 3), 48, np.uint8)
     cv2.putText(img, f"SIMULATED {pattern} t={t:5.1f}s", (24, 40), cv2.FONT_HERSHEY_SIMPLEX, 0.9,
                 (200, 200, 200), 2)
@@ -79,6 +80,28 @@ def synthetic_frame(pattern: str, t: float, cam: Camera | None = None, jam_at_s:
             cv2.circle(img, (px, 250), 45, (150, 170, 200), -1)
             if helmet:
                 cv2.ellipse(img, (px, 230), (55, 35), 0, 180, 360, (0, 200, 255), -1)
+    elif pattern in {"weld_cell", "weld_smoke"}:
+        wx1, wy1, wx2, wy2 = (cam.rois.get("weld_cell") if cam else None) or [380, 160, 900, 600]
+        cv2.rectangle(img, (wx1, wy1), (wx2, wy2), (0, 200, 255), 2)                 # 工位 ROI（黃框）
+        cx, cy = (wx1 + wx2) // 2, (wy1 + wy2) // 2
+        stopped = pattern == "weld_smoke" and t >= max(0.0, jam_at_s - 3)          # 冒煙前 3 秒機器人停止
+        ang = 0.0 if stopped else math.sin(t * 2) * 0.6
+        ex, ey = int(cx + 140 * math.cos(ang)), int(cy - 60 + 140 * math.sin(ang))
+        cv2.line(img, (cx, wy2 - 40), (ex, ey), (150, 150, 160), 18)                 # 機器人手臂
+        if not stopped:                                                              # 工位內火花（正常）
+            for k in range(6):
+                cv2.circle(img, (ex + int(10 * math.sin(t * 9 + k)), ey + int(10 * math.cos(t * 7 + k))), 3,
+                           (80, 220, 255), -1)
+        if pattern == "weld_smoke" and t >= jam_at_s:                               # 工位外煙霧
+            r = int(40 + 20 * min(t - jam_at_s, 6))
+            overlay = img.copy()
+            cv2.circle(overlay, (wx2 + 150, wy1 + 40), r, (170, 170, 170), -1)
+            cv2.circle(overlay, (wx2 + 110, wy1 - 10), int(r * 0.7), (190, 190, 190), -1)
+            img = cv2.addWeighted(overlay, 0.6, img, 0.4, 0)
+    elif pattern == "station":
+        cv2.rectangle(img, (420, 260), (860, 560), (90, 110, 130), -1)               # 工作台與工件
+        x = 480 + int((t * 60) % 320)
+        cv2.rectangle(img, (x, 180), (x + 30, 300), (170, 170, 170), -1)             # 起子
     elif pattern == "offline":
         cv2.putText(img, "NO SIGNAL", (480, 360), cv2.FONT_HERSHEY_SIMPLEX, 2, (0, 0, 255), 4)
     return img
@@ -86,13 +109,17 @@ def synthetic_frame(pattern: str, t: float, cam: Camera | None = None, jam_at_s:
 
 def guess_pattern(video: str | None, cam: Camera | None) -> str:
     name = (video or "").lower()
-    for key in ("feed_jam", "idle"):
+    for key in ("feed_jam", "idle", "weld_smoke"):
         if key in name:
             return key
     if "ppe" in name or "violation" in name:
         return "ppe"
     if cam and "ppe" in cam.detectors:
         return "workers"
+    if cam and cam.line == "welding":
+        return "weld_cell" if "weld_cell" in cam.rois else "station"
+    if cam and cam.line == "assembly":
+        return "station"
     return "normal"
 
 

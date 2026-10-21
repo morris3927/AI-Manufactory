@@ -23,11 +23,14 @@ class GateDecision(BaseModel):
 
 
 def decide(rule_sev: str | None, j: EventJudgement, *, p_false_alarm: float = 0.9,
-           root_cause_conf: float = 0.6) -> GateDecision:
+           root_cause_conf: float = 0.8) -> GateDecision:
     # 1) 安全底線：只能升級，不能降級（規則判 S3 的事件 Jev 不能降級）
     final_sev = max_severity(rule_sev or "S1", j.jev_severity)
     # 3) 根因信心度
-    diag = "jev_top3" if j.root_cause_top3 and j.root_cause_conf >= root_cause_conf else "llm_deep"
+    # 3) 根因信心度：top-1 機率 ≥ 門檻 → 只附 Jev 前三名；不到 → 仍立即派工附前三名，另外啟動 LLM 深入診斷
+    #    （eval E3：Jev 在 0.6–0.8 區間過度自信，門檻由 0.6 提高到 0.8）
+    top1_p = j.root_cause_top3[0].p if j.root_cause_top3 else 0.0
+    diag = "jev_top3" if j.root_cause_top3 and top1_p >= root_cause_conf else "llm_deep"
     # 2) 誤報過濾：只有非 S3、而且 Jev 非常確定是誤報時才壓掉（仍建單、仍記錄，但不通知）
     if final_sev != "S3" and j.p_false_alarm > p_false_alarm:
         return GateDecision(action="log_only", severity=final_sev, category=j.category, diagnosis_mode=diag,
@@ -40,17 +43,30 @@ class SafetyGate(BaseModel):
     needs_loto: float
     enters_danger_zone: float
     high_voltage: float
+    energized: float = 0.0
     flagged: bool
-    source: str = "jev"               # jev／keyword（Jev 不可用時的保守退路）
+    reasons: list[str] = []
+    loto_satisfied: bool = False      # 工單已 LOTO_DONE：needs_loto 只記錄，不單獨要求主管確認
+    source: str = "jev"               # jev／keyword（Jev 不可用時的保守退路）／energized_test
 
 
-async def step(jev: JevClient, step_text: str, machine_type: str | None, *, threshold: float = 0.3,
-               trace_id: str | None = None) -> SafetyGate:
-    """J4：任一機率 > threshold → flagged（故意設低：寧可多問一次，不能漏掉）。"""
+DEFAULT_GATE_THRESHOLDS = {"needs_loto": 0.3, "enters_danger_zone": 0.3, "high_voltage": 0.3, "energized": 0.3}
+
+
+def gate_reasons(p: dict[str, float], thresholds: dict[str, float], loto_done: bool) -> list[str]:
+    """哪些題目超過門檻。LOTO 已完成時 needs_loto 視為已滿足。"""
+    th = DEFAULT_GATE_THRESHOLDS | (thresholds or {})
+    return [k for k, v in p.items() if k in th and v > th[k] and not (k == "needs_loto" and loto_done)]
+
+
+async def step(jev: JevClient, step_text: str, machine_type: str | None, *, thresholds: dict[str, float] | None = None,
+               loto_done: bool = False, trace_id: str | None = None) -> SafetyGate:
+    """J4：任一題超過門檻 → flagged（門檻由 eval/gate_set.yaml 實測校準，危險步驟召回率必須 1.0）。"""
     res = await jev.ask({"machine_type": machine_type, "step": step_text}, Q.SAFETY_GATE, purpose="gate.step",
                         trace_id=trace_id, questions_ver=Q.GATE_VER)
     p = {k: res.noul(k) for k in Q.SAFETY_GATE}
-    return SafetyGate(step=step_text, **p, flagged=any(v > threshold for v in p.values()))
+    reasons = gate_reasons(p, thresholds or {}, loto_done)
+    return SafetyGate(step=step_text, **p, flagged=bool(reasons), reasons=reasons, loto_satisfied=loto_done)
 
 
 class WritebackCheck(BaseModel):

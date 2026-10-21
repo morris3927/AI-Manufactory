@@ -90,6 +90,7 @@ class Incident(SQLModel, table=True):
     facts: dict = json_field()
     status: str = "open"                        # open／closed
     suspected_false_alarm: bool = False
+    casualty: dict | None = Field(default=None, sa_type=JSON)   # {deaths, injured, hospitalized, set_by, set_at}；由人標記
     opened_at: datetime = ts_field()
     last_seen_at: datetime | None = ts_field(nullable=True)
     closed_at: datetime | None = ts_field(nullable=True)
@@ -230,7 +231,8 @@ class IncidentReport(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
     incident_id: str = Field(index=True)
     deadline: datetime = ts_field()
-    draft: str = ""
+    draft: dict = json_field()                  # 職安法第37條通報欄位（模擬），由人確認後送出
+    created_at: datetime | None = ts_field(nullable=True)
     submitted_by: str | None = None
     submitted_at: datetime | None = ts_field(nullable=True)
 

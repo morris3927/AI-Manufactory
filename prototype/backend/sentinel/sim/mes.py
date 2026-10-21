@@ -21,9 +21,38 @@ SIGNALS = ["spm", "feed_rate", "feed_length_error_mm", "motor_temp_c", "motor_cu
            "state", "alarm_code", "tonnage_balance_pct", "stroke_count_since_regrind", "die_stroke_total",
            "stop_angle_deg", "stop_time_ms", "air_pressure_bar", "counterbalance_bar", "shut_height_mm",
            "lube_pressure_bar", "bearing_temp_c", "die_lube_pulse_per_min", "scrap_conveyor_current_a",
-           "light_curtain_status", "pilot_release_angle_deg", "straightener_setting_mm"]
-EVENT_TYPES = {"coil_change", "die_change", "param_change"}   # 劇本可用 event 步驟注入
-COUNTERS = {"stroke_count_since_regrind", "die_stroke_total"}   # 運轉時依 spm 累加
+           "light_curtain_status", "pilot_release_angle_deg", "straightener_setting_mm",
+           # 銲接
+           "wire_feed_speed_mpm", "wire_feed_motor_current_a", "arc_current_a", "arc_current_cv_pct", "arc_voltage_v",
+           "arc_voltage_cv_pct", "arc_start_retry_per_100", "tip_arc_on_min", "gas_flow_lpm", "gas_supply_bar",
+           "torch_clean_interval_min", "tcp_check_delta_mm", "defect_rate_pct", "weld_current_ka",
+           "electrode_force_kn", "weld_count_since_dress", "tip_dress_count", "coolant_flow_lpm",
+           "coolant_return_temp_c", "exhaust_flow_m3h", "exhaust_dp_pa", "exhaust_fan_state", "robot_state",
+           # 組裝
+           "screw_result", "final_torque_nm", "final_angle_deg", "rundown_torque_nm", "nok_hole_id", "nok_rate_pct",
+           "bit_cycle_count", "feeder_pick_fail_count", "screw_count_actual", "screw_count_required",
+           "torque_audit_dev_pct", "insulation_mohm", "test_result", "esd_check"]
+# 劇本可用 event 步驟注入的機台事件（signals.yaml 的 events 區段）
+EVENT_TYPES = {"coil_change", "die_change", "param_change", "days_since_pm",
+               "weld_defect", "collision_event", "consumable_change", "part_lot_change",
+               "screw_lot_change", "calib_due_days", "ppe_stock_count"}
+# 通用警報類別碼（signals.yaml alarm_codes；刻意不用真實廠牌的警報碼）
+ALARM_CODES = {
+    "MISFEED", "DIE_PROTECT", "STRIP_LIFT", "STRIP_EDGE", "OVERLOAD", "DOUBLE_BLANK", "OVERRUN", "AIR_LOW",
+    "FD_OVERCURRENT", "FD_POS_DEV", "LOOP_FAULT", "SCRAP_CONV_OVERLOAD", "LC_FAULT", "DIE_LUBE_LOW",
+    "CENTRAL_LUBE_LOW",
+    "ARC_START_FAIL", "ARC_LOST", "WIRE_STICK", "WIRE_FEED_OVERLOAD", "GAS_LOW", "CLEAN_STATION_FAULT", "COLLISION",
+    "TCP_CHECK_NG", "COOLANT_LOW", "WELD_OVERTEMP", "SPOT_CURRENT_DEV", "FUME_EXH_LOW",
+    "SCREW_NOK", "FEEDER_TIMEOUT", "COUNT_MISMATCH", "CALIB_OVERDUE", "TEST_NG", "ESD_CHECK_FAIL",
+}
+# 運轉時累加的計數器：值為 "spm"（依沖次）或每秒增加量（模擬值）
+COUNTER_RATE: dict[str, str | float] = {
+    "stroke_count_since_regrind": "spm", "die_stroke_total": "spm",
+    "tip_arc_on_min": 1 / 60 * 0.6,          # 起弧率約 60%
+    "weld_count_since_dress": 0.3,
+    "bit_cycle_count": 0.5,
+}
+COUNTERS = set(COUNTER_RATE)
 
 _PRESS_COMMON: dict[str, tuple[Any, float]] = {
     "feed_length_error_mm": (0.02, 0.004), "tonnage_balance_pct": (3.0, 0.3),
@@ -43,6 +72,27 @@ PROFILES: dict[str, dict[str, tuple[Any, float]]] = {
                           "motor_temp_c": (46, 0.3), "motor_current_a": (6.0, 0.1), "tonnage_peak": (0, 0),
                           "air_pressure_bar": (5.8, 0.03), "pilot_release_angle_deg": (220, 0),
                           "straightener_setting_mm": (1.2, 0)},
+    "robot_mig_cell": {
+        "wire_feed_speed_mpm": (6.0, 0.05), "wire_feed_motor_current_a": (2.2, 0.05), "arc_current_a": (130, 2.0),
+        "arc_current_cv_pct": (3.0, 0.2), "arc_voltage_v": (18.5, 0.1), "arc_voltage_cv_pct": (2.5, 0.2),
+        "arc_start_retry_per_100": (1.0, 0.1), "tip_arc_on_min": (120, 0), "gas_flow_lpm": (17.0, 0.2),
+        "gas_supply_bar": (4.0, 0.02), "torch_clean_interval_min": (12, 0), "tcp_check_delta_mm": (0.2, 0.01),
+        "defect_rate_pct": (0.8, 0.05), "coolant_flow_lpm": (2.0, 0.03), "coolant_return_temp_c": (30.0, 0.2),
+        "exhaust_flow_m3h": (2000, 15), "exhaust_dp_pa": (600, 5), "exhaust_fan_state": ("running", 0),
+        "robot_state": ("running", 0)},
+    "spot_welder": {
+        "weld_current_ka": (10.0, 0.1), "electrode_force_kn": (2.5, 0.02), "weld_count_since_dress": (120, 0),
+        "tip_dress_count": (8, 0), "coolant_flow_lpm": (5.0, 0.05), "coolant_return_temp_c": (30.0, 0.2),
+        "defect_rate_pct": (0.8, 0.05), "exhaust_flow_m3h": (2000, 15), "exhaust_dp_pa": (600, 5),
+        "exhaust_fan_state": ("running", 0)},
+    "screwdriving_station": {
+        "screw_result": ("OK", 0), "final_torque_nm": (0.80, 0.01), "final_angle_deg": (1440, 20),
+        "rundown_torque_nm": (0.08, 0.005), "nok_hole_id": (None, 0), "nok_rate_pct": (0.4, 0.03),
+        "bit_cycle_count": (18_000, 0), "feeder_pick_fail_count": (1, 0), "screw_count_actual": (12, 0),
+        "screw_count_required": (12, 0), "torque_audit_dev_pct": (1.5, 0.1), "esd_check": ("PASS", 0)},
+    "manual_assembly_station": {
+        "insulation_mohm": (500, 5), "test_result": ("PASS", 0), "esd_check": ("PASS", 0),
+        "screw_count_actual": (12, 0), "screw_count_required": (12, 0), "nok_rate_pct": (0.3, 0.03)},
 }
 DEFAULT_PROFILE = {"spm": (0, 0), "feed_rate": (0, 0), "feed_length_error_mm": (0, 0),
                    "motor_temp_c": (40, 0.3), "motor_current_a": (5, 0.1), "tonnage_peak": (0, 0)}
@@ -114,13 +164,14 @@ class MachineSim:
         self.last_t = t
         for k in COUNTERS & set(self.base):
             if running:
-                self.base[k] = self.base[k] + float(self.base.get("spm") or 0) / 60 * dt
+                rate = COUNTER_RATE[k]
+                self.base[k] += (float(self.base.get("spm") or 0) / 60 if rate == "spm" else float(rate)) * dt
             values[k] = int(self.base[k])
         for k, sd in self.sigma.items():
             v = values.get(k)
             if k not in COUNTERS and isinstance(v, (int, float)) and v != 0 and sd > 0 and running:
                 values[k] = v + rng.gauss(0, sd)
-        if not running:                    # 停機時節拍歸零
+        if not running and "spm" in values:   # 停機時節拍歸零
             values["spm"] = 0
         return {k: (round(v, 4) if isinstance(v, float) else v) for k, v in values.items()}
 

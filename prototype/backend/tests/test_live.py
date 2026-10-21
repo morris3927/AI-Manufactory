@@ -57,3 +57,40 @@ async def test_live_llm():
     finally:
         await c.aclose()
     assert r.content.strip()
+
+
+async def test_live_writeback_before_after(settings, clock, fake_llm):
+    """越用越準（真實 Jev）：結案根因核准入庫後重跑同一劇本，記錄 J3 機率的變化（不保證方向，只記錄）。"""
+    import httpx
+    from sqlmodel import select
+    from test_agent import close_feed_jam
+
+    from sentinel.db.models import Workorder
+    from sentinel.dispatch.notifier import ConsoleNotifier
+    from sentinel.kb.ingest import ingest
+    from sentinel.runtime import Runtime
+
+    key = S.secret(S.secrets.openrouter_api_key)
+    if not key:
+        pytest.skip("沒有 OPENROUTER_API_KEY")
+    rt = Runtime(settings, clock=clock, notifier=ConsoleNotifier(), llm_transport=httpx.MockTransport(fake_llm),
+                 jev_key=key, llm_key="k")
+    ingest(settings.path("knowledge"), rt.kb.store)
+    await rt.start(realtime=False, warmup=False)
+    target = "material_thickness_dev"
+    try:
+        sc = rt.scenarios["feed_jam"]
+        await rt.engine.run_stepped(sc)
+        wo1 = rt.db.first(select(Workorder))
+        before = rt.dispatch.diagnosis_for(wo1.incident_id).root_cause_top3
+        res = await close_feed_jam(rt, wo1.id, target)
+        rt.writeback.approve(res["case_draft"], reviewer="P-STP-SV1", at=rt.clock.now())
+        await rt.engine.run_stepped(sc)
+        wo2 = rt.db.all(select(Workorder))[-1]
+        after = rt.dispatch.diagnosis_for(wo2.incident_id).root_cause_top3
+    finally:
+        await rt.stop()
+    p = lambda top3: next((r["p"] for r in top3 if r["id"] == target), 0.0)  # noqa: E731
+    print(f"\n[越用越準] 核准前 top1={before[0]['id']} {before[0]['p']:.2f}；{target}={p(before):.2f}"
+          f"\n[越用越準] 核准後 top1={after[0]['id']} {after[0]['p']:.2f}；{target}={p(after):.2f}")
+    assert before and after

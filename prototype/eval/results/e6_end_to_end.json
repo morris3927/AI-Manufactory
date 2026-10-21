@@ -1,0 +1,5003 @@
+{
+  "description": "端到端延遲：本機後端（port 8010）＋真實 Jev／DeepSeek API；通知器為 console（未接 Discord）",
+  "runs_per_scenario": 5,
+  "scenario_times": {
+    "feed_jam": {
+      "ramp_start": 8,
+      "jam_visible": 10,
+      "misfeed_feed_zero": 14
+    },
+    "ppe_violation": {
+      "helmet_removed": 5
+    }
+  },
+  "rule": "R-STP-FEEDJAM：送料速率歸零（30 秒內變化）＋ 15 秒內連續 2 張 Jev 關鍵幀 p_jam > 0.7",
+  "feed_jam_interval5": {
+    "segments_s": {
+      "seg_ramp_to_incident": {
+        "n": 5,
+        "mean": 6.535,
+        "p50": 6.541,
+        "p95": 6.594,
+        "max": 6.6,
+        "values_s": [
+          6.441,
+          6.568,
+          6.526,
+          6.541,
+          6.6
+        ],
+        "n_missing": 0
+      },
+      "seg_jamvisible_to_incident": {
+        "n": 5,
+        "mean": 4.535,
+        "p50": 4.541,
+        "p95": 4.594,
+        "max": 4.6,
+        "values_s": [
+          4.441,
+          4.568,
+          4.526,
+          4.541,
+          4.6
+        ],
+        "n_missing": 0
+      },
+      "seg_misfeed_to_incident": {
+        "n": 5,
+        "mean": 0.554,
+        "p50": 0.554,
+        "p95": 0.613,
+        "max": 0.619,
+        "values_s": [
+          0.462,
+          0.589,
+          0.546,
+          0.554,
+          0.619
+        ],
+        "n_missing": 0
+      },
+      "seg_incident_to_jev_result": {
+        "n": 5,
+        "mean": 0.482,
+        "p50": 0.467,
+        "p95": 0.522,
+        "max": 0.531,
+        "values_s": [
+          0.531,
+          0.466,
+          0.462,
+          0.486,
+          0.467
+        ],
+        "n_missing": 0
+      },
+      "seg_incident_to_notification": {
+        "n": 5,
+        "mean": 0.489,
+        "p50": 0.475,
+        "p95": 0.533,
+        "max": 0.543,
+        "values_s": [
+          0.543,
+          0.472,
+          0.465,
+          0.491,
+          0.475
+        ],
+        "n_missing": 0
+      },
+      "seg_notification_to_llm": {
+        "n": 5,
+        "mean": 10.055,
+        "p50": 5.145,
+        "p95": 23.478,
+        "max": 26.638,
+        "values_s": [
+          10.837,
+          4.269,
+          3.387,
+          26.638,
+          5.145
+        ],
+        "n_missing": 0
+      },
+      "seg_misfeed_to_llm": {
+        "n": 5,
+        "mean": 11.098,
+        "p50": 6.239,
+        "p95": 24.515,
+        "max": 27.683,
+        "values_s": [
+          11.842,
+          5.33,
+          4.398,
+          27.683,
+          6.239
+        ],
+        "n_missing": 0
+      }
+    },
+    "cost": {
+      "per_run": [
+        {
+          "jev_calls": 20,
+          "jev_cost": 0.000963,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 10,
+            "vision.smoke": 9
+          },
+          "llm_calls": 1,
+          "llm_tokens": 2158,
+          "llm_latency_ms": [
+            10829.7
+          ],
+          "judge_latency_ms": [
+            418.3
+          ],
+          "vision_latency_ms": [
+            583.5,
+            596.0,
+            497.7,
+            498.6,
+            435.9,
+            594.2,
+            440.9,
+            437.1,
+            458.2,
+            595.8,
+            597.0,
+            427.1,
+            429.4,
+            711.4,
+            710.1,
+            485.7,
+            3008.2,
+            436.6,
+            467.7
+          ]
+        },
+        {
+          "jev_calls": 20,
+          "jev_cost": 0.000867,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 10,
+            "vision.smoke": 9
+          },
+          "llm_calls": 1,
+          "llm_tokens": 2031,
+          "llm_latency_ms": [
+            4264.2
+          ],
+          "judge_latency_ms": [
+            448.3
+          ],
+          "vision_latency_ms": [
+            443.8,
+            461.3,
+            466.9,
+            604.3,
+            496.4,
+            545.6,
+            565.1,
+            446.4,
+            3009.1,
+            472.8,
+            576.3,
+            447.5,
+            538.2,
+            3004.3,
+            3002.2,
+            693.4,
+            766.4,
+            435.7,
+            694.0
+          ]
+        },
+        {
+          "jev_calls": 20,
+          "jev_cost": 0.001024,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 10,
+            "vision.smoke": 9
+          },
+          "llm_calls": 1,
+          "llm_tokens": 1976,
+          "llm_latency_ms": [
+            3385.3
+          ],
+          "judge_latency_ms": [
+            455.1
+          ],
+          "vision_latency_ms": [
+            455.9,
+            543.7,
+            475.0,
+            688.0,
+            561.1,
+            572.8,
+            538.2,
+            470.0,
+            486.1,
+            461.7,
+            471.6,
+            581.6,
+            634.3,
+            446.1,
+            477.8,
+            461.3,
+            485.0,
+            505.3,
+            516.6
+          ]
+        },
+        {
+          "jev_calls": 20,
+          "jev_cost": 0.001024,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 10,
+            "vision.smoke": 9
+          },
+          "llm_calls": 1,
+          "llm_tokens": 7314,
+          "llm_latency_ms": [
+            26634.0
+          ],
+          "judge_latency_ms": [
+            469.1
+          ],
+          "vision_latency_ms": [
+            456.7,
+            476.1,
+            476.8,
+            473.3,
+            440.7,
+            1929.9,
+            526.8,
+            432.1,
+            459.1,
+            471.6,
+            470.9,
+            443.7,
+            517.3,
+            704.9,
+            1058.4,
+            441.1,
+            475.7,
+            501.0,
+            616.5
+          ]
+        },
+        {
+          "jev_calls": 20,
+          "jev_cost": 0.001024,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 10,
+            "vision.smoke": 9
+          },
+          "llm_calls": 1,
+          "llm_tokens": 2478,
+          "llm_latency_ms": [
+            5141.7
+          ],
+          "judge_latency_ms": [
+            445.9
+          ],
+          "vision_latency_ms": [
+            552.2,
+            585.5,
+            525.0,
+            523.6,
+            436.9,
+            472.9,
+            590.0,
+            471.2,
+            482.2,
+            463.9,
+            486.9,
+            467.0,
+            484.7,
+            485.6,
+            1863.4,
+            457.3,
+            498.0,
+            515.2,
+            513.8
+          ]
+        }
+      ],
+      "jev_cost_mean": 0.00098,
+      "jev_calls_mean": 20.0,
+      "llm_tokens_mean": 3191.0,
+      "judge_latency_ms": {
+        "n": 5,
+        "mean": 447.3,
+        "p50": 448.3,
+        "p95": 466.3,
+        "max": 469.1
+      },
+      "vision_latency_ms": {
+        "n": 95,
+        "mean": 654.3,
+        "p50": 486.9,
+        "p95": 1883.35,
+        "max": 3009.1
+      },
+      "llm_latency_ms": {
+        "n": 5,
+        "mean": 10051.0,
+        "p50": 5141.7,
+        "p95": 23473.14,
+        "max": 26634.0
+      }
+    },
+    "runs": [
+      {
+        "t_misfeed": 13.979038953781128,
+        "t_incident": 14.441298961639404,
+        "t_jev_result": 14.972141981124878,
+        "t_notification": 14.984314918518066,
+        "t_llm": 25.821208000183105,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 6.441,
+        "seg_jamvisible_to_incident": 4.441,
+        "seg_misfeed_to_incident": 0.462,
+        "seg_incident_to_notification": 0.543,
+        "seg_incident_to_jev_result": 0.531,
+        "seg_notification_to_llm": 10.837,
+        "seg_misfeed_to_llm": 11.842,
+        "jev_frames": [
+          {
+            "t": 0.64,
+            "p_jam": 0.62,
+            "trigger": "interval",
+            "latency_ms": 595.9807089529932
+          },
+          {
+            "t": 5.62,
+            "p_jam": 0.69,
+            "trigger": "interval",
+            "latency_ms": 497.6876659784466
+          },
+          {
+            "t": 10.78,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 594.2121250554919
+          },
+          {
+            "t": 14.43,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 440.94991707243025
+          },
+          {
+            "t": 15.65,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 458.2292080158368
+          },
+          {
+            "t": 20.85,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 595.7539579831064
+          },
+          {
+            "t": 25.75,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 427.14266607072204
+          },
+          {
+            "t": 31.03,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 711.4355000667274
+          },
+          {
+            "t": 35.87,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 485.6999170733616
+          },
+          {
+            "t": 40.82,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 436.6352919023484
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 583.5,
+              "cost": 6.0564e-05,
+              "t": 0.633,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 596.0,
+              "cost": 3.5532e-05,
+              "t": 0.643,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 497.7,
+              "cost": 3.5322e-05,
+              "t": 5.614,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 498.6,
+              "cost": 6.0522e-05,
+              "t": 5.62,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 435.9,
+              "cost": 6.0396e-05,
+              "t": 10.628,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 594.2,
+              "cost": 3.5364e-05,
+              "t": 10.778,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 440.9,
+              "cost": 3.5322e-05,
+              "t": 14.427,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 418.3,
+              "cost": 0.000125202,
+              "t": 14.964,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 437.1,
+              "cost": 6.0606e-05,
+              "t": 15.631,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 458.2,
+              "cost": 3.5364e-05,
+              "t": 15.644,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 595.8,
+              "cost": 3.5364e-05,
+              "t": 20.85,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 597.0,
+              "cost": 6.0354e-05,
+              "t": 20.859,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 427.1,
+              "cost": 3.5364e-05,
+              "t": 25.744,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 429.4,
+              "cost": 6.0438e-05,
+              "t": 25.754,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 711.4,
+              "cost": 3.5322e-05,
+              "t": 31.031,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 710.1,
+              "cost": 6.0522e-05,
+              "t": 31.038,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 485.7,
+              "cost": 3.549e-05,
+              "t": 35.87,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 3008.2,
+              "cost": null,
+              "t": 38.4,
+              "error": "timeout>3.0s"
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 436.6,
+              "cost": 3.5448e-05,
+              "t": 40.822,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 467.7,
+              "cost": 6.0522e-05,
+              "t": 40.861,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 10829.7,
+              "tokens": 2158,
+              "t": 25.815,
+              "error": null
+            }
+          ]
+        },
+        "run": 0
+      },
+      {
+        "t_misfeed": 13.978879928588867,
+        "t_incident": 14.568011999130249,
+        "t_jev_result": 15.033524990081787,
+        "t_notification": 15.039804935455322,
+        "t_llm": 19.309144020080566,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 6.568,
+        "seg_jamvisible_to_incident": 4.568,
+        "seg_misfeed_to_incident": 0.589,
+        "seg_incident_to_notification": 0.472,
+        "seg_incident_to_jev_result": 0.466,
+        "seg_notification_to_llm": 4.269,
+        "seg_misfeed_to_llm": 5.33,
+        "jev_frames": [
+          {
+            "t": 0.49,
+            "p_jam": 0.53,
+            "trigger": "interval",
+            "latency_ms": 443.8026670832187
+          },
+          {
+            "t": 5.66,
+            "p_jam": 0.68,
+            "trigger": "interval",
+            "latency_ms": 604.273583041504
+          },
+          {
+            "t": 10.67,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 545.5898749642074
+          },
+          {
+            "t": 14.56,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 565.101332962513
+          },
+          {
+            "t": 15.63,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 446.43183308653533
+          },
+          {
+            "t": 20.66,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 472.78991690836847
+          },
+          {
+            "t": 25.63,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 447.48870795592666
+          },
+          {
+            "t": 36.02,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 766.3524590898305
+          },
+          {
+            "t": 40.69,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 435.71920797694474
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 443.8,
+              "cost": 3.5448e-05,
+              "t": 0.493,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 461.3,
+              "cost": 6.0354e-05,
+              "t": 0.517,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 466.9,
+              "cost": 6.0438e-05,
+              "t": 5.527,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 604.3,
+              "cost": 3.5532e-05,
+              "t": 5.657,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 496.4,
+              "cost": 6.0606e-05,
+              "t": 10.62,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 545.6,
+              "cost": 3.5406e-05,
+              "t": 10.664,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 565.1,
+              "cost": 3.5364e-05,
+              "t": 14.557,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 448.3,
+              "cost": 0.000125202,
+              "t": 15.03,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 446.4,
+              "cost": 3.5448e-05,
+              "t": 15.632,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 3009.1,
+              "cost": null,
+              "t": 18.203,
+              "error": "timeout>3.0s"
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 472.8,
+              "cost": 3.549e-05,
+              "t": 20.658,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 576.3,
+              "cost": 6.0438e-05,
+              "t": 20.771,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 447.5,
+              "cost": 3.5364e-05,
+              "t": 25.634,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 538.2,
+              "cost": 6.0396e-05,
+              "t": 25.733,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 3004.3,
+              "cost": null,
+              "t": 33.251,
+              "error": "timeout>3.0s"
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 3002.2,
+              "cost": null,
+              "t": 33.252,
+              "error": "timeout>3.0s"
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 693.4,
+              "cost": 6.0354e-05,
+              "t": 35.951,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 766.4,
+              "cost": 3.5448e-05,
+              "t": 36.017,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 435.7,
+              "cost": 3.549e-05,
+              "t": 40.689,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 694.0,
+              "cost": 6.0564e-05,
+              "t": 40.955,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 4264.2,
+              "tokens": 2031,
+              "t": 19.305,
+              "error": null
+            }
+          ]
+        },
+        "run": 1
+      },
+      {
+        "t_misfeed": 13.979859113693237,
+        "t_incident": 14.525957107543945,
+        "t_jev_result": 14.988213062286377,
+        "t_notification": 14.991019010543823,
+        "t_llm": 18.377774953842163,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 6.526,
+        "seg_jamvisible_to_incident": 4.526,
+        "seg_misfeed_to_incident": 0.546,
+        "seg_incident_to_notification": 0.465,
+        "seg_incident_to_jev_result": 0.462,
+        "seg_notification_to_llm": 3.387,
+        "seg_misfeed_to_llm": 4.398,
+        "jev_frames": [
+          {
+            "t": 0.51,
+            "p_jam": 0.59,
+            "trigger": "interval",
+            "latency_ms": 455.9256669599563
+          },
+          {
+            "t": 5.59,
+            "p_jam": 0.67,
+            "trigger": "interval",
+            "latency_ms": 475.0442090444267
+          },
+          {
+            "t": 10.74,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 561.0505419317633
+          },
+          {
+            "t": 14.52,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 538.1631660275161
+          },
+          {
+            "t": 15.67,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 486.1436659703031
+          },
+          {
+            "t": 20.71,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 461.6708749672398
+          },
+          {
+            "t": 25.83,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 581.6367920488119
+          },
+          {
+            "t": 30.76,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 446.0805000271648
+          },
+          {
+            "t": 35.8,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 484.9707910325378
+          },
+          {
+            "t": 40.89,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 505.27487497311085
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 455.9,
+              "cost": 3.5532e-05,
+              "t": 0.508,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 543.7,
+              "cost": 6.0396e-05,
+              "t": 0.601,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 475.0,
+              "cost": 3.5364e-05,
+              "t": 5.593,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 688.0,
+              "cost": 6.0354e-05,
+              "t": 5.814,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 561.1,
+              "cost": 3.549e-05,
+              "t": 10.743,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 572.8,
+              "cost": 6.0564e-05,
+              "t": 10.758,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 538.2,
+              "cost": 3.5406e-05,
+              "t": 14.523,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 455.1,
+              "cost": 0.000125202,
+              "t": 14.987,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 470.0,
+              "cost": 6.0564e-05,
+              "t": 15.655,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 486.1,
+              "cost": 3.5406e-05,
+              "t": 15.668,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 461.7,
+              "cost": 3.5448e-05,
+              "t": 20.71,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 471.6,
+              "cost": 6.0396e-05,
+              "t": 20.723,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 581.6,
+              "cost": 3.528e-05,
+              "t": 25.831,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 634.3,
+              "cost": 6.0312e-05,
+              "t": 25.886,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 446.1,
+              "cost": 3.549e-05,
+              "t": 30.761,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 477.8,
+              "cost": 6.0564e-05,
+              "t": 30.797,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 461.3,
+              "cost": 6.0438e-05,
+              "t": 35.789,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 485.0,
+              "cost": 3.549e-05,
+              "t": 35.804,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 505.3,
+              "cost": 3.5448e-05,
+              "t": 40.888,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 516.6,
+              "cost": 6.0564e-05,
+              "t": 40.902,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 3385.3,
+              "tokens": 1976,
+              "t": 18.377,
+              "error": null
+            }
+          ]
+        },
+        "run": 2
+      },
+      {
+        "t_misfeed": 13.98791790008545,
+        "t_incident": 14.541459083557129,
+        "t_jev_result": 15.027582883834839,
+        "t_notification": 15.032432079315186,
+        "t_llm": 41.67073202133179,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 6.541,
+        "seg_jamvisible_to_incident": 4.541,
+        "seg_misfeed_to_incident": 0.554,
+        "seg_incident_to_notification": 0.491,
+        "seg_incident_to_jev_result": 0.486,
+        "seg_notification_to_llm": 26.638,
+        "seg_misfeed_to_llm": 27.683,
+        "jev_frames": [
+          {
+            "t": 0.51,
+            "p_jam": 0.57,
+            "trigger": "interval",
+            "latency_ms": 456.7255839938298
+          },
+          {
+            "t": 5.54,
+            "p_jam": 0.66,
+            "trigger": "interval",
+            "latency_ms": 476.75337502732873
+          },
+          {
+            "t": 10.57,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 440.7082919497043
+          },
+          {
+            "t": 14.53,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 526.8094580387697
+          },
+          {
+            "t": 15.59,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 459.07812495715916
+          },
+          {
+            "t": 20.67,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 471.5946250362322
+          },
+          {
+            "t": 25.71,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 443.7140829395503
+          },
+          {
+            "t": 31.39,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 1058.3775829290971
+          },
+          {
+            "t": 35.77,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 441.14416593220085
+          },
+          {
+            "t": 41.01,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 616.5410419926047
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 456.7,
+              "cost": 3.5448e-05,
+              "t": 0.515,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 476.1,
+              "cost": 6.0564e-05,
+              "t": 0.537,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 476.8,
+              "cost": 3.5406e-05,
+              "t": 5.536,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 473.3,
+              "cost": 6.0396e-05,
+              "t": 5.539,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 440.7,
+              "cost": 3.5448e-05,
+              "t": 10.565,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 1929.9,
+              "cost": 6.0564e-05,
+              "t": 12.057,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 526.8,
+              "cost": 3.5364e-05,
+              "t": 14.53,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 469.1,
+              "cost": 0.000125202,
+              "t": 15.025,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 432.1,
+              "cost": 6.0438e-05,
+              "t": 15.566,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 459.1,
+              "cost": 3.5364e-05,
+              "t": 15.587,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 471.6,
+              "cost": 3.528e-05,
+              "t": 20.667,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 470.9,
+              "cost": 6.0606e-05,
+              "t": 20.674,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 443.7,
+              "cost": 3.5448e-05,
+              "t": 25.707,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 517.3,
+              "cost": 6.0396e-05,
+              "t": 25.788,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 704.9,
+              "cost": 6.0564e-05,
+              "t": 31.041,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 1058.4,
+              "cost": 3.5364e-05,
+              "t": 31.386,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 441.1,
+              "cost": 3.5238e-05,
+              "t": 35.772,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 475.7,
+              "cost": 6.0564e-05,
+              "t": 35.818,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 501.0,
+              "cost": 6.0522e-05,
+              "t": 40.904,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 616.5,
+              "cost": 3.5448e-05,
+              "t": 41.012,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 26634.0,
+              "tokens": 7314,
+              "t": 41.667,
+              "error": null
+            }
+          ]
+        },
+        "run": 3
+      },
+      {
+        "t_misfeed": 13.980960845947266,
+        "t_incident": 14.600302934646606,
+        "t_jev_result": 15.066881895065308,
+        "t_notification": 15.074895858764648,
+        "t_llm": 20.219948053359985,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 6.6,
+        "seg_jamvisible_to_incident": 4.6,
+        "seg_misfeed_to_incident": 0.619,
+        "seg_incident_to_notification": 0.475,
+        "seg_incident_to_jev_result": 0.467,
+        "seg_notification_to_llm": 5.145,
+        "seg_misfeed_to_llm": 6.239,
+        "jev_frames": [
+          {
+            "t": 0.61,
+            "p_jam": 0.6,
+            "trigger": "interval",
+            "latency_ms": 552.2329590748996
+          },
+          {
+            "t": 5.58,
+            "p_jam": 0.69,
+            "trigger": "interval",
+            "latency_ms": 525.0337079633027
+          },
+          {
+            "t": 10.53,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 472.8948330739513
+          },
+          {
+            "t": 14.59,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 589.9695409461856
+          },
+          {
+            "t": 15.6,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 482.18675004318357
+          },
+          {
+            "t": 20.66,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 463.85908406227827
+          },
+          {
+            "t": 25.74,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 484.72191602922976
+          },
+          {
+            "t": 32.19,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 1863.42212499585
+          },
+          {
+            "t": 35.78,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 457.27524999529123
+          },
+          {
+            "t": 40.9,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 515.1918340707198
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 552.2,
+              "cost": 3.5364e-05,
+              "t": 0.605,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 585.5,
+              "cost": 6.0606e-05,
+              "t": 0.644,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 525.0,
+              "cost": 3.5406e-05,
+              "t": 5.579,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 523.6,
+              "cost": 6.0522e-05,
+              "t": 5.584,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 436.9,
+              "cost": 6.0438e-05,
+              "t": 10.501,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 472.9,
+              "cost": 3.5406e-05,
+              "t": 10.529,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 590.0,
+              "cost": 3.5322e-05,
+              "t": 14.589,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 445.9,
+              "cost": 0.00012516,
+              "t": 15.058,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 471.2,
+              "cost": 6.0438e-05,
+              "t": 15.599,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 482.2,
+              "cost": 3.549e-05,
+              "t": 15.604,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 463.9,
+              "cost": 3.5448e-05,
+              "t": 20.655,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 486.9,
+              "cost": 6.0438e-05,
+              "t": 20.685,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 467.0,
+              "cost": 6.048e-05,
+              "t": 25.73,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 484.7,
+              "cost": 3.5448e-05,
+              "t": 25.74,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 485.6,
+              "cost": 6.0522e-05,
+              "t": 30.814,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 1863.4,
+              "cost": 3.528e-05,
+              "t": 32.185,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 457.3,
+              "cost": 3.5532e-05,
+              "t": 35.781,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 498.0,
+              "cost": 6.048e-05,
+              "t": 35.83,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 515.2,
+              "cost": 3.5364e-05,
+              "t": 40.903,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 513.8,
+              "cost": 6.0396e-05,
+              "t": 40.909,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 5141.7,
+              "tokens": 2478,
+              "t": 20.218,
+              "error": null
+            }
+          ]
+        },
+        "run": 4
+      }
+    ]
+  },
+  "feed_jam_interval2": {
+    "segments_s": {
+      "seg_ramp_to_incident": {
+        "n": 5,
+        "mean": 5.996,
+        "p50": 5.996,
+        "p95": 6.0,
+        "max": 6.0,
+        "values_s": [
+          5.989,
+          5.994,
+          5.999,
+          6.0,
+          5.996
+        ],
+        "n_missing": 0
+      },
+      "seg_jamvisible_to_incident": {
+        "n": 5,
+        "mean": 3.996,
+        "p50": 3.996,
+        "p95": 4.0,
+        "max": 4.0,
+        "values_s": [
+          3.989,
+          3.994,
+          3.999,
+          4.0,
+          3.996
+        ],
+        "n_missing": 0
+      },
+      "seg_misfeed_to_incident": {
+        "n": 5,
+        "mean": 0.023,
+        "p50": 0.022,
+        "p95": 0.026,
+        "max": 0.026,
+        "values_s": [
+          0.024,
+          0.022,
+          0.026,
+          0.021,
+          0.022
+        ],
+        "n_missing": 0
+      },
+      "seg_incident_to_jev_result": {
+        "n": 5,
+        "mean": 0.514,
+        "p50": 0.495,
+        "p95": 0.606,
+        "max": 0.628,
+        "values_s": [
+          0.628,
+          0.495,
+          0.464,
+          0.462,
+          0.52
+        ],
+        "n_missing": 0
+      },
+      "seg_incident_to_notification": {
+        "n": 5,
+        "mean": 0.523,
+        "p50": 0.506,
+        "p95": 0.617,
+        "max": 0.639,
+        "values_s": [
+          0.639,
+          0.506,
+          0.47,
+          0.47,
+          0.528
+        ],
+        "n_missing": 0
+      },
+      "seg_notification_to_llm": {
+        "n": 5,
+        "mean": 5.617,
+        "p50": 5.399,
+        "p95": 8.523,
+        "max": 9.044,
+        "values_s": [
+          2.246,
+          6.439,
+          5.399,
+          9.044,
+          4.959
+        ],
+        "n_missing": 0
+      },
+      "seg_misfeed_to_llm": {
+        "n": 5,
+        "mean": 6.163,
+        "p50": 5.894,
+        "p95": 9.021,
+        "max": 9.534,
+        "values_s": [
+          2.909,
+          6.967,
+          5.894,
+          9.534,
+          5.509
+        ],
+        "n_missing": 0
+      }
+    },
+    "cost": {
+      "per_run": [
+        {
+          "jev_calls": 45,
+          "jev_cost": 0.002237,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 22,
+            "vision.smoke": 22
+          },
+          "llm_calls": 1,
+          "llm_tokens": 1726,
+          "llm_latency_ms": [
+            2239.6
+          ],
+          "judge_latency_ms": [
+            504.0
+          ],
+          "vision_latency_ms": [
+            472.3,
+            510.9,
+            473.6,
+            1678.5,
+            444.0,
+            458.0,
+            441.8,
+            473.6,
+            462.6,
+            500.7,
+            481.4,
+            478.9,
+            472.4,
+            469.7,
+            450.4,
+            429.8,
+            439.4,
+            489.3,
+            457.6,
+            488.1,
+            479.0,
+            503.7,
+            454.1,
+            463.5,
+            479.2,
+            486.1,
+            448.3,
+            461.4,
+            445.8,
+            456.0,
+            459.1,
+            515.8,
+            424.4,
+            457.3,
+            452.5,
+            503.3,
+            535.4,
+            905.7,
+            516.6,
+            518.4,
+            451.0,
+            473.0,
+            486.2,
+            484.2
+          ]
+        },
+        {
+          "jev_calls": 45,
+          "jev_cost": 0.002237,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 22,
+            "vision.smoke": 22
+          },
+          "llm_calls": 1,
+          "llm_tokens": 2415,
+          "llm_latency_ms": [
+            6434.4
+          ],
+          "judge_latency_ms": [
+            476.4
+          ],
+          "vision_latency_ms": [
+            450.8,
+            460.8,
+            438.5,
+            438.5,
+            441.6,
+            440.4,
+            540.3,
+            564.7,
+            424.1,
+            456.5,
+            526.2,
+            560.6,
+            454.7,
+            460.5,
+            438.9,
+            474.4,
+            480.8,
+            483.5,
+            438.1,
+            465.4,
+            479.9,
+            525.6,
+            455.3,
+            458.6,
+            445.8,
+            461.6,
+            426.9,
+            446.6,
+            488.6,
+            482.4,
+            483.5,
+            496.6,
+            461.5,
+            470.1,
+            516.9,
+            535.3,
+            427.8,
+            485.4,
+            449.0,
+            494.1,
+            556.1,
+            492.3,
+            499.5,
+            431.6
+          ]
+        },
+        {
+          "jev_calls": 45,
+          "jev_cost": 0.002238,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 22,
+            "vision.smoke": 22
+          },
+          "llm_calls": 1,
+          "llm_tokens": 2210,
+          "llm_latency_ms": [
+            5394.5
+          ],
+          "judge_latency_ms": [
+            449.9
+          ],
+          "vision_latency_ms": [
+            431.7,
+            473.8,
+            442.7,
+            461.9,
+            431.6,
+            459.9,
+            431.8,
+            430.2,
+            459.2,
+            481.1,
+            462.7,
+            489.8,
+            464.4,
+            461.6,
+            438.8,
+            489.6,
+            476.4,
+            490.9,
+            483.8,
+            485.0,
+            458.6,
+            509.3,
+            458.1,
+            1802.4,
+            512.8,
+            539.6,
+            444.5,
+            551.5,
+            500.1,
+            517.7,
+            440.8,
+            455.2,
+            496.6,
+            497.3,
+            545.1,
+            557.0,
+            431.0,
+            455.3,
+            595.0,
+            884.5,
+            836.2,
+            945.5,
+            444.8,
+            442.7
+          ]
+        },
+        {
+          "jev_calls": 45,
+          "jev_cost": 0.002238,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 22,
+            "vision.smoke": 22
+          },
+          "llm_calls": 1,
+          "llm_tokens": 3196,
+          "llm_latency_ms": [
+            9033.0
+          ],
+          "judge_latency_ms": [
+            445.0
+          ],
+          "vision_latency_ms": [
+            474.7,
+            536.6,
+            510.9,
+            521.0,
+            423.7,
+            464.3,
+            428.3,
+            442.6,
+            461.3,
+            457.4,
+            426.4,
+            438.4,
+            468.0,
+            466.8,
+            439.4,
+            475.4,
+            470.3,
+            448.0,
+            554.5,
+            564.1,
+            425.3,
+            454.5,
+            497.4,
+            509.8,
+            586.7,
+            602.9,
+            483.0,
+            513.5,
+            460.8,
+            471.4,
+            460.5,
+            471.3,
+            504.6,
+            517.5,
+            479.8,
+            518.2,
+            471.2,
+            484.5,
+            483.3,
+            484.6,
+            514.0,
+            512.6,
+            474.1,
+            481.8
+          ]
+        },
+        {
+          "jev_calls": 45,
+          "jev_cost": 0.002238,
+          "jev_by_purpose": {
+            "judge.event": 1,
+            "vision.feed": 22,
+            "vision.smoke": 22
+          },
+          "llm_calls": 1,
+          "llm_tokens": 2422,
+          "llm_latency_ms": [
+            4952.8
+          ],
+          "judge_latency_ms": [
+            500.3
+          ],
+          "vision_latency_ms": [
+            454.9,
+            467.5,
+            498.0,
+            542.8,
+            460.8,
+            478.7,
+            514.8,
+            591.3,
+            476.8,
+            601.2,
+            491.9,
+            489.8,
+            466.3,
+            463.2,
+            560.3,
+            511.0,
+            436.8,
+            448.0,
+            486.6,
+            514.6,
+            489.0,
+            501.3,
+            517.5,
+            554.3,
+            559.2,
+            557.8,
+            451.4,
+            466.0,
+            626.1,
+            626.4,
+            460.6,
+            468.8,
+            446.6,
+            466.2,
+            461.0,
+            493.3,
+            450.2,
+            728.9,
+            450.6,
+            464.6,
+            521.7,
+            551.3,
+            443.1,
+            502.3
+          ]
+        }
+      ],
+      "jev_cost_mean": 0.002238,
+      "jev_calls_mean": 45.0,
+      "llm_tokens_mean": 2394.0,
+      "judge_latency_ms": {
+        "n": 5,
+        "mean": 475.1,
+        "p50": 476.4,
+        "p95": 503.26,
+        "max": 504.0
+      },
+      "vision_latency_ms": {
+        "n": 220,
+        "mean": 502.1,
+        "p50": 474.25,
+        "p95": 595.31,
+        "max": 1802.4
+      },
+      "llm_latency_ms": {
+        "n": 5,
+        "mean": 5610.9,
+        "p50": 5394.5,
+        "p95": 8513.28,
+        "max": 9033.0
+      }
+    },
+    "runs": [
+      {
+        "t_misfeed": 13.964729070663452,
+        "t_incident": 13.988965034484863,
+        "t_jev_result": 14.617279052734375,
+        "t_notification": 14.627853870391846,
+        "t_llm": 16.873488903045654,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 5.989,
+        "seg_jamvisible_to_incident": 3.989,
+        "seg_misfeed_to_incident": 0.024,
+        "seg_incident_to_notification": 0.639,
+        "seg_incident_to_jev_result": 0.628,
+        "seg_notification_to_llm": 2.246,
+        "seg_misfeed_to_llm": 2.909,
+        "jev_frames": [
+          {
+            "t": 0.46,
+            "p_jam": 0.48,
+            "trigger": "interval",
+            "latency_ms": 472.3070840118453
+          },
+          {
+            "t": 3.72,
+            "p_jam": 0.48,
+            "trigger": "interval",
+            "latency_ms": 1678.4620000980794
+          },
+          {
+            "t": 4.56,
+            "p_jam": 0.64,
+            "trigger": "interval",
+            "latency_ms": 458.00308394245803
+          },
+          {
+            "t": 6.64,
+            "p_jam": 0.54,
+            "trigger": "interval",
+            "latency_ms": 473.59900001902133
+          },
+          {
+            "t": 8.7,
+            "p_jam": 0.55,
+            "trigger": "interval",
+            "latency_ms": 462.5992910005152
+          },
+          {
+            "t": 10.79,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 481.37804097495973
+          },
+          {
+            "t": 12.78,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 472.3804579116404
+          },
+          {
+            "t": 14.56,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 450.3664580406621
+          },
+          {
+            "t": 16.86,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 489.2622500192374
+          },
+          {
+            "t": 18.93,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 488.0735829938203
+          },
+          {
+            "t": 21.01,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 503.6930829519406
+          },
+          {
+            "t": 22.96,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 454.0960839949548
+          },
+          {
+            "t": 25.05,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 479.2466249782592
+          },
+          {
+            "t": 27.03,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 461.3520000129938
+          },
+          {
+            "t": 29.02,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 445.78258402179927
+          },
+          {
+            "t": 31.15,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 515.7720829593018
+          },
+          {
+            "t": 33.16,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 457.2951670270413
+          },
+          {
+            "t": 35.22,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 452.46137504000217
+          },
+          {
+            "t": 37.37,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 535.3568330174312
+          },
+          {
+            "t": 39.35,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 516.5549159282818
+          },
+          {
+            "t": 41.31,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 472.9917920194566
+          },
+          {
+            "t": 43.39,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 486.2439999124035
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 472.3,
+              "cost": 3.5532e-05,
+              "t": 0.463,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 510.9,
+              "cost": 6.0438e-05,
+              "t": 0.505,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 473.6,
+              "cost": 6.0564e-05,
+              "t": 2.519,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 1678.5,
+              "cost": 3.5532e-05,
+              "t": 3.717,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 444.0,
+              "cost": 6.0438e-05,
+              "t": 4.555,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 458.0,
+              "cost": 3.5364e-05,
+              "t": 4.561,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 441.8,
+              "cost": 6.0606e-05,
+              "t": 6.62,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 473.6,
+              "cost": 3.5406e-05,
+              "t": 6.644,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 462.6,
+              "cost": 3.5364e-05,
+              "t": 8.7,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 500.7,
+              "cost": 6.0438e-05,
+              "t": 8.745,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 481.4,
+              "cost": 3.5448e-05,
+              "t": 10.784,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 478.9,
+              "cost": 6.0522e-05,
+              "t": 10.789,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 472.4,
+              "cost": 3.5532e-05,
+              "t": 12.776,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 469.7,
+              "cost": 6.0438e-05,
+              "t": 12.781,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 450.4,
+              "cost": 3.5448e-05,
+              "t": 14.557,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 504.0,
+              "cost": 0.000128436,
+              "t": 14.61,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 429.8,
+              "cost": 6.048e-05,
+              "t": 14.805,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 439.4,
+              "cost": 6.048e-05,
+              "t": 16.817,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 489.3,
+              "cost": 3.528e-05,
+              "t": 16.859,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 457.6,
+              "cost": 6.0438e-05,
+              "t": 18.902,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 488.1,
+              "cost": 3.5406e-05,
+              "t": 18.925,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 479.0,
+              "cost": 6.0438e-05,
+              "t": 20.99,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 503.7,
+              "cost": 3.5364e-05,
+              "t": 21.007,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 454.1,
+              "cost": 3.5448e-05,
+              "t": 22.957,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 463.5,
+              "cost": 6.0354e-05,
+              "t": 22.974,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 479.2,
+              "cost": 3.5448e-05,
+              "t": 25.048,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 486.1,
+              "cost": 6.0438e-05,
+              "t": 25.061,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 448.3,
+              "cost": 6.0396e-05,
+              "t": 27.025,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 461.4,
+              "cost": 3.5322e-05,
+              "t": 27.031,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 445.8,
+              "cost": 3.5448e-05,
+              "t": 29.018,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 456.0,
+              "cost": 6.0522e-05,
+              "t": 29.036,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 459.1,
+              "cost": 6.0564e-05,
+              "t": 31.103,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 515.8,
+              "cost": 3.5364e-05,
+              "t": 31.152,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 424.4,
+              "cost": 6.0564e-05,
+              "t": 33.137,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 457.3,
+              "cost": 3.528e-05,
+              "t": 33.162,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 452.5,
+              "cost": 3.5364e-05,
+              "t": 35.22,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 503.3,
+              "cost": 6.048e-05,
+              "t": 35.275,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 535.4,
+              "cost": 3.549e-05,
+              "t": 37.371,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 905.7,
+              "cost": 6.0396e-05,
+              "t": 37.748,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 516.6,
+              "cost": 3.5196e-05,
+              "t": 39.353,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 518.4,
+              "cost": 6.0564e-05,
+              "t": 39.362,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 451.0,
+              "cost": 6.0438e-05,
+              "t": 41.296,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 473.0,
+              "cost": 3.528e-05,
+              "t": 41.31,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 486.2,
+              "cost": 3.5238e-05,
+              "t": 43.389,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 484.2,
+              "cost": 6.0312e-05,
+              "t": 43.394,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 2239.6,
+              "tokens": 1726,
+              "t": 16.868,
+              "error": null
+            }
+          ]
+        },
+        "run": 0
+      },
+      {
+        "t_misfeed": 13.972279071807861,
+        "t_incident": 13.994456052780151,
+        "t_jev_result": 14.489157915115356,
+        "t_notification": 14.500664949417114,
+        "t_llm": 20.93932795524597,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 5.994,
+        "seg_jamvisible_to_incident": 3.994,
+        "seg_misfeed_to_incident": 0.022,
+        "seg_incident_to_notification": 0.506,
+        "seg_incident_to_jev_result": 0.495,
+        "seg_notification_to_llm": 6.439,
+        "seg_misfeed_to_llm": 6.967,
+        "jev_frames": [
+          {
+            "t": 0.45,
+            "p_jam": 0.48,
+            "trigger": "interval",
+            "latency_ms": 460.8186660334468
+          },
+          {
+            "t": 2.48,
+            "p_jam": 0.47,
+            "trigger": "interval",
+            "latency_ms": 438.5333330137655
+          },
+          {
+            "t": 4.49,
+            "p_jam": 0.54,
+            "trigger": "interval",
+            "latency_ms": 441.5731249609962
+          },
+          {
+            "t": 6.65,
+            "p_jam": 0.55,
+            "trigger": "interval",
+            "latency_ms": 540.2863330673426
+          },
+          {
+            "t": 8.57,
+            "p_jam": 0.56,
+            "trigger": "interval",
+            "latency_ms": 456.52333297766745
+          },
+          {
+            "t": 10.67,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 560.6350830057636
+          },
+          {
+            "t": 12.63,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 454.67883395031095
+          },
+          {
+            "t": 14.45,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 438.8565419940278
+          },
+          {
+            "t": 16.73,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 480.7754170615226
+          },
+          {
+            "t": 18.78,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 465.4002080205828
+          },
+          {
+            "t": 20.84,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 525.5662080598995
+          },
+          {
+            "t": 22.84,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 455.3239999804646
+          },
+          {
+            "t": 24.91,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 461.5791250253096
+          },
+          {
+            "t": 26.89,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 446.6104169841856
+          },
+          {
+            "t": 29.0,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 488.5664579924196
+          },
+          {
+            "t": 31.0,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 483.53333305567503
+          },
+          {
+            "t": 33.05,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 470.1059589860961
+          },
+          {
+            "t": 35.1,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 516.9488749234006
+          },
+          {
+            "t": 37.13,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 485.44566601049155
+          },
+          {
+            "t": 39.1,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 448.9780419971794
+          },
+          {
+            "t": 41.2,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 556.0825830325484
+          },
+          {
+            "t": 43.21,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 499.4924170896411
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 450.8,
+              "cost": 6.0522e-05,
+              "t": 0.447,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 460.8,
+              "cost": 3.5448e-05,
+              "t": 0.452,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 438.5,
+              "cost": 3.5406e-05,
+              "t": 2.482,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 438.5,
+              "cost": 6.0522e-05,
+              "t": 2.489,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 441.6,
+              "cost": 3.5532e-05,
+              "t": 4.488,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 440.4,
+              "cost": 6.048e-05,
+              "t": 4.494,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 540.3,
+              "cost": 3.5406e-05,
+              "t": 6.65,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 564.7,
+              "cost": 6.0522e-05,
+              "t": 6.68,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 424.1,
+              "cost": 6.0396e-05,
+              "t": 8.544,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 456.5,
+              "cost": 3.5238e-05,
+              "t": 8.568,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 526.2,
+              "cost": 6.0354e-05,
+              "t": 10.645,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 560.6,
+              "cost": 3.5364e-05,
+              "t": 10.673,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 454.7,
+              "cost": 3.5364e-05,
+              "t": 12.632,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 460.5,
+              "cost": 6.0312e-05,
+              "t": 12.645,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 438.9,
+              "cost": 3.5448e-05,
+              "t": 14.447,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 476.4,
+              "cost": 0.000128352,
+              "t": 14.483,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 474.4,
+              "cost": 6.0396e-05,
+              "t": 14.657,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 480.8,
+              "cost": 3.5406e-05,
+              "t": 16.727,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 483.5,
+              "cost": 6.0438e-05,
+              "t": 16.737,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 438.1,
+              "cost": 6.0438e-05,
+              "t": 18.755,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 465.4,
+              "cost": 3.5322e-05,
+              "t": 18.775,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 479.9,
+              "cost": 6.048e-05,
+              "t": 20.798,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 525.6,
+              "cost": 3.5322e-05,
+              "t": 20.836,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 455.3,
+              "cost": 3.5448e-05,
+              "t": 22.835,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 458.6,
+              "cost": 6.0438e-05,
+              "t": 22.847,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 445.8,
+              "cost": 6.0438e-05,
+              "t": 24.897,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 461.6,
+              "cost": 3.5448e-05,
+              "t": 24.906,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 426.9,
+              "cost": 6.0564e-05,
+              "t": 26.882,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 446.6,
+              "cost": 3.5364e-05,
+              "t": 26.893,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 488.6,
+              "cost": 3.5364e-05,
+              "t": 28.999,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 482.4,
+              "cost": 6.0522e-05,
+              "t": 29.0,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 483.5,
+              "cost": 3.549e-05,
+              "t": 30.995,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 496.6,
+              "cost": 6.0396e-05,
+              "t": 31.017,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 461.5,
+              "cost": 6.0438e-05,
+              "t": 33.045,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 470.1,
+              "cost": 3.528e-05,
+              "t": 33.047,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 516.9,
+              "cost": 3.549e-05,
+              "t": 35.095,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 535.3,
+              "cost": 6.048e-05,
+              "t": 35.121,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 427.8,
+              "cost": 6.0396e-05,
+              "t": 37.079,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 485.4,
+              "cost": 3.5322e-05,
+              "t": 37.13,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 449.0,
+              "cost": 3.5406e-05,
+              "t": 39.094,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 494.1,
+              "cost": 6.0522e-05,
+              "t": 39.146,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 556.1,
+              "cost": 3.5406e-05,
+              "t": 41.2,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 492.3,
+              "cost": 6.0396e-05,
+              "t": 41.207,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 499.5,
+              "cost": 3.5322e-05,
+              "t": 43.208,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 431.6,
+              "cost": 6.0522e-05,
+              "t": 43.213,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 6434.4,
+              "tokens": 2415,
+              "t": 20.936,
+              "error": null
+            }
+          ]
+        },
+        "run": 1
+      },
+      {
+        "t_misfeed": 13.97350287437439,
+        "t_incident": 13.999018907546997,
+        "t_jev_result": 14.462654829025269,
+        "t_notification": 14.468930959701538,
+        "t_llm": 19.867883920669556,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 5.999,
+        "seg_jamvisible_to_incident": 3.999,
+        "seg_misfeed_to_incident": 0.026,
+        "seg_incident_to_notification": 0.47,
+        "seg_incident_to_jev_result": 0.464,
+        "seg_notification_to_llm": 5.399,
+        "seg_misfeed_to_llm": 5.894,
+        "jev_frames": [
+          {
+            "t": 0.42,
+            "p_jam": 0.48,
+            "trigger": "interval",
+            "latency_ms": 431.65866599883884
+          },
+          {
+            "t": 2.51,
+            "p_jam": 0.45,
+            "trigger": "interval",
+            "latency_ms": 461.8897920008749
+          },
+          {
+            "t": 4.57,
+            "p_jam": 0.68,
+            "trigger": "interval",
+            "latency_ms": 459.94416589383036
+          },
+          {
+            "t": 6.55,
+            "p_jam": 0.53,
+            "trigger": "interval",
+            "latency_ms": 431.8140420364216
+          },
+          {
+            "t": 8.59,
+            "p_jam": 0.53,
+            "trigger": "interval",
+            "latency_ms": 481.1105419648811
+          },
+          {
+            "t": 10.67,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 489.7621670970693
+          },
+          {
+            "t": 12.64,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 464.3760409671813
+          },
+          {
+            "t": 14.45,
+            "p_jam": 0.97,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 438.7789589818567
+          },
+          {
+            "t": 16.74,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 490.8937499858439
+          },
+          {
+            "t": 18.73,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 483.7640000041574
+          },
+          {
+            "t": 20.71,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 458.57545803301036
+          },
+          {
+            "t": 24.12,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 1802.3792079184204
+          },
+          {
+            "t": 24.92,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 539.5695419283584
+          },
+          {
+            "t": 27.0,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 551.4578330330551
+          },
+          {
+            "t": 28.95,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 500.1273750094697
+          },
+          {
+            "t": 30.97,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 455.2230410045013
+          },
+          {
+            "t": 33.08,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 496.58966704737395
+          },
+          {
+            "t": 35.14,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 557.0481249596924
+          },
+          {
+            "t": 37.1,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 455.3249169839546
+          },
+          {
+            "t": 39.53,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 884.5367500325665
+          },
+          {
+            "t": 41.55,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 836.2195410300046
+          },
+          {
+            "t": 43.23,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 444.8096249252558
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 431.7,
+              "cost": 3.549e-05,
+              "t": 0.422,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 473.8,
+              "cost": 6.0396e-05,
+              "t": 0.47,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 442.7,
+              "cost": 6.0396e-05,
+              "t": 2.495,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 461.9,
+              "cost": 3.5448e-05,
+              "t": 2.507,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 431.6,
+              "cost": 6.048e-05,
+              "t": 4.55,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 459.9,
+              "cost": 3.5406e-05,
+              "t": 4.571,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 431.8,
+              "cost": 3.5448e-05,
+              "t": 6.543,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 430.2,
+              "cost": 6.0564e-05,
+              "t": 6.549,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 459.2,
+              "cost": 6.048e-05,
+              "t": 8.578,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 481.1,
+              "cost": 3.5322e-05,
+              "t": 8.593,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 462.7,
+              "cost": 6.0648e-05,
+              "t": 10.648,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 489.8,
+              "cost": 3.5448e-05,
+              "t": 10.668,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 464.4,
+              "cost": 3.5532e-05,
+              "t": 12.643,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 461.6,
+              "cost": 6.0606e-05,
+              "t": 12.648,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 438.8,
+              "cost": 3.549e-05,
+              "t": 14.449,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 449.9,
+              "cost": 0.000128352,
+              "t": 14.459,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 489.6,
+              "cost": 6.0564e-05,
+              "t": 14.739,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 476.4,
+              "cost": 6.0438e-05,
+              "t": 16.729,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 490.9,
+              "cost": 3.549e-05,
+              "t": 16.736,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 483.8,
+              "cost": 3.5364e-05,
+              "t": 18.729,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 485.0,
+              "cost": 6.0396e-05,
+              "t": 18.738,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 458.6,
+              "cost": 3.528e-05,
+              "t": 20.704,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 509.3,
+              "cost": 6.0438e-05,
+              "t": 20.762,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 458.1,
+              "cost": 6.048e-05,
+              "t": 22.777,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 1802.4,
+              "cost": 3.5364e-05,
+              "t": 24.114,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 512.8,
+              "cost": 6.0438e-05,
+              "t": 24.901,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 539.6,
+              "cost": 3.5406e-05,
+              "t": 24.919,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 444.5,
+              "cost": 6.0396e-05,
+              "t": 26.896,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 551.5,
+              "cost": 3.5364e-05,
+              "t": 26.996,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 500.1,
+              "cost": 3.528e-05,
+              "t": 28.945,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 517.7,
+              "cost": 6.0522e-05,
+              "t": 28.97,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 440.8,
+              "cost": 6.0312e-05,
+              "t": 30.961,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 455.2,
+              "cost": 3.5448e-05,
+              "t": 30.967,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 496.6,
+              "cost": 3.5532e-05,
+              "t": 33.074,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 497.3,
+              "cost": 6.0396e-05,
+              "t": 33.082,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 545.1,
+              "cost": 6.0438e-05,
+              "t": 35.133,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 557.0,
+              "cost": 3.5406e-05,
+              "t": 35.138,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 431.0,
+              "cost": 6.048e-05,
+              "t": 37.082,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 455.3,
+              "cost": 3.5364e-05,
+              "t": 37.1,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 595.0,
+              "cost": 6.0522e-05,
+              "t": 39.247,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 884.5,
+              "cost": 3.5322e-05,
+              "t": 39.53,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 836.2,
+              "cost": 3.5448e-05,
+              "t": 41.548,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 945.5,
+              "cost": 6.048e-05,
+              "t": 41.665,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 444.8,
+              "cost": 3.5448e-05,
+              "t": 43.224,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 442.7,
+              "cost": 6.0564e-05,
+              "t": 43.229,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 5394.5,
+              "tokens": 2210,
+              "t": 19.864,
+              "error": null
+            }
+          ]
+        },
+        "run": 2
+      },
+      {
+        "t_misfeed": 13.978637933731079,
+        "t_incident": 13.999937057495117,
+        "t_jev_result": 14.46215295791626,
+        "t_notification": 14.46947193145752,
+        "t_llm": 23.512980937957764,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 6.0,
+        "seg_jamvisible_to_incident": 4.0,
+        "seg_misfeed_to_incident": 0.021,
+        "seg_incident_to_notification": 0.47,
+        "seg_incident_to_jev_result": 0.462,
+        "seg_notification_to_llm": 9.044,
+        "seg_misfeed_to_llm": 9.534,
+        "jev_frames": [
+          {
+            "t": 0.47,
+            "p_jam": 0.51,
+            "trigger": "interval",
+            "latency_ms": 474.6828330680728
+          },
+          {
+            "t": 2.57,
+            "p_jam": 0.47,
+            "trigger": "interval",
+            "latency_ms": 521.0411669686437
+          },
+          {
+            "t": 4.52,
+            "p_jam": 0.48,
+            "trigger": "interval",
+            "latency_ms": 464.3429999705404
+          },
+          {
+            "t": 6.56,
+            "p_jam": 0.55,
+            "trigger": "interval",
+            "latency_ms": 442.57058401126415
+          },
+          {
+            "t": 8.65,
+            "p_jam": 0.54,
+            "trigger": "interval",
+            "latency_ms": 461.2983340630308
+          },
+          {
+            "t": 10.69,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 438.4001250145957
+          },
+          {
+            "t": 12.78,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 467.99758297856897
+          },
+          {
+            "t": 14.46,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 439.4420830067247
+          },
+          {
+            "t": 16.79,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 470.3114159638062
+          },
+          {
+            "t": 18.94,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 554.5167920645326
+          },
+          {
+            "t": 20.91,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 454.4877919834107
+          },
+          {
+            "t": 22.96,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 509.8020000150427
+          },
+          {
+            "t": 25.1,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 586.653875070624
+          },
+          {
+            "t": 27.0,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 483.0454579787329
+          },
+          {
+            "t": 29.04,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 460.8018749859184
+          },
+          {
+            "t": 31.06,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 471.3008749531582
+          },
+          {
+            "t": 33.1,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 517.4735829932615
+          },
+          {
+            "t": 35.17,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 518.2244169991463
+          },
+          {
+            "t": 37.2,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 484.50416699051857
+          },
+          {
+            "t": 39.27,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 483.2942089997232
+          },
+          {
+            "t": 41.37,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 514.0007919399068
+          },
+          {
+            "t": 43.33,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 474.06362497713417
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 474.7,
+              "cost": 3.5406e-05,
+              "t": 0.467,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 536.6,
+              "cost": 6.048e-05,
+              "t": 0.534,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 510.9,
+              "cost": 6.0522e-05,
+              "t": 2.565,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 521.0,
+              "cost": 3.5406e-05,
+              "t": 2.57,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 423.7,
+              "cost": 6.0606e-05,
+              "t": 4.483,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 464.3,
+              "cost": 3.549e-05,
+              "t": 4.516,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 428.3,
+              "cost": 6.0564e-05,
+              "t": 6.555,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 442.6,
+              "cost": 3.528e-05,
+              "t": 6.56,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 461.3,
+              "cost": 3.5448e-05,
+              "t": 8.646,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 457.4,
+              "cost": 6.0438e-05,
+              "t": 8.649,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 426.4,
+              "cost": 6.0438e-05,
+              "t": 10.685,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 438.4,
+              "cost": 3.5364e-05,
+              "t": 10.69,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 468.0,
+              "cost": 3.5322e-05,
+              "t": 12.783,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 466.8,
+              "cost": 6.0396e-05,
+              "t": 12.789,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 439.4,
+              "cost": 3.5406e-05,
+              "t": 14.453,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 445.0,
+              "cost": 0.000128352,
+              "t": 14.458,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 475.4,
+              "cost": 6.0522e-05,
+              "t": 14.863,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 470.3,
+              "cost": 3.549e-05,
+              "t": 16.788,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 448.0,
+              "cost": 6.0648e-05,
+              "t": 16.837,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 554.5,
+              "cost": 3.5406e-05,
+              "t": 18.939,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 564.1,
+              "cost": 6.048e-05,
+              "t": 18.955,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 425.3,
+              "cost": 6.0522e-05,
+              "t": 20.883,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 454.5,
+              "cost": 3.5364e-05,
+              "t": 20.904,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 497.4,
+              "cost": 6.048e-05,
+              "t": 22.958,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 509.8,
+              "cost": 3.5364e-05,
+              "t": 22.963,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 586.7,
+              "cost": 3.5364e-05,
+              "t": 25.103,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 602.9,
+              "cost": 6.0522e-05,
+              "t": 25.127,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 483.0,
+              "cost": 3.528e-05,
+              "t": 27.001,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 513.5,
+              "cost": 6.0438e-05,
+              "t": 27.039,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 460.8,
+              "cost": 3.5364e-05,
+              "t": 29.042,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 471.4,
+              "cost": 6.0564e-05,
+              "t": 29.058,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 460.5,
+              "cost": 6.0438e-05,
+              "t": 31.05,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 471.3,
+              "cost": 3.5322e-05,
+              "t": 31.054,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 504.6,
+              "cost": 6.0438e-05,
+              "t": 33.097,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 517.5,
+              "cost": 3.5322e-05,
+              "t": 33.101,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 479.8,
+              "cost": 6.048e-05,
+              "t": 35.135,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 518.2,
+              "cost": 3.5532e-05,
+              "t": 35.167,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 471.2,
+              "cost": 6.0228e-05,
+              "t": 37.198,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 484.5,
+              "cost": 3.5406e-05,
+              "t": 37.203,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 483.3,
+              "cost": 3.5448e-05,
+              "t": 39.266,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 484.6,
+              "cost": 6.0438e-05,
+              "t": 39.275,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 514.0,
+              "cost": 3.549e-05,
+              "t": 41.364,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 512.6,
+              "cost": 6.0354e-05,
+              "t": 41.371,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 474.1,
+              "cost": 3.5448e-05,
+              "t": 43.325,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 481.8,
+              "cost": 6.0438e-05,
+              "t": 43.339,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 9033.0,
+              "tokens": 3196,
+              "t": 23.509,
+              "error": null
+            }
+          ]
+        },
+        "run": 3
+      },
+      {
+        "t_misfeed": 13.974228143692017,
+        "t_incident": 13.996165990829468,
+        "t_jev_result": 14.516162157058716,
+        "t_notification": 14.524460077285767,
+        "t_llm": 19.483652114868164,
+        "incident_type": "incident_opened",
+        "incident_source": "fused",
+        "seg_ramp_to_incident": 5.996,
+        "seg_jamvisible_to_incident": 3.996,
+        "seg_misfeed_to_incident": 0.022,
+        "seg_incident_to_notification": 0.528,
+        "seg_incident_to_jev_result": 0.52,
+        "seg_notification_to_llm": 4.959,
+        "seg_misfeed_to_llm": 5.509,
+        "jev_frames": [
+          {
+            "t": 0.46,
+            "p_jam": 0.51,
+            "trigger": "interval",
+            "latency_ms": 467.5210420973599
+          },
+          {
+            "t": 2.59,
+            "p_jam": 0.5,
+            "trigger": "interval",
+            "latency_ms": 542.7974170306697
+          },
+          {
+            "t": 4.59,
+            "p_jam": 0.65,
+            "trigger": "interval",
+            "latency_ms": 478.65054104477167
+          },
+          {
+            "t": 6.69,
+            "p_jam": 0.59,
+            "trigger": "interval",
+            "latency_ms": 514.7579159820452
+          },
+          {
+            "t": 8.78,
+            "p_jam": 0.59,
+            "trigger": "interval",
+            "latency_ms": 601.2497909832746
+          },
+          {
+            "t": 10.74,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 491.8798329308629
+          },
+          {
+            "t": 12.72,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 466.2973339436576
+          },
+          {
+            "t": 14.57,
+            "p_jam": 0.96,
+            "trigger": "on_demand:feed_rate_zero",
+            "latency_ms": 560.2932500187308
+          },
+          {
+            "t": 16.83,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 447.97708408441395
+          },
+          {
+            "t": 18.9,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 514.6127910120413
+          },
+          {
+            "t": 20.95,
+            "p_jam": 0.97,
+            "trigger": "interval",
+            "latency_ms": 501.28520792350173
+          },
+          {
+            "t": 23.03,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 517.4666669918224
+          },
+          {
+            "t": 25.07,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 559.1547910589725
+          },
+          {
+            "t": 27.03,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 451.441542012617
+          },
+          {
+            "t": 29.27,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 626.0633340571076
+          },
+          {
+            "t": 31.11,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 460.55891597643495
+          },
+          {
+            "t": 33.16,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 446.59062498249114
+          },
+          {
+            "t": 35.21,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 493.30808292143047
+          },
+          {
+            "t": 37.23,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 450.20058297086507
+          },
+          {
+            "t": 39.25,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 464.6260420558974
+          },
+          {
+            "t": 41.37,
+            "p_jam": 0.95,
+            "trigger": "interval",
+            "latency_ms": 521.6679580044001
+          },
+          {
+            "t": 43.42,
+            "p_jam": 0.96,
+            "trigger": "interval",
+            "latency_ms": 502.3304159985855
+          }
+        ],
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 454.9,
+              "cost": 6.0396e-05,
+              "t": 0.45,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 467.5,
+              "cost": 3.5406e-05,
+              "t": 0.457,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 498.0,
+              "cost": 6.0564e-05,
+              "t": 2.553,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 542.8,
+              "cost": 3.549e-05,
+              "t": 2.59,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 460.8,
+              "cost": 6.0522e-05,
+              "t": 4.581,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 478.7,
+              "cost": 3.5322e-05,
+              "t": 4.592,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 514.8,
+              "cost": 3.5364e-05,
+              "t": 6.693,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 591.3,
+              "cost": 6.0564e-05,
+              "t": 6.777,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 476.8,
+              "cost": 6.0564e-05,
+              "t": 8.663,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 601.2,
+              "cost": 3.5322e-05,
+              "t": 8.781,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 491.9,
+              "cost": 3.5364e-05,
+              "t": 10.737,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 489.8,
+              "cost": 6.048e-05,
+              "t": 10.742,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 466.3,
+              "cost": 3.5448e-05,
+              "t": 12.716,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 463.2,
+              "cost": 6.048e-05,
+              "t": 12.721,
+              "error": null
+            },
+            {
+              "purpose": "judge.event",
+              "latency_ms": 500.3,
+              "cost": 0.000128394,
+              "t": 14.511,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 560.3,
+              "cost": 3.528e-05,
+              "t": 14.572,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 511.0,
+              "cost": 6.048e-05,
+              "t": 14.83,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 436.8,
+              "cost": 6.0438e-05,
+              "t": 16.822,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 448.0,
+              "cost": 3.549e-05,
+              "t": 16.828,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 486.6,
+              "cost": 6.0438e-05,
+              "t": 18.873,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 514.6,
+              "cost": 3.528e-05,
+              "t": 18.895,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 489.0,
+              "cost": 6.0312e-05,
+              "t": 20.944,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 501.3,
+              "cost": 3.5406e-05,
+              "t": 20.948,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 517.5,
+              "cost": 3.549e-05,
+              "t": 23.03,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 554.3,
+              "cost": 6.0522e-05,
+              "t": 23.074,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 559.2,
+              "cost": 3.5322e-05,
+              "t": 25.072,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 557.8,
+              "cost": 6.0354e-05,
+              "t": 25.078,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 451.4,
+              "cost": 3.5448e-05,
+              "t": 27.032,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 466.0,
+              "cost": 6.0606e-05,
+              "t": 27.054,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 626.1,
+              "cost": 3.5406e-05,
+              "t": 29.271,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 626.4,
+              "cost": 6.0438e-05,
+              "t": 29.278,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 460.6,
+              "cost": 3.5406e-05,
+              "t": 31.108,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 468.8,
+              "cost": 6.0564e-05,
+              "t": 31.123,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 446.6,
+              "cost": 3.549e-05,
+              "t": 33.159,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 466.2,
+              "cost": 6.048e-05,
+              "t": 33.186,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 461.0,
+              "cost": 6.048e-05,
+              "t": 35.182,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 493.3,
+              "cost": 3.5364e-05,
+              "t": 35.207,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 450.2,
+              "cost": 3.549e-05,
+              "t": 37.228,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 728.9,
+              "cost": 6.048e-05,
+              "t": 37.514,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 450.6,
+              "cost": 6.0606e-05,
+              "t": 39.238,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 464.6,
+              "cost": 3.5448e-05,
+              "t": 39.245,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 521.7,
+              "cost": 3.5448e-05,
+              "t": 41.37,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 551.3,
+              "cost": 6.0522e-05,
+              "t": 41.408,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 443.1,
+              "cost": 6.0438e-05,
+              "t": 43.362,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 502.3,
+              "cost": 3.5406e-05,
+              "t": 43.414,
+              "error": null
+            }
+          ],
+          "llm": [
+            {
+              "purpose": "explain.diagnosis",
+              "latency_ms": 4952.8,
+              "tokens": 2422,
+              "t": 19.478,
+              "error": null
+            }
+          ]
+        },
+        "run": 4
+      }
+    ]
+  },
+  "ppe_violation": {
+    "segments_s": {
+      "seg_onset_to_violation": {
+        "n": 5,
+        "mean": 0.185,
+        "p50": 0.185,
+        "p95": 0.251,
+        "max": 0.251,
+        "values_s": [
+          0.251,
+          0.25,
+          0.185,
+          0.118,
+          0.119
+        ],
+        "n_missing": 0
+      },
+      "seg_violation_to_incident": {
+        "n": 5,
+        "mean": 0.009,
+        "p50": 0.008,
+        "p95": 0.012,
+        "max": 0.012,
+        "values_s": [
+          0.012,
+          0.008,
+          0.007,
+          0.011,
+          0.007
+        ],
+        "n_missing": 0
+      },
+      "seg_onset_to_incident": {
+        "n": 5,
+        "mean": 0.194,
+        "p50": 0.192,
+        "p95": 0.262,
+        "max": 0.263,
+        "values_s": [
+          0.263,
+          0.257,
+          0.192,
+          0.13,
+          0.127
+        ],
+        "n_missing": 0
+      },
+      "seg_incident_to_notification": {
+        "n": 5,
+        "mean": 0.014,
+        "p50": 0.013,
+        "p95": 0.016,
+        "max": 0.016,
+        "values_s": [
+          0.012,
+          0.014,
+          0.013,
+          0.016,
+          0.013
+        ],
+        "n_missing": 0
+      },
+      "seg_onset_to_notification": {
+        "n": 5,
+        "mean": 0.207,
+        "p50": 0.205,
+        "p95": 0.273,
+        "max": 0.274,
+        "values_s": [
+          0.274,
+          0.271,
+          0.205,
+          0.145,
+          0.14
+        ],
+        "n_missing": 0
+      }
+    },
+    "cost": {
+      "per_run": [
+        {
+          "jev_calls": 10,
+          "jev_cost": 0.000479,
+          "jev_by_purpose": {
+            "vision.feed": 5,
+            "vision.smoke": 5
+          },
+          "llm_calls": 0,
+          "llm_tokens": 0,
+          "llm_latency_ms": [],
+          "judge_latency_ms": [],
+          "vision_latency_ms": [
+            466.9,
+            465.1,
+            479.6,
+            463.8,
+            610.8,
+            532.8,
+            474.9,
+            461.1,
+            461.0,
+            499.7
+          ]
+        },
+        {
+          "jev_calls": 10,
+          "jev_cost": 0.000479,
+          "jev_by_purpose": {
+            "vision.feed": 5,
+            "vision.smoke": 5
+          },
+          "llm_calls": 0,
+          "llm_tokens": 0,
+          "llm_latency_ms": [],
+          "judge_latency_ms": [],
+          "vision_latency_ms": [
+            564.9,
+            580.2,
+            450.3,
+            483.1,
+            452.6,
+            457.4,
+            501.8,
+            501.2,
+            447.6,
+            452.0
+          ]
+        },
+        {
+          "jev_calls": 9,
+          "jev_cost": 0.000418,
+          "jev_by_purpose": {
+            "vision.feed": 5,
+            "vision.smoke": 4
+          },
+          "llm_calls": 0,
+          "llm_tokens": 0,
+          "llm_latency_ms": [],
+          "judge_latency_ms": [],
+          "vision_latency_ms": [
+            447.2,
+            480.0,
+            478.0,
+            484.6,
+            484.1,
+            491.1,
+            468.2,
+            466.5,
+            561.2
+          ]
+        },
+        {
+          "jev_calls": 10,
+          "jev_cost": 0.000479,
+          "jev_by_purpose": {
+            "vision.feed": 5,
+            "vision.smoke": 5
+          },
+          "llm_calls": 0,
+          "llm_tokens": 0,
+          "llm_latency_ms": [],
+          "judge_latency_ms": [],
+          "vision_latency_ms": [
+            480.9,
+            478.0,
+            478.9,
+            470.5,
+            479.9,
+            493.1,
+            474.2,
+            579.9,
+            535.7,
+            533.0
+          ]
+        },
+        {
+          "jev_calls": 10,
+          "jev_cost": 0.000479,
+          "jev_by_purpose": {
+            "vision.feed": 5,
+            "vision.smoke": 5
+          },
+          "llm_calls": 0,
+          "llm_tokens": 0,
+          "llm_latency_ms": [],
+          "judge_latency_ms": [],
+          "vision_latency_ms": [
+            436.5,
+            451.8,
+            462.9,
+            457.9,
+            624.1,
+            618.3,
+            431.0,
+            451.6,
+            467.6,
+            477.2
+          ]
+        }
+      ],
+      "jev_cost_mean": 0.000467,
+      "jev_calls_mean": 9.8,
+      "llm_tokens_mean": 0.0,
+      "judge_latency_ms": {
+        "n": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      },
+      "vision_latency_ms": {
+        "n": 49,
+        "mean": 490.8,
+        "p50": 478.0,
+        "p95": 598.56,
+        "max": 624.1
+      },
+      "llm_latency_ms": {
+        "n": 0,
+        "mean": null,
+        "p50": null,
+        "p95": null,
+        "max": null
+      }
+    },
+    "runs": [
+      {
+        "t_violation_event": 5.25055193901062,
+        "t_incident": 5.262811899185181,
+        "t_notification": 5.274353981018066,
+        "t_llm": null,
+        "seg_onset_to_violation": 0.251,
+        "seg_violation_to_incident": 0.012,
+        "seg_onset_to_incident": 0.263,
+        "seg_incident_to_notification": 0.012,
+        "seg_onset_to_notification": 0.274,
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 466.9,
+              "cost": 3.549e-05,
+              "t": 0.518,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 465.1,
+              "cost": 6.048e-05,
+              "t": 0.523,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 479.6,
+              "cost": 3.5406e-05,
+              "t": 5.531,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 463.8,
+              "cost": 6.0396e-05,
+              "t": 5.586,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 610.8,
+              "cost": 3.5406e-05,
+              "t": 10.663,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 532.8,
+              "cost": 6.0396e-05,
+              "t": 10.723,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 474.9,
+              "cost": 3.5322e-05,
+              "t": 15.592,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 461.1,
+              "cost": 6.0396e-05,
+              "t": 15.717,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 461.0,
+              "cost": 3.5322e-05,
+              "t": 20.644,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 499.7,
+              "cost": 6.0564e-05,
+              "t": 20.824,
+              "error": null
+            }
+          ],
+          "llm": []
+        },
+        "run": 0
+      },
+      {
+        "t_violation_event": 5.249773979187012,
+        "t_incident": 5.257468938827515,
+        "t_notification": 5.271091938018799,
+        "t_llm": null,
+        "seg_onset_to_violation": 0.25,
+        "seg_violation_to_incident": 0.008,
+        "seg_onset_to_incident": 0.257,
+        "seg_incident_to_notification": 0.014,
+        "seg_onset_to_notification": 0.271,
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 564.9,
+              "cost": 3.5448e-05,
+              "t": 0.616,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 580.2,
+              "cost": 6.0438e-05,
+              "t": 0.639,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 450.3,
+              "cost": 6.048e-05,
+              "t": 5.508,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 483.1,
+              "cost": 3.5364e-05,
+              "t": 5.534,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 452.6,
+              "cost": 3.5364e-05,
+              "t": 10.504,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 457.4,
+              "cost": 6.0438e-05,
+              "t": 10.516,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 501.8,
+              "cost": 3.5364e-05,
+              "t": 15.618,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 501.2,
+              "cost": 6.0438e-05,
+              "t": 15.625,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 447.6,
+              "cost": 3.5322e-05,
+              "t": 20.566,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 452.0,
+              "cost": 6.0396e-05,
+              "t": 20.577,
+              "error": null
+            }
+          ],
+          "llm": []
+        },
+        "run": 1
+      },
+      {
+        "t_violation_event": 5.184954881668091,
+        "t_incident": 5.192137002944946,
+        "t_notification": 5.204980850219727,
+        "t_llm": null,
+        "seg_onset_to_violation": 0.185,
+        "seg_violation_to_incident": 0.007,
+        "seg_onset_to_incident": 0.192,
+        "seg_incident_to_notification": 0.013,
+        "seg_onset_to_notification": 0.205,
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 447.2,
+              "cost": 3.5448e-05,
+              "t": 0.498,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 480.0,
+              "cost": 6.0312e-05,
+              "t": 0.538,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 478.0,
+              "cost": 3.549e-05,
+              "t": 5.53,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 484.6,
+              "cost": 6.0438e-05,
+              "t": 5.544,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 484.1,
+              "cost": 3.5364e-05,
+              "t": 10.604,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 491.1,
+              "cost": 6.048e-05,
+              "t": 10.618,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 468.2,
+              "cost": 3.549e-05,
+              "t": 15.654,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 466.5,
+              "cost": 6.0228e-05,
+              "t": 15.66,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 561.2,
+              "cost": 3.5238e-05,
+              "t": 20.814,
+              "error": null
+            }
+          ],
+          "llm": []
+        },
+        "run": 2
+      },
+      {
+        "t_violation_event": 5.118021011352539,
+        "t_incident": 5.129508972167969,
+        "t_notification": 5.145087957382202,
+        "t_llm": null,
+        "seg_onset_to_violation": 0.118,
+        "seg_violation_to_incident": 0.011,
+        "seg_onset_to_incident": 0.13,
+        "seg_incident_to_notification": 0.016,
+        "seg_onset_to_notification": 0.145,
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 480.9,
+              "cost": 3.5322e-05,
+              "t": 0.532,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 478.0,
+              "cost": 6.0564e-05,
+              "t": 0.537,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 478.9,
+              "cost": 3.5364e-05,
+              "t": 5.6,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 470.5,
+              "cost": 6.0312e-05,
+              "t": 5.606,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 479.9,
+              "cost": 6.048e-05,
+              "t": 10.671,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 493.1,
+              "cost": 3.5364e-05,
+              "t": 10.676,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 474.2,
+              "cost": 6.0438e-05,
+              "t": 15.668,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 579.9,
+              "cost": 3.5532e-05,
+              "t": 15.766,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 535.7,
+              "cost": 3.5406e-05,
+              "t": 20.787,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 533.0,
+              "cost": 6.0438e-05,
+              "t": 20.791,
+              "error": null
+            }
+          ],
+          "llm": []
+        },
+        "run": 3
+      },
+      {
+        "t_violation_event": 5.119425058364868,
+        "t_incident": 5.126867055892944,
+        "t_notification": 5.140141010284424,
+        "t_llm": null,
+        "seg_onset_to_violation": 0.119,
+        "seg_violation_to_incident": 0.007,
+        "seg_onset_to_incident": 0.127,
+        "seg_incident_to_notification": 0.013,
+        "seg_onset_to_notification": 0.14,
+        "calls": {
+          "jev": [
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 436.5,
+              "cost": 6.0396e-05,
+              "t": 0.499,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 451.8,
+              "cost": 3.5406e-05,
+              "t": 0.508,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 462.9,
+              "cost": 3.5448e-05,
+              "t": 5.519,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 457.9,
+              "cost": 6.048e-05,
+              "t": 5.521,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 624.1,
+              "cost": 3.5406e-05,
+              "t": 10.747,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 618.3,
+              "cost": 6.048e-05,
+              "t": 10.75,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 431.0,
+              "cost": 6.0438e-05,
+              "t": 15.562,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 451.6,
+              "cost": 3.5448e-05,
+              "t": 15.575,
+              "error": null
+            },
+            {
+              "purpose": "vision.feed",
+              "latency_ms": 467.6,
+              "cost": 3.5406e-05,
+              "t": 20.592,
+              "error": null
+            },
+            {
+              "purpose": "vision.smoke",
+              "latency_ms": 477.2,
+              "cost": 6.0354e-05,
+              "t": 20.609,
+              "error": null
+            }
+          ],
+          "llm": []
+        },
+        "run": 4
+      }
+    ]
+  }
+}

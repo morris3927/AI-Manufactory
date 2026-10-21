@@ -33,14 +33,14 @@ llm:
   enabled: true
 
 kb:
-  embedding: auto                           # auto：有裝 sentence-transformers 用 bge-m3，否則用 hash（僅供開發）
-  embedding_model: BAAI/bge-m3
+  embedding: auto                           # auto：有裝 sentence-transformers 用 embedding_model，否則 hash（只給測試）
+  embedding_model: intfloat/multilingual-e5-small   # 多語（中英混用）；bge-m3 下載卡在 1 GB，先用 e5-small（約 470 MB）
   allow_draft: false
 
 vision:
   fps: 15
   ppe_fps: 5
-  keyframe_interval_s: 5
+  keyframe_interval_s: 2                    # eval E6：MISFEED → 開單由 0.55 s 降到 0.02 s，看圖次數約 2.3 倍
   jpeg_quality: 85
   jev_max_side: 768
   yolo_weights: models/ppe.pt
@@ -54,14 +54,27 @@ thresholds:
   p_jam_window_s: 15
   feed_drop_window_s: 30
   jev_stale_s: 30                           # 這段時間內沒有 Jev 看圖結果 → 規則改用動態分數退路
+  p_smoke_outside: 0.7                      # 銲接：Jev 判定工位外有煙霧
+  p_flame: 0.7
+  smoke_window_s: 10
+  screw_nok_rate_pct: 3.0                   # 組裝：近 100 次 NOK 率（signals.yaml alarm > 3）
+  screw_nok_s: 3                            # 鎖附結果連續 NOK 秒數
   ppe_overlap: 0.3                          # Head 與 Helmet 重疊比例低於此值 → 未戴安全帽
   ppe_conf: 0.5
   ppe_dedupe_s: 3
   ppe_window_s: 5
-  log_mismatch_s: 20                        # 影像閒置 ↔ Log 運轉 持續秒數
+  log_mismatch_s: 20
+  multi_stop_window_s: 15                   # 不同連動群組的機台在這段時間內都停止 → S3（需同時有氣源壓力低）
+  air_pressure_low_bar: 4.8                 # signals.yaml air_pressure_bar alarm
+  person_zone_window_s: 5                        # 影像閒置 ↔ Log 運轉 持續秒數
   p_false_alarm: 0.9
-  root_cause_conf: 0.6
-  safety_gate_p: 0.3
+  root_cause_conf: 0.8                      # Jev 根因 top-1 機率 ≥ 此值 → jev_top3；否則加跑 LLM 深入診斷（eval E3：0.6–0.8 過度自信）
+  safety_gate_p: 0.3                        # 舊版單一門檻（僅保留相容）
+  gate:                                     # J4 各題門檻：2026-10-21 以 eval/gate_set.yaml（32 步）實測 Jev 校準
+    needs_loto: 0.3                         #   LOTO_DONE 前才會用到；之後只記錄
+    enters_danger_zone: 0.55                #   結果 recall 1.00、precision 1.00（全部 0.3 時 precision 0.90）
+    high_voltage: 0.45                      #   重跑：python -m sentinel.eval.calibrate_gate
+    energized: 0.55
   writeback_complete: 0.7
   sop_top1: 0.6
   sop_low: 0.3
@@ -70,6 +83,9 @@ thresholds:
 escalation:
   ack_timeout_s: {S1: 600, S2: 300, S3: 120}
   demo_ack_timeout_s: null                  # Demo 可設 30，覆蓋上面的值
+
+workflow:
+  require_permit: true                      # 設備類：ACKED → 申請許可 → 班長核准 → LOTO → 維修（設施規則第57條）
 
 mes:
   tick_s: 1.0
