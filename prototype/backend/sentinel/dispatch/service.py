@@ -79,9 +79,11 @@ class DispatchService:
                 diag = Diagnosis(incident_id=inc.id, root_cause_top3=top3, confidence=judgement.root_cause_conf,
                                  mode=decision.diagnosis_mode, category=judgement.category,
                                  p_false_alarm=judgement.p_false_alarm, jev_severity=judgement.jev_severity,
-                                 sop_ids=sorted({c.sop_id for c in sop_plan["chunks"]}))
+                                 sop_ids=sorted({c.sop_id for c in sop_plan["chunks"]}),
+                                 similar_cases=[c.model_dump(exclude={"short"}) for c in cases])
                 self.audit.record("jev_judgement", actor="jev", trace_id=inc.trace_id,
-                                  judgement=judgement.model_dump(), decision=decision.model_dump())
+                                  judgement=judgement.model_dump(), decision=decision.model_dump(),
+                                  similar_case_ids=[c.case_id for c in cases])
                 with self.db.session() as s:
                     row = s.get(Incident, inc.id)
                     assert row is not None

@@ -172,6 +172,7 @@ class Diagnosis(SQLModel, table=True):
     p_false_alarm: float | None = None
     jev_severity: str | None = None
     sop_ids: list = json_field(list)
+    similar_cases: list = json_field(list)     # 判斷時引用的相似案例 [{case_id, failure_mode_id, hypothesis_correct, distance}]
     explanation: str | None = None
     final_root_cause: str | None = None         # 結案時回填（校準曲線用）
 

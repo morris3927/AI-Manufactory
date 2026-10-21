@@ -55,9 +55,9 @@ export function AuditView() {
                 <div className="flex items-center gap-2">
                   <SeverityBadge s={i.final_severity} short />
                   <span className="truncate text-sm">{i.title ?? i.type}</span>
-                  <span className="tabular ml-auto font-mono text-[11px] text-muted">{fmtTime(i.opened_at)}</span>
+                  <span className="tabular ml-auto font-mono text-xs text-muted">{fmtTime(i.opened_at)}</span>
                 </div>
-                <div className="mt-0.5 font-mono text-[11px] text-muted">
+                <div className="mt-0.5 font-mono text-xs text-muted">
                   {i.trace_id}
                   {w && ` ・${w.id}`}
                 </div>

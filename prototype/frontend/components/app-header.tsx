@@ -3,8 +3,10 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Activity, BarChart3, ClipboardList, FileSearch, LayoutDashboard, ShieldAlert, SlidersHorizontal } from "lucide-react";
+import { useEffect } from "react";
+import { api } from "@/lib/api";
 import { MOCK } from "@/lib/config";
-import { useNow } from "@/lib/hooks";
+import { useAsync, useNow } from "@/lib/hooks";
 import { ROLE_LABEL } from "@/lib/labels";
 import { PERSONAS, setRole, usePersona } from "@/lib/session";
 import type { Role } from "@/lib/types";
@@ -24,6 +26,47 @@ function Clock() {
   return (
     <span className="tabular hidden font-mono text-xs text-muted lg:inline">
       {now ? new Date(now).toLocaleTimeString("zh-TW", { hour12: false }) : "--:--:--"}
+    </span>
+  );
+}
+
+/** 系統實際狀態（如實標示給評審：偵測是 YOLO 還是劇本、向量模型、AI 開關） */
+function HealthBadge() {
+  const q = useAsync(() => api.health(), []);
+  const { reload } = q;
+  useEffect(() => {
+    const t = setInterval(reload, 30000);
+    return () => clearInterval(t);
+  }, [reload]);
+  const h = q.data;
+  if (q.error) return <span className="hidden text-xs text-red-300 lg:inline" title={q.error.message}>系統狀態：無法取得</span>;
+  if (!h) return null;
+  const det = h.detector_mode === "yolo" ? "YOLO" : h.detector_mode === "scripted" ? "劇本" : h.detector_mode;
+  const emb = (h.embedding_model ?? "—").split("/").pop();
+  const tip = [
+    `偵測器：${h.detector_mode}${h.yolo?.weights ? `（${h.yolo.weights}${h.yolo.weights_exist ? "" : "，權重不存在"}）` : ""}`,
+    `向量模型：${h.embedding_model ?? "—"}`,
+    `知識庫：文件 ${h.kb?.docs ?? 0}、案例 ${h.kb?.cases ?? 0}${h.kb?.allow_draft ? "（含草稿）" : ""}`,
+    `Jev：${h.jev?.enabled ? "開" : "關"} ${h.jev?.model ?? ""}`,
+    `LLM：${h.llm?.enabled ? "開" : "關"} ${h.llm?.model ?? ""}`,
+    `通知：${h.notifier ?? "—"}`,
+    `作業許可：${h.workflow?.require_permit === false ? "不需要" : "需要"}`,
+    h.scenario ? `目前劇本：${h.scenario}` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return (
+    <span className="hidden items-center gap-1.5 rounded border border-line bg-panel-2/60 px-2 py-0.5 text-xs text-muted xl:flex" title={tip}>
+      <span>
+        偵測：<span className={h.detector_mode === "yolo" ? "text-emerald-300" : "text-amber-200"}>{det}</span>
+      </span>
+      <span>・向量：<span className="text-slate-200">{emb}</span></span>
+      <span className="flex items-center gap-1">
+        ・Jev <span className={cn("h-1.5 w-1.5 rounded-full", h.jev?.enabled ? "bg-emerald-400" : "bg-red-500")} />
+      </span>
+      <span className="flex items-center gap-1">
+        LLM <span className={cn("h-1.5 w-1.5 rounded-full", h.llm?.enabled ? "bg-emerald-400" : "bg-red-500")} />
+      </span>
     </span>
   );
 }
@@ -80,7 +123,7 @@ export function AppHeader() {
           <span className="font-bold tracking-wider text-foreground">
             Sentinel <span className="text-cyan-400">AI</span>
           </span>
-          <span className="hidden rounded bg-cyan-500/10 px-1.5 py-0.5 text-[10px] font-semibold tracking-widest text-cyan-300 xl:inline">戰情模式</span>
+          <span className="hidden rounded bg-cyan-500/10 px-1.5 py-0.5 text-[11px] font-semibold tracking-widest text-cyan-300 xl:inline">戰情模式</span>
         </Link>
         {!mobile && (
           <nav className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto">
@@ -105,10 +148,11 @@ export function AppHeader() {
         {mobile && <span className="flex-1 truncate text-sm text-muted">技術員</span>}
         <div className="flex shrink-0 items-center gap-3">
           {MOCK && (
-            <span className="hidden items-center gap-1 rounded border border-fuchsia-500/40 px-1.5 py-0.5 text-[10px] text-fuchsia-300 sm:flex" title="NEXT_PUBLIC_MOCK=1：前端內建模擬後端">
+            <span className="hidden items-center gap-1 rounded border border-fuchsia-500/40 px-1.5 py-0.5 text-[11px] text-fuchsia-300 sm:flex" title="NEXT_PUBLIC_MOCK=1：前端內建模擬後端">
               <Activity className="h-3 w-3" /> 離線模擬
             </span>
           )}
+          <HealthBadge />
           <Clock />
           <WsDot />
           <RoleSwitcher compact={mobile} />

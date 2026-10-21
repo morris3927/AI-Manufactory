@@ -8,6 +8,7 @@ import { SimBadge } from "@/components/sim-badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { AgentChat, ChecklistPanel, LotoPanel, PermitPanel, ReportPanel, WorkorderHeader } from "@/components/workorder/panels";
 import { useWorkorder } from "@/components/workorder/use-workorder";
+import { IncidentReportPanel } from "@/components/incident-report";
 import { reached } from "@/lib/labels";
 import { cn } from "@/lib/utils";
 
@@ -25,18 +26,16 @@ export default function MobileWorkorderPage() {
     ? wo.status === "ACKED" && wo.checklist?.every((c) => c.checked_by)
       ? "report"
       : "check"
-    : !reached(wo.status, "LOTO_DONE")
+    : !reached(wo.status, "IN_REPAIR")
       ? "loto"
-      : wo.status === "LOTO_DONE" || wo.status === "IN_REPAIR"
-        ? wo.status === "IN_REPAIR" && wo.checklist?.every((c) => c.checked_by)
+      : wo.status === "IN_REPAIR"
+        ? wo.checklist?.every((c) => c.checked_by)
           ? "check"
           : "agent"
-        : wo.status === "PENDING_VERIFY" || wo.status === "CLOSED"
-          ? "report"
-          : "agent";
+        : "report";
   const cur = tab ?? auto;
   const tabs: { id: Tab; label: string }[] = [
-    ...(safety ? [] : [{ id: "loto" as Tab, label: "LOTO" }]),
+    ...(safety ? [] : [{ id: "loto" as Tab, label: "許可／LOTO" }]),
     { id: "agent", label: "Agent" },
     { id: "check", label: "Checklist" },
     { id: "report", label: "回報" },
@@ -45,6 +44,7 @@ export default function MobileWorkorderPage() {
   return (
     <div className="mx-auto max-w-xl space-y-3 pb-16">
       <WorkorderHeader wo={wo} act={act} busy={busy} compact />
+      <IncidentReportPanel inc={wo.incident} />
       {top.length > 0 && (
         <Card>
           <CardHeader title="根因前三名" />
@@ -67,13 +67,12 @@ export default function MobileWorkorderPage() {
       </div>
       {cur === "loto" && (
         <>
-          <LotoPanel wo={wo} act={act} busy={busy} big />
           <PermitPanel wo={wo} act={act} busy={busy} />
+          <LotoPanel wo={wo} act={act} busy={busy} big />
         </>
       )}
       {cur === "agent" && (
         <>
-          {wo.status === "LOTO_DONE" && <PermitPanel wo={wo} act={act} busy={busy} />}
           <AgentChat wo={wo} act={act} busy={busy} streaming={streaming} tall />
         </>
       )}

@@ -5,6 +5,8 @@ export const STATUS_LABEL: Record<WorkOrderStatus, string> = {
   ASSIGNED: "已指派",
   ESCALATED: "已升級",
   ACKED: "已接單",
+  PERMIT_REQUESTED: "許可申請中",
+  PERMIT_APPROVED: "許可已核准",
   LOTO_DONE: "LOTO 完成",
   IN_REPAIR: "維修中",
   PENDING_VERIFY: "待確認",
@@ -16,7 +18,7 @@ export type KanbanColumn = "todo" | "doing" | "verify" | "done";
 
 export const KANBAN_COLUMNS: { id: KanbanColumn; label: string; statuses: WorkOrderStatus[] }[] = [
   { id: "todo", label: "待處理", statuses: ["OPEN", "ASSIGNED", "ESCALATED"] },
-  { id: "doing", label: "處理中", statuses: ["ACKED", "LOTO_DONE", "IN_REPAIR"] },
+  { id: "doing", label: "處理中", statuses: ["ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED", "LOTO_DONE", "IN_REPAIR"] },
   { id: "verify", label: "待確認", statuses: ["PENDING_VERIFY"] },
   { id: "done", label: "已解除", statuses: ["CLOSED", "CANCELLED"] },
 ];
@@ -31,6 +33,8 @@ const ORDER: WorkOrderStatus[] = [
   "ASSIGNED",
   "ESCALATED",
   "ACKED",
+  "PERMIT_REQUESTED",
+  "PERMIT_APPROVED",
   "LOTO_DONE",
   "IN_REPAIR",
   "PENDING_VERIFY",

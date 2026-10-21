@@ -199,7 +199,8 @@ export const SCENARIOS: Scenario[] = [
   { id: "ppe_helmet", title: "場景 1：PPE 未戴安全帽", description: "組裝線攝影機切到未戴安全帽影片 → YOLO＋Jev 確認 → 工安 S2 直接派班長（不叫 LLM）" },
   { id: "feed_jam", title: "場景 2：沖床送料卡料", description: "影片卡料＋Log 送料速率歸零 → 跨模態確認 → Jev 根因前三名 → 派工 → LLM 說明補上" },
   { id: "idle_mismatch", title: "場景 3：影像閒置但 Log 顯示運轉", description: "沖床畫面靜止，但 MES 回報運轉中 → Log 失準告警" },
-  { id: "weld_smoke", title: "場景 4：銲接煙霧＋逐級升級", description: "Jev 看到異常煙霧 → 無人接單 → 技術員 → 班長 → 組長" },
+  { id: "weld_smoke", title: "場景 4：銲接煙霧＋逐級升級（S3）", description: "Jev 看到異常煙霧 → 無人接單 → 技術員 → 班長 → 組長" },
+  { id: "person_zone", title: "場景 6：光幕停用時人員進入危險區（S3＋職災通報）", description: "人員進入沖床危險區 → S3 → 傷亡標記 → 8 小時通報倒數（主管送出）" },
 ];
 
 export const VIDEOS: VideoAsset[] = [

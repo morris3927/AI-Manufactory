@@ -66,7 +66,7 @@ export default function KanbanPage() {
               <div className="flex items-center gap-2 border-b border-line px-3 py-2">
                 <span className={cn("text-sm font-semibold", COL_TONE[col.id])}>{col.label}</span>
                 <span className="rounded bg-panel-2 px-1.5 text-xs text-muted">{items.length}</span>
-                <span className="ml-auto text-[10px] text-muted">{col.statuses.map((s) => STATUS_LABEL[s]).join("／")}</span>
+                <span className="ml-auto text-[11px] text-muted">{col.statuses.map((s) => STATUS_LABEL[s]).join("／")}</span>
               </div>
               <div className="flex-1 space-y-2 p-2">
                 {items.map((w) => (
@@ -97,11 +97,11 @@ function KanbanCard({ w, flash }: { w: WorkOrder; flash: boolean }) {
       <span className={cn("absolute inset-y-0 left-0 w-1.5", SEVERITY_STYLE[sev].bar)} />
       <div className="flex items-center gap-1.5">
         <SeverityBadge s={sev} short />
-        <span className="font-mono text-[11px] text-muted">{w.id}</span>
-        <span className="ml-auto rounded bg-black/30 px-1.5 py-0.5 text-[10px] text-slate-300">{STATUS_LABEL[w.status]}</span>
+        <span className="font-mono text-xs text-muted">{w.id}</span>
+        <span className="ml-auto rounded bg-black/30 px-1.5 py-0.5 text-[11px] text-slate-300">{STATUS_LABEL[w.status]}</span>
       </div>
       <div className="mt-1.5 text-sm font-medium leading-snug">{w.title ?? "異常"}</div>
-      <div className="mt-0.5 text-[11px] text-muted">
+      <div className="mt-0.5 text-xs text-muted">
         {LINE_LABEL[w.line ?? ""] ?? w.line}・<span className="font-mono">{w.machine_id}</span>・{CATEGORY_LABEL[w.category ?? "equipment"]}
       </div>
       <div className="mt-2 flex items-center gap-2 text-xs">
@@ -109,13 +109,13 @@ function KanbanCard({ w, flash }: { w: WorkOrder; flash: boolean }) {
         <span>{w.assignee_name ?? w.assignee_id ?? "未指派"}</span>
         <span className="text-muted">{PERSON_ROLE_LABEL[w.assignee_role ?? ""] ?? w.assignee_role}</span>
         {w.escalation_level > 0 && (
-          <span className="ml-auto flex items-center gap-0.5 rounded bg-red-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-red-300" title="升級次數">
+          <span className="ml-auto flex items-center gap-0.5 rounded bg-red-500/15 px-1.5 py-0.5 text-[11px] font-semibold text-red-300" title="升級次數">
             <ArrowUpCircle className="h-3 w-3" /> 升級 {w.escalation_level}
           </span>
         )}
       </div>
       <div className="mt-1.5 flex items-center gap-2 border-t border-line/60 pt-1.5">
-        <span className="text-[10px] text-muted">{done ? "處理時間" : "經過"}</span>
+        <span className="text-[11px] text-muted">{done ? "處理時間" : "經過"}</span>
         <Elapsed since={w.created_at} until={w.closed_at} />
         {(w.status === "ASSIGNED" || w.status === "ESCALATED") && <Countdown deadline={w.ack_deadline} className="ml-auto" />}
       </div>

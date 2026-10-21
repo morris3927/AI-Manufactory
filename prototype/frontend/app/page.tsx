@@ -8,6 +8,7 @@ import { HandledRatio, SeverityBars } from "@/components/charts";
 import { HealthDot, SeverityBadge } from "@/components/severity";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { ErrorNote } from "@/components/error-note";
+import { ReportAlertBar } from "@/components/incident-report";
 import { api } from "@/lib/api";
 import { useAsync, useNow, useThrottled } from "@/lib/hooks";
 import { CATEGORY_LABEL, EVENT_TYPE_LABEL, STATUS_LABEL } from "@/lib/labels";
@@ -18,13 +19,24 @@ import { useWs } from "@/lib/ws";
 const OVERLAY_TTL = 15000;
 const FEED_TYPES = new Set(["jev_vision", "ppe_violation", "machine_alarm", "machine_state", "scenario_started", "camera_offline", "incident_opened", "camera_source"]);
 
-function KeySignal({ machineId, p }: { machineId: string; p?: Record<string, unknown> }) {
-  if (!p) return <span className="text-muted">—</span>;
-  const pick = machineId.includes("FD") ? ["feed_rate", "m/min"] : machineId.includes("PR") ? ["spm", "spm"] : ["motor_current_a", "A"];
-  const v = p[pick[0]];
+const SIGNAL_PRIORITY: [string, string][] = [
+  ["feed_rate", "m/min"],
+  ["spm", "spm"],
+  ["final_torque_nm", "N·m"],
+  ["weld_current_a", "A"],
+  ["air_pressure_bar", "bar"],
+  ["cycle_time_s", "s"],
+  ["motor_current_a", "A"],
+  ["motor_temp_c", "°C"],
+];
+
+function KeySignal({ p }: { p?: Record<string, unknown> }) {
+  const hit = p && SIGNAL_PRIORITY.find(([k]) => typeof p[k] === "number");
+  if (!p || !hit) return <span className="text-muted">—</span>;
+  const v = p[hit[0]] as number;
   return (
-    <span className="tabular font-mono text-xs text-foreground">
-      {typeof v === "number" ? v : "—"} <span className="text-muted">{pick[1]}</span>
+    <span className="tabular font-mono text-sm text-foreground">
+      {Math.round(v * 100) / 100} <span className="text-xs text-muted">{hit[1]}</span>
     </span>
   );
 }
@@ -39,6 +51,7 @@ export default function DashboardPage() {
   const [latest, setLatest] = useState<Record<string, Record<string, unknown>>>({});
   const [sources, setSources] = useState<Record<string, string>>({});
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
   const buf = useRef<Record<string, Record<string, unknown>>>({});
   const now = useNow();
 
@@ -102,7 +115,7 @@ export default function DashboardPage() {
         const what = p.p_jam !== undefined ? "卡料" : p.p_smoke !== undefined ? "煙霧" : "PPE";
         out.push({ box: p.box as Box, label: `Jev ${what} ${prob?.toFixed(2) ?? ""}`, kind: "jev" });
       }
-      if (ev.type === "ppe_violation" && Array.isArray(p.person_box)) out.push({ box: p.person_box as Box, label: `未戴安全帽 ${(p.conf as number)?.toFixed(2)}`, kind: "yolo" });
+      if (ev.type === "ppe_violation" && Array.isArray(p.person_box)) out.push({ box: p.person_box as Box, label: `${Array.isArray(p.missing) && p.missing.length ? "未戴安全帽" : "人員進入危險區"} ${(p.conf as number)?.toFixed(2)}`, kind: "yolo" });
     }
     for (const inc of openIncidents) {
       const st = woByIncident.get(inc.id)?.status;
@@ -114,7 +127,10 @@ export default function DashboardPage() {
 
   const m = liveMetrics ?? metrics.data;
   const sevCounts = m?.severity_counts ?? {};
-  const shown = expanded ? cameras.filter((c) => c.id === expanded) : cameras.slice(0, 4);
+  const pages = Math.max(1, Math.ceil(cameras.length / 4));
+  const pg = Math.min(page, pages - 1);
+  const shown = expanded ? cameras.filter((c) => c.id === expanded) : cameras.slice(pg * 4, pg * 4 + 4);
+  const reportIncidents = (incidents.data ?? []).filter((i) => i.incident_report && (i.incident_report.status === "draft" || i.incident_report.status === "overdue"));
 
   // 告警串：Incident ＋ 重要事件
   const feed = useMemo(() => {
@@ -136,6 +152,10 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-3">
+      {reportIncidents.map((inc) => {
+        const wo = woByIncident.get(inc.id);
+        return <ReportAlertBar key={inc.id} inc={inc} href={wo ? `/workorders/${wo.id}` : undefined} />;
+      })}
       {/* KPI */}
       <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
         <Kpi icon={<AlertTriangle className="h-4 w-4" />} label="未結案異常" value={openIncidents.length} tone={openIncidents.length ? "alarm" : "ok"} />
@@ -147,7 +167,29 @@ export default function DashboardPage() {
       <div className="grid gap-3 xl:grid-cols-[minmax(0,1fr)_380px]">
         <div className="space-y-3">
           <Card>
-            <CardHeader title="攝影機牆" icon={<Video className="h-4 w-4" />} right={<span className="text-xs text-muted">{expanded ? "點右上角縮小" : "滑過畫面可放大"}・青框 = Jev Box・紅框 = YOLO</span>} />
+            <CardHeader title="攝影機牆" icon={<Video className="h-4 w-4" />} right={
+                <div className="flex items-center gap-2">
+                  <span className="hidden text-xs text-muted lg:inline">青框 = Jev Box・紅框 = YOLO／規則</span>
+                  {!expanded && pages > 1 && (
+                    <div className="flex gap-1">
+                      {Array.from({ length: pages }, (_, i) => {
+                        const camsHere = cameras.slice(i * 4, i * 4 + 4);
+                        const hot = camsHere.some((c) => openIncidents.some((x) => x.camera_id === c.id));
+                        return (
+                          <button
+                            key={i}
+                            onClick={() => setPage(i)}
+                            className={cn("rounded border px-2 py-0.5 text-xs", i === pg ? "border-cyan-500 bg-cyan-500/15 text-cyan-200" : "border-line text-muted hover:text-foreground", hot && i !== pg && "border-red-500 text-red-300")}
+                          >
+                            {camsHere.map((c) => c.id.replace("CAM-", "")).join("・")}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              }
+            />
             <CardContent>
               {plant.error && <ErrorNote e={plant.error} />}
               <div className={cn("grid gap-2", expanded ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2")}>
@@ -181,24 +223,31 @@ export default function DashboardPage() {
                     right={lineOpen ? <span className="text-xs font-semibold text-red-400">{lineOpen} 件異常</span> : <span className="text-xs text-emerald-400">正常</span>}
                   />
                   <CardContent className="space-y-2.5">
-                    <div className="flex items-center gap-2 text-xs">
-                      <Gauge className="h-3.5 w-3.5 text-muted" />
-                      <span className="text-muted">稼動率</span>
-                      <div className="h-1.5 flex-1 overflow-hidden rounded bg-panel-2">
-                        <div className="h-full rounded bg-[#3987e5]" style={{ width: pct(avg) }} />
+                    {l.machines.length ? (
+                      <div className="flex items-center gap-2 text-sm">
+                        <Gauge className="h-4 w-4 text-muted" />
+                        <span className="text-muted">稼動率</span>
+                        <div className="h-2 flex-1 overflow-hidden rounded bg-panel-2">
+                          <div className="h-full rounded bg-[#3987e5]" style={{ width: pct(avg) }} />
+                        </div>
+                        <span className="tabular font-mono text-foreground">{pct(avg)}</span>
                       </div>
-                      <span className="tabular font-mono text-foreground">{pct(avg)}</span>
-                    </div>
+                    ) : (
+                      <div className="rounded border border-dashed border-line px-3 py-4 text-center text-sm text-muted">
+                        尚無設備資料
+                        {l.cameras.length > 0 && <div className="mt-0.5 text-xs">攝影機 {l.cameras.map((c) => c.id).join("、")} 監看中</div>}
+                      </div>
+                    )}
                     {l.machines.map((mm) => (
                       <div key={mm.id} className="flex items-center gap-2 rounded border border-line/60 bg-panel-2/50 px-2 py-1.5">
                         <HealthDot h={mm.health} />
                         <div className="min-w-0 flex-1">
                           <div className="truncate text-sm">{mm.name}</div>
-                          <div className="font-mono text-[10px] text-muted">{mm.id}</div>
+                          <div className="font-mono text-[11px] text-muted">{mm.id}</div>
                         </div>
                         <div className="text-right">
-                          <KeySignal machineId={mm.id} p={latest[mm.id]} />
-                          <div className="text-[10px] text-muted">
+                          <KeySignal p={latest[mm.id]} />
+                          <div className="text-[11px] text-muted">
                             {mm.health === "alarm" ? <span className="text-red-400">告警</span> : mm.health === "warn" ? <span className="text-amber-300">注意</span> : "運轉中"}・{pct(mm.utilization ?? 0)}
                           </div>
                         </div>
@@ -261,12 +310,12 @@ function IncidentRow({ inc, wo }: { inc: Incident; wo?: WorkOrder }) {
           <span className="truncate text-sm font-medium">{inc.title ?? inc.type}</span>
           {inc.status === "open" && <span className="h-1.5 w-1.5 shrink-0 animate-pulse rounded-full bg-red-500" />}
         </div>
-        <div className="truncate text-[11px] text-muted">
+        <div className="truncate text-xs text-muted">
           {CATEGORY_LABEL[inc.category] ?? inc.category}・{inc.machine_id}・{inc.rule_id}
           {wo && <> ・{wo.id} {STATUS_LABEL[wo.status]}</>}
         </div>
       </div>
-      <span className="tabular shrink-0 font-mono text-[11px] text-muted">{fmtTime(inc.opened_at)}</span>
+      <span className="tabular shrink-0 font-mono text-xs text-muted">{fmtTime(inc.opened_at)}</span>
     </div>
   );
   return wo ? (
@@ -284,19 +333,19 @@ function EventRow({ ev }: { ev: SentinelEvent }) {
   if (ev.type === "jev_vision") {
     const parts = Object.entries(p).filter(([k]) => k.startsWith("p_")).map(([k, v]) => `${k}=${v}`);
     text = `Jev 看圖：${parts.join(" ")}`;
-  } else if (ev.type === "ppe_violation") text = `YOLO：未戴安全帽（conf ${p.conf}）`;
+  } else if (ev.type === "ppe_violation") text = `YOLO：${Array.isArray(p.missing) && p.missing.length ? "未戴安全帽" : "人員進入危險區"}（conf ${p.conf}）`;
   else if (ev.type === "machine_alarm") text = `機台警報 ${p.alarm_code}，送料速率 ${p.feed_rate}`;
   else if (ev.type === "machine_state") text = `機台狀態 → ${p.state}（動態 ${p.motion_score}）`;
   else if (ev.type === "scenario_started") text = `▶ ${p.title}`;
   else if (ev.type === "camera_source") text = `切換影片：${String(p.video).split("/").pop()}`;
   return (
     <div className="flex items-start gap-2 text-xs">
-      <span className="mt-0.5 rounded bg-panel-2 px-1 font-mono text-[10px] text-muted">{ev.source}</span>
+      <span className="mt-0.5 rounded bg-panel-2 px-1 font-mono text-[11px] text-muted">{ev.source}</span>
       <span className="min-w-0 flex-1 text-slate-300">
         {text}
-        <span className="ml-1 font-mono text-[10px] text-muted">{ev.camera_id ?? ev.machine_id}</span>
+        <span className="ml-1 font-mono text-[11px] text-muted">{ev.camera_id ?? ev.machine_id}</span>
       </span>
-      <span className="tabular shrink-0 font-mono text-[11px] text-muted">{fmtTime(ev.ts)}</span>
+      <span className="tabular shrink-0 font-mono text-xs text-muted">{fmtTime(ev.ts)}</span>
     </div>
   );
 }

@@ -26,7 +26,12 @@ import type {
   WorkOrderDetail,
   WorkOrderStatus,
   WritebackCheck,
+  NextAction,
+  IncidentReportStatus,
+  KbCase,
+  Health,
   WsMessage,
+  SimilarCase,
 } from "../types";
 import {
   CHECKLIST_FEEDER,
@@ -34,7 +39,6 @@ import {
   CHECKLIST_SAFETY,
   ESCALATION_CHAIN,
   FEED_JAM_EXPLANATION,
-  FEED_JAM_EXPLANATION_LEARNED,
   LOTO_FEEDER,
   PEOPLE,
   PLANT,
@@ -155,6 +159,8 @@ interface State {
   incSeq: number;
   agentTurns: Record<string, number>;
   timers: ReturnType<typeof setTimeout>[];
+  reports: Map<string, IncidentReportStatus>;
+  cases: Map<string, KbCase & { learned?: boolean }>;
 }
 
 const S: State = {
@@ -175,7 +181,70 @@ const S: State = {
   incSeq: 2044,
   agentTurns: {},
   timers: [],
+  reports: new Map(),
+  cases: new Map(),
 };
+
+const isSafetyCat = (c: Category) => c === "safety";
+
+// ---------------------------------------------------------------- 職災 8 小時通報（職安法第37條第2項）
+const SCENE_NOTICE = "非經司法機關或檢查機構許可，不得移動或破壞現場";
+
+function criteriaMet(c: { deaths: number; injured: number; hospitalized: number; designated: boolean }) {
+  const out: string[] = [];
+  if (c.deaths >= 1) out.push("死亡");
+  if (c.injured >= 3) out.push("罹災 3 人以上");
+  if (c.hospitalized >= 1) out.push("罹災需住院");
+  if (c.designated) out.push("其他經中央主管機關指定公告之災害");
+  return out;
+}
+
+function reportStatus(incId: string): IncidentReportStatus {
+  const inc = S.incidents.get(incId)!;
+  const r = S.reports.get(incId);
+  if (!r) return { incident_id: incId, required: false, criteria_met: [], casualty: inc.casualty ?? null, status: "none", deadline: null, remaining_s: null, draft: null, instructions: [], submitted_by: null, submitted_at: null };
+  const remaining = r.deadline ? Math.floor((new Date(r.deadline).getTime() - Date.now()) / 1000) : null;
+  return { ...r, status: r.submitted_at ? "submitted" : remaining !== null && remaining <= 0 ? "overdue" : "draft", remaining_s: remaining === null ? null : Math.max(0, remaining) };
+}
+
+function reportSummary(incId: string) {
+  const r = reportStatus(incId);
+  return { status: r.status, deadline: r.deadline, remaining_s: r.remaining_s, criteria_met: r.criteria_met, instructions: r.instructions };
+}
+
+function setCasualty(incId: string, c: { deaths: number; injured: number; hospitalized: number; designated: boolean; note?: string }, actor: string) {
+  const inc = S.incidents.get(incId);
+  need(inc, 404, "找不到異常");
+  inc.casualty = { ...c, set_by: actor, set_at: iso() };
+  audit(inc.trace_id, actor, "casualty_marked", { incident_id: incId, casualty: inc.casualty });
+  const met = criteriaMet(c);
+  if (met.length && !S.reports.has(incId)) {
+    const deadline = iso(new Date(inc.opened_at).getTime() + 8 * 3600e3);
+    S.reports.set(incId, {
+      incident_id: incId, required: true, criteria_met: met, casualty: inc.casualty, status: "draft", deadline, remaining_s: null,
+      draft: {
+        data_label: "模擬資料",
+        事業單位: "（模擬）Sentinel 示範工廠",
+        發生時間: inc.opened_at,
+        發生地點: `${inc.line} ${inc.machine_id ?? inc.camera_id ?? ""}`,
+        災害經過: `${inc.title ?? inc.type}（${inc.rule_id}）`,
+        傷亡概況: `死亡 ${c.deaths} 人、罹災 ${c.injured} 人、需住院 ${c.hospitalized} 人（待現場確認）`,
+        符合通報條件: met,
+        通報對象: "勞動檢查機構",
+        法源: "職業安全衛生法第37條第2項：發生死亡、罹災 3 人以上、罹災 1 人以上需住院治療等職業災害，應於 8 小時內通報勞動檢查機構",
+        現場保全: SCENE_NOTICE,
+        備註: "本草稿由系統預填，須由主管確認內容後送出；系統不會自動送出。",
+      },
+      instructions: [SCENE_NOTICE, "由主管確認草稿後按「送出通報」；系統不會自動送出"],
+      submitted_by: null, submitted_at: null,
+    });
+    audit(inc.trace_id, "system", "incident_report_created", { incident_id: incId, deadline, criteria_met: met });
+    emit("incidents", "report_required", { incident_id: incId, payload: reportStatus(incId) });
+  }
+  inc.incident_report = S.reports.has(incId) ? reportSummary(incId) : null;
+  emit("incidents", "casualty_marked", { incident_id: incId, payload: { incident_id: incId, criteria_met: met, report_required: met.length > 0 } });
+  return reportStatus(incId);
+}
 
 function audit(trace_id: string | null, actor: string, action: string, detail: Record<string, unknown> = {}, ts = Date.now()) {
   const e: AuditEntry = { ts: iso(ts), trace_id, actor, action, detail };
@@ -184,7 +253,8 @@ function audit(trace_id: string | null, actor: string, action: string, detail: R
 }
 
 function addCost(kind: "jev" | "llm", ts = Date.now()) {
-  const c = kind === "jev" ? rnd(0.0009, 0.0014) : rnd(0.0003, 0.0006);
+  // LLM（Ollama Cloud）是訂閱制，不逐次計價
+  const c = kind === "jev" ? rnd(0.0009, 0.0014) : 0;
   S.costTotal += c;
   S.calls[kind] += 1;
   S.cost.push({ ts: iso(ts), cost: c }); // 單次成本，computeSummary 再累加
@@ -301,7 +371,7 @@ function makeWorkorder(inc: Incident, spec: WoSpec, silent = false): WorkOrderDe
     diagnosis: inc.diagnosis ?? null,
     sops: spec.sops ?? (isSafety ? SOP_PPE : []),
     loto: isSafety ? null : (spec.loto ?? (machine ? genericLoto(machine.type, machine.name) : null)),
-    permit: isSafety ? null : { requested_by: null, approved_by: null, ts: null },
+    permit: null,
     checklist: clone(spec.checklist ?? (isSafety ? CHECKLIST_SAFETY : CHECKLIST_GENERIC)),
     agent_messages: [],
     transitions: [
@@ -317,8 +387,26 @@ function makeWorkorder(inc: Incident, spec: WoSpec, silent = false): WorkOrderDe
   return wo;
 }
 
+function nextActionOf(wo: WorkOrderDetail): NextAction | null {
+  const st = wo.status;
+  if (wo.category === "safety") return st === "ASSIGNED" || st === "ESCALATED" ? "ack" : st === "ACKED" ? "report" : null;
+  const m: Partial<Record<WorkOrderStatus, NextAction>> = {
+    OPEN: "assign", ASSIGNED: "ack", ESCALATED: "ack", ACKED: "permit_request", PERMIT_REQUESTED: "permit_approve",
+    PERMIT_APPROVED: "loto", LOTO_DONE: "loto", IN_REPAIR: "checklist", PENDING_VERIFY: "report",
+  };
+  return m[st] ?? null;
+}
+
+/** 對外輸出：加上 workflow（與後端 serialize 相同） */
+function out(wo: WorkOrderDetail): WorkOrderDetail {
+  const c = clone(wo);
+  c.workflow = { require_permit: true, next_action: nextActionOf(wo) };
+  c.incident = { ...c.incident, incident_report: S.reports.has(wo.incident_id) ? reportSummary(wo.incident_id) : null };
+  return c;
+}
+
 function summary(wo: WorkOrderDetail) {
-  return clone(wo);
+  return out(wo);
 }
 
 function transition(wo: WorkOrderDetail, to: WorkOrderStatus, actor: string, reason?: string) {
@@ -382,7 +470,7 @@ function seedHistoric(now: number) {
       s.checked_by = wo.assignee_id;
       s.ts = iso(ackAt + s.step_no * 30e3);
     });
-    if (wo.permit) wo.permit = { requested_by: wo.assignee_id, approved_by: "P-L01", ts: iso(ackAt + 200e3) };
+    if (!isSafetyCat(inc.category)) wo.permit = { status: "approved", requested_by: wo.assignee_id, requested_at: iso(ackAt + 60e3), approved_by: "P-L01", ts: iso(ackAt + 200e3) };
     wo.checklist?.forEach((c) => {
       c.checked_by = wo.assignee_id;
       c.ts = iso(closeAt - 60e3);
@@ -411,12 +499,14 @@ function seedActive(now: number, includeFeedJam: boolean) {
     wo.acked_at = iso(ack);
     wo.ack_deadline = null;
     wo.loto?.steps.forEach((s) => ((s.checked_by = wo.assignee_id), (s.ts = iso(ack + s.step_no * 40e3))));
-    wo.permit = { requested_by: wo.assignee_id, approved_by: "P-L01", ts: iso(ack + 240e3) };
+    wo.permit = { status: "approved", requested_by: wo.assignee_id, requested_at: iso(ack + 60e3), approved_by: "P-L01", ts: iso(ack + 120e3) };
     wo.checklist?.forEach((c) => ((c.checked_by = wo.assignee_id), (c.ts = iso(now - 6 * 60e3))));
     wo.transitions!.push(
       { from: "ASSIGNED", to: "ACKED", actor: wo.assignee_id!, reason: "Discord 接單", ts: iso(ack) },
-      { from: "ACKED", to: "LOTO_DONE", actor: wo.assignee_id!, ts: iso(ack + 160e3) },
-      { from: "LOTO_DONE", to: "IN_REPAIR", actor: "P-L01", reason: "作業許可核准", ts: iso(ack + 240e3) },
+      { from: "ACKED", to: "PERMIT_REQUESTED", actor: wo.assignee_id!, reason: "申請作業許可", ts: iso(ack + 60e3) },
+      { from: "PERMIT_REQUESTED", to: "PERMIT_APPROVED", actor: "P-L01", reason: "作業許可核准", ts: iso(ack + 120e3) },
+      { from: "PERMIT_APPROVED", to: "LOTO_DONE", actor: wo.assignee_id!, ts: iso(ack + 240e3) },
+      { from: "LOTO_DONE", to: "IN_REPAIR", actor: wo.assignee_id!, reason: "LOTO 完成並驗證零能量，開始維修", ts: iso(ack + 240e3) },
       { from: "IN_REPAIR", to: "PENDING_VERIFY", actor: wo.assignee_id!, reason: "Checklist 完成", ts: iso(now - 6 * 60e3) },
     );
     wo.status = "PENDING_VERIFY";
@@ -474,11 +564,32 @@ function seedActive(now: number, includeFeedJam: boolean) {
   }
 }
 
+function latestApprovedFeedJamCase() {
+  return [...S.cases.values()].filter((c) => c.status === "approved" && c.event_type === "feed_jam").sort((a, b) => (b.reviewed_at ?? "").localeCompare(a.reviewed_at ?? ""))[0];
+}
+
+function rootCauseName(id: string | null | undefined) {
+  return feedJamDiagnosis("", false).root_cause_top3.find((r) => r.failure_mode_id === id)?.name ?? id ?? "未確認";
+}
+
+function refSentence(c: KbCase) {
+  return `引用剛核准的 ${c.case_id}：上次同一台送料機也是卡料，最後確認是${rootCauseName(c.final_root_cause)}。`;
+}
+
 function createFeedJam(t0: number, silent: boolean) {
-  const learned = S.learned;
+  // 已核准入庫的卡料案例：會出現在下一次判斷的相似案例裡，但 top-1 機率不一定上升（實測 0.54 → 0.47）
+  const ref = latestApprovedFeedJamCase();
   const jevOn = S.settings.jev_enabled;
+  const base = feedJamDiagnosis("", false);
+  if (ref) base.root_cause_top3 = base.root_cause_top3.map((r, i) => ({ ...r, p: [0.49, 0.33, 0.13][i] ?? r.p }));
+  base.similar_cases = [
+    ...(ref ? [{ case_id: ref.case_id, final_root_cause: ref.final_root_cause, final_root_cause_name: rootCauseName(ref.final_root_cause), status: "approved", just_approved: true, score: 0.91 }] : []),
+    { case_id: "CASE-STP-0087", title: "送料卡料：板厚超差", final_root_cause_name: "材料厚度偏差", status: "approved", score: 0.82 },
+    { case_id: "CASE-STP-0031", title: "送料長度偏短：滾輪打滑", final_root_cause_name: "送料滾輪磨損", status: "approved", score: 0.77 },
+  ];
+  const explanation = ref ? `${FEED_JAM_EXPLANATION}${refSentence(ref)}` : FEED_JAM_EXPLANATION;
   const diag: Diagnosis = jevOn
-    ? { ...feedJamDiagnosis("", learned), explanation: silent ? (learned ? FEED_JAM_EXPLANATION_LEARNED : FEED_JAM_EXPLANATION) : null, explanation_status: silent ? "done" : "pending" }
+    ? { ...base, explanation: silent ? explanation : null, explanation_status: silent ? "done" : "pending" }
     : { incident_id: "", root_cause_top3: [], confidence: 0, mode: "rules_only", explanation: "AI 判斷暫不可用：Jev 已關閉，系統以規則（Log 送料速率歸零＋動態分數歸零）照常派工。", explanation_status: "failed" };
   const inc = makeIncident({
     line: "stamping",
@@ -538,6 +649,8 @@ function seed(includeFeedJam: boolean) {
   S.calls = { jev: 14, llm: 4 };
   S.agentTurns = {};
   S.segments = {};
+  S.reports = new Map();
+  S.cases = new Map();
   S.cameraSources = Object.fromEntries(PLANT.lines.flatMap((l) => l.cameras.map((c) => [c.id, c.source ?? ""])));
   const now = Date.now();
   // AI 成本歷史（早上的呼叫）
@@ -563,8 +676,13 @@ function start() {
   metricsTimer = setInterval(() => emit("metrics", "summary", computeSummary()), 5000);
 }
 
+let lastCountdown = 0;
 function tick() {
   const now = Date.now();
+  if (now - lastCountdown > 60000) {
+    lastCountdown = now;
+    for (const [id, r] of S.reports) if (!r.submitted_at) emit("incidents", reportStatus(id).status === "overdue" ? "report_overdue" : "report_countdown", { incident_id: id, payload: { incident_id: id, ...reportSummary(id) } });
+  }
   for (const m of MACHINES) {
     const p = sample(m.id, now);
     const arr = (S.history[m.id] ??= []);
@@ -636,7 +754,8 @@ function runScenario(id: string): { ok: boolean; trace_id?: string } {
       if (inc.diagnosis && inc.diagnosis.mode === "jev_top3") emit("ai", "jev_result", { incident_id: inc.id, workorder_id: wo.id, diagnosis: inc.diagnosis });
       if (S.settings.jev_enabled) {
         // LLM 說明約 1.5 秒後補上（串流）
-        const full = S.learned ? FEED_JAM_EXPLANATION_LEARNED : FEED_JAM_EXPLANATION;
+        const ref = latestApprovedFeedJamCase();
+        const full = ref ? `${FEED_JAM_EXPLANATION}${refSentence(ref)}` : FEED_JAM_EXPLANATION;
         const d = inc.diagnosis!;
         later(900, () => {
           d.explanation_status = "streaming";
@@ -706,6 +825,22 @@ function runScenario(id: string): { ok: boolean; trace_id?: string } {
     });
     return { ok: true };
   }
+  if (id === "person_zone") {
+    pushEvent({ topic: "vision.events", source: "control", line: "stamping", machine_id: null, camera_id: "CAM-STP-02", type: "scenario_started", payload: { scenario: "person_zone", title: "場景 6：光幕停用時人員進入沖床危險區" }, trace_id: null });
+    later(2000, () => pushEvent({ topic: "mes.logs", source: "sim.mes", line: "stamping", machine_id: "STP-L1-PR01", camera_id: null, type: "machine_alarm", payload: { alarm_code: "LIGHT_CURTAIN_MUTED", feed_rate: "—" }, trace_id: null }));
+    later(4000, () => {
+      pushEvent({ topic: "vision.events", source: "vision.ppe", line: "stamping", machine_id: "STP-L1-PR01", camera_id: "CAM-STP-02", type: "ppe_violation", payload: { person_box: [520, 200, 700, 620], missing: [], conf: 0.88, zone: "danger_zone" }, trace_id: null });
+      const inc = makeIncident({ line: "stamping", machine_id: "STP-L1-PR01", camera_id: "CAM-STP-02", type: "person_in_danger_zone", title: "光幕停用時人員進入沖床危險區", category: "safety", rule_id: "R-SAF-ZONE", severity: "S3", facts: { light_curtain_status: "MUTED", person_in_zone_s: 5, press_state: "running" }, jev_box: [520, 200, 700, 620] });
+      audit(inc.trace_id, "rules", "rule_hit", { rule_id: "R-SAF-ZONE", severity: "S3", route: "emergency" });
+      S.handled.rules_only++;
+      pushEvent({ topic: "alerts", source: "rules", line: "stamping", machine_id: "STP-L1-PR01", camera_id: "CAM-STP-02", type: "incident_opened", payload: { incident_id: inc.id, severity: "S3", title: inc.title }, trace_id: inc.trace_id });
+      emit("incidents", "created", inc);
+      makeWorkorder(inc, { role: "supervisor" });
+      // 劇本腳本設定傷亡（系統不會從影像推論傷亡）
+      later(4000, () => setCasualty(inc.id, { deaths: 0, injured: 1, hospitalized: 1, designated: false, note: "劇本：右手壓傷送醫" }, "scenario"));
+    });
+    return { ok: true };
+  }
   if (id === "weld_smoke") {
     setSource("CAM-WLD-01", "assets/videos/welding/smoke_01.mp4");
     pushEvent({ topic: "vision.events", source: "control", line: "welding", machine_id: null, camera_id: "CAM-WLD-01", type: "scenario_started", payload: { scenario: "weld_smoke", title: "場景 4：銲接煙霧＋逐級升級" }, trace_id: null });
@@ -717,7 +852,7 @@ function runScenario(id: string): { ok: boolean; trace_id?: string } {
         addCost("jev");
         S.handled.jev++;
       } else S.handled.rules_only++;
-      const inc = makeIncident({ line: "welding", machine_id: "WLD-L1-RB01", camera_id: "CAM-WLD-01", type: "weld_smoke", title: "銲接煙霧異常", category: "equipment", rule_id: "R-WLD-SMOKE", severity: "S2", facts: { p_smoke_last2: [0.84, 0.87], motor_temp_c: 78 }, jev_box: [470, 150, 830, 430],
+      const inc = makeIncident({ line: "welding", machine_id: "WLD-L1-RB01", camera_id: "CAM-WLD-01", type: "weld_smoke", title: "銲接煙霧異常", category: "equipment", rule_id: "R-WLD-SMOKE", severity: "S3", facts: { p_smoke_last2: [0.84, 0.87], motor_temp_c: 78 }, jev_box: [470, 150, 830, 430],
         diagnosis: S.settings.jev_enabled ? { incident_id: "", root_cause_top3: [ { failure_mode_id: "FM-WLD-EXHAUST", name: "排煙風機效能下降", p: 0.49 }, { failure_mode_id: "FM-WLD-GAS", name: "保護氣體流量不足", p: 0.3 }, { failure_mode_id: "FM-WLD-PARAM", name: "銲接電流設定過高", p: 0.14 } ], confidence: 0.66, mode: "jev_top3", explanation: "煙霧集中在銲槍上方且溫度上升，排煙風機效能下降的可能性最高。", explanation_status: "done" } : null });
       audit(inc.trace_id, "rules", "rule_hit", { rule_id: "R-WLD-SMOKE" });
       pushEvent({ topic: "alerts", source: "rules", line: "welding", machine_id: "WLD-L1-RB01", camera_id: "CAM-WLD-01", type: "incident_opened", payload: { incident_id: inc.id, severity: "S2", title: inc.title }, trace_id: inc.trace_id });
@@ -756,13 +891,13 @@ function agentReply(wo: WorkOrderDetail, userText: string) {
     tools.push({ name: "get_sop", args: { failure_mode_id: "SAF-PPE", phase: "respond" } });
   } else if (wo.status === "ASSIGNED" || wo.status === "ESCALATED" || wo.status === "OPEN") {
     content = "請先接單，接單後我會帶你完成 LOTO。";
-  } else if (wo.status === "ACKED") {
+  } else if (wo.status === "ACKED" || wo.status === "PERMIT_REQUESTED") {
+    content = "依系統規則，作業許可核准、LOTO 完成前我只能協助準備。請先申請作業許可（需班長核准），準備：";
+    steps = ["確認危害防止計畫與作業許可單內容（設施規則第57條）", "準備塞規、分厘卡、取料夾具", wo.status === "ACKED" ? "在上方按「申請作業許可」" : "等待班長核准作業許可"];
+  } else if (wo.status === "PERMIT_APPROVED") {
     content = LOTO_ONLY_NOTE + `（${wo.loto?.loto_id ?? "LOTO"}）尚未完成的步驟：`;
     steps = (wo.loto?.steps ?? []).filter((s) => !s.checked_by).map((s) => `【${s.energy}】${s.text}`);
     steps.push("準備工具：塞規、分厘卡、取料夾具");
-  } else if (wo.status === "LOTO_DONE") {
-    content = "LOTO 已完成。作業許可尚未核准（需班長核准），核准前我只能協助準備：";
-    steps = ["確認上鎖人與掛牌資訊已拍照記錄", "準備塞規、分厘卡、取料夾具", "在下方按「申請作業許可」"];
   } else {
     const repairTurn = (S.agentTurns[`${wo.id}:repair`] ?? 0) + 1;
     S.agentTurns[`${wo.id}:repair`] = repairTurn;
@@ -771,7 +906,10 @@ function agentReply(wo: WorkOrderDetail, userText: string) {
       steps = ["確認上鎖狀態", "依 SOP 檢查對應部位", "回報檢查結果"];
     } else if (repairTurn === 1) {
       const first = top[0]?.name ?? "送料滾輪磨損";
-      content = `作業許可已核准。依 Jev 根因排序，先排查第一名「${first}」（${((top[0]?.p ?? 0.52) * 100).toFixed(0)}%）。`;
+      const ref = wo.diagnosis?.similar_cases?.find((c): c is SimilarCase => typeof c !== "string" && !!c.just_approved);
+      content =
+        (ref ? `上次同一台送料機（${ref.case_id}）也是卡料，最後是${ref.final_root_cause_name ?? "已確認的根因"}，這次一併留意。` : "") +
+        `依 Jev 根因排序，先排查第一名「${first}」（${((top[0]?.p ?? 0.52) * 100).toFixed(0)}%）。`;
       steps =
         first === "送料滾輪磨損"
           ? ["確認主電源 QF1 已上鎖、氣壓表歸零", "目視檢查上下送料滾輪表面是否有亮面磨耗或溝痕", "以塞規量測滾輪間隙，標準 ≤ 0.05 mm（SOP-STP-012 §3.2）", "回報量測結果"]
@@ -780,7 +918,7 @@ function agentReply(wo: WorkOrderDetail, userText: string) {
     } else if (repairTurn === 2) {
       content = `了解，第一個方向排除。改排查第二名「${top[1]?.name ?? "材料厚度偏差"}」（${((top[1]?.p ?? 0.31) * 100).toFixed(0)}%），相似案例 CASE-STP-0087 也是板厚超差造成卡料。`;
       steps = ["從送料口側將卡住的板材退出", "伸手進模具區取出卡住的板材", "以分厘卡量測板材三點厚度，公差 2.00 ± 0.05 mm", "比對本批材料進料檢驗紀錄"];
-      flags = [{ step_index: 1, step_text: steps[1], probs: { enters_danger_zone: 0.9, bypasses_guard: 0.35 }, max_p: 0.9, supervisor_requested: true }];
+      flags = [{ step_index: 1, step_text: steps[1], probs: { needs_loto: 0.2, enters_danger_zone: 0.9, high_voltage: 0.05, energized: 0.12 }, max_p: 0.9, reasons: ["enters_danger_zone"], requires_supervisor: true, supervisor_requested: true, source: "jev" }];
       tools = [{ name: "search_cases", args: { query: "送料卡料 板厚" } }, { name: "get_sop", args: { failure_mode_id: "FM-STP-MATERIAL-THICK", phase: "inspect" } }, { name: "request_supervisor", args: { reason: "步驟 2 涉及進入模具危險區" } }];
     } else if (repairTurn === 3) {
       content = "板厚 2.08 mm 超出公差，根因確認為「材料厚度偏差」。處置步驟：";
@@ -859,7 +997,7 @@ function computeSummary(): MetricsSummary {
     comparison: [
       { method: "規則引擎（CEP）", latency_ms: 3, accuracy: 0.71, cost_per_call_usd: 0, calls: S.handled.rules_only + S.handled.jev + S.handled.llm },
       { method: "Jev 1.14（直覺層）", latency_ms: 610, accuracy: 0.86, cost_per_call_usd: 0.0011, calls: S.calls.jev },
-      { method: "DeepSeek V4.1（深度說明）", latency_ms: 1650, accuracy: 0.82, cost_per_call_usd: 0.00045, calls: S.calls.llm },
+      { method: "DeepSeek V4.1（深度說明）", latency_ms: 1650, accuracy: 0.82, cost_per_call_usd: 0, calls: S.calls.llm },
     ],
   };
 }
@@ -932,14 +1070,25 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       const since = Date.now() - lastMin * 60e3;
       return r({ machine_id: seg[1], points: (S.history[seg[1]] ?? []).filter((x) => new Date(x.ts).getTime() >= since) });
     }
-    if (p === "/incidents") return r([...S.incidents.values()].sort((a, c) => c.opened_at.localeCompare(a.opened_at)));
+    if (p === "/incidents")
+      return r([...S.incidents.values()].sort((a, c) => c.opened_at.localeCompare(a.opened_at)).map((i) => ({ ...i, incident_report: S.reports.has(i.id) ? reportSummary(i.id) : null })));
+    if (seg[0] === "incidents" && seg[2] === "report") {
+      need(S.incidents.has(seg[1]), 404, "找不到異常");
+      return r(reportStatus(seg[1]));
+    }
+    if (p === "/kb/cases") {
+      const st = q.get("status");
+      return r([...S.cases.values()].filter((c) => !st || c.status === st));
+    }
+    if (p === "/health")
+      return r({ ok: true, detector_mode: "scripted", yolo: { weights: "models/ppe.pt", weights_exist: false, classes: null }, embedding_model: "（模擬）multilingual-e5-small", kb: { docs: 412, cases: 38 + [...S.cases.values()].filter((c) => c.status === "approved").length, allow_draft: false }, jev: { enabled: S.settings.jev_enabled, model: "jev-1.14" }, llm: { enabled: true, model: "deepseek-v4.1-flash" }, notifier: "console", workflow: { require_permit: true }, scenario: null } satisfies Health);
     if (seg[0] === "incidents" && seg[1]) {
       const inc = S.incidents.get(seg[1]);
       need(inc, 404, "找不到異常");
       return r(inc);
     }
-    if (p === "/workorders") return r([...S.workorders.values()].sort((a, c) => c.created_at.localeCompare(a.created_at)));
-    if (seg[0] === "workorders" && seg[1]) return r(getWo(seg[1]));
+    if (p === "/workorders") return r([...S.workorders.values()].sort((a, c) => c.created_at.localeCompare(a.created_at)).map(out));
+    if (seg[0] === "workorders" && seg[1]) return r(out(getWo(seg[1])));
     if (p === "/audit") {
       const tr = q.get("trace_id");
       const woId = q.get("workorder_id");
@@ -970,7 +1119,7 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       wo.assignee_role = persona.role;
       audit(tr, me, "ack", { workorder_id: wo.id, via: "web" });
       transition(wo, "ACKED", me, "接單");
-      return r(wo);
+      return r(out(wo));
     }
     if (action === "reassign") {
       need(persona.role === "leader" || persona.role === "supervisor", 403, "只有班長或主管能轉派");
@@ -981,41 +1130,50 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       wo.ack_deadline = iso(Date.now() + S.settings.escalation_timeout_s * 1000);
       audit(tr, me, "reassign", { workorder_id: wo.id, to: to.name, reason: b.reason });
       transition(wo, "ASSIGNED", me, `轉派給 ${to.name}：${String(b.reason ?? "")}`);
-      return r(wo);
+      return r(out(wo));
     }
     if (action === "loto") {
       need(wo.loto, 400, "此工單不需要 LOTO");
-      need(wo.status === "ACKED", 409, "請先接單；LOTO 只在已接單狀態勾選");
+      need(wo.status === "PERMIT_APPROVED", 409, `作業許可核准後才能勾選 LOTO（目前狀態：${wo.status}）`);
       const stepNo = Number(seg[3]);
       const next = wo.loto.steps.find((s) => !s.checked_by);
       need(next && next.step_no === stepNo, 409, "請依順序勾選 LOTO 步驟");
       next.checked_by = me;
       next.ts = iso();
       audit(tr, me, "loto_check", { workorder_id: wo.id, loto_id: wo.loto.loto_id, step_no: stepNo, text: next.text });
-      if (wo.loto.steps.every((s) => s.checked_by)) transition(wo, "LOTO_DONE", me, `${wo.loto.loto_id} 全部完成`);
-      else emit("workorders", "updated", summary(wo));
-      return r(wo);
-    }
-    if (action === "permit") {
-      need(wo.status === "LOTO_DONE", 409, "LOTO 完成後才能申請／核准作業許可");
-      wo.permit ??= { requested_by: null, approved_by: null, ts: null };
-      if (b.action === "approve") {
-        need(persona.role === "leader", 403, "只有班長能核准作業許可");
-        need(wo.permit.requested_by, 409, "尚未申請作業許可");
-        wo.permit.approved_by = me;
-        wo.permit.ts = iso();
-        audit(tr, me, "permit_approved", { workorder_id: wo.id });
-        transition(wo, "IN_REPAIR", me, "作業許可核准");
-        const sys: AgentMessage = { id: uid("MSG"), workorder_id: wo.id, role: "system", content: "作業許可已核准：維修 Agent 已開放排查與維修步驟（get_sop inspect／repair）。", ts: iso() };
+      if (wo.loto.steps.every((s) => s.checked_by)) {
+        transition(wo, "LOTO_DONE", me, `${wo.loto.loto_id} 全部勾選完成`);
+        transition(wo, "IN_REPAIR", me, "LOTO 完成並驗證零能量，開始維修");
+        const sys: AgentMessage = { id: uid("MSG"), workorder_id: wo.id, role: "system", content: "LOTO 完成：維修 Agent 已開放排查與維修步驟（get_sop inspect／repair）。", ts: iso() };
         wo.agent_messages = [...(wo.agent_messages ?? []), sys];
         emit(`agent:${wo.id}`, "message", sys);
+      } else emit("workorders", "updated", summary(wo));
+      return r(out(wo));
+    }
+    if (action === "permit") {
+      need(wo.loto, 400, "此工單不需要作業許可");
+      const act = String(b.action ?? "request");
+      if (act === "request") {
+        need(wo.status === "ACKED", 409, `接單後才能申請作業許可（目前狀態：${wo.status}）`);
+        wo.permit = { status: "requested", requested_by: me, requested_at: iso(), approved_by: null, ts: iso() };
+        audit(tr, me, "permit_requested", { workorder_id: wo.id });
+        transition(wo, "PERMIT_REQUESTED", me, "申請作業許可");
       } else {
-        wo.permit.requested_by = me;
-        wo.permit.requested_at = iso();
-        audit(tr, me, "permit_requested", { workorder_id: wo.id, to: "班長" });
-        emit("workorders", "updated", summary(wo));
+        need(persona.role === "leader" || persona.role === "supervisor", 403, "班長以上才能核准／退回作業許可");
+        need(wo.status === "PERMIT_REQUESTED", 409, "目前沒有待核准的作業許可申請");
+        wo.permit = { ...(wo.permit ?? { requested_by: null, approved_by: null, ts: null }), ts: iso() };
+        if (act === "approve") {
+          wo.permit.status = "approved";
+          wo.permit.approved_by = me;
+          audit(tr, me, "permit_approved", { workorder_id: wo.id });
+          transition(wo, "PERMIT_APPROVED", me, "作業許可核准");
+        } else {
+          wo.permit.status = "rejected";
+          audit(tr, me, "permit_rejected", { workorder_id: wo.id });
+          transition(wo, "ACKED", me, "作業許可退回");
+        }
       }
-      return r(wo);
+      return r(out(wo));
     }
     if (action === "checklist") {
       const isSafety = wo.category === "safety";
@@ -1027,7 +1185,7 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       audit(tr, me, "checklist_check", { workorder_id: wo.id, item: it.label });
       if (!isSafety && wo.checklist!.every((c) => c.checked_by)) transition(wo, "PENDING_VERIFY", me, "Checklist 完成");
       else emit("workorders", "updated", summary(wo));
-      return r(wo);
+      return r(out(wo));
     }
     if (action === "report") {
       const isSafety = wo.category === "safety";
@@ -1043,7 +1201,13 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       wo.report = { text, root_cause_confirmed: rc, submitted_by: me, submitted_at: iso(), check };
       audit(tr, "jev", "writeback_check", { purpose: "J5", ...check });
       if (check.complete) {
-        if (!isSafety) audit(tr, "kb", "kb_writeback", { case_id: `CASE-STP-${100 + S.woSeq}`, review_status: "draft" });
+        if (!isSafety) {
+          const case_id = `CASE-DRAFT-${wo.id}`;
+          S.cases.set(case_id, { case_id, status: "draft", line: wo.line, machine_id: wo.machine_id, workorder_id: wo.id, event_type: wo.incident.type, final_root_cause: rc, first_hypothesis: wo.diagnosis?.root_cause_top3[0]?.failure_mode_id ?? null, hypothesis_correct: rc ? rc === wo.diagnosis?.root_cause_top3[0]?.failure_mode_id : null, report: text, closed_at: iso(), reviewed_by: null, reviewed_at: null });
+          wo.writeback = { case_id, status: "draft", reviewed_by: null, approve_url: `/api/kb/cases/${case_id}/approve` };
+          check.kb_status = "draft";
+          audit(tr, "system", "case_draft_written", { workorder_id: wo.id, case_id });
+        }
         wo.closed_at = iso();
         wo.incident.status = "closed";
         wo.incident.closed_at = iso();
@@ -1054,12 +1218,12 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
         }
         if (wo.incident.type === "feed_jam") {
           S.segments["STP-L1-FD02"] = [{ at: 0, mode: "normal" }];
-          if (rc && rc.includes("THICK")) S.learned = true;
+          // 主管「核准入庫」後下一次卡料的根因機率才會變（見 /kb/cases/{id}/approve）
         }
         transition(wo, "CLOSED", me, "回報通過 J5 完整性檢查");
         emit("incidents", "updated", inc);
       } else emit("workorders", "updated", summary(wo));
-      return r({ check, workorder: wo });
+      return r({ check, workorder: out(wo) });
     }
     if (action === "agent") {
       const text = String(b.message ?? "").trim();
@@ -1070,6 +1234,40 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       const mid = agentReply(wo, text);
       return r({ accepted: true, message_id: mid });
     }
+  }
+  if (seg[0] === "incidents" && seg[1]) {
+    need(persona.role === "supervisor", 403, "需要組長（supervisor）以上身分");
+    if (seg[2] === "casualty")
+      return r(setCasualty(seg[1], { deaths: Number(b.deaths ?? 0), injured: Number(b.injured ?? 0), hospitalized: Number(b.hospitalized ?? 0), designated: !!b.designated, note: String(b.note ?? "") }, me));
+    if (seg[2] === "report" && seg[3] === "submit") {
+      const rep = S.reports.get(seg[1]);
+      need(rep, 409, "此事件不符合職災通報條件，沒有通報草稿");
+      need(!rep.submitted_at, 409, "通報已送出");
+      if (b.draft) rep.draft = { ...rep.draft, ...(b.draft as Record<string, unknown>) };
+      rep.submitted_by = me;
+      rep.submitted_at = iso();
+      const inc = S.incidents.get(seg[1])!;
+      inc.incident_report = reportSummary(seg[1]);
+      audit(inc.trace_id, me, "incident_report_submitted", { incident_id: seg[1] });
+      emit("incidents", "report_submitted", { incident_id: seg[1], payload: reportStatus(seg[1]) });
+      return r(reportStatus(seg[1]));
+    }
+  }
+  if (seg[0] === "kb" && seg[1] === "cases" && seg[3] === "approve") {
+    need(persona.role === "supervisor", 403, "案例入庫需要組長（supervisor）以上核准");
+    const c = S.cases.get(seg[2]);
+    need(c, 404, `找不到案例 ${seg[2]}`);
+    need(c.status !== "approved", 409, `${seg[2]} 已經核准入庫`);
+    c.status = "approved";
+    c.reviewed_by = me;
+    c.reviewed_at = iso();
+    c.reviewed_at = iso(); // 下一次卡料判斷會在相似案例中引用它（機率不一定變）
+    const wo = c.workorder_id ? S.workorders.get(c.workorder_id) : undefined;
+    if (wo?.writeback) wo.writeback = { ...wo.writeback, status: "approved", reviewed_by: me };
+    audit(wo?.trace_id ?? null, me, "case_approved", { case_id: c.case_id, workorder_id: c.workorder_id, chunks: 3 });
+    if (wo) emit("workorders", "updated", summary(wo));
+    emit("ai", "case_approved", { case_id: c.case_id, workorder_id: c.workorder_id, chunks: 3 });
+    return r({ ok: true, case: c, ingested_chunks: 3 });
   }
   if (p === "/overrides") {
     need(persona.role === "supervisor", 403, "只有主管能覆寫");
@@ -1087,7 +1285,12 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
         transition(wo, "CANCELLED", me, `主管標記誤報：${String(b.reason ?? "")}`);
       } else if (field === "safety_ack") {
         const m = wo.agent_messages?.find((x) => x.id === b.new);
-        m?.safety_flags?.forEach((f) => (f.supervisor_requested = false));
+        m?.safety_flags?.forEach((f) => {
+          f.supervisor_requested = false;
+          f.acked_by = me;
+          f.ack_reason = String(b.reason ?? "");
+        });
+        if (m) emit(`agent:${wo.id}`, "safety_gate", { message_id: m.id, flags: m.safety_flags });
         audit(wo.trace_id ?? null, me, "override", { target, id, field, message_id: b.new, reason: b.reason });
         const sys: AgentMessage = { id: uid("MSG"), workorder_id: wo.id, role: "system", content: `主管 ${persona.name} 已確認安全把關：${String(b.reason ?? "改用取料夾具，禁止徒手進入模具區")}`, ts: iso() };
         wo.agent_messages = [...(wo.agent_messages ?? []), sys];

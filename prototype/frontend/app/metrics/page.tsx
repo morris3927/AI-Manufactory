@@ -22,9 +22,23 @@ function Stat({ label, value, unit, note, icon }: { label: string; value: string
         <span className="tabular font-mono text-3xl font-semibold">{value}</span>
         {unit && <span className="text-sm text-muted">{unit}</span>}
       </div>
-      {note && <div className="mt-0.5 text-[11px] text-muted">{note}</div>}
+      {note && <div className="mt-0.5 text-xs text-muted">{note}</div>}
     </Card>
   );
+}
+
+function latencyCell(ms: number | null | undefined) {
+  if (ms === null || ms === undefined || Number.isNaN(ms)) return "—";
+  return ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${Math.round(ms)} ms`;
+}
+
+/** 規則免費；LLM 走 Ollama Cloud 訂閱制，後端回 0 → 不顯示「免費」；Jev 顯示每次 USD */
+function costCell(method: string, cost: number | null | undefined) {
+  const m = method.toLowerCase();
+  const isLlm = m.includes("llm") || m.includes("deepseek");
+  const isRule = method.includes("規則");
+  if (!cost) return isLlm ? <span className="font-sans text-sm text-amber-200">訂閱制（未逐次計價）</span> : isRule ? "免費" : "$0";
+  return `$${cost < 0.0001 ? cost.toFixed(6) : cost.toFixed(5)} / 次`;
 }
 
 export default function MetricsPage() {
@@ -49,7 +63,7 @@ export default function MetricsPage() {
             <Stat icon={<Clock className="h-4 w-4" />} label="通知（命中 → 推播）" value={s.reaction_s.notify.toFixed(2)} unit="秒" note="目標 < 1 秒" />
             <Stat icon={<Clock className="h-4 w-4" />} label="到場（推播 → 接單）" value={s.reaction_s.arrive.toFixed(0)} unit="秒" />
             <Stat icon={<Wrench className="h-4 w-4" />} label="MTTR" value={s.mttr_min.toFixed(1)} unit="分鐘" note="設備類，建單到結案" />
-            <Stat icon={<DollarSign className="h-4 w-4" />} label="AI 成本累計" value={`$${s.ai_cost_usd.toFixed(4)}`} note="Jev＋LLM 真實 usage.cost 加總" />
+            <Stat icon={<DollarSign className="h-4 w-4" />} label="AI 成本累計" value={`$${s.ai_cost_usd.toFixed(4)}`} note="Jev 真實 usage.cost 加總；LLM 為訂閱制不逐次計價" />
             <Stat icon={<Target className="h-4 w-4" />} label="今日異常" value={String(s.incidents_total ?? "—")} unit="件" note={`進行中工單 ${s.open_workorders ?? "—"}`} />
           </div>
 
@@ -62,11 +76,11 @@ export default function MetricsPage() {
               <CardHeader
                 title="校準曲線（Jev 根因機率）"
                 icon={<Target className="h-4 w-4" />}
-                right={calib.data && <span className="font-mono text-[11px] text-muted">Brier {calib.data.brier?.toFixed(3)}・ECE {calib.data.ece?.toFixed(3)}・n={calib.data.n_total}</span>}
+                right={calib.data && <span className="font-mono text-xs text-muted">Brier {calib.data.brier?.toFixed(3)}・ECE {calib.data.ece?.toFixed(3)}・n={calib.data.n_total}</span>}
               />
               <CardContent>
                 {calib.data ? <CalibrationChart bins={calib.data.bins} /> : calib.error ? <ErrorNote e={calib.error} /> : null}
-                <p className="text-[11px] text-muted">虛線為完美校準；點越貼近虛線，代表「說 70% 的事大約 70% 會發生」。</p>
+                <p className="text-xs text-muted">虛線為完美校準；點越貼近虛線，代表「說 70% 的事大約 70% 會發生」。</p>
               </CardContent>
             </Card>
           </div>
@@ -76,7 +90,7 @@ export default function MetricsPage() {
               <CardHeader title="規則 vs AI 處理比例" />
               <CardContent>
                 <HandledRatio handled={s.handled} />
-                <p className="mt-3 text-[11px] text-muted">工安類與明確規則直接派工，不呼叫 AI；只有需要判斷根因時才用 Jev，需要長說明時才用 LLM。</p>
+                <p className="mt-3 text-xs text-muted">工安類與明確規則直接派工，不呼叫 AI；只有需要判斷根因時才用 Jev，需要長說明時才用 LLM。</p>
               </CardContent>
             </Card>
             <Card>
@@ -96,9 +110,9 @@ export default function MetricsPage() {
                     {(s.comparison ?? []).map((c) => (
                       <tr key={c.method} className="border-b border-line/50">
                         <td className="py-2">{c.method}</td>
-                        <td className="tabular py-2 text-right font-mono">{c.latency_ms >= 1000 ? `${(c.latency_ms / 1000).toFixed(2)} s` : `${c.latency_ms} ms`}</td>
-                        <td className="tabular py-2 text-right font-mono">{c.accuracy === null ? "—" : pct(c.accuracy)}</td>
-                        <td className="tabular py-2 text-right font-mono">{c.cost_per_call_usd ? `$${c.cost_per_call_usd.toFixed(5)}` : "免費"}</td>
+                        <td className="tabular py-2 text-right font-mono">{latencyCell(c.latency_ms)}</td>
+                        <td className="tabular py-2 text-right font-mono">{c.accuracy == null ? "—" : pct(c.accuracy)}</td>
+                        <td className="tabular py-2 text-right font-mono">{costCell(c.method, c.cost_per_call_usd)}</td>
                         <td className="tabular py-2 text-right font-mono">{c.calls}</td>
                       </tr>
                     ))}

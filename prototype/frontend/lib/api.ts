@@ -4,7 +4,11 @@
 import { API_BASE, MOCK } from "./config";
 import { getPersona } from "./session";
 import type {
+  AgentSendResult,
   AuditEntry,
+  Health,
+  IncidentReportStatus,
+  KbCase,
   Calibration,
   DemoSettings,
   Incident,
@@ -97,12 +101,28 @@ export const api = {
   reassign: (id: string, to_person_id: string | null, reason: string) =>
     request<WorkOrderDetail>("POST", `/workorders/${id}/reassign`, { to_person_id, reason }),
   checkLoto: (id: string, step: number) => request<WorkOrderDetail>("POST", `/workorders/${id}/loto/${step}`, { checked: true }),
-  permit: (id: string, action: "request" | "approve") => request<WorkOrderDetail>("POST", `/workorders/${id}/permit`, { action }),
+  permit: (id: string, action: "request" | "approve" | "reject") => request<WorkOrderDetail>("POST", `/workorders/${id}/permit`, { action }),
   checkItem: (id: string, item: string) =>
     request<WorkOrderDetail>("POST", `/workorders/${id}/checklist/${encodeURIComponent(item)}`, { checked: true }),
   report: (id: string, text: string, root_cause_confirmed: string | null) =>
     request<{ check: WritebackCheck; workorder?: WorkOrderDetail }>("POST", `/workorders/${id}/report`, { text, root_cause_confirmed }),
-  sendAgent: (id: string, message: string) => request<{ accepted: boolean; message_id?: string }>("POST", `/workorders/${id}/agent`, { message }),
+  /** wait=true：同步等 Agent 回覆（後端也會同時推 WS agent:{id}） */
+  sendAgent: (id: string, message: string) => request<AgentSendResult>("POST", `/workorders/${id}/agent?wait=true`, { message, wait: true }),
+
+  // 職災 8 小時通報（職安法第37條第2項）
+  casualty: (incidentId: string, c: { deaths: number; injured: number; hospitalized: number; designated: boolean; note: string }) =>
+    request<IncidentReportStatus>("POST", `/incidents/${encodeURIComponent(incidentId)}/casualty`, c),
+  incidentReport: (incidentId: string) => request<IncidentReportStatus>("GET", `/incidents/${encodeURIComponent(incidentId)}/report`),
+  submitIncidentReport: (incidentId: string, draft?: Record<string, unknown>) =>
+    request<IncidentReportStatus>("POST", `/incidents/${encodeURIComponent(incidentId)}/report/submit`, draft ? { draft } : {}),
+
+  // 知識回寫審核
+  kbCases: async (status?: "draft" | "approved") => unwrapList(await request<KbCase[] | { items: KbCase[] }>("GET", `/kb/cases${status ? `?status=${status}` : ""}`)),
+  approveCase: (caseId: string, note?: string) =>
+    request<{ ok: boolean; case: KbCase; ingested_chunks: number }>("POST", `/kb/cases/${encodeURIComponent(caseId)}/approve`, note ? { note } : {}),
+
+  // 系統狀態
+  health: () => request<Health>("GET", "/health"),
 
   // 主管覆寫
   override: (o: { target: "incident" | "workorder"; target_id: string; field: string; new: unknown; reason: string }) =>

@@ -38,7 +38,8 @@ def diagnosis_out(d: Diagnosis | None, inc: Incident) -> dict | None:
                                 for r in d.root_cause_top3 or []],
             "explanation": d.explanation, "explanation_status": status, "p_false_alarm": d.p_false_alarm,
             "questions_ver": EVENT_VER if d.mode != "rules_only" else None, "category": d.category,
-            "jev_severity": d.jev_severity, "sop_ids": d.sop_ids, "final_root_cause": d.final_root_cause}
+            "jev_severity": d.jev_severity, "sop_ids": d.sop_ids, "final_root_cause": d.final_root_cause,
+            "similar_cases": d.similar_cases or []}
 
 
 def incident_out(rt: "Runtime", inc: Incident, base_url: str = "", with_diag: bool = True) -> dict:

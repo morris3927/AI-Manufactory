@@ -44,14 +44,14 @@ export function useWorkorder(id: string) {
       setData((w) => {
         if (!w) return w;
         const list = w.agent_messages ?? [];
-        if (list.some((x) => x.id === msg.id)) return { ...w, agent_messages: list.map((x) => (x.id === msg.id ? msg : x)) };
+        if (list.some((x) => String(x.id) === String(msg.id))) return { ...w, agent_messages: list.map((x) => (String(x.id) === String(msg.id) ? msg : x)) };
         return { ...w, agent_messages: [...list, msg] };
       });
-      setStreaming((s) => (s && s.message_id === msg.id ? null : s));
+      setStreaming((s) => (s && String(s.message_id) === String(msg.id) ? null : s));
     } else if (m.type === "safety_gate") {
       const flags = d.flags as SafetyFlag[];
       setData((w) =>
-        w ? { ...w, agent_messages: (w.agent_messages ?? []).map((x) => (x.id === d.message_id ? { ...x, safety_flags: flags } : x)) } : w,
+        w ? { ...w, agent_messages: (w.agent_messages ?? []).map((x) => (String(x.id) === String(d.message_id) ? { ...x, safety_flags: flags } : x)) } : w,
       );
     }
   });

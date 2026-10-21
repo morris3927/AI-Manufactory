@@ -22,7 +22,7 @@ import { fmtTime } from "@/lib/utils";
 
 // 已用 dataviz validator 驗證（深色底）：藍／橘／綠
 export const SERIES = ["#3987e5", "#d95926", "#199e70"];
-const AXIS = { stroke: "#334155", tick: { fill: "#7f93a8", fontSize: 11 } };
+const AXIS = { stroke: "#334155", tick: { fill: "#95a9bd", fontSize: 12 } };
 const GRID = <CartesianGrid stroke="#1e2b39" strokeDasharray="0" vertical={false} />;
 const TIP = {
   contentStyle: { background: "#0e151d", border: "1px solid #1e2b39", borderRadius: 6, fontSize: 12, color: "#dbe5ef" },
@@ -165,7 +165,7 @@ export function CalibrationChart({ bins }: { bins: CalibrationBin[] }) {
     <ResponsiveContainer width="100%" height={260}>
       <ComposedChart data={data} margin={{ top: 8, right: 16, bottom: 18, left: 0 }}>
         <CartesianGrid stroke="#1e2b39" />
-        <XAxis type="number" dataKey="x" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} {...AXIS} label={{ value: "預測機率", position: "insideBottom", offset: -10, fill: "#7f93a8", fontSize: 11 }} />
+        <XAxis type="number" dataKey="x" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} {...AXIS} label={{ value: "預測機率", position: "insideBottom", offset: -10, fill: "#95a9bd", fontSize: 12 }} />
         <YAxis type="number" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} width={36} {...AXIS} />
         <Tooltip {...TIP} formatter={(v, name) => [Number(v).toFixed(2), name === "y" ? "實際發生率" : String(name)]} labelFormatter={(l) => `預測 ${Number(l).toFixed(2)}`} />
         <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#475569" strokeDasharray="4 4" />

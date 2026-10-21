@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { Clapperboard, Play, RotateCcw, Settings2, Timer, Video, Zap } from "lucide-react";
 import { ErrorNote } from "@/components/error-note";
+import { KbReview } from "@/components/kb-review";
 import { toast } from "@/components/toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -109,7 +110,7 @@ export default function ControlPage() {
                 <div key={c.id} className="flex flex-wrap items-center gap-2 rounded border border-line bg-panel-2/40 px-2 py-2">
                   <div className="w-40 shrink-0">
                     <div className="font-mono text-sm">{c.id}</div>
-                    <div className="text-[11px] text-muted">{c.name ?? c.lineName}</div>
+                    <div className="text-xs text-muted">{c.name ?? c.lineName}</div>
                   </div>
                   <select
                     value={val}
@@ -138,7 +139,7 @@ export default function ControlPage() {
                   >
                     播放
                   </Button>
-                  <span className="w-full truncate font-mono text-[10px] text-muted sm:w-auto">目前：{c.source?.split("/").pop() ?? "—"}</span>
+                  <span className="w-full truncate font-mono text-[11px] text-muted sm:w-auto">目前：{c.source?.split("/").pop() ?? "—"}</span>
                 </div>
               );
             })}
@@ -166,7 +167,7 @@ export default function ControlPage() {
                   套用
                 </Button>
               </div>
-              <p className="mt-1 text-[11px] text-muted">正式值 S2 5 分、S3 2 分；Demo 建議 30 秒</p>
+              <p className="mt-1 text-xs text-muted">正式值 S2 5 分、S3 2 分；Demo 建議 30 秒</p>
             </div>
             <div className="rounded border border-line p-3">
               <div className="flex items-center gap-1.5 text-sm font-medium">
@@ -182,7 +183,7 @@ export default function ControlPage() {
                   <span className={cn("block h-4 w-4 rounded-full bg-white transition-transform", settings.data?.jev_enabled && "translate-x-4")} />
                 </span>
               </button>
-              <p className="mt-1 text-[11px] text-muted">關閉後規則照常建單派工，通知註明「AI 判斷暫不可用」</p>
+              <p className="mt-1 text-xs text-muted">關閉後規則照常建單派工，通知註明「AI 判斷暫不可用」</p>
             </div>
             <div className="rounded border border-line p-3">
               <div className="flex items-center gap-1.5 text-sm font-medium">
@@ -206,10 +207,11 @@ export default function ControlPage() {
               >
                 重置
               </Button>
-              <p className="mt-1 text-[11px] text-muted">清除進行中的異常，攝影機回到正常影片</p>
+              <p className="mt-1 text-xs text-muted">清除進行中的異常，攝影機回到正常影片</p>
             </div>
           </CardContent>
         </Card>
+        <KbReview />
       </div>
 
       <Card className="flex max-h-[calc(100vh-6rem)] flex-col">

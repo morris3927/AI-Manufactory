@@ -6,7 +6,7 @@ export function SeverityBadge({ s, short, className }: { s: Severity | undefined
   if (!s) return null;
   const st = SEVERITY_STYLE[s];
   return (
-    <span className={cn("inline-flex items-center rounded border px-1.5 py-0.5 text-[11px] font-bold leading-none", st.bg, st.text, className)}>
+    <span className={cn("inline-flex items-center rounded border px-1.5 py-0.5 text-xs font-bold leading-none", st.bg, st.text, className)}>
       {short ? s : SEVERITY_LABEL[s]}
     </span>
   );

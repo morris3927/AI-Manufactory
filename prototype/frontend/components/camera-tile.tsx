@@ -39,7 +39,7 @@ export function OverlayBoxes({ overlays }: { overlays: Overlay[] }) {
             className={cn("absolute rounded-sm border-2", KIND[o.kind])}
             style={{ left: `${(x1 / 1280) * 100}%`, top: `${(y1 / 720) * 100}%`, width: `${((x2 - x1) / 1280) * 100}%`, height: `${((y2 - y1) / 720) * 100}%` }}
           >
-            <span className={cn("absolute -top-[18px] left-[-2px] whitespace-nowrap rounded-t-sm px-1 text-[10px] font-bold leading-[18px]", KIND_LABEL[o.kind])}>{o.label}</span>
+            <span className={cn("absolute -top-[18px] left-[-2px] whitespace-nowrap rounded-t-sm px-1 text-[11px] font-bold leading-[18px]", KIND_LABEL[o.kind])}>{o.label}</span>
           </div>
         );
       })}
@@ -98,29 +98,27 @@ export function CameraTile({
 }) {
   const now = useNow();
   return (
-    <div className={cn("group relative overflow-hidden rounded-lg border bg-black scanline", alert ? "border-red-500/80 pulse-red" : "border-line")}>
-      <CameraView camera={camera} overlays={overlays} />
-      {/* HUD */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 flex items-center gap-2 bg-gradient-to-b from-black/80 to-transparent px-2 py-1.5">
-        <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
-        <span className="font-mono text-xs font-semibold text-slate-100">{camera.id}</span>
-        <span className="truncate text-xs text-slate-300">{camera.name ?? machineName}</span>
-        <SimBadge className="ml-auto" />
+    <div className={cn("group overflow-hidden rounded-lg border bg-black", alert ? "border-red-500/80 pulse-red" : "border-line")}>
+      {/* 標題列：實心底色，不疊在畫面上（避免和合成影像上的文字重疊） */}
+      <div className="flex items-center gap-2 border-b border-line bg-panel-2 px-2 py-1.5">
+        <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-red-500" />
+        <span className="font-mono text-sm font-semibold text-slate-100">{camera.id}</span>
+        <span className="min-w-0 truncate text-sm text-slate-300">{camera.name ?? machineName}</span>
+        <SimBadge className="ml-auto shrink-0" />
+        {onToggle && (
+          <button onClick={onToggle} className="shrink-0 rounded p-0.5 text-slate-400 hover:bg-black/40 hover:text-white" aria-label={expanded ? "縮小" : "放大"} title={expanded ? "縮小" : "放大"}>
+            {expanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
+          </button>
+        )}
       </div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-center gap-2 bg-gradient-to-t from-black/80 to-transparent px-2 py-1.5">
-        <span className="tabular font-mono text-[11px] text-slate-300">{now ? new Date(now).toLocaleTimeString("zh-TW", { hour12: false }) : ""}</span>
-        <span className="truncate font-mono text-[10px] text-slate-500">{camera.source?.split("/").pop()}</span>
-        {alert && <span className="ml-auto rounded bg-red-600 px-1.5 py-0.5 text-[11px] font-bold text-white">{alert}</span>}
+      <div className="relative scanline">
+        <CameraView camera={camera} overlays={overlays} />
       </div>
-      {onToggle && (
-        <button
-          onClick={onToggle}
-          className="absolute right-2 top-8 rounded bg-black/60 p-1 text-slate-300 opacity-0 transition-opacity hover:text-white group-hover:opacity-100"
-          aria-label={expanded ? "縮小" : "放大"}
-        >
-          {expanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-        </button>
-      )}
+      <div className="flex items-center gap-2 border-t border-line bg-panel-2 px-2 py-1">
+        <span className="tabular font-mono text-xs text-slate-300">{now ? new Date(now).toLocaleTimeString("zh-TW", { hour12: false }) : ""}</span>
+        <span className="min-w-0 truncate font-mono text-xs text-muted">{camera.source?.split("/").pop()}</span>
+        {alert && <span className="ml-auto shrink-0 rounded bg-red-600 px-1.5 py-0.5 text-xs font-bold text-white">{alert}</span>}
+      </div>
     </div>
   );
 }

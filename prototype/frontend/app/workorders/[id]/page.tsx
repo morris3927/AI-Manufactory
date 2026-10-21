@@ -6,6 +6,7 @@ import { Smartphone } from "lucide-react";
 import { ErrorNote } from "@/components/error-note";
 import { AgentChat, AuditTimeline, ChecklistPanel, DiagnosisPanel, EventInfo, LotoPanel, PermitPanel, ReportPanel, WorkorderHeader } from "@/components/workorder/panels";
 import { useWorkorder } from "@/components/workorder/use-workorder";
+import { IncidentReportPanel } from "@/components/incident-report";
 
 export default function WorkorderPage() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +26,7 @@ export default function WorkorderPage() {
         </Link>
       </div>
       <WorkorderHeader wo={wo} act={act} busy={busy} />
+      <IncidentReportPanel inc={wo.incident} />
       <div className="grid gap-3 lg:grid-cols-2 2xl:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)_minmax(0,1.1fr)]">
         <div className="min-w-0">
           <EventInfo wo={wo} />
@@ -33,8 +35,8 @@ export default function WorkorderPage() {
           <DiagnosisPanel wo={wo} />
         </div>
         <div className="min-w-0 space-y-3 lg:col-span-2 2xl:col-span-1">
-          <LotoPanel wo={wo} act={act} busy={busy} />
           <PermitPanel wo={wo} act={act} busy={busy} />
+          <LotoPanel wo={wo} act={act} busy={busy} />
           <AgentChat wo={wo} act={act} busy={busy} streaming={streaming} />
           <ChecklistPanel wo={wo} act={act} busy={busy} />
           <ReportPanel wo={wo} act={act} busy={busy} />

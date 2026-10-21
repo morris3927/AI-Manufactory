@@ -11,6 +11,8 @@ export type WorkOrderStatus =
   | "ASSIGNED"
   | "ESCALATED"
   | "ACKED"
+  | "PERMIT_REQUESTED"
+  | "PERMIT_APPROVED"
   | "LOTO_DONE"
   | "IN_REPAIR"
   | "PENDING_VERIFY"
@@ -85,6 +87,19 @@ export interface Diagnosis {
   explanation_status?: "pending" | "streaming" | "done" | "failed";
   p_false_alarm?: number;
   questions_ver?: string;
+  /** 判斷時引用的相似案例（後端若提供；字串或物件皆可） */
+  similar_cases?: (string | SimilarCase)[] | null;
+}
+
+export interface SimilarCase {
+  case_id: string;
+  title?: string | null;
+  final_root_cause?: string | null;
+  final_root_cause_name?: string | null;
+  score?: number | null;
+  status?: string | null;
+  /** 剛由主管核准入庫的案例 */
+  just_approved?: boolean;
 }
 
 export interface Incident {
@@ -108,6 +123,9 @@ export interface Incident {
   keyframe_url?: string | null;
   jev_box?: Box | null;
   diagnosis?: Diagnosis | null;
+  casualty?: Casualty | null;
+  /** 職災通報摘要（後端 incident_out 內嵌） */
+  incident_report?: Pick<IncidentReportStatus, "status" | "deadline" | "remaining_s" | "criteria_met" | "instructions"> | null;
 }
 
 // ---------- WorkOrder ----------
@@ -134,6 +152,7 @@ export interface LotoChecklist {
 }
 
 export interface Permit {
+  status?: "requested" | "approved" | "rejected";
   requested_by: string | null;
   requested_at?: string | null;
   approved_by: string | null;
@@ -163,6 +182,12 @@ export interface SafetyFlag {
   probs: Record<string, number>;
   max_p: number;
   supervisor_requested?: boolean;
+  requires_supervisor?: boolean;
+  /** 超過門檻的題目（後端 J4 判定） */
+  reasons?: string[];
+  source?: string;
+  acked_by?: string | null;
+  ack_reason?: string | null;
 }
 
 export interface AgentMessage {
@@ -231,6 +256,78 @@ export interface WorkOrderDetail extends WorkOrder {
   agent_messages?: AgentMessage[];
   transitions?: Transition[];
   report?: ClosingReport | null;
+  workflow?: { require_permit: boolean; next_action: NextAction | null } | null;
+  writeback?: { case_id: string; status: string | null; reviewed_by: string | null; approve_url?: string } | null;
+  sop_mode?: string | null;
+  sop_note?: string | null;
+}
+
+export type NextAction = "assign" | "ack" | "permit_request" | "permit_approve" | "loto" | "checklist" | "report";
+
+// ---------- 職災 8 小時通報（職安法第37條第2項） ----------
+export interface Casualty {
+  deaths: number;
+  injured: number;
+  hospitalized: number;
+  designated: boolean;
+  note?: string;
+  set_by?: string;
+  set_at?: string;
+}
+
+export interface IncidentReportStatus {
+  incident_id: string;
+  required: boolean;
+  criteria_met: string[];
+  casualty: Casualty | null;
+  status: "none" | "draft" | "overdue" | "submitted";
+  deadline: string | null;
+  remaining_s: number | null;
+  draft: Record<string, unknown> | null;
+  instructions: string[];
+  submitted_by: string | null;
+  submitted_at: string | null;
+}
+
+// ---------- 知識回寫 ----------
+export interface KbCase {
+  case_id: string;
+  status: string | null;
+  line?: string | null;
+  machine_id?: string | null;
+  workorder_id?: string | null;
+  event_type?: string | null;
+  final_root_cause?: string | null;
+  first_hypothesis?: string | null;
+  hypothesis_correct?: boolean | null;
+  report?: string | null;
+  closed_at?: string | null;
+  reviewed_by?: string | null;
+  reviewed_at?: string | null;
+}
+
+// ---------- 系統狀態 ----------
+export interface Health {
+  ok: boolean;
+  detector_mode: "yolo" | "scripted" | string;
+  yolo?: { weights?: string; weights_exist?: boolean; classes?: string[] | null };
+  embedding_model?: string | null;
+  kb?: { docs: number; cases: number; allow_draft?: boolean };
+  jev?: { enabled: boolean; model?: string };
+  llm?: { enabled: boolean; model?: string };
+  notifier?: string;
+  workflow?: { require_permit: boolean };
+  scenario?: string | null;
+}
+
+export interface AgentSendResult {
+  accepted: boolean;
+  message_id?: string | number | null;
+  user_message_id?: string | number | null;
+  message?: AgentMessage | null;
+  phase?: string;
+  supervisor_requested?: boolean;
+  safety_flags?: SafetyFlag[];
 }
 
 // ---------- 訊號 ----------

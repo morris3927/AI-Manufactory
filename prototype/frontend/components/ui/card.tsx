@@ -23,7 +23,7 @@ export function CardHeader({
   return (
     <div className={cn("flex items-center gap-2 border-b border-line px-3 py-2", className)}>
       {icon && <span className="text-accent">{icon}</span>}
-      <h2 className="text-sm font-semibold tracking-wide text-foreground">{title}</h2>
+      <h2 className="text-[15px] font-semibold tracking-wide text-foreground">{title}</h2>
       {sim && <SimBadge />}
       <div className="ml-auto flex items-center gap-2">{right}</div>
     </div>
