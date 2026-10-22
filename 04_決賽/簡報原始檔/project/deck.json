@@ -1,0 +1,19 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-22T15:00:00+08:00"},
+  "lists": "css",
+  "title": "Sentinel AI 決賽簡報",
+  "order": ["cover", "story", "problem", "approach", "layers", "architecture", "safety", "demo", "s3report", "results", "limits", "value", "deploy", "team"],
+  "sections": {
+    "s1": {"description": "開場：一個夜班卡料的故事，和現場真正的痛點", "start": "cover"},
+    "s2": {"description": "解決方案：三層判斷、系統架構、寫進程式的安全規則", "start": "approach"},
+    "s3": {"description": "成果展示：卡料閉環與職災通報", "start": "demo"},
+    "s4": {"description": "測試結果與做不好的地方", "start": "results"},
+    "s5": {"description": "效益、落地方式與團隊", "start": "value"}
+  },
+  "faces": {
+    "noto-sans-tc": {"family": "Noto Sans TC", "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap"},
+    "oswald": {"family": "Oswald", "href": "https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap"}
+  },
+  "designSystems": []
+}

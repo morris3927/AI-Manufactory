@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<title>Sentinel AI 海報</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Oswald:wght@500;600&display=swap">
+<style>
+  @page { size: 594mm 841mm; margin: 0; }
+  :root {
+    --dark: #101B2C; --dark2: #1A2940; --light: #F3F1EB; --paper: #FBFAF7;
+    --ink: #1B2433; --soft: #4A5568; --line: #DAD6CC;
+    --rule: #2F6BD8; --jev: #17845F; --llm: #B85E15; --danger: #C93C3C;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 594mm; height: 841mm; }
+  body { background: var(--light); color: var(--ink); font-family: "Noto Sans TC", "PingFang TC", sans-serif;
+         font-size: 7mm; line-height: 1.45; display: flex; flex-direction: column; }
+  .pad { padding: 0 24mm; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12mm; }
+  .col { display: flex; flex-direction: column; }
+  header { background: var(--dark); color: var(--light); padding: 18mm 24mm 14mm; }
+  header .eyebrow { font-size: 7mm; letter-spacing: 1.2mm; color: #8FB3F0; }
+  header h1 { font-family: Oswald, sans-serif; font-weight: 600; font-size: 40mm; line-height: 1; margin: 4mm 0 3mm; }
+  header h2 { font-size: 14mm; font-weight: 700; line-height: 1.3; }
+  header .team { margin-top: 8mm; font-size: 6.6mm; color: #C6CFDB; display: flex; justify-content: space-between; align-items: end; }
+  section { margin-top: 9mm; }
+  h3 { font-size: 11mm; font-weight: 900; margin-bottom: 5mm; }
+  h3 small { font-size: 7mm; font-weight: 500; color: var(--soft); margin-left: 4mm; }
+  .row { display: flex; gap: 10mm; }
+  .card { background: var(--paper); border: 0.5mm solid var(--line); border-radius: 5mm; padding: 8mm; }
+  .quote { background: var(--dark); color: var(--light); border-radius: 5mm; padding: 9mm; font-size: 8.4mm; line-height: 1.55; }
+  .quote .label { font-size: 6mm; color: #8FB3F0; margin-bottom: 2mm; }
+  img { display: block; width: 100%; border-radius: 4mm; }
+  .shot { background: #0B1420; border-radius: 4mm; padding: 2mm; }
+  .layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm; }
+  .layer { border-radius: 4mm; padding: 5mm 7mm; color: var(--light); font-size: 6.8mm; }
+  .layer b { font-size: 8mm; }
+  .layer .t { font-family: Oswald, sans-serif; font-size: 7mm; opacity: .9; }
+  .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6mm; }
+  .num { background: var(--dark); color: var(--light); border-radius: 5mm; padding: 7mm; }
+  .num .v { font-family: Oswald, sans-serif; font-weight: 600; font-size: 20mm; line-height: 1; color: #5FD3A6; }
+  .num .k { font-size: 7.6mm; font-weight: 700; margin-top: 2mm; }
+  .num .d { font-size: 5.6mm; color: #C6CFDB; }
+  ol { padding-left: 9mm; }
+  li { margin: 1.5mm 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 6.6mm; }
+  th, td { border-bottom: 0.4mm solid var(--line); padding: 2.2mm 3mm; text-align: left; }
+  th { background: #E6EEF9; }
+  .note { font-size: 5.4mm; color: var(--soft); }
+  footer { margin-top: auto; background: var(--dark); color: #C6CFDB; padding: 10mm 24mm; display: flex; justify-content: space-between; align-items: center; font-size: 5.8mm; }
+  footer img { width: 34mm; border-radius: 2mm; }
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">AI MANUFACTURING 2026｜主題一 AI × 智慧現場：全知辨識與即時響應</div>
+  <h1>Sentinel AI</h1>
+  <h2>警報響了之後，讓對的人帶著線索，安全地把機器修好</h2>
+  <div class="team">
+    <div>中山大學 資訊管理學系　楊翊愷・陳啓祥・賴昱霖　｜　高雄大學 資訊工程學系　林吟蓁<br>指導老師　[姓名待填]</div>
+    <div class="note" style="color:#8A97A8">畫面中的工廠、人員與數據皆為模擬資料</div>
+  </div>
+</header>
+
+<div class="pad cols">
+  <div class="col">
+    <section style="margin-top:10mm">
+      <h3>夜班，鐵板卡在模具入口</h3>
+      <p>技術員心想：「伸手拿出來就好了吧？」手機上的維修助理已經回覆：</p>
+      <div class="quote" style="margin-top:4mm"><div class="label">維修助理的實際回覆（節錄）</div><b>不行，不要直接伸手。</b>模具入口在運轉範圍內……確認零能量、請主管到場，再用夾具把料片取出。</div>
+      <p style="margin-top:4mm">在他到場之前，系統已經用畫面＋機台數據確認真的卡料、查班表派給當班的他，並附上最可能的三個原因和機率。</p>
+    </section>
+    <section>
+      <h3>判斷分三層，像急診分工</h3>
+      <div class="layers" style="grid-template-columns:1fr">
+        <div class="layer" style="background:var(--rule)"><span class="t">毫秒｜</span><b style="display:inline">規則</b>　確定、攸關安全的事，雙重確認才派工</div>
+        <div class="layer" style="background:var(--jev)"><span class="t">約 0.5 秒｜</span><b style="display:inline">Jev 判斷模型</b>　從故障清單挑最可能原因，附上機率</div>
+        <div class="layer" style="background:var(--llm)"><span class="t">1–2 秒｜</span><b style="display:inline">LLM 維修助理</b>　寫說明、一問一答、整理紀錄</div>
+      </div>
+      <p class="note" style="margin-top:3mm">派工只等規則和 Jev，不到 1 秒；LLM 說明晚幾秒補上，不拖慢派工</p>
+    </section>
+    <section>
+      <h3>安全寫進程式，不靠提示詞</h3>
+      <div class="row" style="gap:6mm;align-items:start">
+        <div class="shot" style="flex:1"><img src="img/agent_chat_crop.png" alt="維修助理：有風險的步驟被標紅等主管確認"></div>
+        <ol style="flex:1;font-size:6.6mm">
+          <li>作業許可核准前，只給預覽</li>
+          <li>上鎖掛牌勾完前，查不到維修步驟</li>
+          <li>每一步過 Jev 安全把關，有風險就標紅、等主管確認</li>
+          <li>不說「可以復電」</li>
+          <li>AI 不能改工單狀態</li>
+        </ol>
+      </div>
+    </section>
+    <section>
+      <h3>有人受傷時，由人做決定</h3>
+      <div class="shot"><img src="img/s3_banner_crop.png" alt="職災 8 小時通報倒數橫幅"></div>
+      <p style="margin-top:3mm;font-size:6.6mm">傷亡由主管標記，AI 不從畫面推斷；依職安法第 37 條啟動 8 小時倒數與草稿，提醒不得移動現場，由人按下送出。</p>
+    </section>
+  </div>
+  <div class="col">
+    <section style="margin-top:10mm">
+      <div class="card"><img src="img/fig0-1_press_feed.png" alt="沖床送料口示意圖"></div>
+    </section>
+    <section>
+      <h3>系統架構<small>AI 只讀、不控制</small></h3>
+      <div class="card" style="padding:4mm"><img src="img/fig3-1_architecture.png" alt="系統架構圖"></div>
+    </section>
+    <section>
+      <h3>系統畫面</h3>
+      <div class="shot"><img src="img/dashboard_cams_crop.png" alt="戰情儀表板：Jev 框出卡料位置"></div>
+      <p class="note" style="margin-top:2mm">Jev 在送料口畫面框出卡料（公開授權照片製作的模擬畫面，卡料為影像編輯）</p>
+    </section>
+    <section>
+      <h3>一條沖壓線的效益</h3>
+      <table>
+        <tr><th>情境</th><th>修理縮短</th><th>每月淨效益</th><th>回本期</th></tr>
+        <tr><td>保守</td><td>10%</td><td>約 NT$5 萬</td><td>約 5.4 個月</td></tr>
+        <tr><td><b>中間</b></td><td>25%</td><td><b>約 NT$16 萬</b></td><td><b>約 1.7 個月</b></td></tr>
+        <tr><td>樂觀</td><td>40%</td><td>約 NT$34 萬</td><td>不到 1 個月</td></tr>
+      </table>
+      <p class="note" style="margin-top:2mm">假設每月停機 60 次、每次修 30 分鐘、每小時產值 NT$15,000；導入一次約 NT$27 萬</p>
+    </section>
+  </div>
+</div>
+<div class="pad">
+  <section>
+    <h3>測試結果<small>全部為模擬資料；97% 那批案例也用來調整檢索參數，數字偏樂觀</small></h3>
+    <div class="nums">
+      <div class="num"><div class="v">97%</div><div class="k">最可能原因猜中</div><div class="d">37 筆保留案例，純規則 78%；另 125 筆未調參情境全對</div></div>
+      <div class="num"><div class="v">120/120</div><div class="k">安全帽判斷全對</div><div class="d">SH17 真實照片頭部裁切</div></div>
+      <div class="num"><div class="v" style="color:#8FB3F0">0.5 秒</div><div class="k">警報到派工</div><div class="d">附前三名原因與機率</div></div>
+      <div class="num"><div class="v" style="color:#F0A35E">1.1 秒</div><div class="k">維修助理開始回話</div><div class="d">完整回覆約 2 秒</div></div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div>AI 是第二道眼睛，不是第一道防線。Sentinel AI 看見風險、叫對的人、留下紀錄，最後由人做決定。<br><span class="note" style="color:#8A97A8">資料來源：SH17（CC BY-NC-SA 4.0）、Hard Hat Workers（CC0）、Pexels 與 Wikimedia Commons 公開授權照片、全國法規資料庫</span></div>
+  <div style="display:flex;align-items:center;gap:5mm"><span style="text-align:right">程式與評估結果<br>github.com/morris3927/AI-Manufactory</span><img src="img/qr_github.svg" alt="GitHub QR code"></div>
+</footer>
+</body>
+</html>
