@@ -1,6 +1,6 @@
 """知識庫檢索（KB-2；07_RAG知識庫資料.md 4.6）。
 
-- similar_cases：向量相似度，篩 line、machine_type
+- similar_cases：向量＋BM25（RRF）＋metadata 加減分，篩 line、machine_type（見 RetrievalCfg）
 - sops_for：直接用故障模式 ID 查，不靠語意（可稽核：同一根因一定取到同一份 SOP）
 - loto_for：讀 YAML，不進向量庫
 - search：一般語意檢索（信心不足時）
@@ -11,8 +11,10 @@ import logging
 from pathlib import Path
 from typing import Any
 
+import numpy as np
 from pydantic import BaseModel, Field
 
+from . import facts as F
 from . import ingest as ing
 from .store import VectorStore
 
@@ -80,12 +82,34 @@ DEFAULT_LOTO = LotoChecklist(
 DEFAULT_CHECKLIST = ["確認異常原因已排除", "無料空轉與試沖確認正常", "護圍、光幕與現場整理復原"]
 
 
+class RetrievalCfg(BaseModel):
+    """相似案例檢索設定（config.yaml kb.retrieval）。預設值＝eval/retrieval_eval.py 選出的組合。
+    加減分以 RRF 的 1/(rrf_k+1) 為單位（1.0 ≈ 一份排名第一的檢索結果）。"""
+    mode: str = "hybrid"                  # hybrid（向量＋BM25）／vector／legacy（舊版硬排序，只供對照）
+    query_format: str = "structured"      # structured（與案例同一種寫法）／legacy（type machine_id k=v…）
+    rrf_k: int = 60
+    w_vector: float = 1.0
+    w_bm25: float = 1.0
+    boost_trigger: float = 1.0
+    filter_machine_type: bool = False     # True：只取同機型（舊版）；False：同產線全部，同機型加分
+    boost_machine_type: float = 0.5
+    boost_machine: float = 0.0
+    boost_signals: float = 1.0
+    penalty_non_root_cause: float = 1.0
+    boost_writeback: float = 3.0
+
+
 class KnowledgeBase:
-    def __init__(self, root: Path, store: VectorStore | None, allow_draft: bool = False):
+    def __init__(self, root: Path, store: VectorStore | None, allow_draft: bool = False,
+                 retrieval: RetrievalCfg | dict | None = None):
         self.root = root
         self.store = store
         self.allow_draft = allow_draft
+        self.retrieval = retrieval if isinstance(retrieval, RetrievalCfg) else RetrievalCfg(**(retrieval or {}))
+        self._pool: dict[str, dict[str, Any]] = {}
         self.reload()
+        for w in self.health()["warnings"]:
+            log.warning("知識庫：%s", w)
 
     def reload(self) -> None:
         self.failure_modes = ing.load_failure_modes(self.root) if self.root.exists() else {}
@@ -97,6 +121,23 @@ class KnowledgeBase:
         self.lotos = ing.load_lotos(self.root) if self.root.exists() else []
         log.info("知識庫：故障模式 %d、SOP %d、LOTO %d", sum(map(len, self.failure_modes.values())),
                  len(self.sops), len(self.lotos))
+
+    def health(self) -> dict[str, Any]:
+        """/health 用：向量庫筆數、建庫 embedder 是否與現在一致；空的 cases 會讓 Jev 沒有相似案例（信心度明顯下降）。"""
+        if self.store is None:
+            return {"docs": 0, "cases": 0, "warnings": ["向量庫未啟用：相似案例檢索停用"]}
+        try:
+            docs, cases = self.store.count("docs"), self.store.count("cases")
+        except Exception as e:                      # Chroma 檔案損壞等
+            return {"docs": 0, "cases": 0, "warnings": [f"向量庫無法讀取：{e}"]}
+        warnings = []
+        if cases == 0:
+            warnings.append("cases collection 是空的：相似案例檢索會回傳空集合，請執行 make kb")
+        built = self.store.built_with("cases")
+        if built and built != self.store.embedder.name:
+            warnings.append(f"cases 用 {built} 建立，現在是 {self.store.embedder.name}：請執行 make kb 重建")
+        return {"docs": docs, "cases": cases, "built_with": built, "embedder": self.store.embedder.name,
+                "retrieval_mode": self.retrieval.mode, "warnings": warnings}
 
     # ── 故障模式 ───────────────────────────────────────────────
     def failure_modes_for(self, line: str, machine_type: str | None = None) -> dict[str, dict]:
@@ -117,32 +158,103 @@ class KnowledgeBase:
         return (self.failure_modes.get(line, {}).get(fid) or {}).get("label", fid)
 
     # ── 案例 ───────────────────────────────────────────────────
+    def case_query(self, incident: Any, machine_type: str | None = None) -> str:
+        if self.retrieval.query_format == "legacy":
+            return f"{incident.type} {incident.machine_id or ''} " + " ".join(
+                f"{k}={v}" for k, v in (incident.facts or {}).items())
+        return F.incident_query_text(incident, machine_type)
+
     def similar_cases(self, incident: Any, k: int = 5, machine_type: str | None = None,
                       query: str | None = None) -> list[CaseSummary]:
         if self.store is None:
             return []
-        q = query or f"{incident.type} {incident.machine_id or ''} " + " ".join(
-            f"{k}={v}" for k, v in (incident.facts or {}).items())
-        where: dict[str, Any] = {"$and": [{"line": incident.line}, {"chunk_kind": "case_summary"}]}
-        if machine_type:
-            where["$and"].append({"machine_type": machine_type})
+        q = query or self.case_query(incident, machine_type)
         try:
-            hits = self.store.query("cases", q, k=k * 4, where=where)
-            if not hits and machine_type:
-                hits = self.store.query("cases", q, k=k * 4, where={"$and": where["$and"][:2]})
+            hits = (self._legacy_cases(incident, q, k, machine_type) if self.retrieval.mode == "legacy"
+                    else self._ranked_cases(incident, q, k, machine_type))
         except Exception:
             log.exception("案例檢索失敗")
             return []
-        # 語意相似之外，同一台機台、同一種事件的案例排前面（結案回寫的真實紀錄因此會排第一）
+        return [CaseSummary(case_id=h["metadata"].get("case_id", h["chunk_id"]),
+                            failure_mode_id=h["metadata"].get("failure_mode_id"),
+                            hypothesis_correct=h["metadata"].get("hypothesis_correct"), short=h["text"][:300],
+                            distance=h.get("distance")) for h in hits[:k]]
+
+    def _legacy_cases(self, incident: Any, q: str, k: int, machine_type: str | None) -> list[dict]:
+        """舊版（2026-10-21 前）：Chroma 取 4k 筆後，同機台、同事件類型硬排前面。只留給 eval 對照。"""
+        assert self.store is not None
+        where: dict[str, Any] = {"$and": [{"line": incident.line}, {"chunk_kind": "case_summary"}]}
+        if machine_type:
+            where["$and"].append({"machine_type": machine_type})
+        hits = self.store.query("cases", q, k=k * 4, where=where)
+        if not hits and machine_type:
+            hits = self.store.query("cases", q, k=k * 4, where={"$and": where["$and"][:2]})
         mid = getattr(incident, "machine_id", None)
         hits.sort(key=lambda h: (h["metadata"].get("machine_id") != mid,
                                  h["metadata"].get("trigger_type") != incident.type, h.get("distance") or 0))
+        return hits
+
+    def _case_pool(self, line: str) -> dict[str, Any]:
+        """同產線全部案例摘要（含 embedding）＋BM25 索引；向量庫有寫入（make kb、結案回寫）就重建。"""
+        assert self.store is not None
+        key = (line, self.store.version)
+        if self._pool.get(line, {}).get("key") != key:
+            rows = self.store.get("cases", where={"$and": [{"line": line}, {"chunk_kind": "case_summary"}]})
+            emb = np.asarray([r["embedding"] for r in rows], dtype=np.float32) if rows else np.zeros((0, 1), np.float32)
+            bm = F.BM25([F.tokenize(r["metadata"].get("index_text") or r["text"]) for r in rows])
+            self._pool[line] = {"key": key, "rows": rows, "emb": emb, "bm25": bm}
+        return self._pool[line]
+
+    def _ranked_cases(self, incident: Any, q: str, k: int, machine_type: str | None) -> list[dict]:
+        """向量＋BM25 以 RRF 融合，再加 metadata 加減分（eval/retrieval_eval.py 調過）：
+        同事件類型、同機型、同機台、訊號名稱重疊加分（機型不再硬篩：同根因常出現在同產線的其他機型）；最終根因是 none／new（誤報、目錄外）的案例減分，
+        除非事件本身看起來像誤報（狀態已回到運轉／OK）。"""
+        cfg = self.retrieval
+        pool = self._case_pool(incident.line)
+        rows = pool["rows"]
+        idx = [i for i, r in enumerate(rows) if not (cfg.filter_machine_type and machine_type)
+               or r["metadata"].get("machine_type") == machine_type]
+        if not idx:
+            idx = list(range(len(rows)))
+        if not idx:
+            return []
+        qv = np.asarray(self.store.embed_query(q), dtype=np.float32)
+        cos = pool["emb"][idx] @ qv
+        n = len(idx)
+        vec_rank = np.empty(n, dtype=np.int64)
+        vec_rank[np.argsort(-cos, kind="stable")] = np.arange(1, n + 1)
+        score = cfg.w_vector / (cfg.rrf_k + vec_rank)
+        if cfg.mode == "hybrid" and cfg.w_bm25:
+            bm = np.asarray(pool["bm25"].scores(F.tokenize(q), idx))
+            bm_rank = np.empty(n, dtype=np.int64)
+            bm_rank[np.argsort(-bm, kind="stable")] = np.arange(1, n + 1)
+            score = score + np.where(bm > 0, cfg.w_bm25 / (cfg.rrf_k + bm_rank), 0.0)
+        unit = 1.0 / (cfg.rrf_k + 1)
+        facts = getattr(incident, "facts", None) or {}
+        qsig = F.signal_keys(facts)
+        fa_like = F.looks_false_alarm(facts)
+        mid = getattr(incident, "machine_id", None)
+        for j, i in enumerate(idx):
+            m = rows[i]["metadata"]
+            b = cfg.boost_trigger * (m.get("trigger_type") == incident.type)
+            b += cfg.boost_machine * (bool(mid) and m.get("machine_id") == mid)
+            b += cfg.boost_machine_type * (bool(machine_type) and m.get("machine_type") == machine_type)
+            csig = {x for x in str(m.get("signals") or "").split("|") if x}
+            if qsig and csig:
+                b += cfg.boost_signals * len(qsig & csig) / len(qsig | csig)
+            non_rc = m.get("failure_mode_id") in F.NON_ROOT_CAUSES or m.get("outcome") == "false_alarm"
+            if non_rc and not fa_like:
+                b -= cfg.penalty_non_root_cause
+            if m.get("case_type") == "writeback" and bool(mid) and m.get("machine_id") == mid \
+                    and m.get("trigger_type") == incident.type:
+                b += cfg.boost_writeback          # 同機台、同事件的真實結案紀錄排第一（越用越準）
+            score[j] += b * unit
+        order = np.argsort(-score, kind="stable")[: max(k, 1) * 2]
         out = []
-        for h in hits[:k]:
-            m = h["metadata"]
-            out.append(CaseSummary(case_id=m.get("case_id", h["chunk_id"]), failure_mode_id=m.get("failure_mode_id"),
-                                   hypothesis_correct=m.get("hypothesis_correct"), short=h["text"][:300],
-                                   distance=h.get("distance")))
+        for j in order:
+            r = rows[idx[j]]
+            out.append({"chunk_id": r["chunk_id"], "text": r["text"], "metadata": r["metadata"],
+                        "distance": round(float(1 - cos[j]), 4), "score": float(score[j])})
         return out
 
     # ── SOP（用 ID 查）─────────────────────────────────────────

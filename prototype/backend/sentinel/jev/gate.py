@@ -1,6 +1,8 @@
 """信心度分流（程式邏輯，Jev 不做最終決定）＋ J4 安全把關 ＋ J5 結案回寫檢查。"""
 from __future__ import annotations
 
+import asyncio
+
 from pydantic import BaseModel
 
 from . import questions as Q
@@ -67,6 +69,18 @@ async def step(jev: JevClient, step_text: str, machine_type: str | None, *, thre
     p = {k: res.noul(k) for k in Q.SAFETY_GATE}
     reasons = gate_reasons(p, thresholds or {}, loto_done)
     return SafetyGate(step=step_text, **p, flagged=bool(reasons), reasons=reasons, loto_satisfied=loto_done)
+
+
+async def steps(jev: JevClient, step_texts: list[str], machine_type: str | None, *,
+                thresholds: dict[str, float] | None = None, loto_done: bool = False,
+                trace_id: str | None = None) -> list[SafetyGate | BaseException]:
+    """多個步驟同時送 J4（asyncio.gather，共用 keep-alive 連線）；順序與輸入相同，失敗的位置是例外物件。
+
+    刻意每步一個請求、不把多步塞進同一個 Jev state：門檻是用「單一步驟」的題目在 gate_set 上校準的
+    （recall 1.00），合併題目會改變輸入分佈、需要重新校準。平行送出的總時間 ≈ 最慢的一個請求。
+    """
+    return list(await asyncio.gather(*(step(jev, t, machine_type, thresholds=thresholds, loto_done=loto_done,
+                                            trace_id=trace_id) for t in step_texts), return_exceptions=True))
 
 
 class WritebackCheck(BaseModel):

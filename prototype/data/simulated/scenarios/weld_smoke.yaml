@@ -4,7 +4,8 @@ duration_s: 16
 cameras:
   CAM-WLD-01:
     video: assets/videos/welding/weld_smoke_01.mp4
-    synthetic: weld_smoke          # 合成畫面：5 秒機器人停止，8 秒起黃框（工位）外冒煙
+    synthetic: weld_smoke          # 影片不存在時的合成畫面：5 秒機器人停止，8 秒起黃框（工位）外冒煙
+    # 影片由 scripts/build_demo_footage.py 產生（Welding Robot.jpg；robot_state=stopped 起移除火花，event_at_s 起工位外合成煙霧）
     event_at_s: 8
 mes_script:
   WLD-L1-RC01:

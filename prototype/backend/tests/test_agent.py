@@ -1,6 +1,8 @@
 """維修 Agent 的程式強制限制：LOTO 先行、復電過濾、J4 安全把關、不能改工單狀態；結案回報（J5）。"""
 from __future__ import annotations
 
+import json
+
 import pytest
 from sqlmodel import select
 
@@ -235,3 +237,129 @@ async def test_permit_before_loto_order(rt):
     trs = [t.to_status for t in rt.workorders.transitions(wo.id)]
     assert trs == ["OPEN", "ASSIGNED", "ACKED", "PERMIT_REQUESTED", "ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED",
                    "LOTO_DONE", "IN_REPAIR"]
+
+
+# ── 串流與延遲最佳化（首字／安全旗標分開送；每步寫完就送 J4）──────────────
+@pytest.mark.parametrize("text", [
+    "先看滾輪。\n1. 目視滾輪\n2. 處理完成後即可復電試運轉。\n3. 量測直徑\n",
+    "1. 需要通電量測送料長度時，依測試／定位程序由原上鎖人取下自己的鎖\n2. 伸手取出板材",
+    "說明一行沒有換行結尾。可以解除上鎖。",
+])
+def test_stream_filter_matches_full_filter(text):
+    sf = guards.StreamFilter("LOTO-FEED-01")
+    shown: list[str] = []
+    for i in range(0, len(text), 3):                       # 3 個字一段，隨機切在句中
+        shown += sf.feed(text[i:i + 3])
+    shown += sf.finish()
+    full = guards.filter_restore(text, "LOTO-FEED-01")
+    assert "\n".join(shown) == full.text == sf.text
+    assert not any(guards.classify(line) == "restore" for line in shown if line != guards.CLOSING_REMINDER)
+
+
+async def test_agent_streams_filtered_lines_then_flags(rt, fake_llm, fake_jev):
+    from sentinel.schemas.events import Topic
+
+    wo = await open_feed_jam(rt)
+    await loto_done(rt, wo.id)
+    q = rt.bus.subscribe(Topic.AI, "t-stream", maxsize=1000)
+    reply = await rt.agent.handle(wo.id, "LOTO 完成了，下一步？", "P-STP-TC1")
+    evts = []
+    while not q.empty():
+        e = q.get_nowait()
+        if e.payload.get("workorder_id") == wo.id:
+            evts.append(e)
+    types = [e.type for e in evts]
+    deltas = [e.payload for e in evts if e.type == "agent_delta"]
+    assert len(deltas) >= 3                                               # 逐行送出
+    assert types.index("agent_delta") < types.index("agent_reply") < len(types) - 1
+    assert all("復電試運轉" not in d["text"] for d in deltas)              # 未過濾的字不會出現在畫面
+    assert deltas[-1]["text"].endswith(guards.CLOSING_REMINDER)
+    mid = {d["message_id"] for d in deltas}
+    assert mid == {reply.message_id}                                      # 串流與最終訊息同一個 id
+    rep = next(e.payload for e in evts if e.type == "agent_reply")
+    assert rep["gate_pending"] and rep["message"]["gate"]["status"] == "pending"
+    gates = [e.payload for e in evts if e.type == "agent_safety_gate"]
+    assert gates[-1]["done"] and gates[-1]["gate"]["status"] == "done" and types[-1] == "agent_safety_gate"
+    assert any("伸手" in f["step_text"] for f in gates[-1]["flags"])
+    # 存檔：最終旗標、把關狀態 done，標記不當工具顯示
+    from sentinel.agent.repair_agent import message_dict
+    from sentinel.db.models import AgentMessage
+    row = rt.db.get(AgentMessage, int(reply.message_id))
+    d = message_dict(row)
+    assert d["gate"]["status"] == "done" and d["safety_flags"] == gates[-1]["flags"]
+    assert all(t["name"] != "safety_gate" for t in d["tool_calls"])
+    # 只呼叫一次 LLM、stream=true、think=false、沒有給工具（資料已預先放進提示詞）
+    body = fake_llm.calls[-1]
+    assert body["stream"] is True and body["think"] is False and "tools" not in body
+    ctx = json.loads(body["messages"][1]["content"].split("\n", 1)[1])
+    assert {"workorder", "sop", "loto", "signals", "similar_cases"} <= ctx.keys() and ctx["loto"]["all_checked"]
+    assert reply.timings["llm_calls"] == 1 and reply.timings["tool_rounds"] == 0
+    assert reply.timings["first_text_ms"] <= reply.timings["total_ms"]
+
+
+async def test_gate_starts_while_llm_still_streaming(rt, fake_llm, fake_jev):
+    wo = await open_feed_jam(rt)
+    await loto_done(rt, wo.id)
+    log: list[str] = []
+    fake_llm.log = fake_jev.log = log
+    fake_llm.delay_s = 0.01
+    reply = await rt.agent.handle(wo.id, "下一步？", "P-STP-TC1")
+    first_jev = next(i for i, x in enumerate(log) if x.startswith("jev:"))
+    assert first_jev < log.index("llm:done")                             # 第 1 步一寫完就送 J4，不等全文
+    jev_steps = [x for x in log if x.startswith("jev:")]
+    gated = [s for s in reply.steps if s.source == "jev"]
+    assert len(jev_steps) == len(gated) == reply.timings["gate_requests"]   # 每步一次，沒有重複送
+    assert any(s.flagged and "伸手" in s.text for s in reply.steps)
+
+
+async def test_tool_rounds_capped(rt, fake_llm):
+    from sentinel.agent import repair_agent
+
+    wo = await open_feed_jam(rt)
+    await loto_done(rt, wo.id)
+    rt.agent.ctx.agent_tool_rounds = 5
+    fake_llm.tool_first = True
+    n0 = len(fake_llm.calls)
+    reply = await rt.agent.handle(wo.id, "下一步？", "P-STP-TC1")
+    calls = fake_llm.calls[n0:]
+    assert reply.timings["tool_rounds"] == 1 and len(calls) == 2           # 工具一輪後就給最終回覆
+    assert len(calls) <= repair_agent.MAX_TOOL_ROUNDS + 1
+    assert any(m["role"] == "tool" for m in calls[-1]["messages"])
+    assert "目視" in reply.content and guards.CLOSING_REMINDER in reply.content
+
+
+async def test_gate_steps_parallel_in_order(rt, fake_jev):
+    from sentinel.jev import gate
+
+    texts = ["目視滾輪", "伸手取出卡料", "填寫紀錄"]
+    res = await gate.steps(rt.jev, texts, "servo_roll_feeder", thresholds=rt.settings.thresholds.gate, loto_done=True)
+    assert [r.step for r in res] == texts
+    assert [r.flagged for r in res] == [False, True, False]                 # 門檻來自 config，LOTO 後 needs_loto 不單獨觸發
+    fake_jev.fail = True
+    res = await gate.steps(rt.jev, texts, None)
+    assert all(isinstance(r, Exception) for r in res)
+
+
+async def test_llm_stream_failure_falls_back_to_sop(rt, fake_llm):
+    wo = await open_feed_jam(rt)
+    await loto_done(rt, wo.id)
+    fake_llm.fail = True
+    reply = await rt.agent.handle(wo.id, "下一步？", "P-STP-TC1")
+    assert not reply.llm_used and "SOP 原文" in reply.content and reply.steps    # SOP 原文一樣過 J4
+
+
+def test_ws_maps_stream_and_gate_events():
+    from datetime import datetime
+
+    from sentinel.api.ws import to_messages
+    from sentinel.clock import TW
+    from sentinel.schemas.events import Event, Topic
+
+    ts = datetime(2026, 10, 30, 9, tzinfo=TW)
+    out = to_messages(Event(ts=ts, topic=Topic.AI, source="agent", type="agent_delta",
+                            payload={"workorder_id": "WO-1", "message_id": "9", "text": "a\n1. b", "chunk": "1. b"}))
+    assert [(m["channel"], m["type"], m["data"]["text"]) for m in out] == [("agent:WO-1", "delta", "a\n1. b")]
+    out = to_messages(Event(ts=ts, topic=Topic.AI, source="agent", type="agent_safety_gate",
+                            payload={"workorder_id": "WO-1", "message_id": "9", "flags": [], "done": True,
+                                     "gate": {"status": "done", "checked": ["b"]}}))
+    assert out[0]["type"] == "safety_gate" and out[0]["data"]["done"] and out[0]["data"]["gate"]["status"] == "done"

@@ -136,7 +136,7 @@ class JevClient:
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
         self.http = httpx.AsyncClient(timeout=timeout_s, headers=headers, transport=transport,
-                                      limits=httpx.Limits(max_keepalive_connections=4, keepalive_expiry=300))
+                                      limits=httpx.Limits(max_keepalive_connections=16, keepalive_expiry=300))
 
     async def warmup(self) -> bool:
         try:

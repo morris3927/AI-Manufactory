@@ -198,8 +198,16 @@ export interface AgentMessage {
   steps?: string[];
   tool_calls?: { name: string; args?: Record<string, unknown> }[];
   safety_flags?: SafetyFlag[];
+  /** J4 把關進度：pending 時尚未出現在 checked 的步驟顯示「安全把關檢查中…」；沒有此欄位視為已完成 */
+  gate?: AgentGate | null;
   ts: string;
   streaming?: boolean;
+}
+
+export interface AgentGate {
+  status: "pending" | "done";
+  /** 已完成把關的步驟文字 */
+  checked?: string[];
 }
 
 export interface Transition {

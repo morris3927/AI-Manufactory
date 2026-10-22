@@ -66,6 +66,8 @@ class SimEngine:
         c = sc.casualty if sc else None
         if not c or self._casualty_done or self.t < c.t:
             return
+        if not self.rt.settings.workflow.scripted_casualty:   # Demo：留給主管在畫面上標記
+            return
         from sqlmodel import select
 
         from ..db.models import Incident

@@ -6,6 +6,7 @@ cameras:
     video: assets/videos/stamping/feed_jam_01.mp4
     then: assets/videos/stamping/normal_01.mp4
     synthetic: feed_jam          # 影片不存在時的合成畫面：板材 10 秒後歪斜卡住
+    # 影片由 scripts/build_demo_footage.py 產生（Air Feeder.jpg；jam_at_s 起疊上合成翹起銅帶，送料歸零後無衝程震動）
     jam_at_s: 10
 mes_script:
   STP-L1-FD02:

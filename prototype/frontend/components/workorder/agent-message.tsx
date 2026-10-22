@@ -1,6 +1,6 @@
 "use client";
 
-import { ShieldAlert, ShieldCheck } from "lucide-react";
+import { Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { api } from "@/lib/api";
 import { usePersona } from "@/lib/session";
@@ -117,7 +117,9 @@ function FlagChips({ f }: { f: SafetyFlag }) {
   );
 }
 
-function Step({ no, text, flag }: { no?: string; text: string; flag?: SafetyFlag }) {
+type GateState = "pending" | "cleared" | undefined;
+
+function Step({ no, text, flag, gate }: { no?: string; text: string; flag?: SafetyFlag; gate?: GateState }) {
   const tone = flag ? (flag.max_p >= 0.6 ? "border-red-500/70 bg-red-500/10" : "border-amber-500/60 bg-amber-500/10") : "border-transparent";
   return (
     <li className={cn("flex gap-2 rounded border-l-4 px-2 py-1", tone)}>
@@ -126,9 +128,27 @@ function Step({ no, text, flag }: { no?: string; text: string; flag?: SafetyFlag
       <div className="min-w-0 flex-1">
         <span className="leading-relaxed">{inline(text)}</span>
         {flag && <FlagChips f={flag} />}
+        {!flag && gate === "pending" && (
+          <div className="mt-0.5 flex items-center gap-1 text-xs text-amber-200/80">
+            <Loader2 className="h-3 w-3 animate-spin" /> 安全把關檢查中…
+          </div>
+        )}
+        {!flag && gate === "cleared" && (
+          <span className="ml-1 inline-flex items-center align-middle text-emerald-400/70" title="Jev 安全把關：未超過門檻">
+            <ShieldCheck className="h-3.5 w-3.5" />
+          </span>
+        )}
       </div>
     </li>
   );
+}
+
+/** 步驟的把關狀態：沒有 gate 欄位（舊訊息、LOTO 模板）→ 不顯示；pending 且尚未檢查 → 檢查中 */
+function gateState(m: AgentMessage, text: string): GateState {
+  const g = m.gate;
+  if (!g) return undefined;
+  if (g.status === "done" || (g.checked ?? []).some((c) => similar(text, c))) return "cleared";
+  return "pending";
 }
 
 export function sortMessages(list: AgentMessage[]): AgentMessage[] {
@@ -160,7 +180,7 @@ export function AssistantContent({ m }: { m: AgentMessage }) {
         {b.items.map((it, j) => {
           const f = matchFlag(it.text, steps, flags);
           if (f) used.add(f);
-          return <Step key={j} no={it.no} text={it.text} flag={f} />;
+          return <Step key={j} no={it.no} text={it.text} flag={f} gate={gateState(m, it.text)} />;
         })}
       </Tag>
     );
@@ -172,7 +192,7 @@ export function AssistantContent({ m }: { m: AgentMessage }) {
         {steps.map((s, i) => {
           const f = flags.find((x) => x.step_index === i) ?? matchFlag(s, steps, flags);
           if (f) used.add(f);
-          return <Step key={i} no={String(i + 1)} text={s} flag={f} />;
+          return <Step key={i} no={String(i + 1)} text={s} flag={f} gate={gateState(m, s)} />;
         })}
       </ol>,
     );
@@ -210,11 +230,18 @@ export function ChatBubble({ m, wo, act }: { m: AgentMessage; wo: WorkOrderDetai
       </div>
     );
   const flags = m.safety_flags ?? [];
-  const pending = flags.some((f) => f.supervisor_requested);
+  const gating = m.gate?.status === "pending";
+  // 把關還在跑時先不給「主管確認」：最終旗標以全部步驟檢查完的結果為準
+  const pending = !gating && flags.some((f) => f.supervisor_requested);
   const isSup = persona.role === "supervisor";
   return (
     <div className="max-w-[96%] rounded-lg rounded-tl-none border border-line bg-panel-2 px-3 py-2">
       <AssistantContent m={m} />
+      {gating && (
+        <div className="mt-1.5 flex items-center gap-1 text-xs text-amber-200/80">
+          <Loader2 className="h-3 w-3 animate-spin" /> Jev 安全把關檢查中…（標紅步驟會自動通知主管）
+        </div>
+      )}
       {pending && (
         <div className="mt-2 flex flex-wrap items-center gap-2 rounded border border-red-500/40 bg-red-500/5 px-2 py-1.5">
           <ShieldAlert className="h-4 w-4 text-red-300" />

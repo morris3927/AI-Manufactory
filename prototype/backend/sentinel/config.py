@@ -54,6 +54,8 @@ class LlmCfg(BaseModel):
 class KbCfg(BaseModel):
     embedding: str = "auto"
     embedding_model: str = "BAAI/bge-m3"
+    index_text: str = "structured"            # 案例向量用結構化事實＋摘要（kb/facts.py）；summary＝舊版
+    retrieval: dict = Field(default_factory=dict)   # kb.retrieve.RetrievalCfg 覆寫值
     allow_draft: bool = False
 
 
@@ -111,6 +113,7 @@ class EscalationCfg(BaseModel):
 
 class WorkflowCfg(BaseModel):
     require_permit: bool = True     # 設備類工單：作業許可核准後才能上鎖（設施規則第57條）
+    scripted_casualty: bool = True  # 劇本自動標記傷亡（測試用）；Demo 設 false，由主管在畫面上標記
 
 
 class MesCfg(BaseModel):

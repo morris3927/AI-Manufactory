@@ -32,7 +32,7 @@ import type { AuditEntry, NextAction, Severity, WorkOrderDetail, WorkOrderStatus
 import { cn, fmtTime, pct } from "@/lib/utils";
 import type { Streaming } from "./use-workorder";
 import { toast } from "../toast";
-import { ChatBubble, sortMessages } from "./agent-message";
+import { AssistantContent, ChatBubble, sortMessages } from "./agent-message";
 import { AuditList } from "../audit-list";
 
 type Act = <T>(fn: () => Promise<T>, okText?: string) => Promise<T | undefined>;
@@ -624,19 +624,30 @@ export function AgentChat({ wo, act, busy, streaming, tall }: { wo: WorkOrderDet
             <ChatBubble key={m.id} m={m} wo={wo} act={act} />
           ))}
           {streaming && !msgs.some((x) => String(x.id) === String(streaming.message_id)) && (
-            <div className="max-w-[92%] whitespace-pre-wrap rounded-lg rounded-tl-none border border-line bg-panel-2 px-3 py-2 text-sm text-slate-200">
-              {streaming.text}
+            <div className="max-w-[96%] rounded-lg rounded-tl-none border border-line bg-panel-2 px-3 py-2">
+              <AssistantContent
+                m={{
+                  id: streaming.message_id,
+                  workorder_id: wo.id,
+                  role: "assistant",
+                  content: streaming.text,
+                  safety_flags: streaming.flags ?? [],
+                  gate: streaming.gate ?? { status: "pending", checked: [] },
+                  ts: "",
+                  streaming: true,
+                }}
+              />
               <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-cyan-400 align-middle" />
             </div>
           )}
-          {thinking && !streaming && (
+          {thinking && !streaming && msgs.at(-1)?.role !== "assistant" && (
             <div className="flex w-fit items-center gap-2 rounded-lg rounded-tl-none border border-line bg-panel-2 px-3 py-2 text-sm text-muted">
               <span className="flex gap-1">
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400" />
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400 [animation-delay:150ms]" />
                 <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-cyan-400 [animation-delay:300ms]" />
               </span>
-              Agent 查詢工單、SOP 並經 Jev 安全把關中…
+              Agent 整理工單、SOP 與訊號中…
             </div>
           )}
           {!msgs.length && !streaming && !thinking && <div className="py-6 text-center text-xs text-muted">向 Agent 描述現場狀況，它會依根因排序與 SOP 帶你排查</div>}
@@ -717,12 +728,14 @@ export function ReportPanel({ wo, act, busy }: { wo: WorkOrderDetail; act: Act; 
   const check = wo.report?.check;
   const fill = () => {
     if (wo.incident.type === "feed_jam") {
-      setRc("FM-STP-MATERIAL-THICK");
-      setText("滾輪間隙正常；量測板厚 2.08 mm 超出公差，隔離該批材料並換料，重設送料長度。試沖 10 模送料誤差 0.02 mm，確認恢復正常。");
+      // 只能選下拉選單裡有的選項（前三名＋OTHER），不然 select 會顯示空白但送出看不見的值
+      const thick = top.find((r) => /thick|厚度/i.test(`${r.failure_mode_id}${r.name}`));
+      setRc(thick?.failure_mode_id ?? "OTHER");
+      setText("實際原因：材料板厚 2.08 mm 超出公差（滾輪間隙檢查正常，不是滾輪問題）。處置：隔離該批材料並換料，重設送料長度。結果：試沖 10 模送料誤差 0.02 mm，已恢復正常。");
     } else if (safety) setText("班長到場提醒人員配戴安全帽，已完成現場宣導並記錄。");
     else {
       setRc(top[0]?.failure_mode_id ?? "");
-      setText("依 SOP 排查確認根因並完成處置，復機後運轉 10 分鐘確認正常。");
+      setText(`實際原因：${top[0]?.name ?? "依 SOP 排查確認"}。處置：依 SOP 完成更換與調整。結果：復機後運轉 10 分鐘確認正常。`);
     }
   };
   return (
@@ -762,7 +775,12 @@ export function ReportPanel({ wo, act, busy }: { wo: WorkOrderDetail; act: Act; 
                 <Button size="sm" variant="ghost" disabled={!can || ro} onClick={fill}>
                   帶入範例
                 </Button>
-                <Button className="ml-auto" variant="primary" disabled={!can || busy || ro || !text.trim()} onClick={() => act(() => api.report(wo.id, text, rc || null))}>
+                <Button className="ml-auto" variant="primary" disabled={!can || busy || ro || !text.trim()} onClick={async () => {
+                    const r = await act(() => api.report(wo.id, text, rc || null));
+                    if (r?.check && !r.check.complete) toast(`J5 退回：回報缺少${r.check.missing.join("、")}，請補寫後再送`, "error");
+                    else if (r) toast(r.check?.kb_status === "draft" ? "回報通過，工單已結案；案例草稿待主管核准入庫" : "回報通過，工單已結案", "ok");
+                  }}
+                >
                   提交回報（J5 檢查）
                 </Button>
               </div>

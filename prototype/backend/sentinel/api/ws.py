@@ -9,10 +9,11 @@
 | incidents | incident_opened、incident_updated | 同上 |
 | workorders | created、status_changed、escalated、updated、reset | {id, workorder, ...} |
 | ai | jev_vision、jev_result、llm_explanation、new_failure_mode | 事件 payload（含 workorder_id／incident_id） |
-| agent:{id} | message、delta、safety_gate | AgentMessage／{message_id, text}／{message_id, flags} |
+| agent:{id} | message、delta、safety_gate | AgentMessage／{message_id, text, chunk?}／{message_id, flags, done?, gate?} |
 | metrics | summary | MetricsSummary（每 5 秒） |
 
-LLM 回覆目前不是逐字串流：delta 會一次送出完整文字，接著送 message。
+維修 Agent 串流：delta 逐行送出（text＝目前為止已過復電過濾的全文，chunk＝這次新增的行）→ message（最終內容，
+gate.status=pending 表示 J4 還在跑）→ safety_gate（done=false：某一步驟把關完成；done=true：全部完成，flags 為最終結果）。
 """
 from __future__ import annotations
 
@@ -79,6 +80,11 @@ def to_messages(evt: Event, rt: "Runtime | None" = None) -> list[dict]:
             out.append((f"agent:{wid}", "message", msg))
             if p.get("flags"):
                 out.append((f"agent:{wid}", "safety_gate", {"message_id": msg["id"], "flags": p["flags"]}))
+        elif evt.type == "agent_delta":
+            out.append((f"agent:{wid}", "delta", {"message_id": p["message_id"], "text": p["text"],
+                                                  "chunk": p.get("chunk")}))
+        elif evt.type == "agent_safety_gate":
+            out.append((f"agent:{wid}", "safety_gate", {k: p[k] for k in ("message_id", "flags", "done", "gate") if k in p}))
         elif evt.type == "safety_ack":
             out.append((f"agent:{wid}", "safety_gate", {"message_id": p["message_id"], "flags": p["flags"]}))
         else:

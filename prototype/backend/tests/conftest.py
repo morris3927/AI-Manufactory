@@ -88,9 +88,12 @@ def settings(tmp_path: Path, knowledge: Path):
     return load_settings(BACKEND_DIR / "config.yaml",
                          paths={"db": str(tmp_path / "sentinel.db"), "chroma": str(tmp_path / "chroma"),
                                 "knowledge": str(knowledge), "drafts": str(tmp_path / "drafts"),
-                                "keyframes": str(tmp_path / "keyframes")},
+                                "keyframes": str(tmp_path / "keyframes"),
+                                # 測試不讀 assets/videos 的 Demo 影片（有沒有跑過 build_demo_footage.py 結果都一樣）
+                                "videos_root": str(tmp_path / "videos")},
                          kb={"embedding": "hash"}, jev={"warmup": False}, app={"ambient": False},
-                         vision={"yolo_weights": "models/_none_for_tests.pt"})   # 測試一律用劇本重播的偵測結果
+                         vision={"yolo_weights": "models/_none_for_tests.pt"},   # 測試一律用劇本重播的偵測結果
+                         workflow={"scripted_casualty": True})   # 測試由劇本標記傷亡；Demo 改由主管在畫面上標記
 
 
 @pytest.fixture

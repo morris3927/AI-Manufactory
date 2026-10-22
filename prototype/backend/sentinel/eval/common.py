@@ -16,6 +16,7 @@ from typing import Any
 from ..config import PROTOTYPE_DIR, load_settings
 from ..jev.client import JevClient
 from ..kb import ingest as ing
+from ..kb.facts import signal_facts  # noqa: F401（案例 Log → 事件 facts；與檢索用同一份）
 from ..kb.retrieve import KnowledgeBase
 from ..kb.store import VectorStore, get_embedder
 
@@ -32,9 +33,9 @@ for _d in (RESULTS, FIGURES, RAW, CACHE, SCRATCH):
     _d.mkdir(parents=True, exist_ok=True)
 
 SETTINGS = load_settings()
-# 評估用 embedder：預設 hash（與目前 venv 的正式退路相同、可重現）；
-# SENTINEL_EVAL_EMBEDDER=auto／bge-m3／sentence-transformers 改用真正的語意模型（另存一份結果並列比較）
-EMBEDDER_KIND = os.environ.get("SENTINEL_EVAL_EMBEDDER", "hash")
+# 評估用 embedder：預設與正式設定相同（config.yaml kb.embedding／embedding_model／index_text／retrieval）；
+# SENTINEL_EVAL_EMBEDDER=hash 改用 hash-512 退路（2026-10-21 第一版 E1–E3 用的就是它），結果檔名加 _hash 並列比較
+EMBEDDER_KIND = os.environ.get("SENTINEL_EVAL_EMBEDDER", SETTINGS.kb.embedding)
 SEV_RANK = {"S1": 1, "S2": 2, "S3": 3}
 
 
@@ -94,38 +95,44 @@ def load_json(name: str) -> Any:
 _KB: KnowledgeBase | None = None
 
 
-def eval_kb(rebuild: bool = False) -> KnowledgeBase:
-    """與正式環境相同的 KnowledgeBase／ingest 程式；allow_draft=True（案例目前多為 approved，放行少數 draft）。
+def _store_path(emb_name: str) -> Path:
+    return CACHE / f"chroma-{emb_name}-{SETTINGS.kb.index_text}"
 
-    embedding 與正式設定相同（kb.embedding=auto）：這個 venv 沒有 sentence-transformers → hash embedding。
-    """
+
+def eval_kb(rebuild: bool = False) -> KnowledgeBase:
+    """與正式環境相同的 KnowledgeBase／ingest／檢索設定；allow_draft=True（案例目前多為 approved，放行少數 draft）。
+    評估用向量庫另外建在 eval/.cache/chroma-<embedder>-<index_text>（不動 backend/chroma）。"""
     global _KB
     if _KB is not None and not rebuild:
         return _KB
     s = SETTINGS
     emb = get_embedder(EMBEDDER_KIND, s.kb.embedding_model)
-    path = CACHE / ("chroma" if emb.name.startswith("hash") else f"chroma-{emb.name}")
-    store = VectorStore(path, emb)
+    path = _store_path(emb.name)
+    store = VectorStore(path, emb, index_text=s.kb.index_text)
     marker = path.with_name(path.name + ".ok")
     if rebuild or not marker.exists() or store.count("cases") == 0:
         rep = ing.ingest(KNOWLEDGE, store, allow_draft=True, rebuild=True)
         marker.write_text(json.dumps({"accepted": rep.accepted, "rejected": len(rep.rejected),
-                                      "embedder": store.embedder.name}, ensure_ascii=False))
-    _KB = KnowledgeBase(KNOWLEDGE, store, allow_draft=True)
+                                      "embedder": store.embedder.name, "index_text": s.kb.index_text},
+                                     ensure_ascii=False))
+    _KB = KnowledgeBase(KNOWLEDGE, store, allow_draft=True, retrieval=s.kb.retrieval)
     return _KB
 
 
 def embedder_tag() -> str:
-    """raw 檔名後綴：hash embedding 維持原檔名，其他 embedder 另外存（方便並列比較）。"""
+    """結果檔名後綴：正式設定的 embedder 用原檔名；hash 退路加 _hash；其他 embedder 加 _<名稱>。"""
     kb = eval_kb()
     name = kb.store.embedder.name if kb.store else "none"
-    return "" if name.startswith("hash") else "_" + name.replace("/", "-")
+    if name.startswith("hash"):
+        return "_hash"
+    return "" if name == SETTINGS.kb.embedding_model.split("/")[-1] else "_" + name.replace("/", "-")
 
 
 def kb_info() -> dict:
-    tag = embedder_tag()
-    p = CACHE / (("chroma" if not tag else "chroma-" + tag[1:]) + ".ok")
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    kb = eval_kb()
+    p = _store_path(kb.store.embedder.name if kb.store else "none")
+    info = json.loads(p.with_name(p.name + ".ok").read_text(encoding="utf-8")) if p.with_name(p.name + ".ok").exists() else {}
+    return info | {"retrieval": kb.retrieval.model_dump()}
 
 
 # ── 案例 → 事件 state（與正式 judge.build_state 相同的欄位）─────────
@@ -152,53 +159,8 @@ PLANT_NAMES = {"STP-L1-PR01": "250t 伺服沖床", "STP-L1-FD02": "伺服送料�
                "STP-L2-FD04": "伺服送料機（L2）"}
 
 
-def _num(v: Any) -> float | None:
-    return float(v) if isinstance(v, (int, float)) and not isinstance(v, bool) else None
-
-
 def _hhmmss(t: str) -> str:
     return t[11:19] if len(t) >= 19 and t[10] == "T" else t
-
-
-def signal_facts(log_signals: list[dict], own_machine: str | None) -> dict[str, Any]:
-    """程式先把 Log 算成結論（Jev 不擅長算數）：每個訊號的起訖值、最大最小、變化型態。"""
-    groups: dict[str, list[dict]] = {}
-    for x in sorted(log_signals, key=lambda x: str(x.get("t"))):
-        key = x["signal"] if not x.get("machine_id") or x.get("machine_id") == own_machine \
-            else f"{x['signal']}@{x['machine_id']}"
-        groups.setdefault(key, []).append(x)
-    out: dict[str, Any] = {}
-    for key, xs in groups.items():
-        vals = [x.get("value") for x in xs]
-        nums = [_num(v) for v in vals]
-        if all(n is not None for n in nums) and nums:
-            nn = [n for n in nums if n is not None]
-            if len(nn) == 1:
-                out[key] = {"value": nn[0]}
-                continue
-            diffs = [b - a for a, b in zip(nn, nn[1:])]
-            if all(d > 0 for d in diffs) and len(nn) >= 3:
-                pattern = "逐步上升"
-            elif all(d < 0 for d in diffs) and len(nn) >= 3:
-                pattern = "逐步下降"
-            elif all(abs(d) < 1e-9 for d in diffs):
-                pattern = "持平"
-            else:
-                big = max(range(len(diffs)), key=lambda i: abs(diffs[i]))
-                pattern = "一次跳升" if diffs[big] > 0 else "一次跳降"
-            span_min = None
-            try:
-                from datetime import datetime
-                t0, t1 = datetime.fromisoformat(xs[0]["t"]), datetime.fromisoformat(xs[-1]["t"])
-                span_min = round((t1 - t0).total_seconds() / 60, 1)
-            except Exception:
-                pass
-            out[key] = {"first": nn[0], "last": nn[-1], "min": min(nn), "max": max(nn), "n": len(nn),
-                        "pattern": pattern, "span_min": span_min}
-        else:
-            uniq = list(dict.fromkeys(str(v) for v in vals))
-            out[key] = uniq[0] if len(uniq) == 1 else uniq
-    return out
 
 
 def case_to_incident(case: dict) -> tuple[EvalIncident, EvalMachine, list[str]]:

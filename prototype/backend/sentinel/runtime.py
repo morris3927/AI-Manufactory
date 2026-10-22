@@ -65,10 +65,11 @@ class Runtime:
         store = None
         if use_vector_store:
             try:
-                store = VectorStore(s.path("chroma"), get_embedder(s.kb.embedding, s.kb.embedding_model))
+                store = VectorStore(s.path("chroma"), get_embedder(s.kb.embedding, s.kb.embedding_model),
+                                    index_text=s.kb.index_text)
             except Exception:
                 log.exception("Chroma 無法啟動，案例檢索停用")
-        self.kb = KnowledgeBase(s.path("knowledge"), store, allow_draft=s.kb.allow_draft)
+        self.kb = KnowledgeBase(s.path("knowledge"), store, allow_draft=s.kb.allow_draft, retrieval=s.kb.retrieval)
         self.writeback = CaseWriteback(self.kb, s.path("drafts"))
 
         self.windows = Windows(self.clock, s.thresholds, plant=self.plant)
@@ -147,6 +148,8 @@ class Runtime:
         self.dispatch.start()
         if warmup if warmup is not None else (self.settings.jev.warmup and self.jev.enabled):
             self._bg.append(asyncio.create_task(self.jev.warmup(), name="jev.warmup"))
+            if self.llm.enabled:                     # 維修 Agent 首字延遲：先建好 Ollama Cloud 連線
+                self._bg.append(asyncio.create_task(self.llm.warmup(), name="llm.warmup"))
         if realtime if realtime is not None else self.clock.realtime:
             self.engine.start_realtime(None)
         log.info("sentinel-core 啟動：%s；Jev=%s LLM=%s 通知=%s", self.seed_counts,

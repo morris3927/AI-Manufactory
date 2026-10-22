@@ -439,7 +439,8 @@ def analyze() -> dict[str, Any]:
     held = C.heldout_items(kb)
     syn = synthetic_items(kb)
     items = {it.item_id: it for it in held + syn}
-    jev_log, llm_log = RawLog("e1_jev.jsonl"), RawLog("e2_llm.jsonl")
+    tag = C.embedder_tag()
+    jev_log, llm_log = RawLog(f"e1_jev{tag}.jsonl"), RawLog(f"e2_llm{tag}.jsonl")
     held_ids = {it.item_id for it in held}
 
     def rows(log: RawLog, variant: str, ids: set[str]) -> list[dict]:
@@ -466,7 +467,7 @@ def analyze() -> dict[str, Any]:
                         "position_bias": position_bias(perm)},
         "diagnosis_mode": dict(Counter((r.get("decision") or {}).get("diagnosis_mode") for r in base)),
         "excluded_from_root_cause": [{"item": it.item_id, "gt": it.gt["root_cause"],
-                                      "reason": "誤報（none）" if it.gt["root_cause"] == "none" else "目錄外新模式（new；正式題目沒有 new 選項）"}
+                                      "reason": "誤報（none）" if it.gt["root_cause"] == "none" else "目錄外新模式（new；題目 .4 起有「以上皆非」選項，另列 new_mode_case）"}
                                      for it in held if not it.gt["rc_in_catalog"]],
         "per_item": [{"item": it.item_id, "line": it.line, "case_type": it.meta.get("case_type"), "gt": it.gt,
                       "runs": [{"top3": (r.get("judgement") or {}).get("root_cause_top3"),
@@ -517,7 +518,7 @@ def analyze() -> dict[str, Any]:
         (items[r["item_id"]].gt["category"], (r.get("judgement") or {}).get("category")) for r in rep0).items(), key=str)}
     e1["new_mode_case"] = [{"item": r["item_id"], "jev_top1": r["judgement"]["root_cause_top3"][0]}
                            for r in rep0 if items[r["item_id"]].gt["root_cause"] == "new" and r.get("judgement")]
-    C.save_json("e1_root_cause_jev.json", e1)
+    C.save_json(f"e1_root_cause_jev{C.embedder_tag()}.json", e1)
 
     # E2
     rb = rules_baseline(held)
@@ -538,7 +539,7 @@ def analyze() -> dict[str, Any]:
           "jev": e1["first_run_only"], "jev_all_runs": e1["all_runs"],
           "llm": llm_score, "llm_model": C.SETTINGS.llm.model, "llm_repeats": LLM_REPEATS,
           "retrieval_majority_top1": e1["retrieval_majority_top1"]}
-    C.save_json("e2_rules_jev_llm.json", e2)
+    C.save_json(f"e2_rules_jev_llm{C.embedder_tag()}.json", e2)
 
     # E3
     syn_ids = {it.item_id for it in syn}
@@ -557,7 +558,7 @@ def analyze() -> dict[str, Any]:
           "synthetic_scores": score_rows(items, syn_rows),
           "synthetic_case_types": dict(Counter(it.meta.get("case_type") for it in syn))}
     e1["synthetic_by_case_type"] = e3["synthetic_scores"]["root_cause_top1_by_case_type"]
-    C.save_json("e3_calibration.json", e3)
+    C.save_json(f"e3_calibration{C.embedder_tag()}.json", e3)
     return {"e1": e1, "e2": e2, "e3": e3}
 
 
@@ -684,7 +685,7 @@ def analyze_extra(base_out: dict[str, Any]) -> dict[str, Any]:
     syn = synthetic_items(kb)
     comp = composite_items(kb)
     items = {it.item_id: it for it in held + syn + comp}
-    log = RawLog("e1_jev.jsonl")
+    log = RawLog(f"e1_jev{C.embedder_tag()}.jsonl")
     held_ids = {it.item_id for it in held}
     base = [r for r in log.rows.values() if r["variant"] == "base" and r["item_id"] in held_ids]
     rep0 = [r for r in base if r["rep"] == 0]
@@ -717,52 +718,22 @@ def analyze_extra(base_out: dict[str, Any]) -> dict[str, Any]:
     dm = Counter((r.get("decision") or {}).get("diagnosis_mode") for r in rep0)
     e1["diagnosis_mode_first_run"] = {"counts": dict(dm), "threshold_root_cause_conf": C.SETTINGS.thresholds.root_cause_conf,
                                       "jev_top3_share": C.rate(dm.get("jev_top3", 0), len(rep0))}
-    C.save_json("e1_root_cause_jev.json", e1)
+    C.save_json(f"e1_root_cause_jev{C.embedder_tag()}.json", e1)
     e3 = base_out["e3"]
     e3["heldout_first_run"] = calib_bins(calibration_points(items, rep0))
     e3["heldout_per_case_mean"] = calib_bins(per_case_calibration(items, base))
     e3["n_distinct_cases_heldout"] = len({r["item_id"] for r in rep0 if items[r["item_id"]].gt["rc_in_catalog"]})
-    C.save_json("e3_calibration.json", e3)
+    C.save_json(f"e3_calibration{C.embedder_tag()}.json", e3)
     return e1
-
-
-def analyze_embedder(tag: str) -> dict[str, Any]:
-    """非 hash embedder：只跑保留集 1 次（Jev＋LLM），與 hash 版本並列。"""
-    kb = C.eval_kb()
-    held = C.heldout_items(kb)
-    items = {it.item_id: it for it in held}
-    jl, ll = RawLog(f"e1_jev{tag}.jsonl"), RawLog(f"e2_llm{tag}.jsonl")
-    jrows = [r for r in jl.rows.values() if r["variant"] == "base" and r["rep"] == 0]
-    for r in jrows:
-        r["latency_ms"] = (r.get("judgement") or {}).get("latency_ms")
-    lrows = [r for r in ll.rows.values() if r["variant"] == "llm"]
-    hit = sum(1 for r in jrows if items[r["item_id"]].gt["rc_in_catalog"] and items[r["item_id"]].gt["root_cause"] in (r.get("similar_fm") or []))
-    nrc = sum(1 for r in jrows if items[r["item_id"]].gt["rc_in_catalog"])
-    maj = 0
-    for r in jrows:
-        it = items[r["item_id"]]
-        if it.gt["rc_in_catalog"]:
-            fm = [x for x in (r.get("similar_fm") or []) if x not in (None, "none", "new")]
-            maj += bool(fm) and Counter(fm).most_common(1)[0][0] == it.gt["root_cause"]
-    out = {"embedder": tag[1:], "kb": C.kb_info(), "jev": score_rows(items, jrows), "llm": score_rows(items, lrows),
-           "retrieval_gt_in_top5_cases": C.rate(hit, nrc), "retrieval_majority_top1": C.rate(maj, nrc)}
-    C.save_json(f"e1e2_embedder{tag}.json", out)
-    return out
 
 
 async def run_all(skip_llm: bool = False) -> None:
     kb = C.eval_kb()
     tag = C.embedder_tag()
     held = C.heldout_items(kb)
-    if tag:                                   # 真正的語意 embedder：只重跑檢索相關的 E1／E2（1 次）
-        log = RawLog(f"e1_jev{tag}.jsonl")
-        await run_jev(held, log, variant="base", repeats=1)
-        if not skip_llm:
-            await run_llm(held, RawLog(f"e2_llm{tag}.jsonl"))
-        return
     syn = synthetic_items(kb)
-    log = RawLog("e1_jev.jsonl")
-    print(f"保留測試集 {len(held)} 筆；合成 {len(syn)} 筆", flush=True)
+    log = RawLog(f"e1_jev{tag}.jsonl")
+    print(f"embedder {kb.store.embedder.name if kb.store else None}；保留測試集 {len(held)} 筆；合成 {len(syn)} 筆", flush=True)
     await run_jev(held, log, variant="base", repeats=REPEATS)
     await run_jev(held, log, variant="perm", repeats=1)
     await run_jev(syn, log, variant="synthetic", repeats=1)
@@ -771,7 +742,7 @@ async def run_all(skip_llm: bool = False) -> None:
     await run_cost_breakdown(held[:: 4][:10], log)
     print(f"Jev 完成：{len(log.rows)} 筆", flush=True)
     if not skip_llm:
-        llog = RawLog("e2_llm.jsonl")
+        llog = RawLog(f"e2_llm{tag}.jsonl")
         await run_llm(held, llog)
         print(f"LLM 完成：{len(llog.rows)} 筆", flush=True)
 
@@ -783,12 +754,6 @@ def main(argv: list[str] | None = None) -> int:
     a = ap.parse_args(argv)
     if a.cmd == "run":
         asyncio.run(run_all(a.skip_llm))
-    tag = C.embedder_tag()
-    if tag:
-        r = analyze_embedder(tag)
-        print(json.dumps({"embedder": tag, "jev_top1": r["jev"]["root_cause_top1"], "llm_top1": r["llm"]["root_cause_top1"]},
-                         ensure_ascii=False))
-        return 0
     res = analyze()
     analyze_extra(res)
     e1, e2 = res["e1"]["first_run_only"], res["e2"]

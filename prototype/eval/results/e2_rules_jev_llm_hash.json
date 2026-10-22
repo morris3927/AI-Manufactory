@@ -1,0 +1,540 @@
+{
+  "description": "同一批保留案例、同一份 state 與題目：純規則 vs Jev vs DeepSeek V4.1 Flash",
+  "rules": {
+    "n_calls": 40,
+    "n_errors": 0,
+    "root_cause_top1": {
+      "k": 29,
+      "n": 37,
+      "rate": 0.784,
+      "ci95": [
+        0.628,
+        0.886
+      ]
+    },
+    "root_cause_top3": {
+      "k": 37,
+      "n": 37,
+      "rate": 1.0,
+      "ci95": [
+        0.906,
+        1
+      ]
+    },
+    "root_cause_by_line": {
+      "assembly": {
+        "n": 9,
+        "top1": 0.667,
+        "top3": 1.0
+      },
+      "stamping": {
+        "n": 19,
+        "top1": 0.842,
+        "top3": 1.0
+      },
+      "welding": {
+        "n": 9,
+        "top1": 0.778,
+        "top3": 1.0
+      }
+    },
+    "root_cause_top1_by_case_type": {
+      "escalated": {
+        "n": 2,
+        "top1": 1.0
+      },
+      "typical": {
+        "n": 27,
+        "top1": 0.741
+      },
+      "wrong_first": {
+        "n": 8,
+        "top1": 0.875
+      }
+    },
+    "category": {
+      "k": 36,
+      "n": 40,
+      "rate": 0.9,
+      "ci95": [
+        0.769,
+        0.96
+      ]
+    },
+    "category_lenient": {
+      "k": 38,
+      "n": 40,
+      "rate": 0.95,
+      "ci95": [
+        0.835,
+        0.986
+      ]
+    },
+    "severity_raw": {
+      "k": 36,
+      "n": 40,
+      "rate": 0.9,
+      "ci95": [
+        0.769,
+        0.96
+      ]
+    },
+    "severity_gated": {
+      "k": 36,
+      "n": 40,
+      "rate": 0.9,
+      "ci95": [
+        0.769,
+        0.96
+      ]
+    },
+    "severity_confusion": {
+      "S1->S2": 2,
+      "S2->S1": 2,
+      "S2->S2": 35,
+      "S3->S3": 1
+    },
+    "s3_recall_gated": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "ci95": [
+        0.207,
+        1
+      ]
+    },
+    "false_alarm": {
+      "threshold": 0.5,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 38,
+      "n_false_alarm_cases": 2,
+      "precision": null,
+      "recall": 0.0
+    },
+    "false_alarm_gate": {
+      "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+      "suppressed_true_fa": 0,
+      "suppressed_real_events": 0
+    },
+    "latency_ms": {
+      "note": "查表 < 1 ms（未量測）"
+    },
+    "cost_usd": {
+      "total": 0,
+      "per_call": null
+    },
+    "method": "每個觸發事件類型取訓練案例最常見根因；誤報一律否；嚴重度＝規則判定"
+  },
+  "jev": {
+    "n_calls": 40,
+    "n_errors": 0,
+    "root_cause_top1": {
+      "k": 32,
+      "n": 37,
+      "rate": 0.865,
+      "ci95": [
+        0.72,
+        0.941
+      ]
+    },
+    "root_cause_top3": {
+      "k": 37,
+      "n": 37,
+      "rate": 1.0,
+      "ci95": [
+        0.906,
+        1
+      ]
+    },
+    "root_cause_by_line": {
+      "assembly": {
+        "n": 9,
+        "top1": 0.889,
+        "top3": 1.0
+      },
+      "stamping": {
+        "n": 19,
+        "top1": 0.789,
+        "top3": 1.0
+      },
+      "welding": {
+        "n": 9,
+        "top1": 1.0,
+        "top3": 1.0
+      }
+    },
+    "root_cause_top1_by_case_type": {
+      "escalated": {
+        "n": 2,
+        "top1": 1.0
+      },
+      "typical": {
+        "n": 27,
+        "top1": 0.889
+      },
+      "wrong_first": {
+        "n": 8,
+        "top1": 0.75
+      }
+    },
+    "category": {
+      "k": 27,
+      "n": 40,
+      "rate": 0.675,
+      "ci95": [
+        0.52,
+        0.799
+      ]
+    },
+    "category_lenient": {
+      "k": 29,
+      "n": 40,
+      "rate": 0.725,
+      "ci95": [
+        0.572,
+        0.839
+      ]
+    },
+    "severity_raw": {
+      "k": 36,
+      "n": 40,
+      "rate": 0.9,
+      "ci95": [
+        0.769,
+        0.96
+      ]
+    },
+    "severity_gated": {
+      "k": 37,
+      "n": 40,
+      "rate": 0.925,
+      "ci95": [
+        0.801,
+        0.974
+      ]
+    },
+    "severity_confusion": {
+      "S1->S2": 2,
+      "S2->S1": 1,
+      "S2->S2": 36,
+      "S3->S2": 1
+    },
+    "s3_recall_gated": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "ci95": [
+        0.207,
+        1
+      ]
+    },
+    "false_alarm": {
+      "threshold": 0.5,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 38,
+      "n_false_alarm_cases": 2,
+      "precision": null,
+      "recall": 0.0
+    },
+    "false_alarm_gate": {
+      "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+      "suppressed_true_fa": 0,
+      "suppressed_real_events": 0
+    },
+    "latency_ms": {
+      "n": 40,
+      "mean": 517.4,
+      "p50": 462.92,
+      "p95": 659.38,
+      "max": 1426.9
+    },
+    "cost_usd": {
+      "total": 0.005542,
+      "per_call": 0.00013855
+    }
+  },
+  "jev_all_runs": {
+    "n_calls": 120,
+    "n_errors": 0,
+    "root_cause_top1": {
+      "k": 96,
+      "n": 111,
+      "rate": 0.865,
+      "ci95": [
+        0.789,
+        0.916
+      ]
+    },
+    "root_cause_top3": {
+      "k": 111,
+      "n": 111,
+      "rate": 1.0,
+      "ci95": [
+        0.967,
+        1
+      ]
+    },
+    "root_cause_by_line": {
+      "assembly": {
+        "n": 27,
+        "top1": 0.889,
+        "top3": 1.0
+      },
+      "stamping": {
+        "n": 57,
+        "top1": 0.789,
+        "top3": 1.0
+      },
+      "welding": {
+        "n": 27,
+        "top1": 1.0,
+        "top3": 1.0
+      }
+    },
+    "root_cause_top1_by_case_type": {
+      "escalated": {
+        "n": 6,
+        "top1": 1.0
+      },
+      "typical": {
+        "n": 81,
+        "top1": 0.889
+      },
+      "wrong_first": {
+        "n": 24,
+        "top1": 0.75
+      }
+    },
+    "category": {
+      "k": 81,
+      "n": 120,
+      "rate": 0.675,
+      "ci95": [
+        0.587,
+        0.752
+      ]
+    },
+    "category_lenient": {
+      "k": 87,
+      "n": 120,
+      "rate": 0.725,
+      "ci95": [
+        0.639,
+        0.797
+      ]
+    },
+    "severity_raw": {
+      "k": 108,
+      "n": 120,
+      "rate": 0.9,
+      "ci95": [
+        0.833,
+        0.942
+      ]
+    },
+    "severity_gated": {
+      "k": 111,
+      "n": 120,
+      "rate": 0.925,
+      "ci95": [
+        0.864,
+        0.96
+      ]
+    },
+    "severity_confusion": {
+      "S1->S2": 6,
+      "S2->S1": 3,
+      "S2->S2": 108,
+      "S3->S2": 3
+    },
+    "s3_recall_gated": {
+      "k": 3,
+      "n": 3,
+      "rate": 1.0,
+      "ci95": [
+        0.438,
+        1
+      ]
+    },
+    "false_alarm": {
+      "threshold": 0.5,
+      "tp": 0,
+      "fp": 0,
+      "fn": 6,
+      "tn": 114,
+      "n_false_alarm_cases": 6,
+      "precision": null,
+      "recall": 0.0
+    },
+    "false_alarm_gate": {
+      "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+      "suppressed_true_fa": 0,
+      "suppressed_real_events": 0
+    },
+    "latency_ms": {
+      "n": 120,
+      "mean": 490.5,
+      "p50": 458.18,
+      "p95": 631.02,
+      "max": 1426.9
+    },
+    "cost_usd": {
+      "total": 0.016626,
+      "per_call": 0.00013855
+    }
+  },
+  "llm": {
+    "n_calls": 40,
+    "n_errors": 0,
+    "root_cause_top1": {
+      "k": 32,
+      "n": 37,
+      "rate": 0.865,
+      "ci95": [
+        0.72,
+        0.941
+      ]
+    },
+    "root_cause_top3": {
+      "k": 35,
+      "n": 37,
+      "rate": 0.946,
+      "ci95": [
+        0.823,
+        0.985
+      ]
+    },
+    "root_cause_by_line": {
+      "assembly": {
+        "n": 9,
+        "top1": 1.0,
+        "top3": 1.0
+      },
+      "stamping": {
+        "n": 19,
+        "top1": 0.789,
+        "top3": 0.895
+      },
+      "welding": {
+        "n": 9,
+        "top1": 0.889,
+        "top3": 1.0
+      }
+    },
+    "root_cause_top1_by_case_type": {
+      "escalated": {
+        "n": 2,
+        "top1": 1.0
+      },
+      "typical": {
+        "n": 27,
+        "top1": 0.889
+      },
+      "wrong_first": {
+        "n": 8,
+        "top1": 0.75
+      }
+    },
+    "category": {
+      "k": 26,
+      "n": 40,
+      "rate": 0.65,
+      "ci95": [
+        0.495,
+        0.779
+      ]
+    },
+    "category_lenient": {
+      "k": 28,
+      "n": 40,
+      "rate": 0.7,
+      "ci95": [
+        0.546,
+        0.819
+      ]
+    },
+    "severity_raw": {
+      "k": 36,
+      "n": 40,
+      "rate": 0.9,
+      "ci95": [
+        0.769,
+        0.96
+      ]
+    },
+    "severity_gated": {
+      "k": 37,
+      "n": 40,
+      "rate": 0.925,
+      "ci95": [
+        0.801,
+        0.974
+      ]
+    },
+    "severity_confusion": {
+      "S1->S2": 2,
+      "S2->S1": 1,
+      "S2->S2": 36,
+      "S3->S2": 1
+    },
+    "s3_recall_gated": {
+      "k": 1,
+      "n": 1,
+      "rate": 1.0,
+      "ci95": [
+        0.207,
+        1
+      ]
+    },
+    "false_alarm": {
+      "threshold": 0.5,
+      "tp": 0,
+      "fp": 0,
+      "fn": 2,
+      "tn": 38,
+      "n_false_alarm_cases": 2,
+      "precision": null,
+      "recall": 0.0
+    },
+    "false_alarm_gate": {
+      "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
+      "suppressed_true_fa": 0,
+      "suppressed_real_events": 0
+    },
+    "latency_ms": {
+      "n": 40,
+      "mean": 6555.8,
+      "p50": 1851.38,
+      "p95": 46624.76,
+      "max": 88796.5
+    },
+    "cost_usd": {
+      "reported": null,
+      "note": "Ollama Cloud 訂閱制，不回傳單次費用；以下為 token × 假設單價估算",
+      "assumed_price_per_M": {
+        "input": 0.14,
+        "output": 0.28
+      },
+      "tokens_in": 105691,
+      "tokens_out": 8695,
+      "estimated_total": 0.017231,
+      "estimated_per_call": 0.00043078
+    },
+    "parse_errors": []
+  },
+  "llm_model": "deepseek-v4.1-flash",
+  "llm_repeats": 1,
+  "retrieval_majority_top1": {
+    "k": 20,
+    "n": 37,
+    "rate": 0.541,
+    "ci95": [
+      0.384,
+      0.69
+    ]
+  }
+}

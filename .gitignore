@@ -27,3 +27,7 @@ prototype/models/*.onnx
 LOCAL.md
 00_比賽資訊/timeline.md
 prototype/eval/.cache/
+
+# demo
+prototype/.demo-logs/
+prototype/assets/demo/

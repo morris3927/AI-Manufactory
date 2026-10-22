@@ -1,0 +1,1886 @@
+{
+ "before": {
+  "model": "deepseek-v4.1-flash",
+  "jev_model": "typesafe/jev-1.14",
+  "turns": 6,
+  "summary": {
+   "first_text_ms": {
+    "p50": 11581.5,
+    "p95": 17225.0,
+    "mean": 11896.5
+   },
+   "reply_ms": {
+    "p50": 11581.5,
+    "p95": 17225.0,
+    "mean": 11896.5
+   },
+   "flags_ms": {
+    "p50": 11581.5,
+    "p95": 17225.0,
+    "mean": 11896.5
+   },
+   "gate_wall_ms": {
+    "p50": 516.5,
+    "p95": 741.0,
+    "mean": 487
+   },
+   "llm_calls": {
+    "p50": 2.0,
+    "p95": 3.8,
+    "mean": 2.5
+   },
+   "tool_rounds": {
+    "p50": 1.0,
+    "p95": 2.8,
+    "mean": 1.5
+   },
+   "gate_requests": {
+    "p50": 3.5,
+    "p95": 5.5,
+    "mean": 3.3
+   }
+  },
+  "rows": [
+   {
+    "message": "LOTO 完成了，下一步要做什麼？",
+    "first_text_ms": 8884,
+    "reply_ms": 8884,
+    "flags_ms": 8884,
+    "llm_calls": 2,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 13,
+      "ms": 1569
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 1585,
+      "ms": 6523
+     }
+    ],
+    "tool_rounds": 1,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 5,
+      "ms": 6
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 11,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 12,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 12,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 1582,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 8878,
+      "ms": 4
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 768,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "feed_roller_wear",
+    "llm_used": true,
+    "timings": null
+   },
+   {
+    "message": "上下滾輪表面有一條亮帶，接下來呢？",
+    "first_text_ms": 8026,
+    "reply_ms": 8026,
+    "flags_ms": 8026,
+    "llm_calls": 2,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 19,
+      "ms": 3312
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 3334,
+      "ms": 4022
+     }
+    ],
+    "tool_rounds": 1,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 6,
+      "ms": 10
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 16,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 17,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 18,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "record_step",
+      "start_ms": 3331,
+      "ms": 3
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 8019,
+      "ms": 5
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 660,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "feed_roller_wear",
+    "llm_used": true,
+    "timings": null
+   },
+   {
+    "message": "檢查過滾輪了，沒改善",
+    "first_text_ms": 14279,
+    "reply_ms": 14279,
+    "flags_ms": 14279,
+    "llm_calls": 2,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 16,
+      "ms": 4794
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 4823,
+      "ms": 8941
+     }
+    ],
+    "tool_rounds": 1,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 7,
+      "ms": 4
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 11,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 12,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 13,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "record_step",
+      "start_ms": 4810,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 4812,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 4815,
+      "ms": 7
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4821,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 14274,
+      "ms": 4
+     }
+    ],
+    "gate_requests": 3,
+    "gate_wall_ms": 508,
+    "steps": 3,
+    "flagged": 3,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "servo_feeder_drive_alarm",
+    "llm_used": true,
+    "timings": null
+   },
+   {
+    "message": "料捲厚度量起來是 1.52 mm，要怎麼判斷？",
+    "first_text_ms": 14360,
+    "reply_ms": 14360,
+    "flags_ms": 14360,
+    "llm_calls": 4,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 15,
+      "ms": 5833
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 5851,
+      "ms": 2619
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 8478,
+      "ms": 2832
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 11312,
+      "ms": 3047
+     }
+    ],
+    "tool_rounds": 3,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 7,
+      "ms": 5
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 12,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 13,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 14,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "record_step",
+      "start_ms": 5848,
+      "ms": 3
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 8470,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 8471,
+      "ms": 6
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8477,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 11310,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 11311,
+      "ms": 1
+     }
+    ],
+    "gate_requests": 0,
+    "gate_wall_ms": 0,
+    "steps": 0,
+    "flagged": 0,
+    "gate_sources": [],
+    "hypothesis": "servo_feeder_drive_alarm",
+    "llm_used": true,
+    "timings": null
+   },
+   {
+    "message": "還是一樣卡，下一步？",
+    "first_text_ms": 18180,
+    "reply_ms": 18180,
+    "flags_ms": 18180,
+    "llm_calls": 3,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 10,
+      "ms": 2740
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 2759,
+      "ms": 9216
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 11978,
+      "ms": 5671
+     }
+    ],
+    "tool_rounds": 2,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 1,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 4,
+      "ms": 4
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 2750,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 2751,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 2752,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 2753,
+      "ms": 4
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 2757,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 2758,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "record_step",
+      "start_ms": 11976,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 18176,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 6,
+    "gate_wall_ms": 525,
+    "steps": 7,
+    "flagged": 4,
+    "gate_sources": [
+     "energized_test",
+     "jev"
+    ],
+    "hypothesis": "misfeed_sensor_fault",
+    "llm_used": true,
+    "timings": null
+   },
+   {
+    "message": "現在要怎麼確認修好了？",
+    "first_text_ms": 7650,
+    "reply_ms": 7650,
+    "flags_ms": 7650,
+    "llm_calls": 2,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 10,
+      "ms": 2460
+     },
+     {
+      "kind": "llm",
+      "name": "agent.reply",
+      "start_ms": 2474,
+      "ms": 4710
+     }
+    ],
+    "tool_rounds": 1,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 1,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 4,
+      "ms": 4
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 2470,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 2471,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 2472,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 7646,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 3,
+    "gate_wall_ms": 461,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "energized_test",
+     "jev"
+    ],
+    "hypothesis": "misfeed_sensor_fault",
+    "llm_used": true,
+    "timings": null
+   }
+  ]
+ },
+ "after": {
+  "model": "deepseek-v4.1-flash",
+  "jev_model": "typesafe/jev-1.14",
+  "turns": 12,
+  "summary": {
+   "first_text_ms": {
+    "p50": 1142.0,
+    "p95": 1485.2,
+    "mean": 1098.8
+   },
+   "reply_ms": {
+    "p50": 1837.5,
+    "p95": 2307.1,
+    "mean": 1793.8
+   },
+   "flags_ms": {
+    "p50": 2086.5,
+    "p95": 2380.2,
+    "mean": 1991.2
+   },
+   "gate_wall_ms": {
+    "p50": 717.5,
+    "p95": 1070.1,
+    "mean": 778.1
+   },
+   "llm_calls": {
+    "p50": 1.0,
+    "p95": 1.0,
+    "mean": 1
+   },
+   "tool_rounds": {
+    "p50": 0.0,
+    "p95": 0.0,
+    "mean": 0
+   },
+   "gate_requests": {
+    "p50": 4.0,
+    "p95": 5.0,
+    "mean": 4.2
+   }
+  },
+  "rows": [
+   {
+    "message": "LOTO 完成了，下一步要做什麼？",
+    "first_text_ms": 828,
+    "reply_ms": 1153,
+    "flags_ms": 1541,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 13,
+      "ttft_ms": 519,
+      "ms": 1138
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 7,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 10,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 11,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 12,
+      "ms": 1
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 700,
+    "steps": 4,
+    "flagged": 0,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "feed_roller_wear",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 11,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      1137
+     ],
+     "ttft_ms": 518.9,
+     "first_text_ms": 827,
+     "reply_ms": 1153,
+     "gate_tail_ms": 388,
+     "total_ms": 1541,
+     "gate_requests": 4
+    },
+    "content": "LOTO 完成，現在要驗證的是「送料滾輪磨損／打滑」（Jev 機率 0.99）。訊號也吻合：送料率掉到 0，長度誤差在停機前一路累積到 0.21 mm，沒有過電流警報；三件相似案例也都是這個根因。\n\n1. 在已上鎖掛牌狀態下，目視檢查送料滾輪表面、料帶路徑和料帶表面，確認有沒有油污、粉塵或金屬屑。\n2. 用無絨布擦拭滾輪亮帶處；先確認滾輪抬升氣缸已洩壓，手不要伸進咬合點，也不要直接轉滾輪。\n3. 看有沒有連續亮帶、油污，或料帶上有平行滑痕；滾輪沒有明顯崩角就符合本模式。\n4. 滾輪表面正常、但料帶有局部壓痕或厚度異常，就改查材料厚度偏差（SOP-STP-007）。\n\n第 3、4 步的判定結果請回報，再決定要不要進到量測滾輪那一段。"
+   },
+   {
+    "message": "上下滾輪表面有一條亮帶，接下來呢？",
+    "first_text_ms": 1116,
+    "reply_ms": 1807,
+    "flags_ms": 1946,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 10,
+      "ttft_ms": 1037,
+      "ms": 1795
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 1943,
+      "ms": 2
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 681,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "feed_roller_wear",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 8,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      1795
+     ],
+     "ttft_ms": 1036.6,
+     "first_text_ms": 1115,
+     "reply_ms": 1807,
+     "gate_tail_ms": 139,
+     "total_ms": 1946,
+     "gate_requests": 4
+    },
+    "content": "有連續亮帶，符合滾輪打滑模式，繼續往磨耗量測走。\n\n1. 目視送料滾輪表面、料帶路徑與料帶表面，確認油污、粉塵、金屬屑；不可用手轉滾輪或伸入咬合點，先確認滾輪抬升氣缸已洩壓。\n2. 用無絨布沾中性清潔劑擦拭滾輪亮帶處跟刮板附近，確認沒有殘留油膜。\n3. 清完再目視一次亮帶還在不在；還在就是真的磨耗，先別只靠清潔收工。\n4. 用分厘卡量上下滾輪直徑，左中右各 3 點，再量偏擺。\n\n直徑比基準磨耗 0.05 mm 以上、左右差 0.02 mm 以上，或偏擺超過 0.02 mm，就判定滾輪磨損；規格以圖面為準，SOP 只給模擬值，沒把握就找工程師確認。"
+   },
+   {
+    "message": "檢查過滾輪了，沒改善",
+    "first_text_ms": 743,
+    "reply_ms": 1368,
+    "flags_ms": 1625,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 12,
+      "ttft_ms": 556,
+      "ms": 1355
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 6,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 10,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 1621,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 730,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "new",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 10,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      1355
+     ],
+     "ttft_ms": 555.7,
+     "first_text_ms": 742,
+     "reply_ms": 1368,
+     "gate_tail_ms": 256,
+     "total_ms": 1624,
+     "gate_requests": 4
+    },
+    "content": "滾輪目視正常、清潔後也無效，先不排除磨耗，但要往下一個根因：「以上皆是新的故障模式」（機率 0.01）。三個案例都沒這狀況，所以照訊號走。\n\n1. 把滾輪直徑、偏擺數據補上；沒數據就等於還沒驗完磨耗，先別跳結論。\n2. 手動盤車看送料有沒有卡料、料帶是否偏移或卡進導料板。\n3. 查 MISFEED 警報前後馬達電流、編碼器回饋有無異常；目前電流 6.0A 平穩，偏正常。\n4. 確認料帶規格與厚度是否跟設定一致。\n\n第 1 步量測結果請回報。進機台運轉範圍前，先確認零能量並請主管確認。"
+   },
+   {
+    "message": "料捲厚度量起來是 1.52 mm，要怎麼判斷？",
+    "first_text_ms": 1376,
+    "reply_ms": 1866,
+    "flags_ms": 2114,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 9,
+      "ttft_ms": 1150,
+      "ms": 1856
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 0
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 2110,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 695,
+    "steps": 4,
+    "flagged": 3,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "new",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 7,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      1855
+     ],
+     "ttft_ms": 1150.1,
+     "first_text_ms": 1376,
+     "reply_ms": 1865,
+     "gate_tail_ms": 248,
+     "total_ms": 2114,
+     "gate_requests": 4
+    },
+    "content": "SOP 沒有寫厚度容許範圍，請找工程師確認規格，不能自行判定合格。\n\n1. 拿料捲標籤和工單設定的厚度比對，確認 1.52mm 是不是這批該有的值。\n2. 沿料帶寬度分左、中、右各量一點，看厚度有沒有偏差或變異。\n3. 量同一捲的頭、中、尾，確認是不是整捲都偏，還是只有局部。\n4. 厚度跟設定不符就把量測值和標籤回報，由工程師判定要不要換料。\n\n第 1、2 步結果回報後再決定。"
+   },
+   {
+    "message": "還是一樣卡，下一步？",
+    "first_text_ms": 621,
+    "reply_ms": 1166,
+    "flags_ms": 1480,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 10,
+      "ttft_ms": 527,
+      "ms": 1155
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 1476,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 762,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "material_thickness_dev",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 8,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      1155
+     ],
+     "ttft_ms": 527.0,
+     "first_text_ms": 621,
+     "reply_ms": 1166,
+     "gate_tail_ms": 313,
+     "total_ms": 1480,
+     "gate_requests": 4
+    },
+    "content": "料厚 1.52mm 跟設定不符的話，就照 SOP-STP-007 修復段落走。\n\n1. 把這捲料標示隔離、退料，換上前一捲或合格的同料號料捲。\n2. 換料前先確認送料機和沖床都已上鎖掛牌，並釋放料架張力與料捲重力，防止料帶回彈。\n3. 換完核對標籤、進料檢驗報告跟實際量到的料厚、硬度是否相符。\n4. 依實際料厚，重新核對整平機輥輪壓下量跟送料長度補償，留下設定紀錄。\n\n滾輪直徑數據還沒回報，先補上才能排除磨耗。厚度規格請工程師確認，不要自行放寬。"
+   },
+   {
+    "message": "現在要怎麼確認修好了？",
+    "first_text_ms": 1488,
+    "reply_ms": 2016,
+    "flags_ms": 2235,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 10,
+      "ttft_ms": 1141,
+      "ms": 2003
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 2231,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 705,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "material_thickness_dev",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 8,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      2002
+     ],
+     "ttft_ms": 1141.3,
+     "first_text_ms": 1487,
+     "reply_ms": 2015,
+     "gate_tail_ms": 219,
+     "total_ms": 2235,
+     "gate_requests": 4
+    },
+    "content": "SOP 沒有寫試車驗收標準，請找工程師確認；我只能給你 SOP-STP-007 有的核對項目。\n\n1. 換料後核對標籤、進料檢驗報告與實測料厚硬度是否相符。\n2. 依實際料厚重新核對整平輥壓下量與送料長度補償，並記錄設定值。\n3. 滾輪直徑、偏擺數據補量回報，才能排除磨耗。\n4. 試車要通電或移動滑塊，由原上鎖人依 LOTO 解除、主管在場，只用寸動，結束後立即停機重新上鎖。\n\n試車條件請工程師確認。\n提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+   },
+   {
+    "message": "LOTO 完成了，下一步要做什麼？",
+    "first_text_ms": 1483,
+    "reply_ms": 2449,
+    "flags_ms": 2449,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 9,
+      "ttft_ms": 1177,
+      "ms": 2432
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 1,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 2446,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 3,
+    "gate_wall_ms": 664,
+    "steps": 3,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "feed_roller_wear",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 8,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      2432
+     ],
+     "ttft_ms": 1176.6,
+     "first_text_ms": 1482,
+     "reply_ms": 2443,
+     "gate_tail_ms": 3,
+     "total_ms": 2449,
+     "gate_requests": 3
+    },
+    "content": "現在驗證的是「送料滾輪磨損／打滑」，機率 1.0；案例 CASE-STP-0001、0004 也都是滾輪磨損，誤差在 15 分鐘內從 0.03 累積到 0.17 mm，跟這次吻合。\n\n1. 目視滾輪表面、料帶路徑，用無絨布擦亮帶處，確認有無油污、粉塵、金屬屑。\n2. 量料帶厚度，距料邊 20 mm 取 5 點，查換料捲紀錄與沖壓力峰值，排除 material_thickness_dev。\n3. 量上下滾輪直徑（左中右各 3 點）與偏擺，看磨耗是否超過 0.05 mm、偏擺是否超過 0.02 mm。\n\n滾輪咬合點不可用手伸入，確認零能量並請主管在場。\n提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+   },
+   {
+    "message": "上下滾輪表面有一條亮帶，接下來呢？",
+    "first_text_ms": 1265,
+    "reply_ms": 2107,
+    "flags_ms": 2222,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 9,
+      "ttft_ms": 1154,
+      "ms": 2097
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 2219,
+      "ms": 2
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 839,
+    "steps": 4,
+    "flagged": 2,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "feed_roller_wear",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 7,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      2096
+     ],
+     "ttft_ms": 1154.5,
+     "first_text_ms": 1265,
+     "reply_ms": 2106,
+     "gate_tail_ms": 114,
+     "total_ms": 2221,
+     "gate_requests": 4
+    },
+    "content": "亮帶符合 SOP 判定的滾輪磨損／打滑模式，接下來量尺寸確認。\n\n1. 量上下滾輪直徑，左中右各 3 點，比對基準值。\n2. 量偏擺與軸承徑向間隙，看是否超過 0.02 mm／0.05 mm。\n3. 檢查左右壓緊力是否差異超過 10%。\n4. 讀 MES 送料長度誤差趨勢（不要送電），確認是否斜坡上升。\n\n數值超過就換滾輪與軸承，扭力 25 N·m；SOP 沒寫的規格請找工程師確認。\n拆軸承前先支撐滾輪，確認零能量並請主管確認。\n提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+   },
+   {
+    "message": "檢查過滾輪了，沒改善",
+    "first_text_ms": 1472,
+    "reply_ms": 2191,
+    "flags_ms": 2272,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 10,
+      "ttft_ms": 1186,
+      "ms": 2176
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 1,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 9,
+      "ms": 1
+     }
+    ],
+    "gate_requests": 4,
+    "gate_wall_ms": 657,
+    "steps": 4,
+    "flagged": 0,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "material_thickness_dev",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 9,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      2175
+     ],
+     "ttft_ms": 1186.4,
+     "first_text_ms": 1472,
+     "reply_ms": 2190,
+     "gate_tail_ms": 81,
+     "total_ms": 2272,
+     "gate_requests": 4
+    },
+    "content": "滾輪檢查無效，那就排除 feed_roller_wear（機率 1.0），改用 SOP-STP-007 驗證 material_thickness_dev（機率 0.0）。理由是送料長度誤差在 15 分鐘內斜坡累積到 0.21 mm，且換料後才有異常，符合料厚／硬度偏差。\n\n1. 先停機上鎖；於問題料捲前、中、後段各取 3 點，用分厘卡量料厚。\n2. 剪試片送品保，量 HR30T 或維氏硬度，比對進料驗收值。\n3. 查換料紀錄與噸位峰值趨勢，看換料後 30 分鐘內是否開始異常、峰值是否有一次階躍達 5%。\n4. 核對整平機輥輪壓下量與該料厚設定表是否相符。\n\n取樣戴防割手套，手不可伸入模口與滾輪夾點。量測若超規，依 SOP 退料換捲。\n提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+   },
+   {
+    "message": "料捲厚度量起來是 1.52 mm，要怎麼判斷？",
+    "first_text_ms": 866,
+    "reply_ms": 1513,
+    "flags_ms": 1627,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 9,
+      "ttft_ms": 499,
+      "ms": 1503
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 4,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 1624,
+      "ms": 2
+     }
+    ],
+    "gate_requests": 5,
+    "gate_wall_ms": 759,
+    "steps": 5,
+    "flagged": 1,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "material_thickness_dev",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 7,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      1503
+     ],
+     "ttft_ms": 498.7,
+     "first_text_ms": 864,
+     "reply_ms": 1513,
+     "gate_tail_ms": 113,
+     "total_ms": 1626,
+     "gate_requests": 5
+    },
+    "content": "1.52 mm 這個數字，SOP 沒寫這支料號的規格公差，我無法判定超規。請先查進料驗收值與料捲標籤上的標稱厚度，再比對。\n\n2. 查料捲標籤標稱厚度與進料檢驗報告，確認 1.52 mm 是否在 ±公差內。\n3. 若標稱不同（例如標 1.0 mm），直接判定 material_thickness_dev，依 SOP 第 11 步隔離退料、換合格料捲。\n4. 若在公差內，再依 SOP 第 7 步量料帶側彎量，看是否超過 1.5 mm/m，改查 coil_camber。\n5. 同步量硬度（HR30T），與驗收值比對。\n\n取樣戴防割手套，手不可伸入模口與滾輪夾點。規格數值 SOP 沒寫，請找工程師確認。\n提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+   },
+   {
+    "message": "還是一樣卡，下一步？",
+    "first_text_ms": 759,
+    "reply_ms": 1809,
+    "flags_ms": 2059,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 11,
+      "ttft_ms": 576,
+      "ms": 1797
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 2,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 9,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 2055,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 5,
+    "gate_wall_ms": 1096,
+    "steps": 5,
+    "flagged": 3,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "pilot_release_timing",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 8,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      1796
+     ],
+     "ttft_ms": 576.4,
+     "first_text_ms": 758,
+     "reply_ms": 1808,
+     "gate_tail_ms": 250,
+     "total_ms": 2059,
+     "gate_requests": 5
+    },
+    "content": "料厚 1.52 mm 若在公差內，material_thickness_dev 也排除，改驗證 pilot_release_timing（導正銷釋放時機）。\n\n1. 關防護門，由原上鎖人依 LOTO-FEED-01 解除，主管在場，全程只准寸動。\n2. 寸動轉滑塊，看導正銷尖端進孔、滾輪放開、沖頭接觸料帶三個時點的曲軸角度。\n3. 從 HMI 讀導正釋放角度設定，比對目前沖速的設定表，差 5° 以上就判本模式。\n4. 拆導正板量導正銷磨耗與導正孔單邊間隙，看有無單向擠壓亮痕。\n5. 送料機單獨送料（料帶架空不進模），連續量 10 次長度誤差，±0.03 mm 內才成立。\n\n手不得進入模區與滾輪夾捲點，確認零能量並請主管確認。數值 SOP 沒寫就找工程師。\n提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+   },
+   {
+    "message": "現在要怎麼確認修好了？",
+    "first_text_ms": 1168,
+    "reply_ms": 2080,
+    "flags_ms": 2324,
+    "llm_calls": 1,
+    "llm": [
+     {
+      "kind": "llm",
+      "name": "agent.reply(stream)",
+      "start_ms": 13,
+      "ttft_ms": 1086,
+      "ms": 2066
+     }
+    ],
+    "tool_rounds": 0,
+    "tools": [
+     {
+      "kind": "tool",
+      "name": "get_workorder",
+      "start_ms": 3,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_sop",
+      "start_ms": 5,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "search_cases",
+      "start_ms": 6,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 7,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 8,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "get_machine_signals",
+      "start_ms": 9,
+      "ms": 2
+     },
+     {
+      "kind": "tool",
+      "name": "get_loto",
+      "start_ms": 11,
+      "ms": 1
+     },
+     {
+      "kind": "tool",
+      "name": "request_supervisor",
+      "start_ms": 2320,
+      "ms": 3
+     }
+    ],
+    "gate_requests": 5,
+    "gate_wall_ms": 1049,
+    "steps": 5,
+    "flagged": 4,
+    "gate_sources": [
+     "jev"
+    ],
+    "hypothesis": "pilot_release_timing",
+    "llm_used": true,
+    "timings": {
+     "prefetch_ms": 10,
+     "llm_calls": 1,
+     "tool_rounds": 0,
+     "llm_ms": [
+      2065
+     ],
+     "ttft_ms": 1086.0,
+     "first_text_ms": 1168,
+     "reply_ms": 2080,
+     "gate_tail_ms": 243,
+     "total_ms": 2323,
+     "gate_requests": 5
+    },
+    "content": "復機驗證這樣做：\n\n1. 依 SOP 完成換銷與角度調整，參數由主管確認。\n2. 重新上鎖並確認零能量，再由原上鎖人依 LOTO-FEED-01 解除。\n3. 送料機單獨送料，連續量 10 次長度誤差，要都在 ±0.03 mm 內。\n4. 寸動看三個時點，滾輪要在沖頭接觸料帶前放開，釋放角度與設定表差 5° 以內。\n5. 關防護門低速試沖，看 MISFEED 不再跳，長度誤差不再斜坡累積。\n\n手不得進入模區與滾輪夾捲點，全程主管在場。數值 SOP 沒寫就找工程師。\n工單結案與 Checklist 請你在介面上操作。\n提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+   }
+  ]
+ },
+ "notes": {
+  "scenario": "feed_jam → IN_REPAIR，6 輪對話（before 1 輪×6、after 2 次×6）；真實 Ollama Cloud deepseek-v4.1-flash ＋ Jev typesafe/jev-1.14",
+  "first_text_ms": "送出到第一個 WS delta；before 的 delta 與完整回覆同時送出",
+  "flags_ms": "handle() 回傳＝wait=true 回應時間（含 J4 安全旗標）",
+  "before": "stream=false、模型預設思考、LLM 平均 2.5 次（工具輪 1.5）、J4 在全文完成後才平行送",
+  "after": "預先取資料、無工具輪、stream=true、think=false、每步寫完立即送 J4、旗標以 safety_gate 事件補送",
+  "rerun": "cd prototype/backend && .venv/bin/python -m sentinel.agent.latency_bench --label after --turns 6 --runs 2"
+ }
+}

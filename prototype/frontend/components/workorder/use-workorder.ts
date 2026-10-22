@@ -3,14 +3,20 @@
 import { useCallback, useState } from "react";
 import { api } from "@/lib/api";
 import { useAsync, useThrottled } from "@/lib/hooks";
-import type { AgentMessage, SafetyFlag, WorkOrderDetail } from "@/lib/types";
+import type { AgentGate, AgentMessage, SafetyFlag, WorkOrderDetail } from "@/lib/types";
 import { useWs } from "@/lib/ws";
 import { toast } from "../toast";
 
 export interface Streaming {
   message_id: string;
+  /** 目前為止的全文（後端已逐行過復電過濾） */
   text: string;
+  /** 串流期間先到的 J4 結果（safety_gate done=false） */
+  flags?: SafetyFlag[];
+  gate?: AgentGate | null;
 }
+
+type GateUpdate = { flags: SafetyFlag[]; gate: AgentGate };
 
 /** 工單詳情＋即時更新（workorders、ai、agent:{id} 三個頻道） */
 export function useWorkorder(id: string) {
@@ -38,7 +44,8 @@ export function useWorkorder(id: string) {
     }
     // agent:{id}
     if (m.type === "delta") {
-      setStreaming({ message_id: String(d.message_id), text: String(d.text ?? "") });
+      const mid = String(d.message_id);
+      setStreaming((s) => ({ message_id: mid, text: String(d.text ?? ""), flags: s?.message_id === mid ? s.flags : undefined, gate: s?.message_id === mid ? s.gate : { status: "pending", checked: [] } }));
     } else if (m.type === "message") {
       const msg = m.data as AgentMessage;
       setData((w) => {
@@ -49,9 +56,15 @@ export function useWorkorder(id: string) {
       });
       setStreaming((s) => (s && String(s.message_id) === String(msg.id) ? null : s));
     } else if (m.type === "safety_gate") {
-      const flags = d.flags as SafetyFlag[];
+      const mid = String(d.message_id);
+      // done 缺省（舊格式、主管確認）視為把關完成
+      const up: GateUpdate = {
+        flags: (d.flags as SafetyFlag[]) ?? [],
+        gate: (d.gate as AgentGate | undefined) ?? { status: d.done === false ? "pending" : "done" },
+      };
+      setStreaming((s) => (s && s.message_id === mid ? { ...s, ...up } : s));
       setData((w) =>
-        w ? { ...w, agent_messages: (w.agent_messages ?? []).map((x) => (String(x.id) === String(d.message_id) ? { ...x, safety_flags: flags } : x)) } : w,
+        w ? { ...w, agent_messages: (w.agent_messages ?? []).map((x) => (String(x.id) === mid ? { ...x, safety_flags: up.flags, gate: up.gate } : x)) } : w,
       );
     }
   });

@@ -131,12 +131,12 @@
     "n_calls": 40,
     "n_errors": 0,
     "root_cause_top1": {
-      "k": 32,
+      "k": 36,
       "n": 37,
-      "rate": 0.865,
+      "rate": 0.973,
       "ci95": [
-        0.72,
-        0.941
+        0.862,
+        0.995
       ]
     },
     "root_cause_top3": {
@@ -151,12 +151,12 @@
     "root_cause_by_line": {
       "assembly": {
         "n": 9,
-        "top1": 0.889,
+        "top1": 1.0,
         "top3": 1.0
       },
       "stamping": {
         "n": 19,
-        "top1": 0.789,
+        "top1": 0.947,
         "top3": 1.0
       },
       "welding": {
@@ -172,11 +172,11 @@
       },
       "typical": {
         "n": 27,
-        "top1": 0.889
+        "top1": 1.0
       },
       "wrong_first": {
         "n": 8,
-        "top1": 0.75
+        "top1": 0.875
       }
     },
     "category": {
@@ -247,26 +247,26 @@
     },
     "latency_ms": {
       "n": 40,
-      "mean": 517.4,
-      "p50": 462.92,
-      "p95": 659.38,
-      "max": 1426.9
+      "mean": 1076.0,
+      "p50": 459.92,
+      "p95": 1204.79,
+      "max": 12701.1
     },
     "cost_usd": {
-      "total": 0.005542,
-      "per_call": 0.00013855
+      "total": 0.005695,
+      "per_call": 0.00014239
     }
   },
   "jev_all_runs": {
     "n_calls": 120,
     "n_errors": 0,
     "root_cause_top1": {
-      "k": 96,
+      "k": 108,
       "n": 111,
-      "rate": 0.865,
+      "rate": 0.973,
       "ci95": [
-        0.789,
-        0.916
+        0.924,
+        0.991
       ]
     },
     "root_cause_top3": {
@@ -281,12 +281,12 @@
     "root_cause_by_line": {
       "assembly": {
         "n": 27,
-        "top1": 0.889,
+        "top1": 1.0,
         "top3": 1.0
       },
       "stamping": {
         "n": 57,
-        "top1": 0.789,
+        "top1": 0.947,
         "top3": 1.0
       },
       "welding": {
@@ -302,11 +302,11 @@
       },
       "typical": {
         "n": 81,
-        "top1": 0.889
+        "top1": 1.0
       },
       "wrong_first": {
         "n": 24,
-        "top1": 0.75
+        "top1": 0.875
       }
     },
     "category": {
@@ -377,35 +377,35 @@
     },
     "latency_ms": {
       "n": 120,
-      "mean": 490.5,
-      "p50": 458.18,
-      "p95": 631.02,
-      "max": 1426.9
+      "mean": 867.7,
+      "p50": 451.8,
+      "p95": 617.11,
+      "max": 12701.1
     },
     "cost_usd": {
-      "total": 0.016626,
-      "per_call": 0.00013855
+      "total": 0.017086,
+      "per_call": 0.00014239
     }
   },
   "llm": {
     "n_calls": 40,
     "n_errors": 0,
     "root_cause_top1": {
-      "k": 32,
+      "k": 37,
       "n": 37,
-      "rate": 0.865,
+      "rate": 1.0,
       "ci95": [
-        0.72,
-        0.941
+        0.906,
+        1
       ]
     },
     "root_cause_top3": {
-      "k": 35,
+      "k": 37,
       "n": 37,
-      "rate": 0.946,
+      "rate": 1.0,
       "ci95": [
-        0.823,
-        0.985
+        0.906,
+        1
       ]
     },
     "root_cause_by_line": {
@@ -416,12 +416,12 @@
       },
       "stamping": {
         "n": 19,
-        "top1": 0.789,
-        "top3": 0.895
+        "top1": 1.0,
+        "top3": 1.0
       },
       "welding": {
         "n": 9,
-        "top1": 0.889,
+        "top1": 1.0,
         "top3": 1.0
       }
     },
@@ -432,29 +432,29 @@
       },
       "typical": {
         "n": 27,
-        "top1": 0.889
+        "top1": 1.0
       },
       "wrong_first": {
         "n": 8,
-        "top1": 0.75
+        "top1": 1.0
       }
     },
     "category": {
+      "k": 24,
+      "n": 40,
+      "rate": 0.6,
+      "ci95": [
+        0.446,
+        0.737
+      ]
+    },
+    "category_lenient": {
       "k": 26,
       "n": 40,
       "rate": 0.65,
       "ci95": [
         0.495,
         0.779
-      ]
-    },
-    "category_lenient": {
-      "k": 28,
-      "n": 40,
-      "rate": 0.7,
-      "ci95": [
-        0.546,
-        0.819
       ]
     },
     "severity_raw": {
@@ -492,13 +492,13 @@
     },
     "false_alarm": {
       "threshold": 0.5,
-      "tp": 0,
+      "tp": 1,
       "fp": 0,
-      "fn": 2,
+      "fn": 1,
       "tn": 38,
       "n_false_alarm_cases": 2,
-      "precision": null,
-      "recall": 0.0
+      "precision": 1.0,
+      "recall": 0.5
     },
     "false_alarm_gate": {
       "rule": "p_false_alarm > 0.9 且非 S3 → log_only",
@@ -507,10 +507,10 @@
     },
     "latency_ms": {
       "n": 40,
-      "mean": 6555.8,
-      "p50": 1851.38,
-      "p95": 46624.76,
-      "max": 88796.5
+      "mean": 1751.4,
+      "p50": 1258.3,
+      "p95": 5132.05,
+      "max": 5597.8
     },
     "cost_usd": {
       "reported": null,
@@ -519,22 +519,22 @@
         "input": 0.14,
         "output": 0.28
       },
-      "tokens_in": 105691,
-      "tokens_out": 8695,
-      "estimated_total": 0.017231,
-      "estimated_per_call": 0.00043078
+      "tokens_in": 108047,
+      "tokens_out": 8565,
+      "estimated_total": 0.017525,
+      "estimated_per_call": 0.00043812
     },
     "parse_errors": []
   },
   "llm_model": "deepseek-v4.1-flash",
   "llm_repeats": 1,
   "retrieval_majority_top1": {
-    "k": 20,
+    "k": 34,
     "n": 37,
-    "rate": 0.541,
+    "rate": 0.919,
     "ci95": [
-      0.384,
-      0.69
+      0.787,
+      0.972
     ]
   }
 }

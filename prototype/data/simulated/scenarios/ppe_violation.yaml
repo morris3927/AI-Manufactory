@@ -3,9 +3,10 @@ title: 場景 1：組裝線未戴安全帽
 duration_s: 15
 cameras:
   CAM-ASM-01:
-    video: assets/videos/assembly/ppe_violation_01.mp4
-    synthetic: ppe               # 合成畫面：第二位作業員 5 秒後脫下安全帽
-# 沒有 YOLO 權重（models/ppe.pt）時，依劇本時間重播的偵測結果（標示為 scripted）
+    video: assets/videos/assembly/ppe_violation_01.mp4   # scripts/build_demo_footage.py 產生：Pexels 照片，5 秒時淡入有人未戴安全帽的畫面
+    synthetic: ppe               # 影片不存在時的合成畫面：第二位作業員 5 秒後脫下安全帽
+# 明確退路：只有在影片不存在或沒有 YOLO 權重（models/ppe.pt）時，才依劇本時間重播這些偵測結果（/health 顯示 scripted）。
+# 影片存在時一律由真實 YOLO 偵測（/health 顯示 yolo）。
 sim_detections:
   - camera: CAM-ASM-01
     t_from: 0

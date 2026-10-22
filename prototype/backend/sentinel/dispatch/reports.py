@@ -45,6 +45,31 @@ def criteria_met(c: dict | None) -> list[str]:
     return out
 
 
+EVENT_LABEL = {
+    "person_in_zone": "人員進入危險區", "fire": "火災或煙霧", "weld_smoke": "銲接工位外冒煙",
+    "air_low": "廠區氣壓不足、多台機台停止", "feed_jam": "送料卡料", "ppe_violation": "未配戴防護具",
+}
+FACT_LABEL = {"light_curtain": "光幕狀態", "person_in_zone": "危險區有人", "zone": "區域",
+              "machines_stopped": "停止機台", "p_smoke_outside": "工位外煙霧機率"}
+
+
+def _narrative(inc, line_name: str | None, machine_name: str | None) -> str:
+    """依事件本身寫經過；傷亡情形系統無從得知，留給現場人員補寫。"""
+    what = EVENT_LABEL.get(inc.type, inc.type)
+    where = " ".join(x for x in (line_name, machine_name) if x)
+    facts = []
+    for k, v in (inc.facts or {}).items():
+        if k in FACT_LABEL:
+            if isinstance(v, dict):
+                v = "、".join(f"{a} {b}" for a, b in v.items())
+            elif isinstance(v, bool):
+                v = "是" if v else "否"
+            facts.append(f"{FACT_LABEL[k]}：{v}")
+    head = f"{inc.opened_at.strftime('%H:%M:%S')}，{where}偵測到「{what}」（規則 {inc.rule_id}）。"
+    body = f"系統紀錄：{'；'.join(facts)}。" if facts else ""
+    return head + body + "人員受傷經過：（請現場人員補寫）"
+
+
 class ReportService:
     def __init__(self, rt: "Runtime"):
         self.rt = rt
@@ -86,10 +111,9 @@ class ReportService:
         draft = {
             "data_label": "模擬資料",
             "事業單位": "（模擬）Sentinel 示範工廠",
-            "發生時間": inc.opened_at.isoformat(),
+            "發生時間": inc.opened_at.strftime("%Y 年 %m 月 %d 日 %H:%M:%S"),
             "發生地點": f"{line.name if line else inc.line} {inc.machine_id or inc.camera_id or ''} {m.name if m else ''}".strip(),
-            "災害經過": "；".join(list(rt.windows.timeline.get(inc.machine_id or inc.camera_id or "", []))[-8:])
-                     or f"{inc.type}（{inc.rule_id}）",
+            "災害經過": _narrative(inc, line.name if line else inc.line, m.name if m else None),
             "傷亡概況": f"死亡 {c.get('deaths', 0)} 人、罹災 {c.get('injured', 0)} 人、需住院 {c.get('hospitalized', 0)} 人（待現場確認）",
             "符合通報條件": met,
             "通報對象": "勞動檢查機構",

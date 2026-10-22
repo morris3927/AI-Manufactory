@@ -1,0 +1,102 @@
+{
+  "case_id": "CASE-STP-WB20261021-0001",
+  "data_label": "模擬資料",
+  "synthetic": true,
+  "generator": {
+    "source": "writeback",
+    "workorder_id": "WO-0001"
+  },
+  "line": "stamping",
+  "machine_type": "servo_roll_feeder",
+  "machine_id": "STP-L1-FD02",
+  "opened_at": "2026-10-21T11:49:33.829290+08:00",
+  "closed_at": "2026-10-21T11:50:55.365680+08:00",
+  "case_type": "writeback",
+  "trigger": {
+    "source": "fused",
+    "event_type": "feed_jam",
+    "rule_severity": "S2",
+    "rule_id": "R-STP-FEEDJAM"
+  },
+  "context": {
+    "days_since_pm": 41,
+    "timeline": [
+      "11:50:35 影像判定卡料機率 0.96",
+      "11:50:37 影像判定卡料機率 0.97",
+      "11:50:39 影像判定卡料機率 0.97",
+      "11:50:41 影像判定卡料機率 0.96",
+      "11:50:43 影像判定卡料機率 0.96",
+      "11:50:45 影像判定卡料機率 0.96",
+      "11:50:47 影像判定卡料機率 0.97",
+      "11:50:49 影像判定卡料機率 0.96",
+      "11:50:52 影像判定卡料機率 0.96",
+      "11:50:54 影像判定卡料機率 0.96"
+    ]
+  },
+  "log_signals": [
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "feed_rate_before",
+      "value": 42.3008
+    },
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "feed_rate_now",
+      "value": 0
+    },
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "seconds_since_drop",
+      "value": 29.01
+    },
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "alarm_code",
+      "value": "MISFEED"
+    },
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "feed_length_error_mm_max_60s",
+      "value": 0.21
+    },
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "feed_length_error_ramp_up",
+      "value": true
+    },
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "jev_available",
+      "value": true
+    },
+    {
+      "t": "2026-10-21T11:49:33.829290+08:00",
+      "signal": "detect_latency_s",
+      "value": 1.01
+    }
+  ],
+  "technician": "P-STP-TC1",
+  "technician_report_raw": "原因：送料下滾輪表面亮帶加油污，清潔後仍偏短，量測直徑磨耗超過基準。處置：依 SOP-STP-012 更換上下滾輪並調整壓緊彈簧。結果：送料長度誤差恢復 0.02 mm，試沖 20 模導正孔正常，已恢復生產。",
+  "technician_report_normalized": "原因：送料下滾輪表面亮帶加油污，清潔後仍偏短，量測直徑磨耗超過基準。處置：依 SOP-STP-012 更換上下滾輪並調整壓緊彈簧。結果：送料長度誤差恢復 0.02 mm，試沖 20 模導正孔正常，已恢復生產。",
+  "first_hypothesis": {
+    "failure_mode_id": "feed_roller_wear",
+    "by": "jev",
+    "p": 0.54
+  },
+  "final_root_cause": "feed_roller_wear",
+  "hypothesis_correct": true,
+  "related_failure_mode_ids": [
+    "feed_roller_wear"
+  ],
+  "lessons": "現場確認根因為 feed_roller_wear",
+  "sop_used": [
+    "SOP-STP-012",
+    "SOP-STP-041"
+  ],
+  "review_status": "approved",
+  "reviewed_by": [
+    "P-STP-SV1"
+  ],
+  "review_note": "現場主管核准（Demo）",
+  "reviewed_at": "2026-10-21T11:50:59.220919+08:00"
+}

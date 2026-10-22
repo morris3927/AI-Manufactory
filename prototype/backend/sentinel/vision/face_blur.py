@@ -8,12 +8,13 @@ import numpy as np
 
 
 @lru_cache(maxsize=1)
-def _cascade() -> cv2.CascadeClassifier | None:
-    try:
-        path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"  # type: ignore[attr-defined]
-    except AttributeError:
+def _cascade():
+    """Haar 人臉偵測器；OpenCV 5 主套件已移除 CascadeClassifier（移到 contrib），沒有時改用頭部區域模糊。"""
+    cls = getattr(cv2, "CascadeClassifier", None)
+    data = getattr(cv2, "data", None)
+    if cls is None or data is None or not hasattr(data, "haarcascades"):
         return None
-    c = cv2.CascadeClassifier(path)
+    c = cls(data.haarcascades + "haarcascade_frontalface_default.xml")
     return None if c.empty() else c
 
 

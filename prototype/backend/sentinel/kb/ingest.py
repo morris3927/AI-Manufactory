@@ -12,11 +12,14 @@ import argparse
 import json
 import logging
 import re
+import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+from .facts import case_structured_text, signal_facts, signal_keys
 
 log = logging.getLogger(__name__)
 
@@ -254,6 +257,8 @@ def chunk_case(doc: dict) -> list[dict]:
         or ([doc.get("final_root_cause")] if doc.get("final_root_cause") else []),
         "case_type": doc.get("case_type"), "trigger_type": (doc.get("trigger") or {}).get("event_type"),
         "hypothesis_correct": doc.get("hypothesis_correct"), "machine_id": doc.get("machine_id"),
+        "outcome": doc.get("outcome"),
+        "signals": sorted(signal_keys(signal_facts(doc.get("log_signals") or [], doc.get("machine_id")))),
     }
     meta["machine_type"] = doc.get("machine_type") if isinstance(doc.get("machine_type"), str) else \
         "|".join(_as_list(doc.get("machine_type")))
@@ -265,8 +270,12 @@ def chunk_case(doc: dict) -> list[dict]:
     detail = (f"{cid} 處置：{actions}。回報：{doc.get('technician_report_normalized') or doc.get('technician_report_raw', '')}。"
               f"使用 SOP：{'、'.join(_as_list(doc.get('sop_used')))}；停機 {doc.get('downtime_min', '-')} 分鐘；"
               f"結果 {doc.get('outcome', '-')}")
+    short = split_text(summary, 800)[0]
+    # 檢索用文字：與事件查詢同一種結構化寫法（kb/facts.py）＋摘要；Jev 看到的仍是摘要
+    index = case_structured_text(doc) + "。" + short
     return [
-        {"chunk_id": f"{cid}#summary", "text": split_text(summary, 800)[0], "metadata": meta | {"chunk_kind": "case_summary"}},
+        {"chunk_id": f"{cid}#summary", "text": short, "embed_text": index,
+         "metadata": meta | {"chunk_kind": "case_summary", "index_text": index}},
         {"chunk_id": f"{cid}#detail", "text": split_text(detail, 800)[0], "metadata": meta | {"chunk_kind": "case_detail"}},
     ]
 
@@ -349,7 +358,7 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     s = load_settings()
     root = args.knowledge or s.path("knowledge")
-    store = VectorStore(s.path("chroma"), get_embedder(s.kb.embedding, s.kb.embedding_model))
+    store = VectorStore(s.path("chroma"), get_embedder(s.kb.embedding, s.kb.embedding_model), index_text=s.kb.index_text)
     rep = ingest(root, store, allow_draft=args.allow_draft or s.kb.allow_draft, rebuild=args.rebuild)
     print(f"知識庫：{root}")
     print(f"入庫：{rep.accepted or '無'}；docs={store.count('docs')} cases={store.count('cases')}")
@@ -358,6 +367,15 @@ def main(argv: list[str] | None = None) -> int:
         for doc_id, reason in rep.rejected[:50]:
             print(f"  - {doc_id}：{reason}")
     print(f"LOTO 檢查表（不進向量庫）：{len(load_lotos(root))} 份")
+    # 建完再讀一次確認（曾發生向量庫看起來建好、但 cases 是空的 → Jev 沒有相似案例，信心度掉到 0.6）
+    ncases, built = store.count("cases"), store.built_with("cases")
+    if ncases == 0 or not rep.accepted.get("case"):
+        print(f"錯誤：cases collection 是空的（{s.path('chroma')}），請檢查 knowledge/cases 與守門規則", file=sys.stderr)
+        return 1
+    if built != store.embedder.name:
+        print(f"錯誤：cases 用 {built} 建立，現在是 {store.embedder.name}；請加 --rebuild", file=sys.stderr)
+        return 1
+    print(f"embedder：{store.embedder.name}（index_text={store.index_text}）")
     return 0
 
 

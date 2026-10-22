@@ -41,11 +41,11 @@ def write_config(variant: str, keyframe_interval_s: float) -> Path:
     data = yaml.safe_load((BACKEND_DIR / "config.yaml").read_text(encoding="utf-8"))
     d = E2E / variant
     d.mkdir(parents=True, exist_ok=True)
-    data["paths"].update({"db": str(d / "sentinel.db"), "chroma": str(C.CACHE / "chroma"),
+    kb = C.eval_kb()                          # 與 E1–E3 同一份評估用向量庫（正式 embedder）
+    data["paths"].update({"db": str(d / "sentinel.db"), "chroma": str(C._store_path(kb.store.embedder.name)),
                           "keyframes": str(d / "keyframes"), "drafts": str(d / "drafts")})
     data["vision"]["keyframe_interval_s"] = keyframe_interval_s
     data["kb"]["allow_draft"] = True
-    data["kb"]["embedding"] = "hash"          # 與 eval/.cache/chroma 一致；避免另一個 venv 變動中途換 embedder
     p = d / "config.yaml"
     p.write_text(yaml.safe_dump(data, allow_unicode=True, sort_keys=False), encoding="utf-8")
     return p

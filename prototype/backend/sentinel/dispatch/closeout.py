@@ -31,9 +31,12 @@ async def submit_report(rt: "Runtime", wo_id: str, person_id: str, text: str,
     if wo.status != WoStatus.PENDING_VERIFY:
         raise TransitionError(f"結案回報需要先完成 Checklist（目前 {wo.status}）")
     fms = rt.kb.failure_modes_for(inc.line)
+    # 技術員在下拉選單選的根因也算回報內容（否則只寫處置的回報會被 J5 判「缺少實際故障原因」）
+    fm = fms.get(root_cause) if root_cause else None
+    gate_text = f"實際故障原因（技術員確認）：{fm.get('label') or root_cause}。\n{text}" if fm else text
     check = None
     try:
-        check = await gate.writeback(rt.jev, text, inc.line, fms, threshold=rt.settings.thresholds.writeback_complete,
+        check = await gate.writeback(rt.jev, gate_text, inc.line, fms, threshold=rt.settings.thresholds.writeback_complete,
                                      trace_id=inc.trace_id)
     except JevUnavailable as e:
         rt.audit.record("jev_unavailable", actor="jev", trace_id=inc.trace_id, purpose="writeback", error=str(e))

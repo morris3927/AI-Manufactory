@@ -1,6 +1,7 @@
 """測試用的假 Jev／LLM（固定值，結果可重現）。走真的 JevClient／LlmClient，只換掉 HTTP 傳輸層。"""
 from __future__ import annotations
 
+import asyncio
 import json
 from typing import Callable
 
@@ -48,6 +49,8 @@ class FakeJev:
             raise httpx.ReadTimeout("fake timeout", request=request)
         body = json.loads(request.content)
         self.calls.append(body)
+        if getattr(self, "log", None) is not None and "step" in body["state"]:
+            self.log.append(f"jev:{body['state']['step'][:6]}")
         answers = {k: self.answer(k, spec, body["state"]) for k, spec in body["questions"].items()}
         return httpx.Response(200, json={"id": "gen-dec-fake", "model": "typesafe/jev-1.14-20261014",
                                          "provider": "TypeSafe", "answers": answers,
@@ -101,16 +104,44 @@ AGENT_TEXT = ("目前先驗證送料滾輪磨損（機率 82%）。\n"
 
 
 class FakeLlm:
-    def __init__(self, fail: bool = False):
-        self.fail = fail
-        self.calls: list[dict] = []
+    """stream=false 回一個 JSON；stream=true 回 NDJSON，每 chunk_chars 個字一段、段與段之間 delay_s（模擬逐字產生）。
+    tool_first=True：有給 tools 時第一輪先回 tool_calls（測工具輪上限）。log：與 FakeJev 共用的時序紀錄。"""
 
-    def __call__(self, request: httpx.Request) -> httpx.Response:
+    def __init__(self, fail: bool = False, *, chunk_chars: int = 8, delay_s: float = 0.0, tool_first: bool = False):
+        self.fail = fail
+        self.chunk_chars, self.delay_s, self.tool_first = chunk_chars, delay_s, tool_first
+        self.calls: list[dict] = []
+        self.log: list[str] | None = None
+
+    async def __call__(self, request: httpx.Request) -> httpx.Response:
         if self.fail:
             raise httpx.ConnectError("fake down", request=request)
         body = json.loads(request.content)
         self.calls.append(body)
         is_agent = body["messages"][0]["content"].startswith("你是 Sentinel AI 的維修助理")
         content = AGENT_TEXT if is_agent else "送料機 FD02 卡料，最可能是送料滾輪磨損（82%）。請先依 LOTO 上鎖後檢查滾輪。"
-        return httpx.Response(200, json={"model": "deepseek-v4.1-flash", "message": {"role": "assistant", "content": content},
-                                         "prompt_eval_count": 50, "eval_count": 40, "done": True})
+        tool_calls = []
+        if self.tool_first and body.get("tools") and not any(m["role"] == "tool" for m in body["messages"]):
+            content, tool_calls = "", [{"function": {"name": "get_sop", "arguments": {
+                "failure_mode_id": "feed_roller_wear", "phase": "verify"}}}]
+        if not body.get("stream"):
+            return httpx.Response(200, json={"model": "deepseek-v4.1-flash",
+                                             "message": {"role": "assistant", "content": content, "tool_calls": tool_calls},
+                                             "prompt_eval_count": 50, "eval_count": 40, "done": True})
+        n = self.chunk_chars
+
+        async def gen():
+            for i in range(0, len(content), n):
+                if self.delay_s:
+                    await asyncio.sleep(self.delay_s)
+                if self.log is not None:
+                    self.log.append(f"llm:{i // n}")
+                yield (json.dumps({"model": "deepseek-v4.1-flash", "message": {"role": "assistant",
+                                   "content": content[i:i + n]}, "done": False}, ensure_ascii=False) + "\n").encode()
+            last = {"model": "deepseek-v4.1-flash", "message": {"role": "assistant", "content": "",
+                                                                 "tool_calls": tool_calls},
+                    "prompt_eval_count": 50, "eval_count": 40, "done": True}
+            if self.log is not None:
+                self.log.append("llm:done")
+            yield (json.dumps(last, ensure_ascii=False) + "\n").encode()
+        return httpx.Response(200, content=gen(), headers={"content-type": "application/x-ndjson"})

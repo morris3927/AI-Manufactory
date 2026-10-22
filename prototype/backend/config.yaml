@@ -34,7 +34,14 @@ llm:
 
 kb:
   embedding: auto                           # auto：有裝 sentence-transformers 用 embedding_model，否則 hash（只給測試）
-  embedding_model: intfloat/multilingual-e5-small   # 多語（中英混用）；bge-m3 下載卡在 1 GB，先用 e5-small（約 470 MB）
+  embedding_model: BAAI/bge-m3              # eval R1（retrieval_eval）：hit@1 1.00、MRR 1.00，查詢 P95 約 120 ms（M3 CPU）
+  index_text: structured                    # 案例向量＝結構化事實（與事件查詢同寫法）＋摘要；summary＝舊版
+  retrieval:                                # kb.retrieve.RetrievalCfg；混合檢索（向量＋BM25，RRF）＋metadata 加減分
+    mode: hybrid                            #   legacy＝舊版（Chroma top-20＋同機台／同事件硬排序，只供對照）
+    boost_trigger: 1.0                      #   同觸發事件類型
+    boost_machine_type: 0.5                 #   同機型加分（不再硬篩：同根因常出現在其他機型）
+    boost_signals: 1.0                      #   訊號名稱 Jaccard
+    penalty_non_root_cause: 1.0             #   最終根因 none／new 的案例減分（事件像誤報時不減）
   allow_draft: false
 
 vision:
@@ -86,6 +93,7 @@ escalation:
 
 workflow:
   require_permit: true                      # 設備類：ACKED → 申請許可 → 班長核准 → LOTO → 維修（設施規則第57條）
+  scripted_casualty: false        # Demo：傷亡由主管在畫面上標記（測試另行開啟）
 
 mes:
   tick_s: 1.0

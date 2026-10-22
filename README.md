@@ -42,6 +42,13 @@ prototype/       原型程式碼
   python3.13 -m venv .venv && source .venv/bin/activate
   ```
 
+## 知識庫 embedding（離線）
+
+- 相似案例檢索用 `BAAI/bge-m3`（`prototype/backend/config.yaml` 的 `kb.embedding_model`）＋混合檢索（向量＋BM25＋metadata，見 `prototype/eval/results/summary.md` R1／U1）。資源不夠時可改 `intfloat/multilingual-e5-small`（未調參驗證集上差距很小）。
+- 第一次：`cd prototype && make model`（下載約 2.3 GB 到 `~/.cache/huggingface`），再 `make kb` 重建向量庫。`make kb` 建完會檢查 cases collection，空的或 embedder 不符就以非 0 結束。
+- 模型已在快取時，`make dev`／`make dev-demo`／`make kb` 會自動加 `HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1`，**Demo 當天不需要連 Hugging Face Hub**（啟動時會印出「已快取，離線啟動」）。
+- 換 embedding 模型後一定要重跑 `make kb`；`GET /api/health` 的 `warnings`／`kb.warnings` 會提示 cases 為空或建庫 embedder 與現在不同。
+
 ## 訓練主機
 
 - 實驗室內網主機：48 核心、251 GB RAM、**RTX 2080 Ti 11 GB × 2**、CUDA 12.4

@@ -40,7 +40,9 @@ def create_app(runtime_factory=None, *, start_kwargs: dict | None = None) -> Fas
             await rt.stop()
 
     app = FastAPI(title="Sentinel AI — sentinel-core", version="0.1.0", lifespan=lifespan)
-    app.add_middleware(CORSMiddleware, allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    # 本機任何埠＋區網 IP（Demo 用手機連筆電開 /m/{id}）；正式環境再收斂
+    app.add_middleware(CORSMiddleware,
+                       allow_origin_regex=r"https?://(localhost|127\.0\.0\.1|10(\.\d+){3}|192\.168(\.\d+){2}|172\.(1[6-9]|2\d|3[01])(\.\d+){2})(:\d+)?",
                        allow_methods=["*"], allow_headers=["*"], allow_credentials=True)
     @app.middleware("http")
     async def judge_read_only(request: Request, call_next):
@@ -64,19 +66,23 @@ def create_app(runtime_factory=None, *, start_kwargs: dict | None = None) -> Fas
         det = rt.vision.ppe_detector
         mode = det.name if det is not None else ("yolo" if YoloPpeDetector.available(weights) else "scripted")
         store = rt.kb.store
+        kb = rt.kb.health()
         return {
             "ok": True,
+            "warnings": kb["warnings"],
             "detector_mode": mode,
             "yolo": {"weights": s.vision.yolo_weights, "weights_exist": weights.exists(),
                      "classes": getattr(det, "class_names", None) or None},
             "embedding_model": store.embedder.name if store else None,
-            "kb": {"docs": store.count("docs") if store else 0, "cases": store.count("cases") if store else 0,
-                   "allow_draft": s.kb.allow_draft},
+            "kb": kb | {"allow_draft": s.kb.allow_draft},
             "jev": {"enabled": rt.jev.enabled, "model": s.jev.model},
             "llm": {"enabled": rt.llm.enabled, "model": s.llm.model},
             "notifier": rt.notifier.name,
             "workflow": {"require_permit": rt.workorders.require_permit},
             "scenario": rt.engine.scenario.id if rt.engine.scenario else None,
+            # 每支攝影機實際播的是影片（公開照片合成的模擬監視畫面）還是程式合成畫面（找不到影片時的退路）
+            "cameras": {cid: {"video": c.video, "source": "video" if c.synthetic is None else f"synthetic:{c.synthetic}",
+                              "online": c.online} for cid, c in rt.cameras.items()},
         }
 
     return app

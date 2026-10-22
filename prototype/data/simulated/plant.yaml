@@ -17,8 +17,8 @@ lines:
       - id: CAM-STP-01
         machine_id: STP-L1-FD02
         rois:
-          feed_inlet: [420, 310, 860, 620]
-          danger_zone: [300, 200, 1000, 700]
+          feed_inlet: [260, 60, 1280, 680]       # 對應 assets/videos/stamping/*.mp4（Air Feeder.jpg 合成畫面：銅帶由右進模）
+          danger_zone: [200, 40, 1280, 690]
         detectors: [motion, jev_feed]
         motion: {roi: feed_inlet, on: 0.4, off: 0.1, alpha: 0.3}
         default_video: assets/videos/stamping/normal_01.mp4
@@ -50,7 +50,7 @@ lines:
       - id: CAM-WLD-01
         machine_id: WLD-L1-RC01
         rois:
-          weld_cell: [380, 160, 900, 600]      # 工位內的火花與銲煙屬正常（01_初選問題處理.md C1）
+          weld_cell: [470, 90, 1280, 680]      # 工位內的火花與銲煙屬正常（01_初選問題處理.md C1）；對應 welding/*.mp4 機器人與電弧
         detectors: [jev_smoke]                 # Jev 看圖：工位外煙霧／火光
         default_video: assets/videos/welding/normal_01.mp4
       - id: CAM-WLD-02

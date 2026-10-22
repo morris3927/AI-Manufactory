@@ -138,6 +138,8 @@ class VirtualCamera(CameraSource):
         self.jam_at_s = 10.0
         self._cap: cv2.VideoCapture | None = None
         self._frame_no = 0
+        self._file_fps: float = fps
+        self._file_pos = 0
         self._latest: np.ndarray | None = None
         self._play_task: asyncio.Task | None = None
         self.set_source(cam.default_video, synthetic=None)
@@ -152,7 +154,7 @@ class VirtualCamera(CameraSource):
         self._frame_no = 0
         if jam_at_s is not None:
             self.jam_at_s = jam_at_s
-        self.synthetic = synthetic
+        self.synthetic = None                              # None ＝ 正在播影片檔；有值 ＝ 程式合成畫面（退路）
         self.online = True
         if video:                                          # 有影片就播影片；synthetic 只是找不到影片時的樣式
             path = Path(video) if Path(video).is_absolute() else self.videos_root / video
@@ -160,6 +162,8 @@ class VirtualCamera(CameraSource):
                 cap = cv2.VideoCapture(str(path))
                 if cap.isOpened():
                     self._cap = cap
+                    self._file_fps = cap.get(cv2.CAP_PROP_FPS) or self.fps
+                    self._file_pos = 0
                     return
                 log.warning("%s 影片無法開啟：%s", self.camera_id, path)
                 self.online = False
@@ -187,9 +191,23 @@ class VirtualCamera(CameraSource):
                 "online": self.online, "fps": self.fps, "t": round(self.video_t, 2)}
 
     # ── 讀幀 ───────────────────────────────────────────────────
+    def _read_synced(self) -> tuple[bool, np.ndarray | None]:
+        """讀下一幀並跳過多餘的檔案幀，讓影片時間跟模擬時間一致（逐步重播 fps=2 時，15 fps 的檔案每次前進 7.5 幀）。"""
+        cap = self._cap
+        assert cap is not None
+        target = int(round(self._frame_no * self._file_fps / self.fps))   # 這一幀對應的檔案幀號
+        while self._file_pos < target:
+            if not cap.grab():
+                return False, None
+            self._file_pos += 1
+        ok, frame = cap.read()
+        if ok:
+            self._file_pos += 1
+        return ok, frame
+
     def next_frame(self) -> np.ndarray | None:
         if self._cap is not None:
-            ok, frame = self._cap.read()
+            ok, frame = self._read_synced()
             if not ok:
                 if self.then:
                     self.set_source(self.then, loop=True)
@@ -197,7 +215,8 @@ class VirtualCamera(CameraSource):
                 if self.loop:
                     self._cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
                     self._frame_no = 0
-                    ok, frame = self._cap.read()
+                    self._file_pos = 0
+                    ok, frame = self._read_synced()
                 if not ok:
                     self.online = False
                     return None
