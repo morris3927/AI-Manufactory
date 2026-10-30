@@ -81,9 +81,9 @@ TRANSITIONS: dict[tuple[WoStatus, WoStatus], Rule] = {
     (S.ACKED, S.PERMIT_REQUESTED): Rule("human", EQUIP, label="申請作業許可"),
     (S.PERMIT_REQUESTED, S.PERMIT_APPROVED): Rule("human", EQUIP, min_role="leader", label="作業許可核准"),
     (S.PERMIT_REQUESTED, S.ACKED): Rule("human", EQUIP, min_role="leader", label="作業許可退回"),
-    (S.PERMIT_APPROVED, S.LOTO_DONE): Rule("human", EQUIP, label="LOTO 勾完"),
-    (S.ACKED, S.LOTO_DONE): Rule("human", EQUIP, label="LOTO 勾完（不需許可的舊流程）"),
-    (S.LOTO_DONE, S.IN_REPAIR): Rule("human", EQUIP, label="LOTO 完成，開始維修"),
+    (S.PERMIT_APPROVED, S.LOTO_DONE): Rule("human", EQUIP, label="上鎖掛牌勾完"),
+    (S.ACKED, S.LOTO_DONE): Rule("human", EQUIP, label="上鎖掛牌勾完（不需許可的舊流程）"),
+    (S.LOTO_DONE, S.IN_REPAIR): Rule("human", EQUIP, label="上鎖完成，開始維修"),
     (S.IN_REPAIR, S.PENDING_VERIFY): Rule("human", EQUIP, label="Checklist 勾完"),
     (S.PENDING_VERIFY, S.CLOSED): Rule("human", EQUIP, label="回報通過"),
     (S.ACKED, S.CLOSED): Rule("human", SAFETY, label="安全類結案"),
@@ -202,7 +202,7 @@ class WorkorderService:
             if rule.categories is not None and wo.category not in rule.categories:
                 raise TransitionError(f"{wo_id}：{wo.category} 類工單不允許 {frm} → {to}")
             if (frm, to) == (S.ACKED, S.LOTO_DONE) and self.require_permit:
-                raise TransitionError("必須先申請並由班長核准作業許可，才能開始上鎖（設施規則第57條作業許可程序）")
+                raise TransitionError("必須先申請並由現場主管核准作業許可，才能開始上鎖（設施規則第57條作業許可程序）")
             if rule.actor != "any" and rule.actor != kind:
                 raise PermissionDenied(f"{frm} → {to} 只能由 {'人員' if rule.actor == 'human' else '系統'} 執行")
             if kind == "human" and rule.min_role:
@@ -253,12 +253,12 @@ class WorkorderService:
         wo = self.get(wo_id)
         self._require_person(person_id)
         if wo.category not in EQUIP:
-            raise TransitionError("安全類工單不需要 LOTO")
+            raise TransitionError("安全類工單不需要上鎖掛牌")
         allowed = {S.PERMIT_APPROVED} if self.require_permit else {S.ACKED, S.PERMIT_APPROVED}
         if wo.status not in allowed:
             if wo.status in (S.ACKED, S.PERMIT_REQUESTED) and self.require_permit:
-                raise TransitionError("作業許可尚未核准：請先申請作業許可，由班長核准後才能開始上鎖（設施規則第57條）")
-            raise TransitionError(f"目前狀態（{wo.status}）不能勾選 LOTO")
+                raise TransitionError("作業許可尚未核准：請先申請作業許可，由現場主管核准後才能開始上鎖（設施規則第57條）")
+            raise TransitionError(f"目前狀態（{wo.status}）不能勾選上鎖掛牌")
         if step_no not in steps:
             raise TransitionError(f"LOTO {loto_id} 沒有第 {step_no} 步")
         if step_no not in self.loto_checked(wo_id):
@@ -269,7 +269,7 @@ class WorkorderService:
         done = set(steps) <= self.loto_checked(wo_id)
         if done:
             await self.transition(wo_id, S.LOTO_DONE, actor=person_id, reason=f"{loto_id} 全部勾選完成")
-            wo = await self.transition(wo_id, S.IN_REPAIR, actor=person_id, reason="LOTO 完成並驗證零能量，開始維修")
+            wo = await self.transition(wo_id, S.IN_REPAIR, actor=person_id, reason="上鎖掛牌完成、確認機台不會動，開始維修")
         else:
             await self.publish(wo, self.incident(wo), "loto_progress",
                                {"checked": sorted(self.loto_checked(wo_id)), "total": len(steps)})
@@ -292,7 +292,7 @@ class WorkorderService:
             self.audit.record("permit_requested", actor=person_id, trace_id=trace, workorder_id=wo_id,
                               loto_id=loto_id, isolation_points=isolation_points or [])
             return await self.transition(wo_id, S.PERMIT_REQUESTED, actor=person_id,
-                                         reason=f"申請作業許可（隔離點依 {loto_id or 'LOTO 檢查表'}）")
+                                         reason=f"申請作業許可（隔離點依 {loto_id or '上鎖掛牌檢查表'}）")
         if wo.status != S.PERMIT_REQUESTED:
             raise TransitionError(f"沒有待核准的作業許可（目前 {wo.status}）")
         self._require_person(person_id, "leader")

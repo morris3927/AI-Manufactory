@@ -144,7 +144,7 @@ class DispatchService:
         if diag and diag.sop_ids:
             lines.append("SOP：" + "、".join(diag.sop_ids))
         if inc.category == "safety":
-            lines.append("處置：請班長到場確認並提醒配戴 PPE（提醒，不懲罰）")
+            lines.append("處置：請現場主管到場確認並提醒配戴 PPE（提醒，不懲罰）")
         if ai_note:
             lines.append(f"註：{ai_note}")
         lines.extend(extra or [])

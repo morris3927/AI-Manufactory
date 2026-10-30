@@ -9,6 +9,7 @@ from ..db.models import AgentMessage, Incident, Override, Workorder
 from ..schemas.events import Event, Topic
 from ..dispatch.workorder import PermissionDenied, TransitionError, WoStatus
 from ..eval import metrics
+from ..jev import gate
 from ..schemas.api import DemoSettingsReq, OverrideReq
 from ..sim.roster import ROLE_RANK
 from .deps import get_rt, resolve_actor
@@ -31,7 +32,7 @@ async def override(body: OverrideReq, request: Request) -> dict:
     actor_id = resolve_actor(request, body.person_id, inc.line)
     actor = rt.roster.person(actor_id)
     if actor is None or ROLE_RANK.get(actor.role, 0) < ROLE_RANK["leader"]:
-        raise HTTPException(403, "只有班長以上可以覆寫")
+        raise HTTPException(403, "只有現場主管以上可以覆寫")
     field = "final_severity" if body.field == "severity" else body.field
     old = None
     try:
@@ -61,7 +62,7 @@ async def override(body: OverrideReq, request: Request) -> dict:
             await rt.workorders.assign(wo.id, person_id=target.id, role=target.role, actor=actor_id,
                                        reason=f"主管改派：{body.reason}",
                                        ack_timeout_s=rt.settings.escalation.timeout_for(inc.final_severity))
-        elif field == "safety_ack":                    # J4 標紅步驟由主管確認；不改工單狀態
+        elif field == "safety_ack":                    # J4「需主管確認」級步驟由主管確認；不改工單狀態
             if ROLE_RANK.get(actor.role, 0) < ROLE_RANK["supervisor"]:
                 raise HTTPException(403, "安全把關需要組長（supervisor）以上確認")
             old = await ack_safety(rt, wo, str(body.new), actor_id, body.reason)
@@ -88,8 +89,11 @@ async def ack_safety(rt, wo, message_id: str, actor_id: str, reason: str):
         if m is None or m.workorder_id != wo.id:
             raise HTTPException(404, f"找不到訊息 {message_id}")
         old = [dict(f) for f in m.safety_flags or []]
+        # 只確認「需主管確認」級的步驟；「注意」級本來就不用確認，保持原樣（舊資料沒有 level → 視為 supervisor）
+        if not any(gate.flag_level(f) == "supervisor" for f in old):
+            raise HTTPException(409, "這則回覆沒有需要主管確認的步驟")
         m.safety_flags = [dict(f, supervisor_requested=False, acked_by=actor_id, ack_reason=reason)
-                          for f in m.safety_flags or []]
+                          if gate.flag_level(f) == "supervisor" else dict(f) for f in old]
         s.add(m)
         s.commit()
         flags = m.safety_flags

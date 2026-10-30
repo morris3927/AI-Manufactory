@@ -48,11 +48,19 @@ class SafetyGate(BaseModel):
     energized: float = 0.0
     flagged: bool
     reasons: list[str] = []
+    level: str = "none"               # none／lockout（需先完成上鎖掛牌）／caution（只提醒技術員）／supervisor（需主管到場確認）
+    needs_lockout: bool = False       # 上鎖掛牌還沒完成，而且這一步要碰機台（needs_loto 超過門檻）
     loto_satisfied: bool = False      # 工單已 LOTO_DONE：needs_loto 只記錄，不單獨要求主管確認
     source: str = "jev"               # jev／keyword（Jev 不可用時的保守退路）／energized_test
 
 
 DEFAULT_GATE_THRESHOLDS = {"needs_loto": 0.3, "enters_danger_zone": 0.3, "high_voltage": 0.3, "energized": 0.3}
+# 兩級把關：有列在這裡的題目，機率 ≥ 此值才升到 supervisor，介於 gate 門檻與此值之間只是 caution；
+# 沒列的題目（high_voltage、energized）一超過 gate 門檻就是 supervisor。
+# 上鎖還沒完成時的 needs_loto 另外標成「需先完成上鎖掛牌」（needs_lockout），不找主管：
+# 資訊不鎖，要碰機台的步驟標出來，提醒先去上鎖。
+DEFAULT_SUPERVISOR_THRESHOLDS = {"enters_danger_zone": 0.7}
+LEVELS = ("none", "lockout", "caution", "supervisor")
 
 
 def gate_reasons(p: dict[str, float], thresholds: dict[str, float], loto_done: bool) -> list[str]:
@@ -61,25 +69,60 @@ def gate_reasons(p: dict[str, float], thresholds: dict[str, float], loto_done: b
     return [k for k, v in p.items() if k in th and v > th[k] and not (k == "needs_loto" and loto_done)]
 
 
+def gate_level(p: dict[str, float], reasons: list[str], supervisor: dict[str, float] | None = None, *,
+               source: str = "jev") -> str:
+    """被標記步驟的等級（reasons 由 gate_reasons 算出，上鎖完成後已不含 needs_loto）。
+
+    - 沒有 reasons → none
+    - 只有 needs_loto（上鎖前、要碰機台）→ lockout；needs_loto 不會讓步驟升到 supervisor
+    - 不是 Jev 判的（keyword 保守退路、energized_test 通電測試改寫）→ supervisor
+    - 任一 reason 沒有主管門檻（high_voltage、energized、上鎖前的 needs_loto）→ supervisor
+    - 有主管門檻的題目（enters_danger_zone）機率 ≥ 主管門檻 → supervisor
+    - 其餘（只落在 [gate 門檻, 主管門檻) 之間）→ caution
+    """
+    if not reasons:
+        return "none"
+    if source != "jev":
+        return "supervisor"
+    rs = [k for k in reasons if k != "needs_loto"]
+    if not rs:
+        return "lockout"
+    sup = DEFAULT_SUPERVISOR_THRESHOLDS | (supervisor or {})
+    if any(k not in sup or p.get(k, 0.0) >= sup[k] for k in rs):
+        return "supervisor"
+    return "caution"
+
+
+def flag_level(flag: dict) -> str:
+    """已存檔旗標的等級；舊資料沒有 level 欄位 → 一律視為 supervisor（保守）。"""
+    lv = flag.get("level")
+    return lv if lv in ("lockout", "caution", "supervisor") else "supervisor"
+
+
 async def step(jev: JevClient, step_text: str, machine_type: str | None, *, thresholds: dict[str, float] | None = None,
-               loto_done: bool = False, trace_id: str | None = None) -> SafetyGate:
-    """J4：任一題超過門檻 → flagged（門檻由 eval/gate_set.yaml 實測校準，危險步驟召回率必須 1.0）。"""
+               supervisor_thresholds: dict[str, float] | None = None, loto_done: bool = False,
+               trace_id: str | None = None) -> SafetyGate:
+    """J4：任一題超過門檻 → flagged（門檻由 eval/gate_set.yaml 實測校準，危險步驟召回率必須 1.0）；
+    再依 gate_level 分成 caution／supervisor。"""
     res = await jev.ask({"machine_type": machine_type, "step": step_text}, Q.SAFETY_GATE, purpose="gate.step",
                         trace_id=trace_id, questions_ver=Q.GATE_VER)
     p = {k: res.noul(k) for k in Q.SAFETY_GATE}
     reasons = gate_reasons(p, thresholds or {}, loto_done)
-    return SafetyGate(step=step_text, **p, flagged=bool(reasons), reasons=reasons, loto_satisfied=loto_done)
+    return SafetyGate(step=step_text, **p, flagged=bool(reasons), reasons=reasons,
+                      level=gate_level(p, reasons, supervisor_thresholds), needs_lockout="needs_loto" in reasons,
+                      loto_satisfied=loto_done)
 
 
 async def steps(jev: JevClient, step_texts: list[str], machine_type: str | None, *,
-                thresholds: dict[str, float] | None = None, loto_done: bool = False,
-                trace_id: str | None = None) -> list[SafetyGate | BaseException]:
+                thresholds: dict[str, float] | None = None, supervisor_thresholds: dict[str, float] | None = None,
+                loto_done: bool = False, trace_id: str | None = None) -> list[SafetyGate | BaseException]:
     """多個步驟同時送 J4（asyncio.gather，共用 keep-alive 連線）；順序與輸入相同，失敗的位置是例外物件。
 
     刻意每步一個請求、不把多步塞進同一個 Jev state：門檻是用「單一步驟」的題目在 gate_set 上校準的
     （recall 1.00），合併題目會改變輸入分佈、需要重新校準。平行送出的總時間 ≈ 最慢的一個請求。
     """
-    return list(await asyncio.gather(*(step(jev, t, machine_type, thresholds=thresholds, loto_done=loto_done,
+    return list(await asyncio.gather(*(step(jev, t, machine_type, thresholds=thresholds,
+                                            supervisor_thresholds=supervisor_thresholds, loto_done=loto_done,
                                             trace_id=trace_id) for t in step_texts), return_exceptions=True))
 
 

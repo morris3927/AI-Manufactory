@@ -74,7 +74,7 @@ DEFAULT_LOTO = LotoChecklist(
         LotoStep(no=2, action="以正常程序停機，停止送料", check="目視"),
         LotoStep(no=3, action="切斷主電源並逐一隔離所有能量源（電、氣、油壓、重力）", check="每項勾選"),
         LotoStep(no=4, action="每位作業人員在隔離點掛上個人鎖與標籤", check="鎖號登記"),
-        LotoStep(no=5, action="洩除殘壓並驗證零能量：按起動鈕確認無動作後歸回 OFF", check="兩人確認"),
+        LotoStep(no=5, action="洩除殘壓並確認機台不會動：按起動鈕確認無動作後歸回 OFF", check="兩人確認"),
     ],
     release=["清點工具、恢復護圍", "確認人員離開危險區", "各人取下自己的鎖（不得代取）", "通知受影響人員後試運轉"],
 )

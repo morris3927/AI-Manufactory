@@ -6,8 +6,11 @@ from dataclasses import dataclass, field
 
 from ..dispatch.workorder import PRE_REPAIR, WoStatus
 
-# ── 1／2. LOTO 先行、作業許可 ───────────────────────────────────
-SAFE_PHASES = {"summary", "prepare", "isolate"}           # LOTO 完成前只能看這些段落
+# ── 1／2. 作業許可、上鎖掛牌 ─────────────────────────────────
+# 資訊不鎖：接單後就能查 SOP 全文、機台數據、相似案例；要碰機台的步驟由 J4 標成「需先完成上鎖掛牌」。
+# 工單狀態流程（許可 → 上鎖掛牌 → 維修）不變，由 dispatch/workorder.py 強制。
+PRE_ACK = {"OPEN", "ASSIGNED", "ESCALATED"}               # 還沒接單：只給上鎖清單與準備（固定模板）
+SAFE_PHASES = {"summary", "prepare", "isolate"}           # 接單前只能看這些段落
 RESTRICTED_PHASES = {"inspect", "repair", "verify", "restore"}
 PRE_LOTO_TOOLS = {"get_workorder", "get_loto", "get_sop"}   # get_sop 只開放 summary／prepare／isolate
 ALL_TOOLS = {"get_workorder", "get_loto", "get_machine_signals", "get_sop", "search_cases", "record_step",
@@ -23,24 +26,30 @@ def restricted(status: str, require_permit: bool = True) -> bool:
     return WoStatus(status) in PRE_REPAIR
 
 
+def before_ack(status: str) -> bool:
+    """True：還沒接單（只回固定模板，不呼叫 LLM）。"""
+    return str(WoStatus(status).value) in PRE_ACK
+
+
 def allowed_tools(status: str, require_permit: bool = True) -> set[str]:
-    return set(PRE_LOTO_TOOLS) if restricted(status, require_permit) else set(ALL_TOOLS)
+    return set(PRE_LOTO_TOOLS) if before_ack(status) else set(ALL_TOOLS)
 
 
 def check_tool(name: str, args: dict, status: str, require_permit: bool = True) -> None:
     if name not in allowed_tools(status, require_permit):
-        raise ToolDenied(f"工具 {name} 在 {status} 狀態不開放（LOTO 先行）")
-    if name == "get_sop" and restricted(status, require_permit) and args.get("phase") not in SAFE_PHASES:
-        raise ToolDenied(f"LOTO 完成前不提供 SOP 的 {args.get('phase')} 段落")
+        raise ToolDenied(f"工具 {name} 在 {status} 狀態不開放（請先接單）")
+    if name == "get_sop" and before_ack(status) and args.get("phase") not in SAFE_PHASES:
+        raise ToolDenied(f"接單前不提供 SOP 的 {args.get('phase')} 段落")
 
 
 # ── 4. 不能叫人復電 ─────────────────────────────────────────────
 # 復電原則：由原上鎖人親自取下自己的鎖（參考 OSHA 29 CFR 1910.147(e)(3)；電路作業依設施規則第254條
 # 確認無感電之虞後才送電）；測試／定位依 OSHA 29 CFR 1910.147(f)(1)。兩種情況分開處理：
 #   a) 測試／定位：SOP 允許的「暫時通電量測、寸動」→ 改寫成固定句型並要求主管在場（標 requires_supervisor）
-#   b) 恢復生產：叫人復電、解除上鎖、試沖、連續生產 → 整步刪除，結尾加一行提醒（不是步驟）
-# AI 永遠不宣告「可以復電」。
-CLOSING_REMINDER = "提醒：完工後的復電與恢復生產，一律由原上鎖人依 LOTO 解除程序執行；AI 不會宣告可以復電。"
+#   b) 恢復生產：叫人復電、解除上鎖、試沖、連續生產 → 整步刪除，結尾加一行固定的復機步驟（不是 AI 的步驟）
+# AI 永遠不宣告「可以復電」。維修模式的回覆一律附上復機步驟，讓現場拿到的是從頭到尾做得完的流程；
+# 用現場聽得懂的話寫，不用 LOTO、零能量這類術語。
+CLOSING_REMINDER = "完工復機（由當初上鎖的人自己做）：確定機台周圍沒人、工具都拿出來 → 拆下自己的鎖和停止牌 → 重新啟動機台。"
 ENERGIZED_TEMPLATE = "此步需要通電：須主管在場，由原上鎖人依 {loto_id} 測試／定位程序暫時解除，量測完立即重新上鎖"
 ENERGIZED_MARK = "此步需要通電"
 # 否定：否定詞（＋助動詞／虛字，或「為了…／對…」這類目的、對象片語）緊接著動詞 → 這是禁止句，不是指示
@@ -142,17 +151,20 @@ def _filter_line(line: str, template: str, res: FilterResult) -> str | None:
     return joined
 
 
-def filter_restore(text: str, loto_id: str = "LOTO") -> FilterResult:
+def filter_restore(text: str, loto_id: str = "LOTO", remind: bool = False) -> FilterResult:
+    """remind=True（維修模式）：沒刪到東西也在結尾附上復機步驟。"""
     res = FilterResult(text="")
     template = ENERGIZED_TEMPLATE.format(loto_id=loto_id)
     out_lines = [o for line in text.split("\n") if (o := _filter_line(line, template, res)) is not None]
-    if res.removed:                                        # 刪掉步驟後重新編號，最後加提醒（不是步驟）
+    out_lines = [line for line in out_lines if line.strip() != CLOSING_REMINDER]   # LLM 自己抄了提醒 → 只留結尾一行
+    if res.removed:                                        # 刪掉步驟後重新編號
         n = 0
         for i, line in enumerate(out_lines):
             m = _NUMBERED.match(line)
             if m:
                 n += 1
                 out_lines[i] = f"{m.group(1)}{n}{m.group(3)}{m.group(4)}"
+    if res.removed or remind:                              # 最後加復機步驟（不是 AI 的步驟）
         while out_lines and not out_lines[-1].strip():
             out_lines.pop()
         out_lines.append(CLOSING_REMINDER)
@@ -167,8 +179,9 @@ class StreamFilter:
     最終存檔的內容仍以 filter_restore(全文) 為準。
     """
 
-    def __init__(self, loto_id: str = "LOTO"):
+    def __init__(self, loto_id: str = "LOTO", remind: bool = False):
         self.template = ENERGIZED_TEMPLATE.format(loto_id=loto_id)
+        self.remind = remind
         self.res = FilterResult(text="")
         self.buf = ""
         self.n = 0
@@ -180,7 +193,7 @@ class StreamFilter:
 
     def _line(self, line: str) -> str | None:
         o = _filter_line(line, self.template, self.res)
-        if o is None:
+        if o is None or o.strip() == CLOSING_REMINDER:     # 提醒只在 finish() 加一次
             return None
         m = _NUMBERED.match(o)
         if m:
@@ -202,10 +215,29 @@ class StreamFilter:
             line, self.buf = self.buf, ""
             if (o := self._line(line)) is not None:
                 out.append(o)
-        if self.res.removed:
+        if self.res.removed or self.remind:
             self.out.append(CLOSING_REMINDER)
             out.append(CLOSING_REMINDER)
         return out
+
+
+# ── 3a. 只看不碰的步驟：不送 J4 ─────────────────────────────────
+# 「讀警報碼」「看數據趨勢」「看攝影機畫面」這類步驟，Jev 常因為「機台要通電才看得到」而標成帶電作業，
+# 現場看了會覺得矛盾。動詞是看／讀／查、對象是面板／畫面／紀錄，而且完全沒有接觸或進入機台的字眼 → 直接放行。
+# 寧可少放行：只要出現任何接觸、進入、量測、通電字眼就照常送 J4（gate_set 的危險步驟都不會符合，見測試）。
+_OBS_VERB = re.compile(r"看|讀|查|調閱|確認|比對|記下|檢視|觀察")
+_OBS_OBJ = re.compile(r"操作面板|面板|螢幕|HMI|攝影機|監視|畫面|紀錄|記錄|趨勢|數據|報表|警報碼|讀值|MES|Kanban|電流")
+_ACTION = re.compile(r"伸|手|身體|拆|摸|清|打開|開啟|端子|電控箱|配電|接線|寸動|試沖|試送|"
+                     r"送電|通電|復電|上鎖|解除|量測|三用電表|電錶|調整|更換|鎖緊|進入|護圍|靠近|取出|取料|爬|踩")
+_PLACE = re.compile(r"模具|模內|模區|模仁|滾輪表面|咬合|夾捲")   # 看攝影機畫面時，這些只是在描述畫面裡的位置
+_CAMERA = re.compile(r"攝影機|監視")
+
+
+def observation_only(text: str) -> bool:
+    """只看面板／畫面／紀錄、完全不碰機台的步驟（True → 不需要安全把關）。"""
+    if not (_OBS_VERB.search(text) and _OBS_OBJ.search(text)) or _ACTION.search(text):
+        return False
+    return bool(_CAMERA.search(text)) or not _PLACE.search(text)
 
 
 # ── 3. 安全把關：取出步驟 ───────────────────────────────────────

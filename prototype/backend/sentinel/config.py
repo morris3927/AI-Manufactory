@@ -95,6 +95,7 @@ class Thresholds(BaseModel):
     safety_gate_p: float = 0.3
     gate: dict[str, float] = Field(default_factory=lambda: {"needs_loto": 0.3, "enters_danger_zone": 0.3,
                                                             "high_voltage": 0.3, "energized": 0.3})
+    gate_supervisor: dict[str, float] = Field(default_factory=lambda: {"enters_danger_zone": 0.8})
     writeback_complete: float = 0.7
     sop_top1: float = 0.6
     sop_low: float = 0.3

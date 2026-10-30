@@ -4,7 +4,8 @@
 1. 作業許可先行：PERMIT_APPROVED 前只顯示作業許可與 LOTO 預覽（要隔離哪些能量源）。
 2. LOTO 先行：LOTO 勾完（IN_REPAIR）前只顯示 LOTO 檢查表與準備／隔離段落（固定模板，不呼叫 LLM）；
    get_sop(phase=inspect|repair) 等工具在 IN_REPAIR 之前不開放。
-3. 安全把關：回覆中的每個步驟送 jev.gate.step；超過門檻（config thresholds.gate）→ 標紅並自動 request_supervisor。
+3. 安全把關：回覆中的每個步驟送 jev.gate.step；超過門檻（config thresholds.gate）→ 標記，再分兩級：
+   supervisor（標紅、自動 request_supervisor、等主管確認）／caution（黃底提醒，不需任何人確認，只記稽核）。
 4. 不能叫人復電：輸出過濾「可以復電」「解除上鎖」等指示。
 5. 不能改變工單狀態：沒有這類工具，WorkorderService 也會拒絕 agent 身分的轉換。
 
@@ -94,7 +95,9 @@ class StepCheck(BaseModel):
     high_voltage: float = 0
     energized: float = 0
     reasons: list[str] = Field(default_factory=list)
-    requires_supervisor: bool = False
+    level: str = "none"                # none／lockout／caution／supervisor（gate.gate_level）
+    needs_lockout: bool = False        # 上鎖掛牌還沒完成，而且這一步要碰機台
+    requires_supervisor: bool = False  # = level == "supervisor"
     source: str = "jev"
 
 
@@ -132,16 +135,18 @@ class RepairAgent:
 
         if wo.category == "safety":
             reply = AgentReply(workorder_id=workorder_id, phase="safety_only", content=(
-                "這是工安類事件：請班長到場確認人員狀況並提醒配戴 PPE。"
+                "這是工安類事件：請現場主管到場確認人員狀況並提醒配戴 PPE。"
                 "依規定，工安事件由現場主管處理，維修助理不提供排除方法。"))
-        elif guards.restricted(wo.status, ctx.require_permit):
+        elif guards.before_ack(wo.status):
             reply = await self._loto_reply(tools, wo.status)
         else:
             reply = await self._repair_reply(tools, inc, user_message, turn)
 
         reply.timings = {**turn.timings, **reply.timings}
         # 4. 不能叫人復電（所有回覆都要過濾；串流時每行已先過濾，存檔內容以全文過濾為準）
-        fr = guards.filter_restore(reply.content, loto_id)
+        #    上鎖完成後的維修回覆，結尾一律附上復機步驟（由當初上鎖的人做）；上鎖前還談不上復機
+        repair_mode = wo.category != "safety" and not guards.restricted(wo.status, ctx.require_permit)
+        fr = guards.filter_restore(reply.content, loto_id, remind=repair_mode)
         reply.content = fr.text
         reply.restore_filtered, reply.energized_rewritten = fr.removed, fr.rewritten
         if fr.removed:
@@ -180,21 +185,21 @@ class RepairAgent:
         return self.ctx.db.all(select(AgentMessage).where(AgentMessage.workorder_id == workorder_id)
                                .order_by(col(AgentMessage.id)))
 
-    # ── 1. LOTO 先行（固定模板，不呼叫 LLM）─────────────────────
+    # ── 1. 接單前（固定模板，不呼叫 LLM）：作業許可與上鎖清單預覽 ─────
     async def _loto_reply(self, tools: ToolBox, status: str) -> AgentReply:
         loto = await tools.call("get_loto")
         wo_info = await tools.call("get_workorder")
-        lines = ["依職業安全衛生設施規則第 57 條，檢查或維修前要先核准作業許可，再依許可完成上鎖掛牌（LOTO）。"]
+        lines = ["依職業安全衛生設施規則第 57 條，檢查或維修前要先核准作業許可，再依許可完成上鎖掛牌。"]
         pre_permit = status in ("OPEN", "ASSIGNED", "ESCALATED", "ACKED", "PERMIT_REQUESTED") and self.ctx.require_permit
         if status in ("OPEN", "ASSIGNED", "ESCALATED"):
             lines.append("請先在工單按「接單」。")
         if pre_permit:
-            lines.append("請先申請作業許可，由班長核准後才能開始上鎖。" if status != "PERMIT_REQUESTED"
-                         else "作業許可已申請，等待班長核准；核准前請勿開始隔離作業。")
+            lines.append("請先申請作業許可，由現場主管核准後才能開始上鎖。" if status != "PERMIT_REQUESTED"
+                         else "作業許可已申請，等待現場主管核准；核准前請勿開始隔離作業。")
             lines.append(f"作業許可預覽：依 {loto['loto_id']} 隔離以下能量源（核准後再逐項執行）：")
             for e in loto.get("energy_sources") or []:
                 lines.append(f"- {e.get('id', '')} {e.get('type', '')}：{e.get('device', '')}（{e.get('method', '')}）")
-        lines.append(f"LOTO 檢查表 {loto['loto_id']}（{'預覽，許可核准後' if pre_permit else '請'}逐項勾選）：")
+        lines.append(f"上鎖掛牌檢查表 {loto['loto_id']}（{'預覽，許可核准後' if pre_permit else '請'}逐項勾選）：")
         for s in loto["steps"]:
             mark = "☑" if s["checked"] else "☐"
             lines.append(f"{mark} {s['no']}. {s['action']}" + (f"（確認：{s['check']}）" if s.get("check") else ""))
@@ -206,7 +211,7 @@ class RepairAgent:
         if prep:
             lines.append("SOP 準備與隔離段落：")
             lines.extend(prep)
-        lines.append("LOTO 全部勾選並驗證零能量後（IN_REPAIR），我才會提供檢查與維修步驟。")
+        lines.append("接單後我就可以陪你排查不用碰機台的部分；要碰機台的步驟，請在上鎖掛牌完成、確認機台不會動之後再做。")
         return AgentReply(workorder_id=tools.wo_id, phase="loto", content="\n".join(lines))
 
     # ── 5. 動態排查（程式決定查什麼，LLM 只負責寫回覆）─────────
@@ -240,6 +245,7 @@ class RepairAgent:
                    for s in ("feed_rate", "feed_length_error_mm", "motor_current_a")] if inc.machine_id else []
         loto = await tools.call("get_loto")
         context = {"workorder": info, "current_hypothesis": current, "rejected_hypotheses": rejected,
+                   "lockout_done": not guards.restricted(tools.status()),
                    "loto": {"loto_id": loto["loto_id"], "all_checked": all(s["checked"] for s in loto["steps"]),
                             "energy_sources": [e.get("id") for e in loto.get("energy_sources") or []]},
                    "sop": [{"sop_id": c["sop_id"], "phase": c["phase"], "text": c["text"]} for c in sop_chunks],
@@ -276,7 +282,7 @@ class RepairAgent:
         turn.timings.update(llm_calls=0, tool_rounds=0, llm_ms=[], ttft_ms=None)
         for i in range(rounds + 1):
             offer = schemas_for(allowed) if i < rounds else None
-            sf = guards.StreamFilter(turn.loto_id)
+            sf = guards.StreamFilter(turn.loto_id, remind=not guards.restricted(tools.status()))   # 上鎖後才附復機
             res: LlmResult | None = None
             async for item in ctx.llm.stream_chat(messages, tools=offer, purpose="agent.reply", trace_id=trace_id,
                                                   options=ctx.llm_options, think=ctx.llm_think):
@@ -318,30 +324,48 @@ class RepairAgent:
         """單一步驟的 J4（門檻來自 config thresholds.gate）；Jev 不可用 → 關鍵字保守退路。"""
         ctx = self.ctx
         m = ctx.plant.machines.get(inc.machine_id or "")
-        th = ctx.thresholds.gate
+        th, sup = ctx.thresholds.gate, ctx.thresholds.gate_supervisor
         loto_done = not guards.restricted(tools.status())          # ≥ LOTO_DONE：needs_loto 已滿足
+        if guards.observation_only(text):                           # 只看面板／畫面／紀錄：不碰機台，不送 J4
+            return StepCheck(text=text, flagged=False, source="observation")
         if guards.ENERGIZED_MARK in text:                          # 測試／定位改寫過的步驟：一定要主管在場
-            return StepCheck(text=text, flagged=True, energized=1.0, reasons=["energized_test"],
-                             requires_supervisor=True, source="energized_test")
+            return StepCheck(text=text, flagged=True, energized=1.0, reasons=["energized_test"], level="supervisor",
+                             requires_supervisor=True, needs_lockout=not loto_done, source="energized_test")
         try:
-            g = await gate.step(ctx.jev, text, m.type if m else None, thresholds=th, loto_done=loto_done,
-                                trace_id=inc.trace_id)
+            g = await gate.step(ctx.jev, text, m.type if m else None, thresholds=th, supervisor_thresholds=sup,
+                                loto_done=loto_done, trace_id=inc.trace_id)
             return StepCheck(text=text, flagged=g.flagged, needs_loto=g.needs_loto,
                              enters_danger_zone=g.enters_danger_zone, high_voltage=g.high_voltage,
-                             energized=g.energized, reasons=g.reasons, requires_supervisor=g.flagged)
-        except JevUnavailable:
+                             energized=g.energized, reasons=g.reasons, level=g.level,
+                             needs_lockout=g.needs_lockout, requires_supervisor=g.level == "supervisor")
+        except JevUnavailable:                                     # 關鍵字退路分不出輕重 → 一律需主管確認
             p = guards.keyword_gate(text)
             reasons = gate.gate_reasons(p, th, loto_done)
-            return StepCheck(text=text, flagged=bool(reasons), reasons=reasons, requires_supervisor=bool(reasons),
+            level = gate.gate_level(p, reasons, sup, source="keyword")
+            return StepCheck(text=text, flagged=bool(reasons), reasons=reasons, level=level,
+                             needs_lockout="needs_loto" in reasons, requires_supervisor=level == "supervisor",
                              source="keyword", **p)
 
     async def _gate(self, reply: AgentReply, tools: ToolBox, turn: "_Turn", steps: list[str]) -> None:
         reply.steps = [await turn.gate_result(st) for st in steps]
-        flagged = [s for s in reply.steps if s.flagged]
-        if flagged:
+        sup = [s for s in reply.steps if s.flagged and s.level == "supervisor"]
+        caution = [s for s in reply.steps if s.flagged and s.level == "caution"]
+        lockout = [s for s in reply.steps if s.flagged and s.needs_lockout]
+        if sup or caution or lockout:
             reply.safety_flags.append("j4_flagged")
+        if lockout:                              # 上鎖前要碰機台的步驟：提醒先上鎖，不找主管
+            reply.safety_flags.append("j4_lockout")
+        if caution:                              # 注意級：不找主管，只留稽核
+            reply.safety_flags.append("j4_caution")
+            ctx = self.ctx
+            ctx.audit.record("safety_gate_caution", actor=f"agent:{tools.wo_id}", trace_id=turn.inc.trace_id,
+                             workorder_id=tools.wo_id,
+                             steps=[{"step": s.text, "reasons": s.reasons,
+                                     "probs": {k: getattr(s, k) for k in s.reasons if hasattr(s, k)}} for s in caution])
+        if sup:
+            reply.safety_flags.append("j4_supervisor")
             reply.supervisor_requested = True
-            reasons = "；".join(f"「{s.text[:40]}」" for s in flagged[:3])
+            reasons = "；".join(f"「{s.text[:40]}」" for s in sup[:3])
             await tools.call("request_supervisor", {"reason": f"維修步驟涉及危險操作，請主管確認：{reasons}"})
         await turn.gate_done(reply.steps)
 
@@ -365,10 +389,13 @@ def flag_dicts(steps: list[StepCheck]) -> list[dict]:
             continue
         probs = {"needs_loto": st.needs_loto, "enters_danger_zone": st.enters_danger_zone,
                  "high_voltage": st.high_voltage, "energized": st.energized}
+        level = st.level if st.level in ("lockout", "caution", "supervisor") else "supervisor"   # 被標記卻沒等級 → 保守
+        sup = level == "supervisor"
         flags.append({"step_index": i, "step_text": st.text, "probs": probs,
                       "max_p": max(probs[k] for k in st.reasons if k in probs) if any(k in probs for k in st.reasons)
                       else 1.0,
-                      "reasons": st.reasons, "requires_supervisor": True, "supervisor_requested": True,
+                      "reasons": st.reasons, "level": level, "needs_lockout": st.needs_lockout,
+                      "requires_supervisor": sup, "supervisor_requested": sup,
                       "source": st.source})
     return flags
 

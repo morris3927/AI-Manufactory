@@ -224,7 +224,7 @@ def test_route_access_reassign(roster):
     # 技術員都不在廠 → 往上一級班長
     roster.db.add(AccessRecord(person_id="P-STP-TC3", ts=START - timedelta(minutes=1), direction="out"))
     p = route(inc("equipment", "S2"), roster, START)
-    assert p.assignee_role == "leader" and any("改派班長" in n for n in p.notes)
+    assert p.assignee_role == "leader" and any("改派現場主管" in n for n in p.notes)
 
 
 def test_next_role():
@@ -466,3 +466,70 @@ async def test_jev_retries_once_on_400():
     r = await c.ask({}, {"is_bug": {"type": "noul"}}, purpose="t")
     assert r.noul("is_bug") == 0.96 and len(calls) == 2 and c.retries == 1
     await c.aclose()
+
+
+# ── J4 兩級把關：supervisor（需主管確認）／caution（注意）───────────────
+GATE_TH = {"needs_loto": 0.3, "enters_danger_zone": 0.55, "high_voltage": 0.45, "energized": 0.55}
+SUP_TH = {"enters_danger_zone": 0.7}
+
+
+def _level(p: dict[str, float], loto_done: bool = True, source: str = "jev") -> str:
+    from sentinel.jev.gate import gate_level, gate_reasons
+
+    probs = {"needs_loto": 0.0, "enters_danger_zone": 0.0, "high_voltage": 0.0, "energized": 0.0} | p
+    return gate_level(probs, gate_reasons(probs, GATE_TH, loto_done), SUP_TH, source=source)
+
+
+@pytest.mark.parametrize("p,loto_done,expected", [
+    ({}, True, "none"),
+    ({"enters_danger_zone": 0.55}, True, "none"),              # gate 門檻是「超過」：剛好等於不標記
+    ({"enters_danger_zone": 0.56}, True, "caution"),
+    ({"enters_danger_zone": 0.69}, True, "caution"),
+    ({"enters_danger_zone": 0.7}, True, "supervisor"),         # 主管門檻是「≥」
+    ({"enters_danger_zone": 0.95}, True, "supervisor"),
+    ({"high_voltage": 0.46}, True, "supervisor"),              # 高壓一超過 gate 門檻就要主管
+    ({"high_voltage": 0.45}, True, "none"),
+    ({"energized": 0.56}, True, "supervisor"),
+    ({"energized": 0.55}, True, "none"),
+    ({"needs_loto": 0.86}, True, "none"),                      # 上鎖完成：needs_loto 只記錄
+    ({"needs_loto": 0.86}, False, "lockout"),                  # 上鎖還沒完成 → 需先上鎖，不找主管
+    ({"needs_loto": 0.3}, False, "none"),
+    ({"needs_loto": 0.86, "enters_danger_zone": 0.6}, True, "caution"),
+    ({"needs_loto": 0.86, "enters_danger_zone": 0.6}, False, "caution"),       # needs_loto 不升級
+    ({"enters_danger_zone": 0.6, "high_voltage": 0.5}, True, "supervisor"),   # 任一條件成立就是主管
+    ({"enters_danger_zone": 0.6, "energized": 0.2}, True, "caution"),
+])
+def test_gate_level(p, loto_done, expected):
+    assert _level(p, loto_done) == expected
+
+
+def test_gate_level_non_jev_sources_and_defaults():
+    from sentinel.jev.gate import DEFAULT_SUPERVISOR_THRESHOLDS, gate_level
+
+    assert _level({"enters_danger_zone": 1.0}, source="keyword") == "supervisor"     # 關鍵字退路一律主管
+    assert _level({"enters_danger_zone": 0.6}, source="keyword") == "supervisor"
+    assert _level({}, source="keyword") == "none"
+    assert gate_level({"energized": 1.0}, ["energized_test"], SUP_TH, source="energized_test") == "supervisor"
+    assert gate_level({"enters_danger_zone": 0.65}, ["enters_danger_zone"]) == "caution"   # 沒給主管門檻 → 預設 0.7
+    assert DEFAULT_SUPERVISOR_THRESHOLDS == {"enters_danger_zone": 0.7}
+    assert gate_level({"x": 0.9}, ["x"], SUP_TH) == "supervisor"                    # 不認得的題目 → 保守
+
+
+def test_flag_level_legacy_and_flag_dicts():
+    from sentinel.agent.repair_agent import StepCheck, flag_dicts
+    from sentinel.config import load_settings
+    from sentinel.jev.gate import flag_level
+
+    assert flag_level({"step_index": 0}) == "supervisor"                            # 舊資料沒有 level → 保守
+    assert flag_level({"level": "caution"}) == "caution"
+    assert flag_level({"level": "none"}) == "supervisor"
+    flags = flag_dicts([StepCheck(text="目視", flagged=False),
+                        StepCheck(text="靠近模具", flagged=True, enters_danger_zone=0.6,
+                                  reasons=["enters_danger_zone"], level="caution"),
+                        StepCheck(text="伸手取出", flagged=True, enters_danger_zone=0.9,
+                                  reasons=["enters_danger_zone"], level="supervisor", requires_supervisor=True),
+                        StepCheck(text="沒有等級", flagged=True, reasons=["high_voltage"], high_voltage=0.9)])
+    assert [(f["step_index"], f["level"], f["supervisor_requested"]) for f in flags] == \
+        [(1, "caution", False), (2, "supervisor", True), (3, "supervisor", True)]
+    cfg = Path(__file__).resolve().parents[1] / "config.yaml"
+    assert load_settings(cfg).thresholds.gate_supervisor == {"enters_danger_zone": 0.7}   # config.yaml 有對應

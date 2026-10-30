@@ -14,7 +14,7 @@ log = logging.getLogger(__name__)
 ROLE_RANK = {"operator": 0, "technician": 1, "leader": 2, "supervisor": 3, "manager": 4}
 PLANT_LINE = "plant"         # 全廠共用的職位（職安人員、急救人員）在 roster.csv 用 line=plant
 ROLE_LABEL = {"safety_officer": "職安人員", "first_aider": "急救人員",
-              "operator": "作業員", "technician": "技術員", "leader": "班長", "supervisor": "組長",
+              "operator": "作業員", "technician": "技術員", "leader": "現場主管", "supervisor": "組長",
               "manager": "課長"}
 
 

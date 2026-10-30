@@ -82,6 +82,10 @@ thresholds:
     enters_danger_zone: 0.55                #   結果 recall 1.00、precision 1.00（全部 0.3 時 precision 0.90）
     high_voltage: 0.45                      #   重跑：python -m sentinel.eval.calibrate_gate
     energized: 0.55
+  gate_supervisor:                          # 兩級把關：被標記的步驟再分「需主管確認」與「注意」
+    enters_danger_zone: 0.7                 #   進入危險區機率 ≥ 此值才需主管到場確認；介於 gate 門檻與此值之間只提醒技術員注意。
+                                            #   0.7：gate_set 標為危險的手入模區步驟最低 0.73，全部仍需主管確認；導入時依現場資料重新校準
+                                            #   （high_voltage、energized、上鎖前的 needs_loto 超過 gate 門檻一律需主管確認）
   writeback_complete: 0.7
   sop_top1: 0.6
   sop_low: 0.3

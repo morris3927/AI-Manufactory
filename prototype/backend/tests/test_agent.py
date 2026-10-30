@@ -73,33 +73,40 @@ def test_extract_steps():
 
 # ── LOTO 先行 ───────────────────────────────────────────────────
 def test_tool_guard_table():
-    for st in ("OPEN", "ASSIGNED", "ESCALATED", "ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED"):
+    for st in ("OPEN", "ASSIGNED", "ESCALATED"):                         # 接單前：只有上鎖清單與準備
         with pytest.raises(guards.ToolDenied):
             guards.check_tool("get_sop", {"failure_mode_id": "x", "phase": "inspect"}, st)
         with pytest.raises(guards.ToolDenied):
             guards.check_tool("get_machine_signals", {"signal": "feed_rate"}, st)
+    for st in ("ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED", "LOTO_DONE", "IN_REPAIR"):   # 接單後資訊不鎖
+        guards.check_tool("get_sop", {"failure_mode_id": "x", "phase": "repair"}, st)
+        guards.check_tool("get_machine_signals", {"signal": "feed_rate"}, st)
     guards.check_tool("get_loto", {}, "ACKED")
-    guards.check_tool("get_sop", {"failure_mode_id": "x", "phase": "repair"}, "IN_REPAIR")
-    for st in ("PERMIT_REQUESTED", "PERMIT_APPROVED", "LOTO_DONE"):   # 檢查／維修段落只在 IN_REPAIR 之後
-        with pytest.raises(guards.ToolDenied):
-            guards.check_tool("get_sop", {"failure_mode_id": "x", "phase": "repair"}, st)
     assert "set_status" not in guards.ALL_TOOLS and not any("status" in t for t in guards.ALL_TOOLS)
 
 
-async def test_agent_loto_first(rt, fake_llm):
+async def test_agent_before_ack_template(rt, fake_llm):
     wo = await open_feed_jam(rt)
-    await rt.workorders.ack(wo.id, "P-STP-TC1")
     llm_before = len(fake_llm.calls)
     reply = await rt.agent.handle(wo.id, "卡料了，要怎麼處理？", "P-STP-TC1")
-    assert reply.phase == "loto"
-    assert "LOTO-FEED-01" in reply.content and "☐ 1." in reply.content
-    assert "請先申請作業許可" in reply.content and "預覽" in reply.content          # 許可核准前：只有許可／LOTO 預覽
-    assert "目視滾輪" not in reply.content and "更換上下滾輪" not in reply.content   # 沒有 inspect／repair
-    assert "依 LOTO-FEED-01 停機" in reply.content                                  # isolate 段落可以給
+    assert reply.phase == "loto" and "請先在工單按「接單」" in reply.content
+    assert "目視滾輪" not in reply.content and "更換上下滾輪" not in reply.content   # 接單前沒有 inspect／repair
     assert len(fake_llm.calls) == llm_before                                         # 不呼叫 LLM
-    with pytest.raises(guards.ToolDenied):
-        from sentinel.agent.tools import ToolBox
-        await ToolBox(rt.agent.ctx, wo.id).call("get_sop", {"failure_mode_id": "feed_roller_wear", "phase": "inspect"})
+
+
+async def test_agent_before_lockout_marks_steps(rt, fake_llm, fake_jev):
+    """上鎖前資訊不鎖：照常回答，但要碰機台的步驟標成「需先完成上鎖掛牌」，不附復機提醒。"""
+    wo = await open_feed_jam(rt)
+    await rt.workorders.ack(wo.id, "P-STP-TC1")
+    reply = await rt.agent.handle(wo.id, "卡料了，要怎麼處理？", "P-STP-TC1")
+    assert reply.phase == "repair" and reply.llm_used
+    assert reply.steps and all(s.needs_lockout for s in reply.steps if s.source == "jev")
+    assert "j4_lockout" in reply.safety_flags
+    reach = [s for s in reply.steps if "伸手" in s.text]
+    assert reach and reach[0].level == "supervisor" and reach[0].needs_lockout   # 兩個標記同時成立
+    only_lockout = [s for s in reply.steps if s.source == "jev" and s.level == "lockout"]
+    assert only_lockout and not any(s.requires_supervisor for s in only_lockout)  # 只缺上鎖 → 不找主管
+    assert reply.content.count(guards.CLOSING_REMINDER) <= 1   # 上鎖前只有在刪掉復電句時才附（不是每則都附）
     assert rt.workorders.get(wo.id).status == "ACKED"                                # Agent 沒有改狀態
 
 
@@ -230,7 +237,7 @@ async def test_permit_before_loto_order(rt):
     await rt.workorders.permit(wo.id, "P-STP-TC1", "request")
     assert (await rt.workorders.permit(wo.id, "P-STP-LD1", "approve")).status == "PERMIT_APPROVED"
     r = await rt.agent.handle(wo.id, "可以開始了嗎", "P-STP-TC1")
-    assert r.phase == "loto" and "預覽" not in r.content                      # 核准後：LOTO 檢查表本身
+    assert r.phase == "repair" and rt.workorders.get(wo.id).status == "PERMIT_APPROVED"   # 回答不改狀態
     for n in steps:
         w, done = await rt.workorders.check_loto(wo.id, n, "P-STP-TC1", loto_id=loto.loto_id, steps=steps)
     assert done and w.status == "IN_REPAIR"
@@ -328,6 +335,50 @@ async def test_tool_rounds_capped(rt, fake_llm):
     assert "目視" in reply.content and guards.CLOSING_REMINDER in reply.content
 
 
+async def test_caution_level_does_not_request_supervisor(rt, fake_llm, fake_jev):
+    """兩級把關：進入危險區機率落在 [gate 門檻, 主管門檻) → caution，不通知主管、不能也不用主管確認。"""
+    from fastapi import HTTPException
+
+    from sentinel.api.routes_admin import ack_safety
+    from sentinel.db.models import AgentMessage
+
+    wo = await open_feed_jam(rt)
+    await loto_done(rt, wo.id)
+    rt.agent.ctx.thresholds = rt.agent.ctx.thresholds.model_copy(update={"gate_supervisor": {"enters_danger_zone": 0.95}})
+    reply = await rt.agent.handle(wo.id, "下一步？", "P-STP-TC1")
+    reach = [s for s in reply.steps if "伸手" in s.text]
+    assert reach and reach[0].flagged and reach[0].level == "caution" and not reach[0].requires_supervisor
+    energized = [s for s in reply.steps if s.source == "energized_test"]
+    assert all(s.level == "supervisor" for s in energized)                 # 通電測試改寫的步驟一律主管
+    sup = [s for s in reply.steps if s.level == "supervisor"]
+    assert reply.supervisor_requested == bool(sup) and "j4_caution" in reply.safety_flags
+    row = rt.db.get(AgentMessage, int(reply.message_id))
+    caution = [f for f in row.safety_flags if f["level"] == "caution"]
+    assert caution and not any(f["supervisor_requested"] for f in caution)
+    trace = rt.workorders.incident(rt.workorders.get(wo.id)).trace_id
+    assert any(a.action == "safety_gate_caution" for a in rt.audit.timeline(trace))   # 注意級照樣記稽核
+    if not sup:
+        assert not rt.db.first(select(Notification).where(Notification.kind == "supervisor"))
+        with pytest.raises(HTTPException) as e:                             # 只有注意級 → 沒東西可確認
+            await ack_safety(rt, rt.workorders.get(wo.id), reply.message_id, "P-S01", "x")
+        assert e.value.status_code == 409
+    else:                                                                   # 主管確認只動 supervisor 級
+        await ack_safety(rt, rt.workorders.get(wo.id), reply.message_id, "P-S01", "x")
+        row = rt.db.get(AgentMessage, int(reply.message_id))
+        assert all(not f.get("acked_by") for f in row.safety_flags if f["level"] == "caution")
+        assert all(f.get("acked_by") == "P-S01" for f in row.safety_flags if f["level"] == "supervisor")
+    # 只有注意級的回覆 → 沒東西可確認（409）；舊資料沒有 level → 當成需主管確認
+    only = rt.agent._save(wo.id, "assistant", "1. 靠近模具", safety_flags=[
+        {"step_index": 0, "step_text": "靠近模具", "level": "caution", "supervisor_requested": False}])
+    with pytest.raises(HTTPException) as e:
+        await ack_safety(rt, rt.workorders.get(wo.id), str(only.id), "P-S01", "x")
+    assert e.value.status_code == 409
+    legacy = rt.agent._save(wo.id, "assistant", "1. 伸手", safety_flags=[
+        {"step_index": 0, "step_text": "伸手", "supervisor_requested": True}])
+    await ack_safety(rt, rt.workorders.get(wo.id), str(legacy.id), "P-S01", "x")
+    assert rt.db.get(AgentMessage, legacy.id).safety_flags[0]["acked_by"] == "P-S01"
+
+
 async def test_gate_steps_parallel_in_order(rt, fake_jev):
     from sentinel.jev import gate
 
@@ -363,3 +414,35 @@ def test_ws_maps_stream_and_gate_events():
                             payload={"workorder_id": "WO-1", "message_id": "9", "flags": [], "done": True,
                                      "gate": {"status": "done", "checked": ["b"]}}))
     assert out[0]["type"] == "safety_gate" and out[0]["data"]["done"] and out[0]["data"]["gate"]["status"] == "done"
+
+
+def test_repair_mode_always_appends_restart_steps_once():
+    text = "1. 用長柄夾具把料片取出。\n2. 檢查送料滾輪有沒有磨損。\n" + guards.CLOSING_REMINDER
+    r = guards.filter_restore(text, "LOTO-FEED-01", remind=True)
+    assert r.text.count(guards.CLOSING_REMINDER) == 1 and r.text.endswith(guards.CLOSING_REMINDER)
+    assert guards.filter_restore("1. 目視滾輪表面。", remind=False).text == "1. 目視滾輪表面。"
+    sf = guards.StreamFilter("LOTO-FEED-01", remind=True)
+    lines = sf.feed(text + "\n") + sf.finish()
+    assert lines.count(guards.CLOSING_REMINDER) == 1 and lines[-1] == guards.CLOSING_REMINDER
+    assert "LOTO" not in guards.CLOSING_REMINDER                     # 給現場看的字不用術語
+
+
+@pytest.mark.parametrize("text,expected", [
+    ("讀操作面板警報碼，確認是 MISFEED，記下發生時間。", True),
+    ("看送料長度誤差趨勢，確認是逐步上升到 0.21 mm。", True),
+    ("看攝影機卡料畫面，確認卡在滾輪咬合點還是料帶路徑。", True),   # 畫面裡的位置不算接觸
+    ("看一下模具裡面有沒有料片", False),                               # 沒有面板／畫面，人要靠近模具
+    ("看攝影機畫面後伸手取出料片", False),
+    ("以寸動低速送料，看送料長度趨勢", False),
+    ("用三用電表量測馬達電流", False),
+])
+def test_observation_only(text, expected):
+    assert guards.observation_only(text) is expected
+
+
+def test_observation_only_never_matches_dangerous_gate_steps():
+    import yaml
+    from pathlib import Path
+    items = yaml.safe_load((Path(__file__).parents[1] / "sentinel/eval/gate_set.yaml").read_text(encoding="utf-8"))["items"]
+    dangerous = [i["text"] for i in items if any(i.get(k) for k in ("danger_zone", "high_voltage", "energized"))]
+    assert dangerous and not any(guards.observation_only(t) for t in dangerous)

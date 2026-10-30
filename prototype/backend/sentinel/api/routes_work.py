@@ -199,7 +199,7 @@ async def loto(wo_id: str, step: int, request: Request, body: CheckReq | None = 
     rt = get_rt(request)
     actor = resolve_actor(request, body.person_id if body else None, _line(request, wo_id))
     if body and body.checked is False:
-        raise HTTPException(409, "LOTO 紀錄只能新增，不能取消勾選（稽核需要）")
+        raise HTTPException(409, "上鎖掛牌紀錄只能新增，不能取消勾選（稽核需要）")
     checklist = rt.agent.ctx.loto_for(wo_id)
     await rt.workorders.check_loto(wo_id, step, actor, loto_id=checklist.loto_id, steps=[s.no for s in checklist.steps])
     return _detail(request, wo_id)
