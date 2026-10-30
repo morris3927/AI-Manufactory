@@ -1,19 +1,59 @@
 {
   "v": 4,
-  "createdOnFiles": {"v": 1, "at": "2026-10-22T15:00:00+08:00"},
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-22T15:00:00+08:00"
+  },
   "lists": "css",
   "title": "Sentinel AI 決賽簡報",
-  "order": ["cover", "story", "problem", "approach", "layers", "architecture", "safety", "demo", "s3report", "results", "limits", "value", "deploy", "team"],
+  "order": [
+    "cover",
+    "story",
+    "problem",
+    "approach",
+    "layers",
+    "jev",
+    "architecture",
+    "safety",
+    "demo",
+    "s3report",
+    "results",
+    "limits",
+    "value",
+    "deploy",
+    "team"
+  ],
   "sections": {
-    "s1": {"description": "開場：一個夜班卡料的故事，和現場真正的痛點", "start": "cover"},
-    "s2": {"description": "解決方案：三層判斷、系統架構、寫進程式的安全規則", "start": "approach"},
-    "s3": {"description": "成果展示：卡料閉環與職災通報", "start": "demo"},
-    "s4": {"description": "測試結果與做不好的地方", "start": "results"},
-    "s5": {"description": "效益、落地方式與團隊", "start": "value"}
+    "s1": {
+      "description": "問題情境：一個夜班卡料的故事，和製造現場的痛點",
+      "start": "cover"
+    },
+    "s2": {
+      "description": "解決方案：四件事、三層判斷、Jev、系統架構、寫進程式的安全規則",
+      "start": "approach"
+    },
+    "s3": {
+      "description": "成果展示：現場 Demo、職災通報、測試結果與限制",
+      "start": "demo"
+    },
+    "s4": {
+      "description": "效益說明與落地方式",
+      "start": "value"
+    },
+    "s5": {
+      "description": "團隊介紹",
+      "start": "team"
+    }
   },
   "faces": {
-    "noto-sans-tc": {"family": "Noto Sans TC", "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap"},
-    "oswald": {"family": "Oswald", "href": "https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap"}
+    "noto-sans-tc": {
+      "family": "Noto Sans TC",
+      "href": "https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap"
+    },
+    "oswald": {
+      "family": "Oswald",
+      "href": "https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&display=swap"
+    }
   },
   "designSystems": []
 }

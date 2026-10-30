@@ -4,15 +4,15 @@
 <tr><th style="width:18%">誰負責</th><th style="width:14%">速度</th><th style="width:30%">像急診裡的誰</th><th style="width:38%">在系統裡做什麼</th></tr>
 <tr><td><span style="color:#2F6BD8"><b>規則</b></span></td><td>毫秒</td><td>檢傷分類：大出血直接推進去</td><td>確定、攸關安全的事：送料歸零＋畫面卡料 → 確認卡料</td></tr>
 <tr><td><span style="color:#17845F"><b>Jev 判斷模型</b></span></td><td>約 0.5 秒</td><td>護理師快速判斷，先掛哪一科</td><td>從固定選項挑最可能的原因，附上機率</td></tr>
-<tr><td><span style="color:#B85E15"><b>LLM 維修助理</b></span></td><td>1–2 秒</td><td>醫師詳細問診</td><td>寫說明、跟技術員一問一答、整理紀錄</td></tr>
+<tr><td><span style="color:#B85E15"><b>LLM 維修助理</b></span></td><td>數秒</td><td>醫師詳細問診</td><td>寫說明、跟技術員一問一答、整理紀錄</td></tr>
 </table>
 <div style="display:flex;gap:28px">
 <div style="flex:1;background:#FBFAF7;border-left:6px solid #17845F;border-radius:12px;padding:32px">
-<p style="font-size:28px;line-height:1.5"><b>Jev 是什麼？</b>2026 年推出的判斷模型，只回答選擇題、是非題，約 0.5 秒給答案和每個選項的機率，不會答非所問。</p>
+<p style="font-size:28px;line-height:1.5"><b>LLM 不是萬能的</b>：它是依前文一個字一個字接下去，會寫通順的說明，但不是在計算或查證。所以判斷交給規則和專職模型，LLM 只負責說明和陪人排查。</p>
 </div>
 <div style="flex:1;background:#FBFAF7;border-left:6px solid #2F6BD8;border-radius:12px;padding:32px">
 <p style="font-size:28px;line-height:1.5"><b>為什麼不全交給 LLM？</b>LLM 的回應時間忽快忽慢，實測最慢的 5% 曾等到 46 秒。所以派工只等規則和 Jev。</p>
 </div>
 </div>
-<aside>這頁是我們設計的核心。用急診比喻：不是每個病人都要醫師看，檢傷能處理的就不用排隊。重點句：派工只等規則和 Jev，不到一秒；LLM 的說明晚幾秒補上，不拖慢派工。</aside>
+<aside>（約 75 秒）這頁是設計核心。用急診比喻：不是每個病人都要醫師看，檢傷能處理的就不用排隊。重點句：派工只等規則和 Jev，不到一秒；LLM 的說明晚幾秒補上，不拖慢派工。下一頁介紹 Jev。</aside>
 </section>

@@ -1,0 +1,13 @@
+<section id="jev" data-transition="fade" style="background:#F3F1EB;color:#1B2433;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:64px;font-weight:700">Jev：只做判斷題的 AI</h2>
+<div style="background:#FBFAF7;border-left:6px solid #17845F;border-radius:12px;padding:32px">
+<p style="font-size:30px;line-height:1.5">新創公司 TypeSafe 在 <b>2026 年 9 月 15 日</b>才推出的判斷模型（decision model）。不寫文章，只回答是非題、選擇題、評分題，約 0.5 秒回傳答案和每個選項的機率。我們用 10 月 14 日發布的 1.14 版，能看圖、也能在圖上框出位置。</p>
+</div>
+<table style="font-size:28px;color:#1B2433;width:1664px">
+<tr><th style="width:46%">系統問 Jev（卡料事件）</th><th style="width:16%">題型</th><th style="width:38%">Jev 回答</th></tr>
+<tr><td>附上送料口畫面：板材有沒有卡住？</td><td>是非＋框位置</td><td>是，0.82，並框出卡住的板材</td></tr>
+<tr><td>附上機台數據：最可能的原因是哪一個？</td><td>選擇題</td><td>送料滾輪磨損，0.93（附前三名）</td></tr>
+<tr><td>助理的一步「用夾具從側邊取出料片」會不會進入危險區？</td><td>是非題</td><td><span style="color:#C93C3C"><b>會，0.71 → 標紅，等主管確認</b></span></td></tr>
+</table>
+<aside>（約 50 秒）評審多半沒聽過 Jev，先講它是 9 月才出的新東西，再用三個實際問答說明它在系統裡做什麼：看圖、排原因、幫 LLM 的每一步做安全檢查。數字取自一次實際測試。</aside>
+</section>
