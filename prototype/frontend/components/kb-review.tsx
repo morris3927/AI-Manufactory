@@ -53,7 +53,7 @@ export function KbReview() {
             )}
             <span className="text-sm">{c.machine_id}</span>
             <span className="text-sm">
-              根因：<span className="text-slate-100">{c.final_root_cause ?? "—"}</span>
+              根因：<span className="text-foreground">{c.final_root_cause ?? "—"}</span>
               {c.hypothesis_correct === false && <span className="ml-1 text-amber-300">（第一判斷錯誤，可修正機率）</span>}
             </span>
             {c.reviewed_by && <span className="text-xs text-muted">審核 {c.reviewed_by}・{fmtDateTime(c.reviewed_at)}</span>}

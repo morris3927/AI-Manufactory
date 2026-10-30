@@ -3,7 +3,7 @@ import type { HTMLAttributes, ReactNode } from "react";
 import { SimBadge } from "../sim-badge";
 
 export function Card({ className, ...p }: HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("rounded-lg border border-line bg-panel/90 shadow-[0_0_0_1px_rgba(0,0,0,0.3)] backdrop-blur", className)} {...p} />;
+  return <div className={cn("rounded-lg border border-line bg-panel/90 shadow-[var(--card-shadow)] backdrop-blur", className)} {...p} />;
 }
 
 export function CardHeader({

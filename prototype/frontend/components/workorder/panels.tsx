@@ -62,8 +62,8 @@ const NEXT_LABEL: Record<NextAction, string> = {
   assign: "等待指派",
   ack: "接單",
   permit_request: "技術員申請作業許可",
-  permit_approve: "班長核准作業許可",
-  loto: "依序勾選 LOTO",
+  permit_approve: "現場主管核准作業許可",
+  loto: "依序完成上鎖掛牌",
   checklist: "完成維修 Checklist",
   report: "提交結案回報",
 };
@@ -80,7 +80,7 @@ export function StatusStepper({ wo }: { wo: WorkOrderDetail }) {
       : ["ASSIGNED", "ACKED", "LOTO_DONE", "IN_REPAIR", "PENDING_VERIFY", "CLOSED"];
   const na = nextAction(wo);
   if (wo.status === "CANCELLED")
-    return <div className="rounded border border-slate-500/50 bg-slate-500/10 px-3 py-1.5 text-sm text-slate-300">此工單已由主管標記為誤報並取消</div>;
+    return <div className="rounded border border-slate-500/50 bg-slate-500/10 px-3 py-1.5 text-sm text-muted">此工單已由主管標記為誤報並取消</div>;
   return (
     <ol className="flex flex-wrap items-center gap-1 text-xs">
       {flow.map((s, i) => {
@@ -145,7 +145,7 @@ export function WorkorderHeader({ wo, act, busy, compact }: { wo: WorkOrderDetai
             </Button>
           )}
           {!compact && canAck && (persona.role === "leader" || persona.role === "supervisor") && (
-            <Button disabled={busy} onClick={() => act(() => api.reassign(wo.id, null, "班長手動轉派"), "已轉派")}>
+            <Button disabled={busy} onClick={() => act(() => api.reassign(wo.id, null, "現場主管手動轉派"), "已轉派")}>
               轉派
             </Button>
           )}
@@ -292,7 +292,7 @@ function OverlayInline({ overlays }: { overlays: Overlay[] }) {
       {overlays.map((o, i) => (
         <div
           key={i}
-          className="absolute border-2 border-cyan-300"
+          className="absolute border-2 border-[#67e8f9]"
           style={{ left: `${(o.box[0] / 1280) * 100}%`, top: `${(o.box[1] / 720) * 100}%`, width: `${((o.box[2] - o.box[0]) / 1280) * 100}%`, height: `${((o.box[3] - o.box[1]) / 720) * 100}%` }}
         />
       ))}
@@ -337,7 +337,7 @@ export function DiagnosisPanel({ wo }: { wo: WorkOrderDetail }) {
                       <span className="font-mono text-cyan-300">{sc.case_id}</span>
                       {sc.just_approved && <span className="text-xs font-semibold text-emerald-300">剛核准入庫</span>}
                       {(sc.title || sc.final_root_cause_name || sc.final_root_cause) && (
-                        <span className="text-slate-300">{sc.title ?? `最後根因：${sc.final_root_cause_name ?? sc.final_root_cause}`}</span>
+                        <span className="text-foreground/85">{sc.title ?? `最後根因：${sc.final_root_cause_name ?? sc.final_root_cause}`}</span>
                       )}
                       {typeof sc.score === "number" && <span className="ml-auto font-mono text-xs text-muted">相似度 {sc.score.toFixed(2)}</span>}
                     </li>
@@ -355,7 +355,7 @@ export function DiagnosisPanel({ wo }: { wo: WorkOrderDetail }) {
         <CardHeader title="AI 說明（DeepSeek）" icon={<Bot className="h-4 w-4" />} right={<ExplStatus s={d?.explanation_status} />} />
         <CardContent>
           {d?.explanation ? (
-            <p className="text-sm leading-relaxed text-slate-200">
+            <p className="text-sm leading-relaxed text-foreground">
               {d.explanation}
               {d.explanation_status === "streaming" && <span className="ml-0.5 inline-block h-4 w-1.5 animate-pulse bg-cyan-400 align-middle" />}
             </p>
@@ -404,10 +404,10 @@ function SopCard({ wo }: { wo: WorkOrderDetail }) {
                     <summary className="flex cursor-pointer list-none items-center gap-2 px-2 py-1.5 text-sm">
                       <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted transition-transform group-open:rotate-90" />
                       <Badge className={cn("shrink-0", locked ? "border-amber-500/50 text-amber-300" : "border-cyan-600/40 text-cyan-200")}>{PHASE[s.phase] ?? s.phase}</Badge>
-                      <span className="min-w-0 flex-1 truncate text-slate-200">{firstSentence(s.steps)}</span>
+                      <span className="min-w-0 flex-1 truncate text-foreground">{firstSentence(s.steps)}</span>
                       {locked && <Lock className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-label="作業許可核准前 Agent 不可使用此階段" />}
                     </summary>
-                    <ul className="space-y-1 px-3 pb-2 text-sm leading-relaxed text-slate-300">
+                    <ul className="space-y-1 px-3 pb-2 text-sm leading-relaxed text-foreground/85">
                       {s.steps.map((st, j) => (
                         <li key={j}>{st}</li>
                       ))}
@@ -428,7 +428,7 @@ function SopCard({ wo }: { wo: WorkOrderDetail }) {
 const PHASE: Record<string, string> = {
   summary: "摘要",
   prepare: "準備",
-  isolate: "隔離／LOTO",
+  isolate: "隔離／上鎖掛牌",
   inspect: "排查",
   repair: "維修",
   verify: "驗證",
@@ -451,7 +451,7 @@ function Locked({ locked, reason, children }: { locked: boolean; reason: string;
       <div className={cn(locked && "pointer-events-none select-none opacity-30 blur-[1px]")}>{children}</div>
       {locked && (
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="flex items-center gap-1.5 rounded-md border border-amber-500/50 bg-[#1a1408]/90 px-3 py-1.5 text-xs text-amber-200">
+          <span className="flex items-center gap-1.5 rounded-md border border-amber-500/50 bg-panel/95 px-3 py-1.5 text-xs text-amber-200 shadow-sm">
             <Lock className="h-3.5 w-3.5" /> {reason}
           </span>
         </div>
@@ -472,7 +472,11 @@ export function LotoPanel({ wo, act, busy, big }: { wo: WorkOrderDetail; act: Ac
   return (
     <Card className={nextRing(nextAction(wo) === "loto")}>
       <CardHeader
-        title={`LOTO 上鎖掛牌・${wo.loto.loto_id}`}
+        title={
+          <>
+            上鎖掛牌<span className="ml-1.5 font-mono text-xs font-normal text-muted">{wo.loto.loto_id}</span>
+          </>
+        }
         icon={<KeyRound className="h-4 w-4" />}
         right={<span className={cn("tabular text-xs", doneN === steps.length ? "text-emerald-400" : "text-amber-300")}>{doneN}/{steps.length}</span>}
       />
@@ -503,7 +507,7 @@ export function LotoPanel({ wo, act, busy, big }: { wo: WorkOrderDetail; act: Ac
               );
             })}
           </ul>
-          <p className="mt-2 text-xs text-muted">LOTO 勾完並驗證零能量後才進入維修；在此之前維修 Agent 只提供上鎖與準備步驟（程式強制，不靠提示詞）。</p>
+          <p className="mt-2 text-xs text-muted">全部勾完、按啟動鈕確認機台不會動之後才進入維修；在此之前維修 Agent 仍可回答排查問題，但要碰機台的步驟會標成「需先完成上鎖掛牌」（程式強制，不靠提示詞）。</p>
         </Locked>
       </CardContent>
     </Card>
@@ -521,7 +525,7 @@ export function PermitPanel({ wo, act, busy }: { wo: WorkOrderDetail; act: Act; 
     st === "approved" ? (
       <span className="text-xs text-emerald-400">已核准</span>
     ) : st === "requested" ? (
-      <span className="text-xs text-amber-300">待班長核准</span>
+      <span className="text-xs text-amber-300">待現場主管核准</span>
     ) : st === "rejected" ? (
       <span className="text-xs text-red-300">已退回</span>
     ) : null;
@@ -536,7 +540,7 @@ export function PermitPanel({ wo, act, busy }: { wo: WorkOrderDetail; act: Act; 
               <span>{p?.requested_by ? `${p.requested_by}・${fmtTime(p.requested_at ?? p.ts)}` : "—"}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-muted">核准人（班長以上）</span>
+              <span className="text-muted">核准人（現場主管以上）</span>
               <span>{p?.approved_by ? `${p.approved_by}・${fmtTime(p.ts)}` : "—"}</span>
             </div>
             {st === "rejected" && wo.status === "ACKED" && (
@@ -559,9 +563,9 @@ export function PermitPanel({ wo, act, busy }: { wo: WorkOrderDetail; act: Act; 
                   variant="ok"
                   disabled={busy || !canApprove}
                   onClick={() => act(() => api.permit(wo.id, "approve"), "作業許可已核准")}
-                  title={canApprove ? undefined : "班長以上才能核准（右上角切換身分）"}
+                  title={canApprove ? undefined : "現場主管以上才能核准（右上角切換身分）"}
                 >
-                  {canApprove ? "核准作業許可" : "等待班長核准（切換為班長）"}
+                  {canApprove ? "核准作業許可" : "等待現場主管核准（切換為現場主管）"}
                 </Button>
                 {canApprove && (
                   <Button variant="danger" disabled={busy} onClick={() => act(() => api.permit(wo.id, "reject"), "已退回作業許可")}>
@@ -602,7 +606,7 @@ export function AgentChat({ wo, act, busy, streaming, tall }: { wo: WorkOrderDet
   };
   const quick = full
     ? ["開始排查", "滾輪看起來正常，還是卡", "板厚量到 2.08 mm", "已試沖 10 模正常"]
-    : ["我要準備什麼？", "LOTO 要注意什麼？"];
+    : ["可能是什麼原因？", "上鎖前可以先檢查什麼？", "上鎖掛牌要注意什麼？"];
   return (
     <Card className="flex flex-col">
       <CardHeader
@@ -613,7 +617,7 @@ export function AgentChat({ wo, act, busy, streaming, tall }: { wo: WorkOrderDet
             full ? (
               <span className="text-xs text-emerald-400">排查／維修模式</span>
             ) : (
-              <span className="text-xs text-amber-300">受限模式：只提供 LOTO 與準備</span>
+              <span className="text-xs text-orange-300">上鎖前：要碰機台的步驟會標出來</span>
             )
           ) : null
         }
@@ -732,7 +736,7 @@ export function ReportPanel({ wo, act, busy }: { wo: WorkOrderDetail; act: Act; 
       const thick = top.find((r) => /thick|厚度/i.test(`${r.failure_mode_id}${r.name}`));
       setRc(thick?.failure_mode_id ?? "OTHER");
       setText("實際原因：材料板厚 2.08 mm 超出公差（滾輪間隙檢查正常，不是滾輪問題）。處置：隔離該批材料並換料，重設送料長度。結果：試沖 10 模送料誤差 0.02 mm，已恢復正常。");
-    } else if (safety) setText("班長到場提醒人員配戴安全帽，已完成現場宣導並記錄。");
+    } else if (safety) setText("現場主管到場提醒人員配戴安全帽，已完成現場宣導並記錄。");
     else {
       setRc(top[0]?.failure_mode_id ?? "");
       setText(`實際原因：${top[0]?.name ?? "依 SOP 排查確認"}。處置：依 SOP 完成更換與調整。結果：復機後運轉 10 分鐘確認正常。`);
@@ -745,7 +749,7 @@ export function ReportPanel({ wo, act, busy }: { wo: WorkOrderDetail; act: Act; 
         <Locked locked={!can && !wo.report} reason={safety ? "接單後可回報" : "Checklist 完成後解鎖"}>
           {wo.status === "CLOSED" && wo.report ? (
             <div className="space-y-1 text-sm">
-              <p className="text-slate-200">{wo.report.text}</p>
+              <p className="text-foreground">{wo.report.text}</p>
               {wo.report.root_cause_confirmed && <div className="text-xs text-muted">確認根因：{wo.report.root_cause_confirmed}</div>}
               <WritebackStatus wo={wo} act={act} busy={busy} fallback={check?.kb_status} />
             </div>

@@ -20,15 +20,17 @@ import { SEVERITY_STYLE } from "@/lib/labels";
 import type { CalibrationBin, RootCause, Severity, SignalPoint } from "@/lib/types";
 import { fmtTime } from "@/lib/utils";
 
-// 已用 dataviz validator 驗證（深色底）：藍／橘／綠
+// 已用 dataviz validator 驗證（深色底）：藍／橘／綠；白底上也有 3:1 以上，兩種主題共用
 export const SERIES = ["#3987e5", "#d95926", "#199e70"];
-const AXIS = { stroke: "#334155", tick: { fill: "#95a9bd", fontSize: 12 } };
-const GRID = <CartesianGrid stroke="#1e2b39" strokeDasharray="0" vertical={false} />;
+// 軸線、格線、文字、tooltip 用 globals.css 的 CSS 變數，切換主題不必重新 render
+const FG = "var(--foreground)";
+const AXIS = { stroke: "var(--chart-axis)", tick: { fill: "var(--muted)", fontSize: 12 } };
+const GRID = <CartesianGrid stroke="var(--border)" strokeDasharray="0" vertical={false} />;
 const TIP = {
-  contentStyle: { background: "#0e151d", border: "1px solid #1e2b39", borderRadius: 6, fontSize: 12, color: "#dbe5ef" },
-  labelStyle: { color: "#7f93a8" },
-  itemStyle: { color: "#dbe5ef" },
-  cursor: { fill: "rgba(148,163,184,0.08)", stroke: "#475569" },
+  contentStyle: { background: "var(--panel)", border: "1px solid var(--border)", borderRadius: 6, fontSize: 12, color: FG },
+  labelStyle: { color: "var(--muted)" },
+  itemStyle: { color: FG },
+  cursor: { fill: "var(--chart-cursor)", stroke: "var(--chart-ref)" },
 };
 
 /** 根因前三名機率長條圖（水平） */
@@ -38,13 +40,13 @@ export function RootCauseBars({ items, height = 150 }: { items: RootCause[]; hei
     <ResponsiveContainer width="100%" height={height}>
       <BarChart data={data} layout="vertical" margin={{ top: 4, right: 44, bottom: 4, left: 4 }} barCategoryGap={10}>
         <XAxis type="number" domain={[0, 100]} hide />
-        <YAxis type="category" dataKey="name" width={118} {...AXIS} tick={{ fill: "#dbe5ef", fontSize: 12 }} axisLine={false} tickLine={false} />
+        <YAxis type="category" dataKey="name" width={118} {...AXIS} tick={{ fill: FG, fontSize: 12 }} axisLine={false} tickLine={false} />
         <Tooltip {...TIP} formatter={(v) => [`${v}%`, "機率"]} />
         <Bar dataKey="p" radius={[0, 4, 4, 0]} isAnimationActive={false}>
           {data.map((_, i) => (
             <Cell key={i} fill="#3987e5" fillOpacity={i === 0 ? 1 : i === 1 ? 0.7 : 0.45} />
           ))}
-          <LabelList dataKey="p" position="right" formatter={(v) => `${v}%`} fill="#dbe5ef" fontSize={12} />
+          <LabelList dataKey="p" position="right" formatter={(v) => `${v}%`} fill={FG} fontSize={12} />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
@@ -82,7 +84,7 @@ export function SignalCharts({ points, signals, marker }: { points: SignalPoint[
                 <XAxis dataKey="ts" hide />
                 <YAxis width={36} {...AXIS} axisLine={false} tickLine={false} domain={["auto", "auto"]} tickCount={3} />
                 <Tooltip {...TIP} labelFormatter={(l) => fmtTime(String(l))} formatter={(v) => [`${v} ${meta.unit}`, meta.label]} />
-                {marker && <ReferenceLine x={marker} stroke="#ef4444" strokeDasharray="3 3" />}
+                {marker && <ReferenceLine x={marker} stroke="var(--sev-s3)" strokeDasharray="3 3" />}
                 <Line type="monotone" dataKey={sig} stroke="#3987e5" strokeWidth={2} dot={false} isAnimationActive={false} />
               </LineChart>
             </ResponsiveContainer>
@@ -106,7 +108,7 @@ export function SeverityBars({ counts }: { counts: Partial<Record<Severity, numb
           {data.map((d) => (
             <Cell key={d.s} fill={SEVERITY_STYLE[d.s].hex} />
           ))}
-          <LabelList dataKey="n" position="top" fill="#dbe5ef" fontSize={11} />
+          <LabelList dataKey="n" position="top" fill={FG} fontSize={11} />
         </Bar>
       </BarChart>
     </ResponsiveContainer>
@@ -164,13 +166,13 @@ export function CalibrationChart({ bins }: { bins: CalibrationBin[] }) {
   return (
     <ResponsiveContainer width="100%" height={260}>
       <ComposedChart data={data} margin={{ top: 8, right: 16, bottom: 18, left: 0 }}>
-        <CartesianGrid stroke="#1e2b39" />
-        <XAxis type="number" dataKey="x" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} {...AXIS} label={{ value: "預測機率", position: "insideBottom", offset: -10, fill: "#95a9bd", fontSize: 12 }} />
+        <CartesianGrid stroke="var(--border)" />
+        <XAxis type="number" dataKey="x" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} {...AXIS} label={{ value: "預測機率", position: "insideBottom", offset: -10, fill: "var(--muted)", fontSize: 12 }} />
         <YAxis type="number" domain={[0, 1]} ticks={[0, 0.2, 0.4, 0.6, 0.8, 1]} width={36} {...AXIS} />
         <Tooltip {...TIP} formatter={(v, name) => [Number(v).toFixed(2), name === "y" ? "實際發生率" : String(name)]} labelFormatter={(l) => `預測 ${Number(l).toFixed(2)}`} />
-        <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="#475569" strokeDasharray="4 4" />
+        <ReferenceLine segment={[{ x: 0, y: 0 }, { x: 1, y: 1 }]} stroke="var(--chart-ref)" strokeDasharray="4 4" />
         <Line type="linear" dataKey="y" stroke={SERIES[0]} strokeWidth={2} dot={false} isAnimationActive={false} />
-        <Scatter dataKey="y" fill={SERIES[0]} stroke="#0e151d" strokeWidth={2} />
+        <Scatter dataKey="y" fill={SERIES[0]} stroke="var(--panel)" strokeWidth={2} />
       </ComposedChart>
     </ResponsiveContainer>
   );

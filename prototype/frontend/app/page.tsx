@@ -341,7 +341,7 @@ function EventRow({ ev }: { ev: SentinelEvent }) {
   return (
     <div className="flex items-start gap-2 text-xs">
       <span className="mt-0.5 rounded bg-panel-2 px-1 font-mono text-[11px] text-muted">{ev.source}</span>
-      <span className="min-w-0 flex-1 text-slate-300">
+      <span className="min-w-0 flex-1 text-foreground/85">
         {text}
         <span className="ml-1 font-mono text-[11px] text-muted">{ev.camera_id ?? ev.machine_id}</span>
       </span>

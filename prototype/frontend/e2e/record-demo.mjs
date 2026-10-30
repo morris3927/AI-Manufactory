@@ -120,7 +120,7 @@ await pause(1500);
 await role("technician");
 
 // LOTO
-const loto = card(/LOTO 上鎖掛牌/);
+const loto = card(/上鎖掛牌/);
 await scrollTo(loto);
 for (let i = 0; i < 20; i++) {
   const b = loto.locator("ul button:enabled").first();
@@ -129,7 +129,7 @@ for (let i = 0; i < 20; i++) {
   await pause(900);
 }
 await status("維修中");
-mark("LOTO 完成 → 維修中");
+mark("上鎖完成 → 維修中");
 
 // 維修 Agent
 const agent = card("維修 Agent");
@@ -140,16 +140,23 @@ await chat(agent, "卡住的料片可以直接伸手拿嗎？");
 await agent.getByText(/安全把關檢查中/).first().waitFor({ state: "detached", timeout: 120_000 }).catch(() => {});
 mark("安全把關");
 await pause(4000);
-await role("supervisor");
-for (let i = 0; i < 6; i++) {
-  const b = agent.getByRole("button", { name: "主管確認", exact: true });
-  if (!(await b.count())) break;
-  await b.first().scrollIntoViewIfNeeded();
-  await pause(800);
-  await b.first().click();
-  await pause(1500);
+// 真實 LLM 不一定寫出「需主管確認」級的步驟：有才切主管按確認，沒有就略過
+const gateShown = await agent.locator('li[data-gate-level="supervisor"], li[data-gate-level="caution"], [title^="Jev 安全把關"]').count();
+if (!gateShown) mark("警告：畫面上沒有看到把關結果");
+if ((await agent.locator('li[data-gate-level="supervisor"]').count()) > 0 && (await agent.getByRole("button", { name: /主管確認/ }).count()) > 0) {
+  await role("supervisor");
+  for (let i = 0; i < 6; i++) {
+    const b = agent.getByRole("button", { name: "主管確認", exact: true });
+    if (!(await b.count())) break;
+    await b.first().scrollIntoViewIfNeeded();
+    await pause(800);
+    await b.first().click();
+    await pause(1500);
+  }
+  await role("technician");
+} else {
+  mark("無需主管確認的步驟，略過");
 }
-await role("technician");
 
 // Checklist → 結案回報
 const checklist = card("完工 Checklist");

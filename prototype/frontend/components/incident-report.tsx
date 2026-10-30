@@ -42,7 +42,7 @@ export function ReportAlertBar({ inc, href }: { inc: Incident; href?: string }) 
       </div>
       <div className="ml-auto text-right">
         <div className="text-xs text-red-200">{overdue ? "已逾期" : "距通報期限"}</div>
-        <div className="tabular font-mono text-2xl font-bold text-white">{left !== null ? (overdue ? "00:00:00" : fmtDuration(left)) : "—"}</div>
+        <div className="tabular font-mono text-2xl font-bold text-foreground">{left !== null ? (overdue ? "00:00:00" : fmtDuration(left)) : "—"}</div>
       </div>
     </div>
   );
@@ -200,7 +200,7 @@ export function IncidentReportPanel({ inc }: { inc: Incident }) {
         icon={<AlertTriangle className="h-4 w-4 text-red-400" />}
         right={
           required ? (
-            <span className={cn("tabular font-mono text-lg font-bold", overdue ? "text-red-300" : "text-white")}>
+            <span className={cn("tabular font-mono text-lg font-bold", overdue ? "text-red-300" : "text-foreground")}>
               {overdue ? "已逾期" : `剩 ${left !== null ? fmtDuration(left) : "—"}`}
             </span>
           ) : rep.status === "submitted" ? (

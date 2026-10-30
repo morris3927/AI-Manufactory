@@ -98,7 +98,7 @@ function KanbanCard({ w, flash }: { w: WorkOrder; flash: boolean }) {
       <div className="flex items-center gap-1.5">
         <SeverityBadge s={sev} short />
         <span className="font-mono text-xs text-muted">{w.id}</span>
-        <span className="ml-auto rounded bg-black/30 px-1.5 py-0.5 text-[11px] text-slate-300">{STATUS_LABEL[w.status]}</span>
+        <span className="ml-auto rounded bg-background/60 px-1.5 py-0.5 text-[11px] text-muted">{STATUS_LABEL[w.status]}</span>
       </div>
       <div className="mt-1.5 text-sm font-medium leading-snug">{w.title ?? "異常"}</div>
       <div className="mt-0.5 text-xs text-muted">

@@ -7,7 +7,7 @@ export const STATUS_LABEL: Record<WorkOrderStatus, string> = {
   ACKED: "已接單",
   PERMIT_REQUESTED: "許可申請中",
   PERMIT_APPROVED: "許可已核准",
-  LOTO_DONE: "LOTO 完成",
+  LOTO_DONE: "上鎖完成",
   IN_REPAIR: "維修中",
   PENDING_VERIFY: "待確認",
   CLOSED: "已結案",
@@ -48,7 +48,7 @@ export function reached(s: WorkOrderStatus, target: WorkOrderStatus): boolean {
 
 export const ROLE_LABEL: Record<Role, string> = {
   technician: "技術員",
-  leader: "班長",
+  leader: "現場主管",
   supervisor: "主管",
   judge: "評審（唯讀）",
 };
@@ -57,7 +57,7 @@ export const ROLE_LABEL: Record<Role, string> = {
 export const PERSON_ROLE_LABEL: Record<string, string> = {
   operator: "作業員",
   technician: "技術員",
-  leader: "班長",
+  leader: "現場主管",
   supervisor: "組長",
   manager: "主管",
 };
@@ -75,10 +75,11 @@ export const SEVERITY_LABEL: Record<Severity, string> = {
   S3: "S3 緊急",
 };
 
+// bar／hex 用 globals.css 的 --sev-* 變數，跟著主題換色（hex 給 recharts 用）
 export const SEVERITY_STYLE: Record<Severity, { bar: string; text: string; bg: string; hex: string }> = {
-  S1: { bar: "bg-sky-400", text: "text-sky-300", bg: "bg-sky-500/15 border-sky-500/40", hex: "#38bdf8" },
-  S2: { bar: "bg-amber-400", text: "text-amber-300", bg: "bg-amber-500/15 border-amber-500/40", hex: "#fbbf24" },
-  S3: { bar: "bg-red-500", text: "text-red-300", bg: "bg-red-500/15 border-red-500/50", hex: "#ef4444" },
+  S1: { bar: "bg-[var(--sev-s1)]", text: "text-sky-300", bg: "bg-sky-500/15 border-sky-500/40", hex: "var(--sev-s1)" },
+  S2: { bar: "bg-[var(--sev-s2)]", text: "text-amber-300", bg: "bg-amber-500/15 border-amber-500/40", hex: "var(--sev-s2)" },
+  S3: { bar: "bg-[var(--sev-s3)]", text: "text-red-300", bg: "bg-red-500/15 border-red-500/50", hex: "var(--sev-s3)" },
 };
 
 export const LINE_LABEL: Record<string, string> = {
@@ -97,3 +98,6 @@ export const EVENT_TYPE_LABEL: Record<string, string> = {
   camera_offline: "訊號中斷",
   scenario_started: "劇本啟動",
 };
+
+/** 後端維修模式每則回覆最後固定附上的復機提醒（backend sentinel/agent/guards.py CLOSING_REMINDER，字串要完全相同） */
+export const CLOSING_REMINDER = "完工復機（由當初上鎖的人自己做）：確定機台周圍沒人、工具都拿出來 → 拆下自己的鎖和停止牌 → 重新啟動機台。";

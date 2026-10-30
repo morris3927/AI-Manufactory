@@ -1,8 +1,9 @@
 "use client";
 
-import { Loader2, ShieldAlert, ShieldCheck } from "lucide-react";
+import { AlertTriangle, Loader2, Lock, LockOpen, ShieldAlert, ShieldCheck } from "lucide-react";
 import type { ReactNode } from "react";
 import { api } from "@/lib/api";
+import { CLOSING_REMINDER } from "@/lib/labels";
 import { usePersona } from "@/lib/session";
 import type { AgentMessage, SafetyFlag, WorkOrderDetail } from "@/lib/types";
 import { cn, fmtTime } from "@/lib/utils";
@@ -11,7 +12,7 @@ import { Button } from "../ui/button";
 type Act = <T>(fn: () => Promise<T>, okText?: string) => Promise<T | undefined>;
 
 const PROB_LABEL: Record<string, string> = {
-  needs_loto: "需 LOTO",
+  needs_loto: "需上鎖掛牌",
   enters_danger_zone: "進入危險區",
   high_voltage: "高壓電",
   bypasses_guard: "繞過防護",
@@ -25,6 +26,34 @@ export const GATE_THRESHOLDS: Record<string, number> = {
   high_voltage: 0.45,
   energized: 0.55,
 };
+
+/** 後端 config.yaml thresholds.gate_supervisor：進入危險區機率 ≥ 此值才需主管確認（gate_set 標為危險的手入模區步驟最低 0.73） */
+export const GATE_SUPERVISOR_THRESHOLDS: Record<string, number> = { enters_danger_zone: 0.7 };
+
+/** 「注意」級的提醒文字，依觸發的題目決定（給現場人員看，不寫術語） */
+const CAUTION_TEXT: Record<string, string> = {
+  enters_danger_zone: "注意：可能靠近危險區，作業時保持距離",
+  needs_loto: "注意：作業前確認已上鎖掛牌、機台不會動",
+  high_voltage: "注意：可能碰到電氣部位，先確認已斷電",
+  energized: "注意：這步可能讓機台動作，先確認周圍沒人",
+};
+
+/** 旗標等級：caution 只提醒、lockout 只缺上鎖掛牌；舊資料（沒有 level）一律當成需主管確認 */
+export function flagLevel(f: SafetyFlag): "lockout" | "caution" | "supervisor" {
+  return f.level === "caution" || f.level === "lockout" ? f.level : "supervisor";
+}
+
+const LOCKOUT_TEXT = "需先完成上鎖掛牌：這一步要碰機台，請先申請作業許可、完成上鎖掛牌再做";
+
+/** 待主管確認的旗標（只算 supervisor 級、且還沒確認） */
+export function pendingSupervisor(flags: SafetyFlag[]): SafetyFlag[] {
+  return flags.filter((f) => flagLevel(f) === "supervisor" && f.supervisor_requested);
+}
+
+function cautionText(f: SafetyFlag): string {
+  const keys = f.reasons?.length ? f.reasons : Object.entries(f.probs ?? {}).sort((a, b) => b[1] - a[1]).map(([k]) => k);
+  return CAUTION_TEXT[keys.find((k) => CAUTION_TEXT[k]) ?? "enters_danger_zone"];
+}
 
 const NUM_RE = /^\s*(\d+)[.、)）]\s*/;
 const BULLET_RE = /^\s*[-•*・]\s+/;
@@ -52,8 +81,8 @@ function matchFlag(text: string, steps: string[], flags: SafetyFlag[]): SafetyFl
 /** **粗體** 與 `程式碼` 的簡易行內格式 */
 function inline(s: string): ReactNode[] {
   return s.split(/(\*\*[^*]+\*\*|`[^`]+`)/g).map((part, i) => {
-    if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} className="font-semibold text-white">{part.slice(2, -2)}</strong>;
-    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} className="rounded bg-black/40 px-1 font-mono text-[0.9em]">{part.slice(1, -1)}</code>;
+    if (part.startsWith("**") && part.endsWith("**")) return <strong key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</strong>;
+    if (part.startsWith("`") && part.endsWith("`")) return <code key={i} className="rounded bg-background/70 px-1 font-mono text-[0.9em]">{part.slice(1, -1)}</code>;
     return part;
   });
 }
@@ -91,28 +120,46 @@ function parse(content: string): Block[] {
 function FlagChips({ f }: { f: SafetyFlag }) {
   const entries = Object.entries(f.probs ?? {}).sort((a, b) => b[1] - a[1]);
   const over = (k: string, v: number) => (f.reasons ? f.reasons.includes(k) : v >= (GATE_THRESHOLDS[k] ?? 0.3));
-  const shown = entries.filter(([k, v]) => over(k, v));
-  const red = f.max_p >= 0.6;
+  const level = flagLevel(f);
+  const lockout = level === "lockout" || !!f.needs_lockout;
+  const shown = entries.filter(([k, v]) => over(k, v) && !(k === "needs_loto" && lockout));
+  const sup = level === "supervisor";
+  if (level === "lockout")
+    return (
+      <div className="mt-1 flex items-center gap-1 text-[13px] text-orange-300">
+        <Lock className="h-3.5 w-3.5 shrink-0" /> {LOCKOUT_TEXT}
+      </div>
+    );
+  const thTitle = (k: string) =>
+    `門檻 ${GATE_THRESHOLDS[k] ?? 0.3}` + (GATE_SUPERVISOR_THRESHOLDS[k] !== undefined ? `；≥ ${GATE_SUPERVISOR_THRESHOLDS[k]} 需主管確認` : "");
   return (
     <div className="mt-1 flex flex-wrap items-center gap-1 text-xs">
-      <ShieldAlert className={cn("h-3.5 w-3.5", red ? "text-red-300" : "text-amber-300")} />
-      <span className={red ? "text-red-300" : "text-amber-300"}>Jev 安全把關{f.source && f.source !== "jev" ? `（${f.source}）` : ""}</span>
+      {sup ? <ShieldAlert className="h-3.5 w-3.5 text-red-300" /> : <AlertTriangle className="h-3.5 w-3.5 text-amber-300" />}
+      <span className={sup ? "text-red-300" : "text-amber-300"}>
+        {sup ? "需主管確認" : "注意"}・Jev 安全把關{f.source && f.source !== "jev" ? `（${f.source}）` : ""}
+      </span>
       {(shown.length ? shown : entries.slice(0, 1)).map(([k, v]) => (
         <span
           key={k}
-          title={`門檻 ${GATE_THRESHOLDS[k] ?? 0.3}`}
-          className={cn("rounded px-1.5 py-px font-mono", v >= 0.6 ? "bg-red-500/25 text-red-100" : "bg-amber-500/20 text-amber-100")}
+          title={thTitle(k)}
+          className={cn("rounded px-1.5 py-px font-mono", sup ? "bg-red-500/25 text-red-100" : "bg-amber-500/20 text-amber-100")}
         >
           {PROB_LABEL[k] ?? k} {v.toFixed(2)}
         </span>
       ))}
-      {f.supervisor_requested ? (
+      {!sup ? null : f.supervisor_requested ? (
         <span className="text-red-300">・待主管確認</span>
       ) : f.acked_by ? (
         <span className="flex items-center gap-0.5 text-emerald-300">
           <ShieldCheck className="h-3.5 w-3.5" /> 主管已確認（{f.acked_by}）
         </span>
       ) : null}
+      {!sup && <div className="basis-full text-[13px] text-amber-200">{cautionText(f)}</div>}
+      {lockout && (
+        <div className="flex basis-full items-center gap-1 text-[13px] text-orange-300">
+          <Lock className="h-3.5 w-3.5 shrink-0" /> {LOCKOUT_TEXT}
+        </div>
+      )}
     </div>
   );
 }
@@ -120,10 +167,21 @@ function FlagChips({ f }: { f: SafetyFlag }) {
 type GateState = "pending" | "cleared" | undefined;
 
 function Step({ no, text, flag, gate }: { no?: string; text: string; flag?: SafetyFlag; gate?: GateState }) {
-  const tone = flag ? (flag.max_p >= 0.6 ? "border-red-500/70 bg-red-500/10" : "border-amber-500/60 bg-amber-500/10") : "border-transparent";
+  // 需主管確認＝紅；注意＝黃（不需確認）；只缺上鎖掛牌＝橘（不需主管）
+  const level = flag ? flagLevel(flag) : undefined;
+  const tone =
+    level === "supervisor"
+      ? "border-red-500/70 bg-red-500/10"
+      : level === "caution"
+        ? "border-amber-400/70 bg-amber-400/10"
+        : level === "lockout"
+          ? "border-orange-500/70 bg-orange-500/10"
+          : "border-transparent";
   return (
-    <li className={cn("flex gap-2 rounded border-l-4 px-2 py-1", tone)}>
-      {no !== undefined && <span className={cn("shrink-0 font-mono text-sm", flag ? "text-red-200" : "text-cyan-300")}>{no}.</span>}
+    <li className={cn("flex gap-2 rounded border-l-4 px-2 py-1", tone)} data-gate-level={level ?? "none"}>
+      {no !== undefined && (
+        <span className={cn("shrink-0 font-mono text-sm", level === "supervisor" ? "text-red-200" : level === "caution" ? "text-amber-200" : level === "lockout" ? "text-orange-200" : "text-cyan-300")}>{no}.</span>
+      )}
       {no === undefined && <span className="shrink-0 text-cyan-300">•</span>}
       <div className="min-w-0 flex-1">
         <span className="leading-relaxed">{inline(text)}</span>
@@ -163,14 +221,17 @@ export function sortMessages(list: AgentMessage[]): AgentMessage[] {
 
 export function AssistantContent({ m }: { m: AgentMessage }) {
   const flags = m.safety_flags ?? [];
-  const steps = m.steps ?? [];
-  const blocks = parse(m.content ?? "");
+  // 結尾的復機提醒不是步驟：整行相同才抽出來，最後用小字淺底另外畫
+  const lines = (m.content ?? "").split("\n");
+  const remind = lines.some((l) => l.trim() === CLOSING_REMINDER) || (m.steps ?? []).some((s) => s.trim() === CLOSING_REMINDER);
+  const steps = (m.steps ?? []).filter((s) => s.trim() !== CLOSING_REMINDER);
+  const blocks = parse(lines.filter((l) => l.trim() !== CLOSING_REMINDER).join("\n"));
   const used = new Set<SafetyFlag>();
   const hasList = blocks.some((b) => b.kind !== "p");
   const out = blocks.map((b, i) => {
     if (b.kind === "p")
       return (
-        <p key={i} className="whitespace-pre-wrap leading-relaxed text-slate-100">
+        <p key={i} className="whitespace-pre-wrap leading-relaxed text-foreground">
           {inline(b.text)}
         </p>
       );
@@ -210,6 +271,14 @@ export function AssistantContent({ m }: { m: AgentMessage }) {
       </div>,
     );
   }
+  if (remind) {
+    out.push(
+      <div key="remind" className="flex items-start gap-1.5 rounded-md border border-line bg-background/60 px-2.5 py-1.5 text-[13px] leading-relaxed text-muted">
+        <LockOpen className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+        <span>{CLOSING_REMINDER}</span>
+      </div>,
+    );
+  }
   return <div className="space-y-2 text-[15px]">{out}</div>;
 }
 
@@ -232,20 +301,22 @@ export function ChatBubble({ m, wo, act }: { m: AgentMessage; wo: WorkOrderDetai
   const flags = m.safety_flags ?? [];
   const gating = m.gate?.status === "pending";
   // 把關還在跑時先不給「主管確認」：最終旗標以全部步驟檢查完的結果為準
-  const pending = !gating && flags.some((f) => f.supervisor_requested);
+  // 只有「需主管確認」級才出現確認區塊；只有「注意」級的回覆不用任何人按
+  const waiting = pendingSupervisor(flags);
+  const pending = !gating && waiting.length > 0;
   const isSup = persona.role === "supervisor";
   return (
     <div className="max-w-[96%] rounded-lg rounded-tl-none border border-line bg-panel-2 px-3 py-2">
       <AssistantContent m={m} />
       {gating && (
         <div className="mt-1.5 flex items-center gap-1 text-xs text-amber-200/80">
-          <Loader2 className="h-3 w-3 animate-spin" /> Jev 安全把關檢查中…（標紅步驟會自動通知主管）
+          <Loader2 className="h-3 w-3 animate-spin" /> Jev 安全把關檢查中…（需主管確認的步驟會自動通知主管）
         </div>
       )}
       {pending && (
         <div className="mt-2 flex flex-wrap items-center gap-2 rounded border border-red-500/40 bg-red-500/5 px-2 py-1.5">
           <ShieldAlert className="h-4 w-4 text-red-300" />
-          <span className="text-sm text-red-200">有 {flags.filter((f) => f.supervisor_requested).length} 個步驟待主管確認</span>
+          <span className="text-sm text-red-200">有 {waiting.length} 個步驟待主管確認</span>
           <Button
             size="sm"
             variant="warn"
@@ -254,7 +325,7 @@ export function ChatBubble({ m, wo, act }: { m: AgentMessage; wo: WorkOrderDetai
             title={isSup ? undefined : "需主管身分（右上角切換）"}
             onClick={() =>
               act(
-                () => api.override({ target: "workorder", target_id: wo.id, field: "safety_ack", new: String(m.id), reason: "主管已確認安全措施：禁止徒手進入危險區，依 LOTO 與 SOP 執行" }),
+                () => api.override({ target: "workorder", target_id: wo.id, field: "safety_ack", new: String(m.id), reason: "主管已確認安全措施：禁止徒手進入危險區，依上鎖掛牌與 SOP 執行" }),
                 "已確認安全把關",
               )
             }
@@ -266,7 +337,7 @@ export function ChatBubble({ m, wo, act }: { m: AgentMessage; wo: WorkOrderDetai
       {!!m.tool_calls?.length && (
         <div className="mt-1.5 flex flex-wrap gap-1">
           {m.tool_calls.map((t, i) => (
-            <span key={i} className="rounded bg-black/30 px-1.5 py-0.5 font-mono text-xs text-muted" title={JSON.stringify(t.args ?? {})}>
+            <span key={i} className="rounded bg-background/60 px-1.5 py-0.5 font-mono text-xs text-muted" title={JSON.stringify(t.args ?? {})}>
               ƒ {t.name}
             </span>
           ))}

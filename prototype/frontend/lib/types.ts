@@ -181,6 +181,11 @@ export interface SafetyFlag {
   /** 例如 { enters_danger_zone: 0.9 } */
   probs: Record<string, number>;
   max_p: number;
+  /** 把關等級：supervisor＝需主管確認（紅）、caution＝注意（黃，不需確認）、lockout＝只缺上鎖掛牌（橘，不需主管）；
+   *  舊資料沒有此欄位視為 supervisor */
+  level?: "none" | "lockout" | "caution" | "supervisor";
+  /** 上鎖掛牌還沒完成，而且這一步要碰機台（可以和 caution／supervisor 同時成立） */
+  needs_lockout?: boolean;
   supervisor_requested?: boolean;
   requires_supervisor?: boolean;
   /** 超過門檻的題目（後端 J4 判定） */

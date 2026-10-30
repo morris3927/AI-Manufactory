@@ -102,7 +102,7 @@ export const LOTO_FEEDER: LotoChecklist = {
     { step_no: 3, text: "關閉主電源隔離開關 QF1，上鎖並掛牌", energy: "電力", checked_by: null, ts: null },
     { step_no: 4, text: "關閉主氣閥並排空壓縮空氣，壓力表歸零", energy: "氣壓", checked_by: null, ts: null },
     { step_no: 5, text: "釋放送料滾輪壓力，確認機械儲能歸零", energy: "機械儲能", checked_by: null, ts: null },
-    { step_no: 6, text: "按啟動鈕確認無法啟動（零能量驗證）", energy: "驗證", checked_by: null, ts: null },
+    { step_no: 6, text: "按啟動鈕確認機台不會動", energy: "驗證", checked_by: null, ts: null },
   ],
 };
 
@@ -111,7 +111,7 @@ export const CHECKLIST_FEEDER: ChecklistItem[] = [
   { item: "feed_error_ok", label: "試沖 10 模，送料長度誤差 < 0.05 mm", checked_by: null, ts: null },
   { item: "setting_checked", label: "滾輪壓力與板厚設定已確認", checked_by: null, ts: null },
   { item: "guard_restored", label: "護罩與光柵已復位", checked_by: null, ts: null },
-  { item: "loto_released", label: "已由原上鎖人依 LOTO 解除程序解鎖", checked_by: null, ts: null },
+  { item: "loto_released", label: "已由原上鎖人拆下自己的鎖和停止牌", checked_by: null, ts: null },
 ];
 
 export const CHECKLIST_SAFETY: ChecklistItem[] = [
@@ -129,7 +129,7 @@ export const SOP_FEEDER: SopChunk[] = [
     sop_id: "SOP-STP-012",
     title: "伺服送料機卡料排除",
     phase: "prepare",
-    steps: ["確認工單根因前三名與 Log 摘要", "準備塞規、分厘卡、取料夾具", "依 LOTO-STP-FD 完成上鎖"],
+    steps: ["確認工單根因前三名與 Log 摘要", "準備塞規、分厘卡、取料夾具", "依上鎖清單 LOTO-STP-FD 完成上鎖掛牌"],
     source: "模擬 SOP（自編）",
   },
   {
@@ -151,7 +151,7 @@ export const SOP_FEEDER: SopChunk[] = [
     sop_id: "SOP-STP-012",
     title: "伺服送料機卡料排除",
     phase: "verify",
-    steps: ["試沖 10 模確認送料誤差", "由原上鎖人依 LOTO 解除程序解鎖", "填寫結案回報"],
+    steps: ["試沖 10 模確認送料誤差", "由原上鎖人拆下自己的鎖和停止牌", "填寫結案回報"],
     source: "模擬 SOP（自編）",
   },
 ];
@@ -161,7 +161,7 @@ export const SOP_PPE: SopChunk[] = [
     sop_id: "SOP-SAF-003",
     title: "未配戴個人防護具處置",
     phase: "respond",
-    steps: ["班長到場提醒並確認配戴", "記錄人員與時間", "當日班會宣導"],
+    steps: ["現場主管到場提醒並確認配戴", "記錄人員與時間", "當日班會宣導"],
     source: "模擬 SOP（自編）",
   },
 ];
@@ -190,16 +190,16 @@ export function feedJamDiagnosis(incidentId: string, learned: boolean): Diagnosi
 }
 
 export const FEED_JAM_EXPLANATION =
-  "送料速率在 6 秒內由 42 m/min 降為 0，同時送料長度誤差由 0.02 mm 逐步升到 0.21 mm；Jev 連續兩張關鍵幀判定卡料（0.82、0.88），並框出送料口的板材。誤差是「逐步上升」而不是瞬間跳變，比較符合滾輪打滑（磨損）造成的送料不足，所以第一名是送料滾輪磨損。如果量測板厚超出 2.00 ± 0.05 mm 的公差，材料厚度偏差的可能性就會上升。建議先依 LOTO-STP-FD 完成上鎖，再依 SOP-STP-012 §3 檢查滾輪表面與間隙。";
+  "送料速率在 6 秒內由 42 m/min 降為 0，同時送料長度誤差由 0.02 mm 逐步升到 0.21 mm；Jev 連續兩張關鍵幀判定卡料（0.82、0.88），並框出送料口的板材。誤差是「逐步上升」而不是瞬間跳變，比較符合滾輪打滑（磨損）造成的送料不足，所以第一名是送料滾輪磨損。如果量測板厚超出 2.00 ± 0.05 mm 的公差，材料厚度偏差的可能性就會上升。建議先依上鎖清單 LOTO-STP-FD 完成上鎖掛牌，再依 SOP-STP-012 §3 檢查滾輪表面與間隙。";
 
 export const FEED_JAM_EXPLANATION_LEARNED =
   "本次訊號型態與上次結案的 CASE-STP-0087（板厚 2.08 mm 超出公差）高度相似，知識庫寫回後，材料厚度偏差升為第一名。建議上鎖後先以分厘卡量測板材三點厚度，再檢查滾輪。";
 
 export const SCENARIOS: Scenario[] = [
-  { id: "ppe_helmet", title: "場景 1：PPE 未戴安全帽", description: "組裝線攝影機切到未戴安全帽影片 → YOLO＋Jev 確認 → 工安 S2 直接派班長（不叫 LLM）" },
+  { id: "ppe_helmet", title: "場景 1：PPE 未戴安全帽", description: "組裝線攝影機切到未戴安全帽影片 → YOLO＋Jev 確認 → 工安 S2 直接派現場主管（不叫 LLM）" },
   { id: "feed_jam", title: "場景 2：沖床送料卡料", description: "影片卡料＋Log 送料速率歸零 → 跨模態確認 → Jev 根因前三名 → 派工 → LLM 說明補上" },
   { id: "idle_mismatch", title: "場景 3：影像閒置但 Log 顯示運轉", description: "沖床畫面靜止，但 MES 回報運轉中 → Log 失準告警" },
-  { id: "weld_smoke", title: "場景 4：銲接煙霧＋逐級升級（S3）", description: "Jev 看到異常煙霧 → 無人接單 → 技術員 → 班長 → 組長" },
+  { id: "weld_smoke", title: "場景 4：銲接煙霧＋逐級升級（S3）", description: "Jev 看到異常煙霧 → 無人接單 → 技術員 → 現場主管 → 組長" },
   { id: "person_zone", title: "場景 6：光幕停用時人員進入危險區（S3＋職災通報）", description: "人員進入沖床危險區 → S3 → 傷亡標記 → 8 小時通報倒數（主管送出）" },
 ];
 

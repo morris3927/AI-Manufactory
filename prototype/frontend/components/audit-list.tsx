@@ -20,8 +20,8 @@ const ACTION_LABEL: Record<string, string> = {
   notify_suppressed: "通知抑制（疑似誤報）",
   llm_explanation: "LLM 說明",
   llm_unavailable: "LLM 不可用",
-  loto_step_checked: "LOTO 勾選",
-  loto_check: "LOTO 勾選",
+  loto_step_checked: "上鎖掛牌勾選",
+  loto_check: "上鎖掛牌勾選",
   permit_requested: "申請作業許可",
   permit_approved: "核准作業許可",
   checklist_checked: "Checklist 勾選",
@@ -36,6 +36,7 @@ const ACTION_LABEL: Record<string, string> = {
   agent_reply: "Agent 回覆",
   agent_tool: "Agent 查詢工具",
   safety_gate_flag: "安全把關標紅",
+  safety_gate_caution: "安全把關提醒（注意）",
   override: "主管覆寫",
   ack: "接單",
   reassign: "轉派",
@@ -54,14 +55,15 @@ const ACTOR_STYLE: Record<string, string> = {
   jev: "bg-orange-500/20 text-orange-200",
   llm: "bg-emerald-500/20 text-emerald-200",
   rules: "bg-blue-500/20 text-blue-200",
-  system: "bg-slate-500/25 text-slate-200",
+  system: "bg-slate-500/25 text-foreground",
 };
 
 type D = Record<string, unknown>;
 const st = (s: unknown) => STATUS_LABEL[s as WorkOrderStatus] ?? String(s ?? "—");
 const p2 = (v: unknown) => (typeof v === "number" ? (Math.abs(v) < 1 && v !== 0 ? v.toFixed(2) : String(Math.round(v * 1000) / 1000)) : String(v));
 const short = (v: unknown, n = 60) => {
-  const s = typeof v === "string" ? v : JSON.stringify(v);
+  // JSON.stringify(undefined) 會回傳 undefined，不是字串
+  const s = typeof v === "string" ? v : (JSON.stringify(v) ?? String(v));
   return s.length > n ? s.slice(0, n) + "…" : s;
 };
 
@@ -127,6 +129,8 @@ function summarize(a: AuditEntry): string | null {
       return [d.phase && `階段 ${d.phase}`, d.llm_used !== undefined && (d.llm_used ? "LLM 產生" : "固定流程"), Array.isArray(d.safety_flags) && d.safety_flags.length ? `旗標 ${(d.safety_flags as string[]).join("、")}` : null, d.supervisor_requested ? "已要求主管確認" : null]
         .filter(Boolean)
         .join("・");
+    case "safety_gate_caution":
+      return Array.isArray(d.steps) ? (d.steps as D[]).map((x) => short(x.step, 30)).join("；") : null;
     case "override":
       return `${d.field}：${short(d.old ?? "—", 20)} → ${short(d.new, 20)}${d.reason ? `（${d.reason}）` : ""}`;
     case "agent_tool":
@@ -143,7 +147,7 @@ function KeyValues({ d }: { d: D }) {
     <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-xs">
       {entries.map(([k, v]) => (
         <span key={k}>
-          <span className="text-muted">{k}</span> <span className="font-mono text-slate-200">{short(p2(v), 40)}</span>
+          <span className="text-muted">{k}</span> <span className="font-mono text-foreground">{short(p2(v), 40)}</span>
         </span>
       ))}
     </div>
@@ -156,7 +160,7 @@ function Raw({ d }: { d: unknown }) {
       <summary className="flex cursor-pointer list-none items-center gap-0.5 text-xs text-muted hover:text-foreground">
         <ChevronRight className="h-3 w-3 transition-transform group-open:rotate-90" /> 原始 JSON
       </summary>
-      <pre className="mt-1 max-h-56 overflow-auto whitespace-pre-wrap break-all rounded bg-black/40 p-2 font-mono text-xs text-slate-300">{JSON.stringify(d, null, 2)}</pre>
+      <pre className="mt-1 max-h-56 overflow-auto whitespace-pre-wrap break-all rounded bg-background/70 p-2 font-mono text-xs text-foreground/85">{JSON.stringify(d, null, 2)}</pre>
     </details>
   );
 }
@@ -174,8 +178,8 @@ function Row({ a }: { a: AuditEntry }) {
       <div className="flex flex-wrap items-baseline gap-2 text-sm">
         <span className="tabular font-mono text-xs text-muted">{fmtDateTime(a.ts)}</span>
         <Actor a={a.actor} />
-        <span className="font-medium text-slate-100">{ACTION_LABEL[a.action] ?? a.action}</span>
-        {sum && <span className="text-slate-300">{sum}</span>}
+        <span className="font-medium text-foreground">{ACTION_LABEL[a.action] ?? a.action}</span>
+        {sum && <span className="text-foreground/85">{sum}</span>}
         {Object.keys(d).length > 0 && <Raw d={d} />}
       </div>
       {!sum && <KeyValues d={d} />}
@@ -213,8 +217,8 @@ export function AuditList({ list, compact }: { list: AuditEntry[]; compact?: boo
               <summary className="flex cursor-pointer list-none flex-wrap items-baseline gap-2 text-sm">
                 <span className="tabular font-mono text-xs text-muted">{fmtDateTime(it.list[0].ts)}</span>
                 <Actor a={it.list[0].actor} />
-                <span className="font-medium text-slate-100">Agent 查詢工具 ×{it.list.length}</span>
-                <span className="truncate text-slate-400">{[...new Set(it.list.map((x) => String((x.detail as D)?.tool ?? "")))].join("、")}</span>
+                <span className="font-medium text-foreground">Agent 查詢工具 ×{it.list.length}</span>
+                <span className="truncate text-muted">{[...new Set(it.list.map((x) => String((x.detail as D)?.tool ?? "")))].join("、")}</span>
                 <ChevronRight className="h-3.5 w-3.5 self-center text-muted transition-transform group-open:rotate-90" />
               </summary>
               <ol className="mt-1 space-y-1 border-l border-violet-500/30 pl-3">

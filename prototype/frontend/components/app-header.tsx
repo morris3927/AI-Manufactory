@@ -2,19 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Activity, BarChart3, ClipboardList, FileSearch, LayoutDashboard, ShieldAlert, SlidersHorizontal } from "lucide-react";
+import { Activity, BarChart3, ClipboardList, FileSearch, LayoutDashboard, Moon, ShieldAlert, SlidersHorizontal, Sun } from "lucide-react";
 import { useEffect } from "react";
 import { api } from "@/lib/api";
 import { MOCK } from "@/lib/config";
 import { useAsync, useNow } from "@/lib/hooks";
 import { ROLE_LABEL } from "@/lib/labels";
 import { PERSONAS, setRole, usePersona } from "@/lib/session";
+import { setTheme, useTheme } from "@/lib/theme";
 import type { Role } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import { useWsStatus, wsClient } from "@/lib/ws";
 
 const NAV = [
-  { href: "/", label: "戰情儀表板", icon: LayoutDashboard },
+  { href: "/", label: "監控儀表板", icon: LayoutDashboard },
   { href: "/kanban", label: "任務看板", icon: ClipboardList },
   { href: "/control", label: "控制台", icon: SlidersHorizontal },
   { href: "/metrics", label: "效益", icon: BarChart3 },
@@ -60,7 +61,7 @@ function HealthBadge() {
       <span>
         偵測：<span className={h.detector_mode === "yolo" ? "text-emerald-300" : "text-amber-200"}>{det}</span>
       </span>
-      <span>・向量：<span className="text-slate-200">{emb}</span></span>
+      <span>・向量：<span className="text-foreground">{emb}</span></span>
       <span className="flex items-center gap-1">
         ・Jev <span className={cn("h-1.5 w-1.5 rounded-full", h.jev?.enabled ? "bg-emerald-400" : "bg-red-500")} />
       </span>
@@ -85,6 +86,24 @@ function WsDot() {
       <span className={cn("h-2 w-2 rounded-full", c)} />
       <span className="hidden sm:inline">{t}</span>
     </span>
+  );
+}
+
+/** 淺色／深色切換：圖示顯示「按下去會切到的模式」 */
+function ThemeToggle() {
+  const t = useTheme();
+  const next = t === "dark" ? "light" : "dark";
+  const label = next === "dark" ? "切換為深色模式" : "切換為淺色模式";
+  return (
+    <button
+      type="button"
+      onClick={() => setTheme(next)}
+      className="flex h-8 w-8 items-center justify-center rounded-md border border-line bg-panel-2 text-muted transition-colors hover:border-cyan-500/60 hover:text-foreground"
+      aria-label={label}
+      title={label}
+    >
+      {next === "dark" ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+    </button>
   );
 }
 
@@ -116,14 +135,13 @@ export function AppHeader() {
   const path = usePathname();
   const mobile = path.startsWith("/m/");
   return (
-    <header className="sticky top-0 z-40 border-b border-line bg-[#070b10]/90 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-line bg-background/90 backdrop-blur">
       <div className="mx-auto flex h-12 max-w-[1800px] items-center gap-3 px-3 sm:px-4">
         <Link href="/" className="flex shrink-0 items-center gap-2">
           <ShieldAlert className="h-5 w-5 text-cyan-400" />
           <span className="font-bold tracking-wider text-foreground">
             Sentinel <span className="text-cyan-400">AI</span>
           </span>
-          <span className="hidden rounded bg-cyan-500/10 px-1.5 py-0.5 text-[11px] font-semibold tracking-widest text-cyan-300 xl:inline">戰情模式</span>
         </Link>
         {!mobile && (
           <nav className="flex min-w-0 flex-1 items-center gap-0.5 overflow-x-auto">
@@ -155,6 +173,7 @@ export function AppHeader() {
           <HealthBadge />
           <Clock />
           <WsDot />
+          <ThemeToggle />
           <RoleSwitcher compact={mobile} />
         </div>
       </div>
@@ -165,7 +184,7 @@ export function AppHeader() {
 /** 畫面右下角常駐的「模擬資料」標示 */
 export function FloatingSimBadge() {
   return (
-    <div className="pointer-events-none fixed bottom-3 right-3 z-50 rounded border border-fuchsia-400/60 bg-[#14081a]/90 px-2 py-1 text-xs font-semibold tracking-widest text-fuchsia-300 shadow-lg">
+    <div className="pointer-events-none fixed bottom-3 right-3 z-50 rounded border border-fuchsia-400/60 bg-panel/90 px-2 py-1 text-xs font-semibold tracking-widest text-fuchsia-300 shadow-lg">
       模擬資料
     </div>
   );

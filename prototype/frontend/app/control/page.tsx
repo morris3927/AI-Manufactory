@@ -225,7 +225,7 @@ export default function ControlPage() {
                   {l.text}
                 </Link>
               ) : (
-                <span className="text-slate-300">{l.text}</span>
+                <span className="text-foreground/85">{l.text}</span>
               )}
             </div>
           ))}

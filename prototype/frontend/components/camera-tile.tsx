@@ -17,13 +17,14 @@ export interface Overlay {
   kind: "jev" | "yolo" | "roi";
 }
 
+// 疊在影像上的框和標籤：不跟主題走（淺色模式會把 cyan-300 之類換成深色階），直接寫色碼
 const KIND: Record<Overlay["kind"], string> = {
-  jev: "border-cyan-300 shadow-[0_0_12px_rgba(34,211,238,0.8)]",
+  jev: "border-[#67e8f9] shadow-[0_0_12px_rgba(34,211,238,0.8)]",
   yolo: "border-red-500",
   roi: "border-dashed border-slate-400/50",
 };
 const KIND_LABEL: Record<Overlay["kind"], string> = {
-  jev: "bg-cyan-300 text-slate-950",
+  jev: "bg-[#67e8f9] text-slate-950",
   yolo: "bg-red-500 text-white",
   roi: "bg-slate-700/80 text-slate-200",
 };
@@ -66,10 +67,10 @@ export function CameraView({
       {MOCK || !url ? (
         <MockFeed cameraId={camera.id} source={camera.source} frozen={frozen} />
       ) : failed ? (
-        <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#0b0f14] text-red-400">
+        <div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[#0b0f14] text-[#f87171]">
           <VideoOff className="h-8 w-8" />
           <span className="text-sm font-semibold">訊號中斷</span>
-          <button className="pointer-events-auto text-xs text-muted underline" onClick={() => setFailed(false)}>
+          <button className="pointer-events-auto text-xs text-slate-400 underline" onClick={() => setFailed(false)}>
             重新連線
           </button>
         </div>
@@ -102,11 +103,11 @@ export function CameraTile({
       {/* 標題列：實心底色，不疊在畫面上（避免和合成影像上的文字重疊） */}
       <div className="flex items-center gap-2 border-b border-line bg-panel-2 px-2 py-1.5">
         <span className="h-2 w-2 shrink-0 animate-pulse rounded-full bg-red-500" />
-        <span className="font-mono text-sm font-semibold text-slate-100">{camera.id}</span>
-        <span className="min-w-0 truncate text-sm text-slate-300">{camera.name ?? machineName}</span>
+        <span className="font-mono text-sm font-semibold text-foreground">{camera.id}</span>
+        <span className="min-w-0 truncate text-sm text-foreground/85">{camera.name ?? machineName}</span>
         <SimBadge className="ml-auto shrink-0" />
         {onToggle && (
-          <button onClick={onToggle} className="shrink-0 rounded p-0.5 text-slate-400 hover:bg-black/40 hover:text-white" aria-label={expanded ? "縮小" : "放大"} title={expanded ? "縮小" : "放大"}>
+          <button onClick={onToggle} className="shrink-0 rounded p-0.5 text-muted hover:bg-panel hover:text-foreground" aria-label={expanded ? "縮小" : "放大"} title={expanded ? "縮小" : "放大"}>
             {expanded ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
           </button>
         )}
@@ -115,7 +116,7 @@ export function CameraTile({
         <CameraView camera={camera} overlays={overlays} />
       </div>
       <div className="flex items-center gap-2 border-t border-line bg-panel-2 px-2 py-1">
-        <span className="tabular font-mono text-xs text-slate-300">{now ? new Date(now).toLocaleTimeString("zh-TW", { hour12: false }) : ""}</span>
+        <span className="tabular font-mono text-xs text-foreground/85">{now ? new Date(now).toLocaleTimeString("zh-TW", { hour12: false }) : ""}</span>
         <span className="min-w-0 truncate font-mono text-xs text-muted">{camera.source?.split("/").pop()}</span>
         {alert && <span className="ml-auto shrink-0 rounded bg-red-600 px-1.5 py-0.5 text-xs font-bold text-white">{alert}</span>}
       </div>

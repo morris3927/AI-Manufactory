@@ -35,7 +35,7 @@ export default function MobileWorkorderPage() {
         : "report";
   const cur = tab ?? auto;
   const tabs: { id: Tab; label: string }[] = [
-    ...(safety ? [] : [{ id: "loto" as Tab, label: "許可／LOTO" }]),
+    ...(safety ? [] : [{ id: "loto" as Tab, label: "許可／上鎖" }]),
     { id: "agent", label: "Agent" },
     { id: "check", label: "Checklist" },
     { id: "report", label: "回報" },

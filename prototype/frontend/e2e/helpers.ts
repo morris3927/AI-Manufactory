@@ -107,6 +107,9 @@ export async function chat(page: Page, scope: Locator, text: string) {
   await expect(scope.getByRole("button", { name: "送出" })).toBeDisabled(); // 空字串時應 disabled
 }
 
+/** 把關結果：需主管確認／注意的步驟，或未超過門檻的盾牌圖示 */
+export const GATE_RESULT = 'li[data-gate-level="supervisor"], li[data-gate-level="caution"], [title^="Jev 安全把關"]';
+
 /** 等 Jev 安全把關跑完 */
 export async function waitGate(scope: Locator) {
   await expect(scope.getByText(/安全把關檢查中/)).toHaveCount(0, { timeout: 120_000 });

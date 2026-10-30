@@ -1,7 +1,35 @@
 @import "tailwindcss";
 
-/* 戰情模式：深色工業風。只有深色主題（大螢幕＋攤位燈光下對比最好）。 */
+/* 主題：預設淺色（白天、投影、列印都好讀）；<html data-theme="dark"> 切成監控深色（大螢幕＋攤位燈光）。
+   data-theme 由 layout 的 inline script 在第一次繪製前設定，切換鈕在 app-header。 */
 :root {
+  --background: #eef1f5;
+  --panel: #ffffff;
+  --panel-2: #f4f6f9;
+  --border: #d5dce4;
+  --foreground: #0f1b2a;
+  --muted: #526477;
+  --accent: #0e7490;
+  --accent-foreground: #ffffff;
+  --ok: #047857;
+  --warn: #b45309;
+  --alarm: #b91c1c;
+  /* 背景光暈／格線、卡片陰影、捲軸 */
+  --glow: transparent;
+  --grid: rgba(15, 27, 42, 0.025);
+  --card-shadow: 0 1px 2px rgba(15, 27, 42, 0.06);
+  --scrollbar: #c2ccd6;
+  /* recharts：軸線、格線、tooltip、嚴重度長條 */
+  --chart-axis: #b4c0cc;
+  --chart-ref: #8796a6;
+  --chart-cursor: rgba(15, 27, 42, 0.06);
+  --sev-s1: #0284c7;
+  --sev-s2: #d97706;
+  --sev-s3: #dc2626;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
   --background: #070b10;
   --panel: #0e151d;
   --panel-2: #131d28;
@@ -9,10 +37,36 @@
   --foreground: #dbe5ef;
   --muted: #95a9bd;
   --accent: #22d3ee;
+  --accent-foreground: #020617;
   --ok: #22c55e;
   --warn: #f59e0b;
   --alarm: #ef4444;
+  --glow: rgba(34, 211, 238, 0.07);
+  --grid: rgba(148, 163, 184, 0.035);
+  --card-shadow: 0 0 0 1px rgba(0, 0, 0, 0.3);
+  --scrollbar: #1e2b39;
+  --chart-axis: #334155;
+  --chart-ref: #475569;
+  --chart-cursor: rgba(148, 163, 184, 0.08);
+  --sev-s1: #38bdf8;
+  --sev-s2: #fbbf24;
+  --sev-s3: #ef4444;
   color-scheme: dark;
+}
+
+/* 元件裡的狀態色大多寫成 text-red-300、text-amber-200 這類「深底上的淺色字」。
+   淺色模式把這些淺色階換成同色系的深色階，白底上也有 AA 對比，不必每個元件各寫一套。
+   副作用：淺色模式下 bg-cyan-400 之類也會變深；疊在攝影機畫面上的顏色請直接寫色碼。 */
+:root:not([data-theme="dark"]) {
+  --color-red-50: var(--color-red-950); --color-red-100: var(--color-red-900); --color-red-200: var(--color-red-800); --color-red-300: var(--color-red-800); --color-red-400: var(--color-red-700);
+  --color-amber-50: var(--color-amber-950); --color-amber-100: var(--color-amber-900); --color-amber-200: var(--color-amber-800); --color-amber-300: var(--color-amber-800); --color-amber-400: var(--color-amber-700);
+  --color-cyan-50: var(--color-cyan-950); --color-cyan-100: var(--color-cyan-900); --color-cyan-200: var(--color-cyan-800); --color-cyan-300: var(--color-cyan-800); --color-cyan-400: var(--color-cyan-700);
+  --color-emerald-50: var(--color-emerald-950); --color-emerald-100: var(--color-emerald-900); --color-emerald-200: var(--color-emerald-800); --color-emerald-300: var(--color-emerald-800); --color-emerald-400: var(--color-emerald-700);
+  --color-sky-50: var(--color-sky-950); --color-sky-100: var(--color-sky-900); --color-sky-200: var(--color-sky-800); --color-sky-300: var(--color-sky-800); --color-sky-400: var(--color-sky-700);
+  --color-violet-50: var(--color-violet-950); --color-violet-100: var(--color-violet-900); --color-violet-200: var(--color-violet-800); --color-violet-300: var(--color-violet-800); --color-violet-400: var(--color-violet-700);
+  --color-fuchsia-50: var(--color-fuchsia-950); --color-fuchsia-100: var(--color-fuchsia-900); --color-fuchsia-200: var(--color-fuchsia-800); --color-fuchsia-300: var(--color-fuchsia-800); --color-fuchsia-400: var(--color-fuchsia-700);
+  --color-orange-50: var(--color-orange-950); --color-orange-100: var(--color-orange-900); --color-orange-200: var(--color-orange-800); --color-orange-300: var(--color-orange-800); --color-orange-400: var(--color-orange-700);
+  --color-blue-50: var(--color-blue-950); --color-blue-100: var(--color-blue-900); --color-blue-200: var(--color-blue-800); --color-blue-300: var(--color-blue-800); --color-blue-400: var(--color-blue-700);
 }
 
 @theme inline {
@@ -23,6 +77,7 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
   --color-ok: var(--ok);
   --color-warn: var(--warn);
   --color-alarm: var(--alarm);
@@ -39,9 +94,9 @@ body {
 body {
   font-family: var(--font-sans);
   background-image:
-    radial-gradient(circle at 20% -10%, rgba(34, 211, 238, 0.07), transparent 40%),
-    linear-gradient(rgba(148, 163, 184, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(148, 163, 184, 0.035) 1px, transparent 1px);
+    radial-gradient(circle at 20% -10%, var(--glow), transparent 40%),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
   background-size: auto, 32px 32px, 32px 32px;
   background-attachment: fixed;
 }
@@ -55,7 +110,7 @@ body {
   height: 8px;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e2b39;
+  background: var(--scrollbar);
   border-radius: 4px;
 }
 

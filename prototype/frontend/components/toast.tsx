@@ -42,10 +42,11 @@ export function Toaster() {
         <div
           key={t.id}
           className={cn(
-            "rounded-md border px-3 py-2 text-sm shadow-lg backdrop-blur",
-            t.tone === "error" && "border-red-500/60 bg-red-950/90 text-red-100",
-            t.tone === "ok" && "border-emerald-500/60 bg-emerald-950/90 text-emerald-100",
-            t.tone === "info" && "border-cyan-500/60 bg-slate-900/90 text-cyan-100",
+            // 不透明的 bg-panel 疊一層同色系淡底；文字色在淺色模式會換成深色階
+            "rounded-md border bg-panel px-3 py-2 text-sm shadow-lg",
+            t.tone === "error" && "border-red-500/60 bg-[linear-gradient(rgb(239_68_68/0.14),rgb(239_68_68/0.14))] text-red-100",
+            t.tone === "ok" && "border-emerald-500/60 bg-[linear-gradient(rgb(16_185_129/0.14),rgb(16_185_129/0.14))] text-emerald-100",
+            t.tone === "info" && "border-cyan-500/60 text-cyan-100",
           )}
         >
           {t.text}

@@ -3,7 +3,7 @@
 // 這裡所有資料都是模擬資料。
 
 import { ApiError } from "../errors";
-import { PERSON_ROLE_LABEL } from "../labels";
+import { CLOSING_REMINDER, PERSON_ROLE_LABEL } from "../labels";
 import type { Persona } from "../session";
 import type {
   AgentMessage,
@@ -325,7 +325,7 @@ function genericLoto(machineType: string, machineName: string): LotoChecklist {
       { step_no: 1, text: "通知產線人員即將停機上鎖", energy: "通知", checked_by: null, ts: null },
       { step_no: 2, text: "正常停機並關閉主電源，上鎖掛牌", energy: "電力", checked_by: null, ts: null },
       { step_no: 3, text: "釋放氣壓／油壓等儲存能量", energy: "儲能", checked_by: null, ts: null },
-      { step_no: 4, text: "零能量驗證", energy: "驗證", checked_by: null, ts: null },
+      { step_no: 4, text: "按啟動鈕確認機台不會動", energy: "驗證", checked_by: null, ts: null },
     ],
   };
 }
@@ -506,7 +506,7 @@ function seedActive(now: number, includeFeedJam: boolean) {
       { from: "ACKED", to: "PERMIT_REQUESTED", actor: wo.assignee_id!, reason: "申請作業許可", ts: iso(ack + 60e3) },
       { from: "PERMIT_REQUESTED", to: "PERMIT_APPROVED", actor: "P-L01", reason: "作業許可核准", ts: iso(ack + 120e3) },
       { from: "PERMIT_APPROVED", to: "LOTO_DONE", actor: wo.assignee_id!, ts: iso(ack + 240e3) },
-      { from: "LOTO_DONE", to: "IN_REPAIR", actor: wo.assignee_id!, reason: "LOTO 完成並驗證零能量，開始維修", ts: iso(ack + 240e3) },
+      { from: "LOTO_DONE", to: "IN_REPAIR", actor: wo.assignee_id!, reason: "上鎖完成、確認機台不會動，開始維修", ts: iso(ack + 240e3) },
       { from: "IN_REPAIR", to: "PENDING_VERIFY", actor: wo.assignee_id!, reason: "Checklist 完成", ts: iso(now - 6 * 60e3) },
     );
     wo.status = "PENDING_VERIFY";
@@ -556,7 +556,7 @@ function seedActive(now: number, includeFeedJam: boolean) {
       { from: null, to: "OPEN", actor: "system", reason: "規則 R-ASM-CVCUR 命中", ts: iso(t0) },
       { from: "OPEN", to: "ASSIGNED", actor: "system", reason: "依班表指派 張雅婷（技術員）", ts: iso(t0 + 500) },
       { from: "ASSIGNED", to: "ESCALATED", actor: "system", reason: "逾時未接單", ts: iso(t0 + 30e3) },
-      { from: "ESCALATED", to: "ASSIGNED", actor: "system", reason: "升級指派 陳美玲（班長）", ts: iso(t0 + 30e3) },
+      { from: "ESCALATED", to: "ASSIGNED", actor: "system", reason: "升級指派 陳美玲（現場主管）", ts: iso(t0 + 30e3) },
     ];
     wo.ack_deadline = iso(now + 45e3);
     S.handled.jev++;
@@ -874,7 +874,6 @@ function setSource(cam: string, video: string) {
 }
 
 // ---------------------------------------------------------------- 維修 Agent（腳本化回覆）
-const LOTO_ONLY_NOTE = "工單尚未完成 LOTO，依系統規則我現在只能提供上鎖清單與準備步驟。";
 
 function agentReply(wo: WorkOrderDetail, userText: string) {
   const turns = (S.agentTurns[wo.id] ?? 0) + 1;
@@ -883,22 +882,27 @@ function agentReply(wo: WorkOrderDetail, userText: string) {
   let steps: string[] = [];
   let flags: SafetyFlag[] = [];
   let tools: AgentMessage["tool_calls"] = [{ name: "get_workorder" }];
+  let remind = false; // 維修模式：回覆最後附上復機提醒（跟後端一樣）
   const top = wo.diagnosis?.root_cause_top3 ?? [];
 
   if (wo.category === "safety") {
-    content = "這是工安類工單，不需要 LOTO。依 SOP-SAF-003：";
+    content = "這是工安類工單，不需要上鎖掛牌。依 SOP-SAF-003：";
     steps = SOP_PPE[0].steps;
     tools.push({ name: "get_sop", args: { failure_mode_id: "SAF-PPE", phase: "respond" } });
   } else if (wo.status === "ASSIGNED" || wo.status === "ESCALATED" || wo.status === "OPEN") {
-    content = "請先接單，接單後我會帶你完成 LOTO。";
-  } else if (wo.status === "ACKED" || wo.status === "PERMIT_REQUESTED") {
-    content = "依系統規則，作業許可核准、LOTO 完成前我只能協助準備。請先申請作業許可（需班長核准），準備：";
-    steps = ["確認危害防止計畫與作業許可單內容（設施規則第57條）", "準備塞規、分厘卡、取料夾具", wo.status === "ACKED" ? "在上方按「申請作業許可」" : "等待班長核准作業許可"];
-  } else if (wo.status === "PERMIT_APPROVED") {
-    content = LOTO_ONLY_NOTE + `（${wo.loto?.loto_id ?? "LOTO"}）尚未完成的步驟：`;
-    steps = (wo.loto?.steps ?? []).filter((s) => !s.checked_by).map((s) => `【${s.energy}】${s.text}`);
-    steps.push("準備工具：塞規、分厘卡、取料夾具");
+    content = "請先接單，接單後我會帶你完成上鎖掛牌。";
+  } else if (wo.status === "ACKED" || wo.status === "PERMIT_REQUESTED" || wo.status === "PERMIT_APPROVED") {
+    // 上鎖前資訊不鎖（跟後端一樣）：先給不用碰機台的檢查；要碰機台的步驟標成「需先完成上鎖掛牌」
+    const next =
+      wo.status === "ACKED" ? "請先在上方按「申請作業許可」。" : wo.status === "PERMIT_REQUESTED" ? "作業許可等待現場主管核准中。" : "許可已核准，請逐項完成上鎖掛牌。";
+    content = `依 Jev 根因排序，第一名是「${top[0]?.name ?? "送料滾輪磨損"}」。上鎖掛牌完成前，先做不用碰機台的檢查：`;
+    steps = ["在操作面板讀取警報碼與送料長度誤差趨勢", "看送料口攝影機畫面，確認卡料位置", "上鎖掛牌完成後，目視檢查上下送料滾輪表面有沒有亮面磨耗", next];
+    flags = [
+      { step_index: 2, step_text: steps[2], probs: { needs_loto: 0.82, enters_danger_zone: 0.3, high_voltage: 0.04, energized: 0.08 }, max_p: 0.82, reasons: ["needs_loto"], level: "lockout", needs_lockout: true, requires_supervisor: false, supervisor_requested: false, source: "jev" },
+    ];
+    tools = [{ name: "get_workorder" }, { name: "get_sop", args: { failure_mode_id: top[0]?.failure_mode_id, phase: "inspect" } }, { name: "get_machine_signals", args: { signal: "feed_length_error_mm", last_min: 10 } }];
   } else {
+    remind = true;
     const repairTurn = (S.agentTurns[`${wo.id}:repair`] ?? 0) + 1;
     S.agentTurns[`${wo.id}:repair`] = repairTurn;
     if (wo.incident.type !== "feed_jam") {
@@ -918,11 +922,15 @@ function agentReply(wo: WorkOrderDetail, userText: string) {
     } else if (repairTurn === 2) {
       content = `了解，第一個方向排除。改排查第二名「${top[1]?.name ?? "材料厚度偏差"}」（${((top[1]?.p ?? 0.31) * 100).toFixed(0)}%），相似案例 CASE-STP-0087 也是板厚超差造成卡料。`;
       steps = ["從送料口側將卡住的板材退出", "伸手進模具區取出卡住的板材", "以分厘卡量測板材三點厚度，公差 2.00 ± 0.05 mm", "比對本批材料進料檢驗紀錄"];
-      flags = [{ step_index: 1, step_text: steps[1], probs: { needs_loto: 0.2, enters_danger_zone: 0.9, high_voltage: 0.05, energized: 0.12 }, max_p: 0.9, reasons: ["enters_danger_zone"], requires_supervisor: true, supervisor_requested: true, source: "jev" }];
+      // 兩級把關（跟後端 gate_level 同規則）：進入危險區 0.62 落在 [0.55, 0.7) → 注意；0.9 ≥ 0.7 → 需主管確認
+      flags = [
+        { step_index: 0, step_text: steps[0], probs: { needs_loto: 0.25, enters_danger_zone: 0.62, high_voltage: 0.04, energized: 0.08 }, max_p: 0.62, reasons: ["enters_danger_zone"], level: "caution", requires_supervisor: false, supervisor_requested: false, source: "jev" },
+        { step_index: 1, step_text: steps[1], probs: { needs_loto: 0.2, enters_danger_zone: 0.9, high_voltage: 0.05, energized: 0.12 }, max_p: 0.9, reasons: ["enters_danger_zone"], level: "supervisor", requires_supervisor: true, supervisor_requested: true, source: "jev" },
+      ];
       tools = [{ name: "search_cases", args: { query: "送料卡料 板厚" } }, { name: "get_sop", args: { failure_mode_id: "FM-STP-MATERIAL-THICK", phase: "inspect" } }, { name: "request_supervisor", args: { reason: "步驟 2 涉及進入模具危險區" } }];
     } else if (repairTurn === 3) {
       content = "板厚 2.08 mm 超出公差，根因確認為「材料厚度偏差」。處置步驟：";
-      steps = ["隔離本批材料並掛「待驗」標示", "換上合格批材料，依 SOP-STP-012 §4 重新設定送料長度", "試沖 10 模確認送料誤差 < 0.05 mm", "完成 Checklist 後，請由原上鎖人依 LOTO 解除程序執行"];
+      steps = ["隔離本批材料並掛「待驗」標示", "換上合格批材料，依 SOP-STP-012 §4 重新設定送料長度", "試沖 10 模確認送料誤差 < 0.05 mm"];
       tools = [{ name: "record_step", args: { step: "量測板厚", result: "2.08 mm" } }, { name: "get_sop", args: { failure_mode_id: "FM-STP-MATERIAL-THICK", phase: "repair" } }];
     } else {
       content = `已記錄：「${userText.slice(0, 30)}」。完成右側 Checklist 後即可提交結案回報，回報會經 Jev 檢查完整性再寫回知識庫（draft）。`;
@@ -934,36 +942,40 @@ function agentReply(wo: WorkOrderDetail, userText: string) {
     id: uid("MSG"),
     workorder_id: wo.id,
     role: "assistant",
-    content,
+    content: remind ? `${content}\n${CLOSING_REMINDER}` : content,
     steps,
     tool_calls: tools,
     safety_flags: [],
     ts: iso(),
   };
   const ch = `agent:${wo.id}`;
-  const full = content + (steps.length ? "\n" + steps.map((s, i) => `${i + 1}. ${s}`).join("\n") : "");
+  const full = content + (steps.length ? "\n" + steps.map((s, i) => `${i + 1}. ${s}`).join("\n") : "") + (remind ? "\n" + CLOSING_REMINDER : "");
   const n = Math.ceil(full.length / 6);
   const t0 = 500;
   for (let i = 0; i < n; i++) later(t0 + i * 30, () => emit(ch, "delta", { message_id: msg.id, text: full.slice(0, (i + 1) * 6) }));
   later(t0 + n * 30 + 80, () => {
     // 安全把關（J4）：在回覆送出前檢查每個步驟
     addCost("jev");
-    if (flags.length) {
-      msg.safety_flags = flags;
-      audit(wo.trace_id ?? null, "jev", "safety_gate_flag", { workorder_id: wo.id, step: flags[0].step_text, probs: flags[0].probs });
-      audit(wo.trace_id ?? null, "system", "request_supervisor", { workorder_id: wo.id, to: "王建國（主管）", reason: "安全把關 > 0.3" });
+    const supFlags = flags.filter((f) => f.level !== "caution");
+    const cautionFlags = flags.filter((f) => f.level === "caution");
+    if (flags.length) msg.safety_flags = flags;
+    if (cautionFlags.length)
+      audit(wo.trace_id ?? null, `agent:${wo.id}`, "safety_gate_caution", { workorder_id: wo.id, steps: cautionFlags.map((f) => ({ step: f.step_text, reasons: f.reasons, probs: f.probs })) });
+    if (supFlags.length) {
+      audit(wo.trace_id ?? null, "jev", "safety_gate_flag", { workorder_id: wo.id, step: supFlags[0].step_text, probs: supFlags[0].probs });
+      audit(wo.trace_id ?? null, "system", "request_supervisor", { workorder_id: wo.id, to: "王建國（主管）", reason: "安全把關：需主管確認" });
     }
     wo.agent_messages = [...(wo.agent_messages ?? []), msg];
     addCost("llm");
     audit(wo.trace_id ?? null, "agent", "agent_reply", { workorder_id: wo.id, tools: tools?.map((t) => t.name), safety_flags: flags.length });
     emit(ch, "message", msg);
-    if (flags.length) {
-      emit(ch, "safety_gate", { message_id: msg.id, flags });
+    if (flags.length) emit(ch, "safety_gate", { message_id: msg.id, flags });
+    if (supFlags.length) {
       const sys: AgentMessage = {
         id: uid("MSG"),
         workorder_id: wo.id,
         role: "system",
-        content: `安全把關：步驟 ${flags[0].step_index + 1}「${flags[0].step_text}」進入危險區機率 ${(flags[0].max_p * 100).toFixed(0)}%，已標紅並通知主管確認。請改用取料夾具，由送料口側退出板材。`,
+        content: `安全把關：步驟 ${supFlags[0].step_index + 1}「${supFlags[0].step_text}」進入危險區機率 ${(supFlags[0].max_p * 100).toFixed(0)}%，已標紅並通知主管確認。請改用取料夾具，由送料口側退出板材。`,
         ts: iso(),
       };
       wo.agent_messages.push(sys);
@@ -1122,7 +1134,7 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       return r(out(wo));
     }
     if (action === "reassign") {
-      need(persona.role === "leader" || persona.role === "supervisor", 403, "只有班長或主管能轉派");
+      need(persona.role === "leader" || persona.role === "supervisor", 403, "只有現場主管或主管能轉派");
       const to = PEOPLE.find((x) => x.id === b.to_person_id) ?? pickAssignee("technician", wo.line);
       wo.assignee_id = to.id;
       wo.assignee_name = to.name;
@@ -1133,18 +1145,18 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       return r(out(wo));
     }
     if (action === "loto") {
-      need(wo.loto, 400, "此工單不需要 LOTO");
-      need(wo.status === "PERMIT_APPROVED", 409, `作業許可核准後才能勾選 LOTO（目前狀態：${wo.status}）`);
+      need(wo.loto, 400, "此工單不需要上鎖掛牌");
+      need(wo.status === "PERMIT_APPROVED", 409, `作業許可核准後才能勾選上鎖掛牌（目前狀態：${wo.status}）`);
       const stepNo = Number(seg[3]);
       const next = wo.loto.steps.find((s) => !s.checked_by);
-      need(next && next.step_no === stepNo, 409, "請依順序勾選 LOTO 步驟");
+      need(next && next.step_no === stepNo, 409, "請依順序勾選上鎖掛牌步驟");
       next.checked_by = me;
       next.ts = iso();
       audit(tr, me, "loto_check", { workorder_id: wo.id, loto_id: wo.loto.loto_id, step_no: stepNo, text: next.text });
       if (wo.loto.steps.every((s) => s.checked_by)) {
         transition(wo, "LOTO_DONE", me, `${wo.loto.loto_id} 全部勾選完成`);
-        transition(wo, "IN_REPAIR", me, "LOTO 完成並驗證零能量，開始維修");
-        const sys: AgentMessage = { id: uid("MSG"), workorder_id: wo.id, role: "system", content: "LOTO 完成：維修 Agent 已開放排查與維修步驟（get_sop inspect／repair）。", ts: iso() };
+        transition(wo, "IN_REPAIR", me, "上鎖完成、確認機台不會動，開始維修");
+        const sys: AgentMessage = { id: uid("MSG"), workorder_id: wo.id, role: "system", content: "上鎖完成：維修 Agent 已開放排查與維修步驟（get_sop inspect／repair）。", ts: iso() };
         wo.agent_messages = [...(wo.agent_messages ?? []), sys];
         emit(`agent:${wo.id}`, "message", sys);
       } else emit("workorders", "updated", summary(wo));
@@ -1159,7 +1171,7 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
         audit(tr, me, "permit_requested", { workorder_id: wo.id });
         transition(wo, "PERMIT_REQUESTED", me, "申請作業許可");
       } else {
-        need(persona.role === "leader" || persona.role === "supervisor", 403, "班長以上才能核准／退回作業許可");
+        need(persona.role === "leader" || persona.role === "supervisor", 403, "現場主管以上才能核准／退回作業許可");
         need(wo.status === "PERMIT_REQUESTED", 409, "目前沒有待核准的作業許可申請");
         wo.permit = { ...(wo.permit ?? { requested_by: null, approved_by: null, ts: null }), ts: iso() };
         if (act === "approve") {
@@ -1286,6 +1298,7 @@ export async function mockRequest<T>(method: "GET" | "POST", path: string, body:
       } else if (field === "safety_ack") {
         const m = wo.agent_messages?.find((x) => x.id === b.new);
         m?.safety_flags?.forEach((f) => {
+          if (f.level === "caution") return; // 注意級不需確認；沒有 level 的舊資料視為需主管確認
           f.supervisor_requested = false;
           f.acked_by = me;
           f.ack_reason = String(b.reason ?? "");
