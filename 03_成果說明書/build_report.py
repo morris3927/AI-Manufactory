@@ -21,33 +21,34 @@ IMAGES = {
     "圖 3-1": [(f"{FIG}/fig3-1_architecture.png", "圖 3-1　系統架構：規則（藍）、Jev（綠）、LLM（橘）、人（紫）；AI 只讀不控制")],
     "圖 4-1": [(f"{FIG}/fig4-1_timeline.png", "圖 4-1　人工流程與 Sentinel AI 的時間比較（中間情境，假設值）")],
     "圖 4-2～4-7": [
-        (f"{FIG}/report/04_dashboard_alert.jpg", "圖 4-2　戰情儀表板：送料口畫面由 Jev 框出卡料位置，即時告警列出 S2 事件"),
+        (f"{FIG}/report/04_dashboard_alert.jpg", "圖 4-2　監控儀表板：送料口畫面由 Jev 框出卡料位置，即時告警列出 S2 事件"),
         (f"{FIG}/report/05_kanban_assigned.jpg", "圖 4-3　任務看板：工單已派給當班技術員，顯示嚴重度與接單倒數"),
         (f"{FIG}/report/06_workorder_diagnosis.jpg", "圖 4-4　工單詳情：關鍵畫面、機台訊號、前三名原因與機率、DeepSeek 說明、引用的相似案例"),
-        (f"{FIG}/report/07_permit_requested_leader_view.jpg", "圖 4-5　作業許可由班長核准後，才解鎖上鎖掛牌清單"),
-        (f"{FIG}/report/09_agent_chat.jpg", "圖 4-6　維修助理：有風險的步驟被 Jev 安全把關標紅、要求主管確認；AI 不宣告可以復電"),
+        (f"{FIG}/report/07_permit_requested_leader_view.jpg", "圖 4-5　作業許可由主管核准後，才解鎖上鎖掛牌清單"),
+        (f"{FIG}/report/09_agent_chat.jpg", "圖 4-6　維修助理（上鎖完成後）：風險高的步驟標紅、要主管確認，風險低的標黃提醒；最下方是程式固定附上的完工復機步驟"),
         (f"{FIG}/report/11b_writeback_approved.jpg", "圖 4-7　完工 Checklist、結案回報（Jev 檢查通過）與知識回寫「已核准入庫」"),
     ],
     "圖 4-8": [(f"{FIG}/report/10_mobile_technician.jpg", "圖 4-8　技術員手機畫面")],
     "圖 5-1": [(f"{FIG}/eval/e3_reliability.png", "圖 5-1　E3 校準曲線：Jev 說 0.8 以上時實際約 97% 正確；0.6–0.8 過度自信")],
     "圖 5-2～5-6": [
-        (f"{FIG}/eval/e2_top1_comparison.png", "圖 5-2　E2 根因第一名命中率：純規則、Jev、DeepSeek（95% 信賴區間）"),
-        (f"{FIG}/eval/e2_latency.png", "圖 5-3　E2 回應時間分布：Jev 穩定在 1 秒內，LLM 有長尾"),
-        (f"{FIG}/eval/e4_ppe.png", "圖 5-4　E4 Jev 判斷安全帽（SH17 真實照片 120 張）"),
-        (f"{FIG}/eval/e6_e2e_segments.png", "圖 5-5　E6 從異常到通知的各段時間"),
-        (f"{FIG}/eval/e7_yolo_map50.png", "圖 5-6　E7 安全帽偵測模型微調前後"),
+        (f"{FIG}/eval/e2_top1_comparison.png", "圖 5-1　E2 根因第一名命中率：純規則、Jev、DeepSeek（95% 信賴區間）"),
+        (f"{FIG}/eval/e2_latency.png", "圖 5-2　E2 回應時間分布：Jev 穩定在 1 秒內，LLM 有長尾"),
+        (f"{FIG}/eval/e4_ppe.png", "圖 5-3　E4 Jev 判斷安全帽（SH17 真實照片 120 張）"),
+        (f"{FIG}/eval/e6_e2e_segments.png", "圖 5-4　E6 從異常到通知的各段時間"),
+        (f"{FIG}/eval/e7_yolo_map50.png", "圖 5-5　E7 安全帽偵測模型微調前後"),
     ],
 }
 EXTRA_AFTER = {   # 標題後面補圖（原稿沒有佔位符的地方）
-    "### 4.4 其他場景": [(f"{FIG}/report/14_dashboard_s3_report.jpg",
+    "5. **不能改工單狀態**": [(f"{FIG}/report/08_agent_before_lockout.jpg",
+                             "圖 3-2　上鎖掛牌完成前問維修助理：只看不碰的檢查照常給，要碰機台的步驟標成「需先完成上鎖掛牌」")],
+    "### 4. 其他場景": [(f"{FIG}/report/14_dashboard_s3_report.jpg",
                           "圖 4-9　S3 人員進入危險區：主管標記傷亡後，儀表板出現職災 8 小時通報倒數與「不得移動現場」提醒")],
-    "**E3：Jev 的機率準不準**": [(f"{FIG}/eval/e3_reliability.png", "圖 5-1　E3 校準曲線：改良檢索後，Jev 說 0.8 以上時實際約 97% 正確")],
-    "**E5：Jev 看畫面判斷卡料**": [(f"{FIG}/eval/e5_feed.png", "E5　正常照片與合成卡料圖的卡料機率")],
-    "### 6.3 導入成本與回本期": [(f"{FIG}/report/18_metrics.jpg", "圖 6-1　系統效益頁：反應時間、MTTR、AI 實際成本累計")],
+    "#### 3.6 E5：Jev 看畫面判斷卡料": [(f"{FIG}/eval/e5_feed.png", "E5　正常照片與合成卡料圖的卡料機率")],
+    "### 3. 導入成本": [(f"{FIG}/report/18_metrics.jpg", "圖 6-1　系統效益頁：反應時間、MTTR、AI 實際成本累計")],
 }
 
 
-WIDTH = {"07_permit": "62%", "09_agent": "62%", "11b_writeback": "62%", "10_mobile": "34%",
+WIDTH = {"08_agent": "62%", "07_permit": "62%", "09_agent": "62%", "11b_writeback": "62%", "10_mobile": "34%",
          "fig4-1": "92%", "e3_rel": "88%", "e2_latency": "80%", "e5_feed": "80%", "e7_yolo": "75%",
          "e6_e2e": "85%", "e2_top1": "70%", "e4_ppe": "80%"}
 
@@ -84,10 +85,11 @@ CSS = """
 @page { size: A4; margin: 18mm 16mm 18mm 16mm; }
 body { font-family: "PingFang TC", "Heiti TC", "Microsoft JhengHei", sans-serif; font-size: 10.5pt;
        line-height: 1.65; color: #1f2937; }
-h1 { font-size: 20pt; margin: 0.3em 0; color: #111827; }
-h2 { font-size: 15pt; border-bottom: 2px solid #2563eb; padding-bottom: 4px; margin-top: 1.6em;
+h1 { font-size: 20pt; margin: 0.3em 0; }
+h2 { font-size: 15pt; border-bottom: 1px solid #9ca3af; padding-bottom: 4px; margin-top: 1.6em;
      page-break-after: avoid; }
-h3 { font-size: 12pt; color: #1e3a8a; margin-top: 1.2em; page-break-after: avoid; }
+h3 { font-size: 12pt; margin-top: 1.2em; page-break-after: avoid; }
+h4 { font-size: 10.5pt; margin-top: 1em; page-break-after: avoid; }
 table { border-collapse: collapse; width: 100%; margin: 0.6em 0; font-size: 9.5pt; page-break-inside: avoid; }
 th, td { border: 1px solid #d1d5db; padding: 4px 6px; vertical-align: top; }
 th { background: #eff6ff; }
@@ -108,7 +110,9 @@ def main() -> None:
     try:
         docx = OUT / f"{NAME}.docx"
         subprocess.run(["pandoc", str(build_md), "-o", str(docx), "--resource-path", str(HERE),
-                        "-f", "markdown+pipe_tables", "--metadata", "lang=zh-TW"], check=True)
+                        "-f", "markdown+pipe_tables", "--metadata", "lang=zh-TW",
+                        "--reference-doc", str(HERE / "reference.docx")], check=True)  # 標題黑色，不用 pandoc 預設的藍色
+        subprocess.run([sys.executable, str(HERE / "polish_docx.py"), str(docx)], check=True)   # 字型、表格、頁尾
         print("Word：", docx)
         html = HERE / "_build.html"
         (HERE / "_build.css").write_text(CSS, encoding="utf-8")
@@ -127,7 +131,7 @@ const {{ chromium }} = require('playwright');
   await p.pdf({{ path: '{pdf}', format: 'A4', printBackground: true,
     margin: {{ top: '18mm', bottom: '18mm', left: '16mm', right: '16mm' }},
     displayHeaderFooter: true, headerTemplate: '<span></span>',
-    footerTemplate: '<div style="font-size:8px;width:100%;text-align:center;color:#6b7280">Sentinel AI｜第二階段成果說明書｜<span class="pageNumber"></span>／<span class="totalPages"></span></div>' }});
+    footerTemplate: '<div style="font-size:8px;width:100%;text-align:center;color:#6b7280">Sentinel AI｜二階段成果說明書｜<span class="pageNumber"></span>／<span class="totalPages"></span></div>' }});
   await b.close();
 }})();"""
             subprocess.run([node, "-e", js], check=True, cwd=pw)
