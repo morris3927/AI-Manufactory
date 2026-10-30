@@ -73,25 +73,22 @@ def test_extract_steps():
 
 # ── LOTO 先行 ───────────────────────────────────────────────────
 def test_tool_guard_table():
-    for st in ("OPEN", "ASSIGNED", "ESCALATED"):                         # 接單前：只有上鎖清單與準備
-        with pytest.raises(guards.ToolDenied):
-            guards.check_tool("get_sop", {"failure_mode_id": "x", "phase": "inspect"}, st)
-        with pytest.raises(guards.ToolDenied):
-            guards.check_tool("get_machine_signals", {"signal": "feed_rate"}, st)
-    for st in ("ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED", "LOTO_DONE", "IN_REPAIR"):   # 接單後資訊不鎖
-        guards.check_tool("get_sop", {"failure_mode_id": "x", "phase": "repair"}, st)
+    for st in ("OPEN", "ASSIGNED", "ESCALATED", "ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED", "LOTO_DONE", "IN_REPAIR"):
+        guards.check_tool("get_sop", {"failure_mode_id": "x", "phase": "repair"}, st)   # 資訊不鎖，接單前也能查
         guards.check_tool("get_machine_signals", {"signal": "feed_rate"}, st)
-    guards.check_tool("get_loto", {}, "ACKED")
+    with pytest.raises(guards.ToolDenied):
+        guards.check_tool("set_status", {}, "IN_REPAIR")
     assert "set_status" not in guards.ALL_TOOLS and not any("status" in t for t in guards.ALL_TOOLS)
 
 
-async def test_agent_before_ack_template(rt, fake_llm):
+async def test_agent_before_ack_answers(rt, fake_llm, fake_jev):
+    """接單前也能問：照常回答（LLM），要碰機台的步驟標「需先完成上鎖掛牌」，Agent 不改狀態。"""
     wo = await open_feed_jam(rt)
-    llm_before = len(fake_llm.calls)
-    reply = await rt.agent.handle(wo.id, "卡料了，要怎麼處理？", "P-STP-TC1")
-    assert reply.phase == "loto" and "請先在工單按「接單」" in reply.content
-    assert "目視滾輪" not in reply.content and "更換上下滾輪" not in reply.content   # 接單前沒有 inspect／repair
-    assert len(fake_llm.calls) == llm_before                                         # 不呼叫 LLM
+    status = rt.workorders.get(wo.id).status
+    reply = await rt.agent.handle(wo.id, "卡料了，可能是什麼原因？", "P-STP-TC1")
+    assert reply.phase == "repair" and reply.llm_used
+    assert any(s.needs_lockout for s in reply.steps)
+    assert rt.workorders.get(wo.id).status == status
 
 
 async def test_agent_before_lockout_marks_steps(rt, fake_llm, fake_jev):

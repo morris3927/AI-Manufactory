@@ -5,7 +5,7 @@ import os
 from datetime import datetime
 from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import yaml
 from pydantic import BaseModel, Field, SecretStr
@@ -44,11 +44,31 @@ class JevCfg(BaseModel):
     warmup: bool = True
 
 
+class LlmProviderCfg(BaseModel):
+    url: str
+    model: str | None = None
+
+
 class LlmCfg(BaseModel):
+    """provider：ollama（預設，用 url／model）、anthropic、openai（用各自區塊的 url／model）。"""
+
+    provider: Literal["ollama", "anthropic", "openai"] = "ollama"
     url: str = "https://ollama.com/api/chat"
     model: str = "deepseek-v4.1-flash"
     timeout_s: float = 30.0
     enabled: bool = True
+    case_draft_timeout_s: float = 60.0       # 結案案例由 LLM 整理（背景執行）的總時限；逾時保留程式組的草稿
+    anthropic: LlmProviderCfg = Field(default_factory=lambda: LlmProviderCfg(
+        url="https://api.anthropic.com/v1/messages", model="claude-sonnet-5"))
+    openai: LlmProviderCfg = Field(default_factory=lambda: LlmProviderCfg(
+        url="https://api.openai.com/v1/chat/completions", model=None))
+
+    def endpoint(self) -> tuple[str, str | None]:
+        """目前 provider 實際使用的 (url, model)。"""
+        if self.provider == "ollama":
+            return self.url, self.model
+        sub: LlmProviderCfg = getattr(self, self.provider)
+        return sub.url, sub.model
 
 
 class KbCfg(BaseModel):
@@ -133,6 +153,8 @@ class Secrets(BaseSettings):
 
     openrouter_api_key: SecretStr | None = None
     ollama_api_key: SecretStr | None = None
+    anthropic_api_key: SecretStr | None = None   # llm.provider: anthropic
+    openai_api_key: SecretStr | None = None      # llm.provider: openai
     discord_bot_token: SecretStr | None = None
 
 
@@ -159,6 +181,10 @@ class Settings(BaseModel):
     def secret(value: SecretStr | None) -> str | None:
         v = value.get_secret_value().strip() if value else ""
         return v or None
+
+    def llm_key(self) -> str | None:
+        """llm.provider 對應的金鑰（OLLAMA_API_KEY／ANTHROPIC_API_KEY／OPENAI_API_KEY）。"""
+        return self.secret(getattr(self.secrets, f"{self.llm.provider}_api_key"))
 
 
 def load_settings(config_path: str | Path | None = None, **overrides: Any) -> Settings:

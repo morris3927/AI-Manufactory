@@ -10,6 +10,7 @@ from ..db.models import AgentMessage, ChecklistItem, Diagnosis, Incident, LotoRe
 from ..rules.engine import TYPE_LABEL
 from ..dispatch.workorder import next_action
 from ..jev.questions import EVENT_VER
+from ..kb.writeback import draft_content
 from ..llm.explain import FALLBACK
 
 if TYPE_CHECKING:
@@ -135,4 +136,4 @@ def _writeback(rt: "Runtime", wo: Workorder) -> dict | None:
     doc = rt.writeback.get(case_id)
     return {"case_id": case_id, "status": doc.get("review_status") if doc else "missing",
             "reviewed_by": doc.get("reviewed_by") if doc else None,
-            "approve_url": f"/api/kb/cases/{case_id}/approve"}
+            "approve_url": f"/api/kb/cases/{case_id}/approve", **(draft_content(doc) if doc else {})}

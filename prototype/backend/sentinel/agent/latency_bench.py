@@ -178,7 +178,7 @@ async def main(label: str, turns: int, runs: int) -> dict:
     summ = {k: {"p50": pct([r[k] for r in rows], 0.5), "p95": pct([r[k] for r in rows], 0.95),
                 "mean": round(statistics.mean(r[k] for r in rows), 1)}
             for k in ("first_text_ms", "reply_ms", "flags_ms", "gate_wall_ms", "llm_calls", "tool_rounds", "gate_requests")}
-    result = {"model": s.llm.model, "jev_model": s.jev.model, "turns": len(rows), "summary": summ, "rows": rows}
+    result = {"model": s.llm.endpoint()[1], "jev_model": s.jev.model, "turns": len(rows), "summary": summ, "rows": rows}
     data = json.loads(OUT.read_text("utf-8")) if OUT.exists() else {}
     data[label] = result
     OUT.write_text(json.dumps(data, ensure_ascii=False, indent=1), "utf-8")

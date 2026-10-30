@@ -76,7 +76,7 @@ def create_app(runtime_factory=None, *, start_kwargs: dict | None = None) -> Fas
             "embedding_model": store.embedder.name if store else None,
             "kb": kb | {"allow_draft": s.kb.allow_draft},
             "jev": {"enabled": rt.jev.enabled, "model": s.jev.model},
-            "llm": {"enabled": rt.llm.enabled, "model": s.llm.model},
+            "llm": {"enabled": rt.llm.enabled, "provider": rt.llm.provider, "model": rt.llm.model},
             "notifier": rt.notifier.name,
             "workflow": {"require_permit": rt.workorders.require_permit},
             "scenario": rt.engine.scenario.id if rt.engine.scenario else None,

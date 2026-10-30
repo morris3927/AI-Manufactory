@@ -18,6 +18,7 @@ import {
   Wrench,
 } from "lucide-react";
 import { CameraView, type Overlay } from "../camera-tile";
+import { CaseDraftBadge, CaseDraftDetail } from "../case-draft";
 import { RootCauseBars, SignalCharts } from "../charts";
 import { Countdown } from "../countdown";
 import { SeverityBadge } from "../severity";
@@ -592,7 +593,7 @@ export function AgentChat({ wo, act, busy, streaming, tall }: { wo: WorkOrderDet
     const el = boxRef.current;
     if (el) el.scrollTop = el.scrollHeight;
   }, [msgs.length, streaming?.text, thinking]);
-  const open = reached(wo.status, "ACKED") && wo.status !== "CLOSED";
+  const open = wo.status !== "CLOSED" && wo.status !== "CANCELLED"; // 資訊不鎖：接單前也能問
   const full = isSafety(wo) || reached(wo.status, "IN_REPAIR");
   const send = async (t: string) => {
     if (!t.trim()) return;
@@ -622,7 +623,7 @@ export function AgentChat({ wo, act, busy, streaming, tall }: { wo: WorkOrderDet
           ) : null
         }
       />
-      <Locked locked={!open && wo.status !== "CLOSED"} reason="接單後開放對話">
+      <Locked locked={!open && wo.status !== "CLOSED"} reason="工單已取消">
         <div ref={boxRef} className={cn("space-y-2 overflow-y-auto p-3", tall ? "max-h-[65vh] min-h-[260px]" : "max-h-[560px] min-h-[180px]")}>
           {msgs.map((m) => (
             <ChatBubble key={m.id} m={m} wo={wo} act={act} />
@@ -809,6 +810,7 @@ function WritebackStatus({ wo, act, busy, fallback }: { wo: WorkOrderDetail; act
         知識回寫：<span className={approved ? "font-semibold text-emerald-300" : "font-semibold text-amber-200"}>{approved ? "已核准入庫" : wb.status === "missing" ? "草稿遺失" : "草稿（待主管審核）"}</span>
       </span>
       <span className="font-mono text-xs text-muted">{wb.case_id}</span>
+      {wb.status !== "missing" && <CaseDraftBadge info={wb} />}
       {wb.reviewed_by && <span className="text-xs text-muted">審核人 {wb.reviewed_by}</span>}
       {!approved && wb.status !== "missing" && (
         <Button
@@ -825,6 +827,7 @@ function WritebackStatus({ wo, act, busy, fallback }: { wo: WorkOrderDetail; act
           {isSup ? "核准入庫" : "核准入庫（需主管）"}
         </Button>
       )}
+      <CaseDraftDetail info={wb} report={wo.report?.text} />
     </div>
   );
 }

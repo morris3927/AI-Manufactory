@@ -270,7 +270,7 @@ export interface WorkOrderDetail extends WorkOrder {
   transitions?: Transition[];
   report?: ClosingReport | null;
   workflow?: { require_permit: boolean; next_action: NextAction | null } | null;
-  writeback?: { case_id: string; status: string | null; reviewed_by: string | null; approve_url?: string } | null;
+  writeback?: ({ case_id: string; status: string | null; reviewed_by: string | null; approve_url?: string } & CaseDraftInfo) | null;
   sop_mode?: string | null;
   sop_note?: string | null;
 }
@@ -303,7 +303,24 @@ export interface IncidentReportStatus {
 }
 
 // ---------- 知識回寫 ----------
-export interface KbCase {
+/** 案例草稿全文（主管核准前看）：rules＝程式組稿，llm＝LLM 整理（只整理回報，不新增事實） */
+export interface CaseDraftContent {
+  summary?: string | null;
+  evidence?: string[];
+  actions?: { step: string; result?: string | null }[];
+  lessons?: string | null;
+  why_first_guess_wrong?: string | null;
+  sop_used?: string[];
+}
+
+export interface CaseDraftInfo {
+  drafted_by?: "llm" | "rules" | string | null;
+  /** LLM 整理狀態：pending 整理中、ok 完成、failed 失敗（保留程式版）、skipped 未啟用 */
+  llm_status?: "pending" | "ok" | "failed" | "skipped" | string | null;
+  content?: CaseDraftContent | null;
+}
+
+export interface KbCase extends CaseDraftInfo {
   case_id: string;
   status: string | null;
   line?: string | null;

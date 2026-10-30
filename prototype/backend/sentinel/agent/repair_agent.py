@@ -137,8 +137,6 @@ class RepairAgent:
             reply = AgentReply(workorder_id=workorder_id, phase="safety_only", content=(
                 "這是工安類事件：請現場主管到場確認人員狀況並提醒配戴 PPE。"
                 "依規定，工安事件由現場主管處理，維修助理不提供排除方法。"))
-        elif guards.before_ack(wo.status):
-            reply = await self._loto_reply(tools, wo.status)
         else:
             reply = await self._repair_reply(tools, inc, user_message, turn)
 
@@ -185,36 +183,6 @@ class RepairAgent:
         return self.ctx.db.all(select(AgentMessage).where(AgentMessage.workorder_id == workorder_id)
                                .order_by(col(AgentMessage.id)))
 
-    # ── 1. 接單前（固定模板，不呼叫 LLM）：作業許可與上鎖清單預覽 ─────
-    async def _loto_reply(self, tools: ToolBox, status: str) -> AgentReply:
-        loto = await tools.call("get_loto")
-        wo_info = await tools.call("get_workorder")
-        lines = ["依職業安全衛生設施規則第 57 條，檢查或維修前要先核准作業許可，再依許可完成上鎖掛牌。"]
-        pre_permit = status in ("OPEN", "ASSIGNED", "ESCALATED", "ACKED", "PERMIT_REQUESTED") and self.ctx.require_permit
-        if status in ("OPEN", "ASSIGNED", "ESCALATED"):
-            lines.append("請先在工單按「接單」。")
-        if pre_permit:
-            lines.append("請先申請作業許可，由現場主管核准後才能開始上鎖。" if status != "PERMIT_REQUESTED"
-                         else "作業許可已申請，等待現場主管核准；核准前請勿開始隔離作業。")
-            lines.append(f"作業許可預覽：依 {loto['loto_id']} 隔離以下能量源（核准後再逐項執行）：")
-            for e in loto.get("energy_sources") or []:
-                lines.append(f"- {e.get('id', '')} {e.get('type', '')}：{e.get('device', '')}（{e.get('method', '')}）")
-        lines.append(f"上鎖掛牌檢查表 {loto['loto_id']}（{'預覽，許可核准後' if pre_permit else '請'}逐項勾選）：")
-        for s in loto["steps"]:
-            mark = "☑" if s["checked"] else "☐"
-            lines.append(f"{mark} {s['no']}. {s['action']}" + (f"（確認：{s['check']}）" if s.get("check") else ""))
-        prep: list[str] = []
-        for fid in [r["id"] for r in wo_info["root_cause_top3"][:1]]:
-            for phase in ("prepare", "isolate"):
-                for chunk in await tools.call("get_sop", {"failure_mode_id": fid, "phase": phase}):
-                    prep.append(chunk["text"])
-        if prep:
-            lines.append("SOP 準備與隔離段落：")
-            lines.extend(prep)
-        lines.append("接單後我就可以陪你排查不用碰機台的部分；要碰機台的步驟，請在上鎖掛牌完成、確認機台不會動之後再做。")
-        return AgentReply(workorder_id=tools.wo_id, phase="loto", content="\n".join(lines))
-
-    # ── 5. 動態排查（程式決定查什麼，LLM 只負責寫回覆）─────────
     def _rejected(self, wo_id: str) -> list[str]:
         rows = self.ctx.db.all(select(AgentMessage).where(AgentMessage.workorder_id == wo_id,
                                                           AgentMessage.role == "tool"))

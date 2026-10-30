@@ -3,6 +3,8 @@
 - chat()：一次拿完整回覆；stream_chat()：stream=true，逐段回傳文字（NDJSON），最後回傳 LlmResult。
 - think：DeepSeek V4.1 Flash 預設會先「思考」數百個 token（實測首字 3 s 以上）；維修 Agent 傳 think=False。
 - 連線保持（keepalive 300 s）；啟動時 warmup() 先建好 TLS 連線。
+- 對外介面（訊息、工具、tool_calls 都用 Ollama 格式）固定；換成 Claude、GPT 時只換掉 _headers／_body／_parse／
+  _parse_line 這幾個轉換（llm/providers.py），呼叫端不用改。
 """
 from __future__ import annotations
 
@@ -36,18 +38,25 @@ class LlmResult(BaseModel):
 
 
 class LlmClient:
+    """Ollama /api/chat（預設）。Anthropic／OpenAI 的轉接在 providers.py，用 make_llm_client() 依設定建立。"""
+
+    provider = "ollama"
+
     def __init__(self, *, api_key: str | None, url: str, model: str, timeout_s: float = 30.0,
                  db: Database | None = None, clock: Clock | None = None, enabled: bool = True,
                  transport: httpx.AsyncBaseTransport | None = None):
         self.url, self.model = url, model
         self.db, self.clock = db, clock or Clock()
         self.enabled = enabled and bool(api_key)
+        self.http = httpx.AsyncClient(timeout=timeout_s, headers=self._headers(api_key), transport=transport,
+                                      limits=httpx.Limits(max_keepalive_connections=8, keepalive_expiry=300))
+        self.calls = 0
+
+    def _headers(self, api_key: str | None) -> dict[str, str]:
         headers = {"Content-Type": "application/json"}
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
-        self.http = httpx.AsyncClient(timeout=timeout_s, headers=headers, transport=transport,
-                                      limits=httpx.Limits(max_keepalive_connections=8, keepalive_expiry=300))
-        self.calls = 0
+        return headers
 
     def _body(self, messages, tools, options, think, stream: bool) -> dict[str, Any]:
         body: dict[str, Any] = {"model": self.model, "messages": messages, "stream": stream}
@@ -58,6 +67,25 @@ class LlmClient:
         if think is not None:
             body["think"] = think
         return body
+
+    def _parse(self, d: dict[str, Any]) -> LlmResult:
+        """非串流回應 → LlmResult（latency 由 chat() 補上）。"""
+        msg = d.get("message") or {}
+        tokens = (d.get("prompt_eval_count") or 0) + (d.get("eval_count") or 0)
+        return LlmResult(content=msg.get("content") or "", tool_calls=msg.get("tool_calls") or [],
+                         model=d.get("model", self.model), tokens=tokens or None)
+
+    def _parse_line(self, line: str, st: dict[str, Any]) -> str | None:
+        """串流的一行 → 這一行新增的文字（沒有就 None）；tool_calls、model、tokens 累積在 st。"""
+        d = json.loads(line)
+        if d.get("error"):
+            raise RuntimeError(str(d["error"]))
+        msg = d.get("message") or {}
+        st["tool_calls"] += msg.get("tool_calls") or []
+        if d.get("done"):
+            st["model"] = d.get("model", self.model)
+            st["tokens"] = ((d.get("prompt_eval_count") or 0) + (d.get("eval_count") or 0)) or None
+        return msg.get("content") or None
 
     async def warmup(self) -> bool:
         """建立連線（TLS）並讓雲端載入模型；失敗只記錄。"""
@@ -87,9 +115,8 @@ class LlmClient:
         self.calls += 1
         t0 = time.perf_counter()
         parts: list[str] = []
-        tool_calls: list[dict] = []
+        st: dict[str, Any] = {"tool_calls": [], "model": self.model, "tokens": None}
         first: float | None = None
-        last: dict[str, Any] = {}
         err: str | None = None
         try:
             async with self.http.stream("POST", self.url,
@@ -100,18 +127,11 @@ class LlmClient:
                 async for line in r.aiter_lines():
                     if not line.strip():
                         continue
-                    d = json.loads(line)
-                    if d.get("error"):
-                        raise RuntimeError(str(d["error"]))
-                    msg = d.get("message") or {}
-                    tool_calls += msg.get("tool_calls") or []
-                    if text := msg.get("content"):
+                    if text := self._parse_line(line, st):
                         if first is None:
                             first = time.perf_counter()
                         parts.append(text)
                         yield text
-                    if d.get("done"):
-                        last = d
         except httpx.TimeoutException:
             err = "timeout"
         except httpx.HTTPStatusError as e:
@@ -120,8 +140,7 @@ class LlmClient:
             err = f"{type(e).__name__}: {e}"
         latency = (time.perf_counter() - t0) * 1000
         result = None if err else LlmResult(
-            content="".join(parts), tool_calls=tool_calls, model=last.get("model", self.model),
-            tokens=((last.get("prompt_eval_count") or 0) + (last.get("eval_count") or 0)) or None,
+            content="".join(parts), tool_calls=st["tool_calls"], model=st["model"], tokens=st["tokens"],
             latency_ms=latency, ttft_ms=round((first - t0) * 1000, 1) if first else None)
         self._log(purpose, trace_id, result, latency, err)
         if result is None:
@@ -139,11 +158,7 @@ class LlmClient:
         try:
             r = await self.http.post(self.url, json=body)
             r.raise_for_status()
-            d = r.json()
-            msg = d.get("message") or {}
-            tokens = (d.get("prompt_eval_count") or 0) + (d.get("eval_count") or 0)
-            result = LlmResult(content=msg.get("content") or "", tool_calls=msg.get("tool_calls") or [],
-                               model=d.get("model", self.model), tokens=tokens or None)
+            result = self._parse(r.json())
         except httpx.TimeoutException:
             err = "timeout"
         except httpx.HTTPStatusError as e:

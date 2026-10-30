@@ -889,11 +889,10 @@ function agentReply(wo: WorkOrderDetail, userText: string) {
     content = "這是工安類工單，不需要上鎖掛牌。依 SOP-SAF-003：";
     steps = SOP_PPE[0].steps;
     tools.push({ name: "get_sop", args: { failure_mode_id: "SAF-PPE", phase: "respond" } });
-  } else if (wo.status === "ASSIGNED" || wo.status === "ESCALATED" || wo.status === "OPEN") {
-    content = "請先接單，接單後我會帶你完成上鎖掛牌。";
-  } else if (wo.status === "ACKED" || wo.status === "PERMIT_REQUESTED" || wo.status === "PERMIT_APPROVED") {
+  } else if (["OPEN", "ASSIGNED", "ESCALATED", "ACKED", "PERMIT_REQUESTED", "PERMIT_APPROVED"].includes(wo.status)) {
     // 上鎖前資訊不鎖（跟後端一樣）：先給不用碰機台的檢查；要碰機台的步驟標成「需先完成上鎖掛牌」
     const next =
+      ["OPEN", "ASSIGNED", "ESCALATED"].includes(wo.status) ? "請先在上方按「接單」。" :
       wo.status === "ACKED" ? "請先在上方按「申請作業許可」。" : wo.status === "PERMIT_REQUESTED" ? "作業許可等待現場主管核准中。" : "許可已核准，請逐項完成上鎖掛牌。";
     content = `依 Jev 根因排序，第一名是「${top[0]?.name ?? "送料滾輪磨損"}」。上鎖掛牌完成前，先做不用碰機台的檢查：`;
     steps = ["在操作面板讀取警報碼與送料長度誤差趨勢", "看送料口攝影機畫面，確認卡料位置", "上鎖掛牌完成後，目視檢查上下送料滾輪表面有沒有亮面磨耗", next];

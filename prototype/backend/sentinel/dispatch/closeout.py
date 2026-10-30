@@ -1,12 +1,22 @@
-"""結案（CL-1、CL-3；J5）：回報品質檢查 → 寫回知識庫草稿（review_status=draft）→ CLOSED。"""
+"""結案（CL-1、CL-3；J5）：回報品質檢查 → 寫回知識庫草稿（review_status=draft）→ CLOSED。
+
+案例草稿分兩段（結案不等 LLM）：
+1. 結案當下用程式組稿（kb/writeback.build_case，drafted_by=rules），立即寫檔、工單 CLOSED；
+2. 背景請 LLM 把回報、工單資訊、確認的根因、Jev 診斷整理成摘要／原因／處置步驟／注意事項（llm/case_draft.py），
+   成功且草稿還沒被核准 → 改寫草稿並標 drafted_by=llm；LLM 不可用、逾時（llm.case_draft_timeout_s）或
+   回覆不合格（無法解析、出現資料裡沒有的數值）→ 保留程式版，llm_draft.status=failed。兩種結果都記稽核。
+"""
 from __future__ import annotations
 
+import asyncio
 import logging
 from typing import TYPE_CHECKING, Any
 
 from ..db.models import Diagnosis
 from ..jev import gate
 from ..jev.client import JevUnavailable
+from ..llm import case_draft
+from ..llm.client import LlmUnavailable
 from ..schemas.events import Event, Topic
 from .workorder import TransitionError, WoStatus
 
@@ -86,20 +96,72 @@ def _store_report(rt: "Runtime", wo_id: str, text: str, root_cause: str | None, 
 
 def write_case_draft(rt: "Runtime", wo_id: str, report: str, final_rc: str | None, diag: Diagnosis | None,
                      reported_by: str = "") -> tuple[str, object] | tuple[None, None]:
-    """CL-3：結案回報 → 案例草稿（review_status=draft）；主管在 /api/kb/cases/{id}/approve 核准後立即入庫。"""
+    """CL-3：結案回報 → 案例草稿（review_status=draft）；主管在 /api/kb/cases/{id}/approve 核准後立即入庫。
+    先寫程式版草稿（不等 LLM），LLM 啟用時再於背景整理（_llm_redraft）。"""
     from ..kb.writeback import build_case, case_id_for
 
     wo = rt.workorders.get(wo_id)
     inc = rt.workorders.incident(wo)
     now = rt.clock.now()
     case_id = case_id_for(inc.line, wo_id, now)
-    doc = build_case(case_id=case_id, inc=inc, machine=rt.plant.machines.get(inc.machine_id or ""), wo_id=wo_id,
+    machine = rt.plant.machines.get(inc.machine_id or "")
+    doc = build_case(case_id=case_id, inc=inc, machine=machine, wo_id=wo_id,
                      report=report, final_rc=final_rc, diag=diag, closed_at=now, reported_by=reported_by,
                      timeline=list(rt.windows.timeline.get(inc.machine_id or inc.camera_id or "", [])))
+    use_llm = rt.llm.enabled
+    doc["llm_draft"] = {"status": "pending"} if use_llm else {"status": "skipped", "reason": "LLM 未啟用"}
     try:
         path = rt.writeback.write(doc)
     except OSError:
         log.exception("案例草稿寫入失敗")
         return None, None
-    rt.audit.record("case_draft_written", trace_id=inc.trace_id, workorder_id=wo_id, case_id=case_id)
+    rt.audit.record("case_draft_written", trace_id=inc.trace_id, workorder_id=wo_id, case_id=case_id,
+                    drafted_by="rules", llm=doc["llm_draft"]["status"])
+    if use_llm:
+        labels = {k: v.get("label") or k for k, v in rt.kb.failure_modes_for(inc.line).items()}
+        msgs = case_draft.build_messages(wo_id=wo_id, inc=inc, machine_name=machine.name if machine else None,
+                                         report=report, final_rc=final_rc, rc_label=labels.get(final_rc or ""),
+                                         diag=diag, labels=labels)
+        rt.bus.track(_llm_redraft(rt, case_id, wo_id, msgs), name=f"llm.case_draft:{case_id}")
     return case_id, path
+
+
+async def _llm_redraft(rt: "Runtime", case_id: str, wo_id: str, messages: list[dict]) -> None:
+    """背景：LLM 整理案例草稿。失敗只記稽核、保留程式版；草稿已被核准就不改（主管核准的是當時看到的版本）。"""
+    wo = rt.workorders.get(wo_id)
+    inc = rt.workorders.incident(wo)
+    fields, res, reason = None, None, None
+    try:
+        fields, res = await asyncio.wait_for(case_draft.draft(rt.llm, messages, trace_id=inc.trace_id),
+                                             timeout=rt.settings.llm.case_draft_timeout_s)
+    except (TimeoutError, asyncio.TimeoutError):
+        reason = "timeout"
+    except LlmUnavailable as e:
+        reason = f"LLM 不可用：{e}"
+    except case_draft.CaseDraftInvalid as e:
+        reason = f"回覆不合格：{e}"
+    doc = rt.writeback.get(case_id)
+    if doc is None or doc.get("review_status") != "draft":
+        rt.audit.record("case_draft_llm", actor="llm", trace_id=inc.trace_id, workorder_id=wo_id, case_id=case_id,
+                        ok=False, drafted_by=(doc or {}).get("drafted_by"), reason="草稿已核准或不存在，LLM 版不採用")
+        return
+    at = rt.clock.now().isoformat()
+    if fields is not None and res is not None:
+        doc.update(fields)
+        doc["drafted_by"] = "llm"
+        doc["llm_draft"] = {"status": "ok", "model": res.model, "prompt_ver": case_draft.PROMPT_VER,
+                            "latency_ms": round(res.latency_ms or 0), "at": at}
+    else:
+        doc["llm_draft"] = {"status": "failed", "reason": reason, "at": at}
+    try:
+        rt.writeback.write(doc)
+    except OSError:
+        log.exception("案例草稿更新失敗")
+        return
+    rt.audit.record("case_draft_llm", actor="llm", trace_id=inc.trace_id, workorder_id=wo_id, case_id=case_id,
+                    ok=fields is not None, drafted_by=doc["drafted_by"], reason=reason,
+                    model=res.model if res else None, latency_ms=round(res.latency_ms or 0) if res else None)
+    await rt.bus.publish(Event(ts=rt.clock.now(), topic=Topic.AI, source="llm", line=inc.line,
+                               machine_id=inc.machine_id, type="case_draft_updated", trace_id=inc.trace_id,
+                               payload={"case_id": case_id, "workorder_id": wo_id, "incident_id": inc.id,
+                                        "drafted_by": doc["drafted_by"], "llm_status": doc["llm_draft"]["status"]}))

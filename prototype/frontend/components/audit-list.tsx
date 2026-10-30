@@ -30,6 +30,7 @@ const ACTION_LABEL: Record<string, string> = {
   report_rejected: "回報退回（J5）",
   writeback_check: "回報完整性檢查（J5）",
   case_draft_written: "寫回知識庫（草稿）",
+  case_draft_llm: "LLM 整理案例草稿",
   kb_writeback: "寫回知識庫（草稿）",
   supervisor_requested: "要求主管確認",
   request_supervisor: "要求主管確認",
@@ -121,7 +122,9 @@ function summarize(a: AuditEntry): string | null {
       return [d.complete === true ? "完整" : d.complete === false ? "不完整" : null, Array.isArray(d.missing) && d.missing.length ? `缺 ${(d.missing as string[]).join("、")}` : null].filter(Boolean).join("・") || null;
     case "case_draft_written":
     case "kb_writeback":
-      return String(d.case_id ?? "");
+      return [d.case_id, d.drafted_by === "rules" ? "程式組稿" : null, d.llm === "pending" ? "LLM 整理中" : d.llm === "skipped" ? "LLM 未啟用" : null].filter(Boolean).join("・");
+    case "case_draft_llm":
+      return [d.case_id, d.ok ? "LLM 整理完成" : "保留程式組稿", d.reason && short(d.reason, 60), d.latency_ms && `${d.latency_ms} ms`].filter(Boolean).join("・");
     case "supervisor_requested":
     case "request_supervisor":
       return [d.to && `給 ${d.to}`, d.reason && short(d.reason, 70)].filter(Boolean).join("・");

@@ -7,39 +7,28 @@ from dataclasses import dataclass, field
 from ..dispatch.workorder import PRE_REPAIR, WoStatus
 
 # ── 1／2. 作業許可、上鎖掛牌 ─────────────────────────────────
-# 資訊不鎖：接單後就能查 SOP 全文、機台數據、相似案例；要碰機台的步驟由 J4 標成「需先完成上鎖掛牌」。
-# 工單狀態流程（許可 → 上鎖掛牌 → 維修）不變，由 dispatch/workorder.py 強制。
-PRE_ACK = {"OPEN", "ASSIGNED", "ESCALATED"}               # 還沒接單：只給上鎖清單與準備（固定模板）
-SAFE_PHASES = {"summary", "prepare", "isolate"}           # 接單前只能看這些段落
-RESTRICTED_PHASES = {"inspect", "repair", "verify", "restore"}
-PRE_LOTO_TOOLS = {"get_workorder", "get_loto", "get_sop"}   # get_sop 只開放 summary／prepare／isolate
+# 資訊不鎖：任何階段（含接單前）都能查 SOP 全文、機台數據、相似案例；要碰機台的步驟由 J4 標成「需先完成上鎖掛牌」。
+# 工單狀態流程（接單 → 許可 → 上鎖掛牌 → 維修）不變，由 dispatch/workorder.py 強制；Agent 沒有改狀態的工具。
 ALL_TOOLS = {"get_workorder", "get_loto", "get_machine_signals", "get_sop", "search_cases", "record_step",
              "request_supervisor"}
 
 
 class ToolDenied(Exception):
-    """工具或段落在目前工單狀態下不開放。"""
+    """工具不在 Agent 可用清單內。"""
 
 
 def restricted(status: str, require_permit: bool = True) -> bool:
-    """True：還沒到可以給檢查／維修步驟的狀態（檢查與維修段落只在 IN_REPAIR 之後開放）。"""
+    """True：上鎖掛牌還沒完成（IN_REPAIR 之前）。用來決定 needs_loto 是否已滿足、要不要附復機步驟。"""
     return WoStatus(status) in PRE_REPAIR
 
 
-def before_ack(status: str) -> bool:
-    """True：還沒接單（只回固定模板，不呼叫 LLM）。"""
-    return str(WoStatus(status).value) in PRE_ACK
-
-
 def allowed_tools(status: str, require_permit: bool = True) -> set[str]:
-    return set(PRE_LOTO_TOOLS) if before_ack(status) else set(ALL_TOOLS)
+    return set(ALL_TOOLS)
 
 
 def check_tool(name: str, args: dict, status: str, require_permit: bool = True) -> None:
     if name not in allowed_tools(status, require_permit):
-        raise ToolDenied(f"工具 {name} 在 {status} 狀態不開放（請先接單）")
-    if name == "get_sop" and before_ack(status) and args.get("phase") not in SAFE_PHASES:
-        raise ToolDenied(f"接單前不提供 SOP 的 {args.get('phase')} 段落")
+        raise ToolDenied(f"工具 {name} 不開放給 Agent")
 
 
 # ── 4. 不能叫人復電 ─────────────────────────────────────────────

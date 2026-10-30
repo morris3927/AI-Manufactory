@@ -103,13 +103,24 @@ AGENT_TEXT = ("目前先驗證送料滾輪磨損（機率 82%）。\n"
               "4. 處理完成後即可復電試運轉。")
 
 
+def case_draft_echo(user: str) -> str:
+    """案例整理的預設回覆：只把回報原文搬進欄位（不加任何數值，一定通過檢查）。"""
+    report = user.split("技術員結案回報（原文）：\n", 1)[-1].strip()
+    return json.dumps({"technician_report_normalized": report, "discriminating_evidence": [],
+                       "actions": [{"step": report, "result": ""}], "lessons": "", "why_first_guess_wrong": None},
+                      ensure_ascii=False)
+
+
 class FakeLlm:
     """stream=false 回一個 JSON；stream=true 回 NDJSON，每 chunk_chars 個字一段、段與段之間 delay_s（模擬逐字產生）。
-    tool_first=True：有給 tools 時第一輪先回 tool_calls（測工具輪上限）。log：與 FakeJev 共用的時序紀錄。"""
+    tool_first=True：有給 tools 時第一輪先回 tool_calls（測工具輪上限）。log：與 FakeJev 共用的時序紀錄。
+    案例整理（結案草稿）：case_reply 指定回覆內容（None＝把回報原文搬進欄位），case_delay_s 模擬 LLM 整理耗時。"""
 
-    def __init__(self, fail: bool = False, *, chunk_chars: int = 8, delay_s: float = 0.0, tool_first: bool = False):
+    def __init__(self, fail: bool = False, *, chunk_chars: int = 8, delay_s: float = 0.0, tool_first: bool = False,
+                 case_reply: str | None = None, case_delay_s: float = 0.0):
         self.fail = fail
         self.chunk_chars, self.delay_s, self.tool_first = chunk_chars, delay_s, tool_first
+        self.case_reply, self.case_delay_s = case_reply, case_delay_s
         self.calls: list[dict] = []
         self.log: list[str] | None = None
 
@@ -118,8 +129,13 @@ class FakeLlm:
             raise httpx.ConnectError("fake down", request=request)
         body = json.loads(request.content)
         self.calls.append(body)
-        is_agent = body["messages"][0]["content"].startswith("你是 Sentinel AI 的維修助理")
+        system = body["messages"][0]["content"]
+        is_agent = system.startswith("你是 Sentinel AI 的維修助理")
         content = AGENT_TEXT if is_agent else "送料機 FD02 卡料，最可能是送料滾輪磨損（82%）。請先依 LOTO 上鎖後檢查滾輪。"
+        if system.startswith("你是 Sentinel AI 的知識庫整理員"):
+            if self.case_delay_s:
+                await asyncio.sleep(self.case_delay_s)
+            content = self.case_reply if self.case_reply is not None else case_draft_echo(body["messages"][1]["content"])
         tool_calls = []
         if self.tool_first and body.get("tools") and not any(m["role"] == "tool" for m in body["messages"]):
             content, tool_calls = "", [{"function": {"name": "get_sop", "arguments": {

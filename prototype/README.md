@@ -42,6 +42,18 @@ Demo Day 當天的啟動方式和備案，看 `DEMO_RUNBOOK.md`。
 | `eval/` | 評估結果（E1–E7、檢索基準）與圖表；`results/summary.md` 是總整理 |
 | `scripts/` | 影片產生、模型下載、Demo 啟動等工具 |
 
+## 換 LLM（Claude、GPT）
+
+預設用 Ollama Cloud 上的 DeepSeek。要換成 Claude 或 GPT，改 `backend/config.yaml` 的 `llm.provider`，再到根目錄 `.env` 加上對應的金鑰，重啟後端就好，程式不用改：
+
+| `llm.provider` | 介接方式 | 模型設定 | `.env` 要有 |
+|---|---|---|---|
+| `ollama`（預設） | Ollama `/api/chat` | `llm.model` | `OLLAMA_API_KEY` |
+| `anthropic` | Anthropic Messages API | `llm.anthropic.model`（預設 `claude-sonnet-5`） | `ANTHROPIC_API_KEY` |
+| `openai` | OpenAI Chat Completions | `llm.openai.model`（沒有預設，要自己填） | `OPENAI_API_KEY` |
+
+維修 Agent 的串流、工具呼叫、診斷說明和結案案例整理都走同一層（`backend/sentinel/llm/`），換了 provider 行為一樣。沒有金鑰或沒填模型時 LLM 會停用，系統改用 SOP 原文和程式組的案例草稿，不會卡住。啟動後可以看 `/api/health` 的 `llm.provider`、`llm.model` 確認現在用哪一個。
+
 ## 改東西前要知道的
 
 - **金鑰只放根目錄 `.env`**，不要寫進程式、文件或截圖。這個 repo 是公開的。

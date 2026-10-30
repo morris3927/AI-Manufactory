@@ -22,7 +22,7 @@ from .jev.client import JevClient
 from .kb.retrieve import KnowledgeBase
 from .kb.store import VectorStore, get_embedder
 from .kb.writeback import CaseWriteback
-from .llm.client import LlmClient
+from .llm.providers import make_llm_client
 from .rules.engine import IncidentManager, RuleEngine, load_rules
 from .rules.escalation import EscalationService
 from .rules.windows import Windows
@@ -56,11 +56,15 @@ class Runtime:
         self.scenarios: dict[str, Scenario] = load_scenarios(s.path("scenarios"))
 
         jev_key = jev_key if jev_key is not None else s.secret(s.secrets.openrouter_api_key)
-        llm_key = llm_key if llm_key is not None else s.secret(s.secrets.ollama_api_key)
+        llm_key = llm_key if llm_key is not None else s.llm_key()
         self.jev = JevClient(api_key=jev_key, url=s.jev.url, model=s.jev.model, timeout_s=s.jev.timeout_s, db=self.db,
                              clock=self.clock, enabled=s.jev.enabled, transport=jev_transport)
-        self.llm = LlmClient(api_key=llm_key, url=s.llm.url, model=s.llm.model, timeout_s=s.llm.timeout_s, db=self.db,
-                             clock=self.clock, enabled=s.llm.enabled, transport=llm_transport)
+        llm_url, llm_model = s.llm.endpoint()          # llm.provider：ollama（預設）／anthropic／openai
+        if not llm_model:
+            log.warning("llm.%s.model 沒有設定，LLM 停用", s.llm.provider)
+        self.llm = make_llm_client(s.llm.provider, api_key=llm_key, url=llm_url, model=llm_model or "",
+                                   timeout_s=s.llm.timeout_s, db=self.db, clock=self.clock,
+                                   enabled=s.llm.enabled and bool(llm_model), transport=llm_transport)
 
         store = None
         if use_vector_store:
@@ -148,7 +152,7 @@ class Runtime:
         self.dispatch.start()
         if warmup if warmup is not None else (self.settings.jev.warmup and self.jev.enabled):
             self._bg.append(asyncio.create_task(self.jev.warmup(), name="jev.warmup"))
-            if self.llm.enabled:                     # 維修 Agent 首字延遲：先建好 Ollama Cloud 連線
+            if self.llm.enabled:                     # 維修 Agent 首字延遲：先建好 LLM 連線
                 self._bg.append(asyncio.create_task(self.llm.warmup(), name="llm.warmup"))
         if realtime if realtime is not None else self.clock.realtime:
             self.engine.start_realtime(None)

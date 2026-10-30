@@ -8,6 +8,7 @@ import { useAsync, useThrottled } from "@/lib/hooks";
 import { usePersona } from "@/lib/session";
 import { fmtDateTime } from "@/lib/utils";
 import { useWs } from "@/lib/ws";
+import { CaseDraftBadge, CaseDraftDetail } from "./case-draft";
 import { ErrorNote } from "./error-note";
 import { toast } from "./toast";
 import { Button } from "./ui/button";
@@ -22,7 +23,7 @@ export function KbReview() {
   const reload = useThrottled(q.reload, 500);
   const [busy, setBusy] = useState<string | null>(null);
   useWs(["workorders", "ai"], (m) => {
-    if (m.type === "status_changed" || m.type === "case_approved" || m.type === "updated") reload();
+    if (m.type === "status_changed" || m.type === "case_approved" || m.type === "case_draft_updated" || m.type === "updated") reload();
   });
   const list = q.data ?? [];
   return (
@@ -41,7 +42,7 @@ export function KbReview() {
         }
       />
       <CardContent className="space-y-2">
-        <p className="text-xs text-muted">結案回報通過 J5 後自動產生案例草稿；組長（主管）核准後才寫進向量庫，下次相似異常就會用上。</p>
+        <p className="text-xs text-muted">結案回報通過 J5 後自動產生案例草稿，再由 LLM 整理成摘要、原因、處置步驟與注意事項（只整理回報內容，不新增事實）；組長（主管）看過全文、核准後才寫進向量庫，下次相似異常就會用上。</p>
         {q.error && <ErrorNote e={q.error} />}
         {list.map((c) => (
           <div key={c.case_id} className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded border border-line bg-panel-2/50 px-3 py-2">
@@ -56,6 +57,7 @@ export function KbReview() {
               根因：<span className="text-foreground">{c.final_root_cause ?? "—"}</span>
               {c.hypothesis_correct === false && <span className="ml-1 text-amber-300">（第一判斷錯誤，可修正機率）</span>}
             </span>
+            <CaseDraftBadge info={c} />
             {c.reviewed_by && <span className="text-xs text-muted">審核 {c.reviewed_by}・{fmtDateTime(c.reviewed_at)}</span>}
             {tab === "draft" && (
               <Button
@@ -81,6 +83,7 @@ export function KbReview() {
               </Button>
             )}
             {c.report && <div className="w-full truncate text-xs text-muted">回報：{c.report}</div>}
+            <CaseDraftDetail info={c} report={c.report} />
           </div>
         ))}
         {!list.length && !q.error && <div className="py-3 text-center text-sm text-muted">{tab === "draft" ? "沒有待審核的草稿" : "尚無入庫案例"}</div>}

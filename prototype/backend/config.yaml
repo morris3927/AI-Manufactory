@@ -27,10 +27,18 @@ jev:
   warmup: true
 
 llm:
-  url: https://ollama.com/api/chat
+  provider: ollama                          # ollama | anthropic | openai；只改這一行就能換 LLM（金鑰放根目錄 .env）
+  url: https://ollama.com/api/chat          # provider: ollama 用這組 url／model，金鑰 OLLAMA_API_KEY
   model: deepseek-v4.1-flash
   timeout_s: 30.0
   enabled: true
+  case_draft_timeout_s: 60                  # 結案案例由 LLM 整理（背景執行，不擋結案）；逾時保留程式組的草稿
+  anthropic:                                # provider: anthropic → Messages API，金鑰 ANTHROPIC_API_KEY
+    url: https://api.anthropic.com/v1/messages
+    model: claude-sonnet-5
+  openai:                                   # provider: openai → Chat Completions，金鑰 OPENAI_API_KEY
+    url: https://api.openai.com/v1/chat/completions
+    model: null                             #   改用 openai 時填帳號可用的模型名稱；沒填 LLM 會停用
 
 kb:
   embedding: auto                           # auto：有裝 sentence-transformers 用 embedding_model，否則 hash（只給測試）

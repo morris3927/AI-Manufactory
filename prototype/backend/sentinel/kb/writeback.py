@@ -3,6 +3,9 @@
 「越用越準」：核准後的案例馬上成為下一次 kb.similar_cases 的候選（同機台、同事件類型排最前面），
 所以同一個異常再發生時，Jev J3 的 state.similar_cases 會帶到這筆真實結案紀錄。
 草稿放在 settings.paths.drafts/{line}/（預設 knowledge/cases/_drafts/），make kb 重建時也會照守門規則讀到。
+
+草稿先由 build_case 用程式組好（drafted_by=rules），結案不等 LLM；LLM 整理完（llm/case_draft.py）再改寫摘要、原因、
+處置步驟、注意事項並標 drafted_by=llm（dispatch/closeout.py）。主管核准的是畫面上看到的那一版。
 """
 from __future__ import annotations
 
@@ -49,6 +52,7 @@ def build_case(*, case_id: str, inc: Any, machine: Any, wo_id: str, report: str,
         "lessons": f"現場確認根因為 {final_rc}" if final_rc else "",
         "sop_used": diag.sop_ids if diag else [],
         "review_status": "draft",
+        "drafted_by": "rules",                       # rules：程式組稿；llm：LLM 整理（只整理回報，不新增事實）
     }
 
 
@@ -115,4 +119,15 @@ def summary(d: dict) -> dict:
             "event_type": (d.get("trigger") or {}).get("event_type"), "final_root_cause": d.get("final_root_cause"),
             "first_hypothesis": d.get("first_hypothesis"), "hypothesis_correct": d.get("hypothesis_correct"),
             "report": d.get("technician_report_raw"), "closed_at": d.get("closed_at"),
-            "reviewed_by": d.get("reviewed_by"), "reviewed_at": d.get("reviewed_at"), "review_note": d.get("review_note")}
+            "reviewed_by": d.get("reviewed_by"), "reviewed_at": d.get("reviewed_at"), "review_note": d.get("review_note"),
+            **draft_content(d)}
+
+
+def draft_content(d: dict) -> dict:
+    """主管核准前要看的草稿全文（摘要、原因、處置步驟、注意事項）與整理方式。"""
+    return {"drafted_by": d.get("drafted_by") or "rules", "llm_status": (d.get("llm_draft") or {}).get("status"),
+            "content": {"summary": d.get("technician_report_normalized"),
+                        "evidence": d.get("discriminating_evidence") or [],
+                        "actions": d.get("actions") or [], "lessons": d.get("lessons") or "",
+                        "why_first_guess_wrong": d.get("why_first_guess_wrong"),
+                        "sop_used": d.get("sop_used") or []}}
