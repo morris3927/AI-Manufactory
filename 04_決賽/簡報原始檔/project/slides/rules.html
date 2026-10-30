@@ -1,0 +1,15 @@
+<section id="rules" data-transition="fade" style="background:#F3F1EB;color:#1B2433;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:64px;font-weight:700">第一層：規則引擎，7 條規則</h2>
+<p style="font-size:30px;line-height:1.5;color:#4A5568">自行實作的 if／else 條件判斷，約 1 毫秒、結果可重現，命中哪一條都寫進稽核紀錄；門檻放在設定檔，可依現場調整。</p>
+<table style="font-size:26px;color:#1B2433;width:1664px">
+<tr><th style="width:22%">規則</th><th style="width:66%">觸發條件</th><th style="width:12%">嚴重度</th></tr>
+<tr><td>沖床送料卡料</td><td>送料速率 30 秒內歸零 AND Jev 卡料機率 &gt; 0.7 連續 2 張</td><td>S2</td></tr>
+<tr><td>畫面和數據對不上</td><td>影像判定靜止 AND 數據回報運轉，持續 20 秒</td><td>S2</td></tr>
+<tr><td>人員進入危險區</td><td>人在危險區 AND（機台運轉 OR 光幕停用／異常）</td><td>S3</td></tr>
+<tr><td>未戴安全帽</td><td>YOLO 偵測到頭部 AND 與安全帽重疊 &lt; 0.3</td><td>S2</td></tr>
+<tr><td>鎖附扭力異常</td><td>連續 NOK ≥ 3 秒 AND 近 100 次 NOK 率 &gt; 3%</td><td>S2</td></tr>
+<tr><td>銲接工位外冒煙</td><td>（工位外有煙 AND 機器人已停）OR 偵測到火光</td><td>S3</td></tr>
+<tr><td>多台同時停機</td><td>不同連動群組 2 台以上 15 秒內停止 AND 氣壓 &lt; 4.8 bar</td><td>S3</td></tr>
+</table>
+<aside>（約 40 秒）不用逐條唸。挑卡料那條講「雙重確認」：畫面和數據同時成立才派工，單一感測器誤判不會亂叫；Jev 連不上時改用「送料歸零＋畫面不動」，系統照樣運作。</aside>
+</section>

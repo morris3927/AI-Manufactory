@@ -12,12 +12,18 @@
     "problem",
     "approach",
     "layers",
+    "rules",
     "jev",
     "architecture",
     "safety",
+    "lockout",
+    "knowledge",
+    "screens",
     "demo",
     "s3report",
     "results",
+    "compare",
+    "ppe",
     "limits",
     "value",
     "deploy",
@@ -29,12 +35,12 @@
       "start": "cover"
     },
     "s2": {
-      "description": "解決方案：四件事、三層判斷、Jev、系統架構、寫進程式的安全規則",
+      "description": "解決方案：四件事、三層判斷、規則、Jev、架構、安全設計、知識回寫",
       "start": "approach"
     },
     "s3": {
-      "description": "成果展示：現場 Demo、職災通報、測試結果與限制",
-      "start": "demo"
+      "description": "成果展示：畫面、現場 Demo、職災通報、測試結果與限制",
+      "start": "screens"
     },
     "s4": {
       "description": "效益說明與落地方式",

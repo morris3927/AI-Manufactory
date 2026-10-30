@@ -1,0 +1,14 @@
+<section id="compare" data-transition="fade" style="background:#F3F1EB;color:#1B2433;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 720px;gap:56px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.2">為什麼派工交給 Jev，<br>不交給 LLM</h2>
+<table style="font-size:26px;color:#1B2433;width:880px">
+<tr><th style="width:36%">方法</th><th style="width:26%">第一名猜對</th><th style="width:38%">回應時間</th></tr>
+<tr><td>純規則</td><td>78.4%</td><td>&lt; 1 毫秒</td></tr>
+<tr><td><b>Jev 1.14</b></td><td><b>97.3%</b></td><td><b>0.46 秒，穩定</b></td></tr>
+<tr><td>DeepSeek（LLM）</td><td>100%</td><td>1.26 秒，最慢 5% 達 5 秒以上</td></tr>
+</table>
+<p style="font-size:26px;line-height:1.5;color:#4A5568">準確度接近，差在<b>穩</b>：Jev 重跑 3 次答案一致、選項順序打亂也不影響；LLM 回應時間忽快忽慢。所以派工只等 Jev，LLM 的說明放到派工之後。</p>
+</div>
+<img src="/_blob/624a6cd7b982891448463ad894aaf90f" alt="E2 根因第一名命中率：純規則、Jev、DeepSeek，附 95% 信賴區間" style="width:720px;height:560px;object-fit:contain;background:#FBFAF7;border:1px solid #DAD6CC;border-radius:16px">
+<aside>（約 40 秒）37 筆保留案例的比較。重點不是誰最高分，是派工要的是「快而且穩」。</aside>
+</section>

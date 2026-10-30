@@ -1,0 +1,13 @@
+<section id="ppe" data-transition="fade" style="background:#F3F1EB;color:#1B2433;font-family:'Noto Sans TC', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 720px;gap:56px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:28px">
+<h2 style="font-size:60px;font-weight:700;line-height:1.2">安全帽偵測：<br>YOLO 先抓，Jev 再確認</h2>
+<ol style="font-size:30px;line-height:1.6">
+<li>YOLO 很快（每張約 2.4 毫秒），但安全帽只抓到約六成，會把有戴的人誤判成沒戴</li>
+<li>判定沒戴時，把頭部裁切圖（臉部先模糊）交給 Jev 確認</li>
+<li>Jev 在 120 張真實照片上全對，誤報被擋下</li>
+</ol>
+<p style="font-size:26px;line-height:1.5;color:#4A5568">工安類只派工、不叫 LLM：沒戴安全帽沒有原因需要推理。</p>
+</div>
+<img src="/_blob/3d462ae2649dbec44659e31769cc2e91" alt="E4 Jev 判斷安全帽：SH17 真實照片 120 張" style="width:720px;height:560px;object-fit:contain;background:#FBFAF7;border:1px solid #DAD6CC;border-radius:16px">
+<aside>（約 30 秒）兩段式的理由：快的模型負責找，準的模型負責確認。被問漏報：真正會漏的是頭沒被偵測到，頭部召回率 0.86，導入後用廠內畫面再微調。</aside>
+</section>
