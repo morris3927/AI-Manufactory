@@ -28,10 +28,11 @@
   h3 small { font-size: 7mm; font-weight: 500; color: var(--soft); margin-left: 4mm; }
   .row { display: flex; gap: 10mm; }
   .card { background: var(--paper); border: 0.5mm solid var(--line); border-radius: 5mm; padding: 8mm; }
-  .quote { background: var(--dark); color: var(--light); border-radius: 5mm; padding: 9mm; font-size: 8.4mm; line-height: 1.55; }
+  .quote { background: var(--dark); color: var(--light); border-radius: 5mm; padding: 8mm 9mm; font-size: 8.4mm; line-height: 1.45; }
   .quote .label { font-size: 6mm; color: #8FB3F0; margin-bottom: 2mm; }
   img { display: block; width: 100%; border-radius: 4mm; }
-  .shot { background: #0B1420; border-radius: 4mm; padding: 2mm; }
+  .shot { background: var(--paper); border: 0.5mm solid var(--line); border-radius: 4mm; padding: 2mm; }
+  .shot img { border-radius: 2.5mm; }
   .layers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6mm; }
   .layer { border-radius: 4mm; padding: 5mm 7mm; color: var(--light); font-size: 6.8mm; }
   .layer b { font-size: 8mm; }
@@ -57,7 +58,7 @@
   <h1>Sentinel AI</h1>
   <h2>警報響了之後，讓對的人帶著線索，安全地把機器修好</h2>
   <div class="team">
-    <div>中山大學 資訊管理學系　楊翊愷・陳啓祥・賴昱霖　｜　高雄大學 資訊工程學系　林吟蓁<br>指導老師　[姓名待填]</div>
+    <div>中山大學 資訊管理學系　楊翊愷・陳啓祥・賴昱霖　｜　高雄大學 資訊工程學系　林吟蓁<br>指導老師　康藝晃</div>
     <div class="note" style="color:#8A97A8">畫面中的工廠、人員與數據皆為模擬資料</div>
   </div>
 </header>
@@ -67,7 +68,7 @@
     <section style="margin-top:10mm">
       <h3>夜班，鐵板卡在模具入口</h3>
       <p>技術員心想：「伸手拿出來就好了吧？」手機上的維修助理已經回覆：</p>
-      <div class="quote" style="margin-top:4mm"><div class="label">維修助理的實際回覆（節錄）</div><b>不行，不要直接伸手。</b>模具入口在運轉範圍內……確認零能量、請主管到場，再用夾具把料片取出。</div>
+      <div class="quote" style="margin-top:4mm"><div class="label">維修助理的實際回覆（節錄）</div><b>不行，手不能伸進滾輪咬合點或模仁區</b>……先確認上鎖掛牌完成、按啟動鈕機台不會動。請主管到場確認……用夾具或勾棒從側邊把卡住的料片取出，不要用手。</div>
       <p style="margin-top:4mm">在他到場之前，系統已經用畫面＋機台數據確認真的卡料、查班表派給當班的他，並附上最可能的三個原因和機率。</p>
     </section>
     <section>
@@ -84,10 +85,10 @@
       <div class="row" style="gap:6mm;align-items:start">
         <div class="shot" style="flex:1"><img src="img/agent_chat_crop.png" alt="維修助理：有風險的步驟被標紅等主管確認"></div>
         <ol style="flex:1;font-size:6.6mm">
-          <li>作業許可核准前，只給預覽</li>
-          <li>上鎖掛牌勾完前，查不到維修步驟</li>
-          <li>每一步過 Jev 安全把關，有風險就標紅、等主管確認</li>
-          <li>不說「可以復電」</li>
+          <li>工單流程不能跳：作業許可 → 上鎖掛牌 → 維修</li>
+          <li>上鎖前要碰機台的步驟，標「需先完成上鎖掛牌」</li>
+          <li>每一步過 Jev 安全把關：風險低標黃提醒，風險高標紅等主管確認</li>
+          <li>不叫人重新開機，復機由當初上鎖的人自己做</li>
           <li>AI 不能改工單狀態</li>
         </ol>
       </div>
@@ -108,18 +109,18 @@
     </section>
     <section>
       <h3>系統畫面</h3>
-      <div class="shot"><img src="img/dashboard_cams_crop.png" alt="戰情儀表板：Jev 框出卡料位置"></div>
+      <div class="shot"><img src="img/dashboard_cams_crop.png" alt="監控儀表板：Jev 框出卡料位置"></div>
       <p class="note" style="margin-top:2mm">Jev 在送料口畫面框出卡料（公開授權照片製作的模擬畫面，卡料為影像編輯）</p>
     </section>
     <section>
       <h3>一條沖壓線的效益</h3>
       <table>
-        <tr><th>情境</th><th>修理縮短</th><th>每月淨效益</th><th>回本期</th></tr>
-        <tr><td>保守</td><td>10%</td><td>約 NT$5 萬</td><td>約 5.4 個月</td></tr>
-        <tr><td><b>中間</b></td><td>25%</td><td><b>約 NT$16 萬</b></td><td><b>約 1.7 個月</b></td></tr>
-        <tr><td>樂觀</td><td>40%</td><td>約 NT$34 萬</td><td>不到 1 個月</td></tr>
+        <tr><th>情境</th><th>修理縮短</th><th>每月少停機</th><th>每月效益</th></tr>
+        <tr><td>保守</td><td>10%</td><td>4.5 小時</td><td>約 NT$6.8 萬</td></tr>
+        <tr><td><b>中間</b></td><td>25%</td><td>12 小時</td><td><b>約 NT$18 萬</b></td></tr>
+        <tr><td>樂觀</td><td>40%</td><td>23.5 小時</td><td>約 NT$35 萬</td></tr>
       </table>
-      <p class="note" style="margin-top:2mm">假設每月停機 60 次、每次修 30 分鐘、每小時產值 NT$15,000；導入一次約 NT$27 萬</p>
+      <p class="note" style="margin-top:2mm">假設每月停機 60 次、每次修 30 分鐘、每小時產值 NT$15,000。系統裝在工廠現有伺服器上；AI 服務每月約 NT$1,300（LLM 訂閱＋Jev 呼叫）</p>
     </section>
   </div>
 </div>
